@@ -168,14 +168,26 @@
     background: var(--white);
     border-radius: 6px;
     box-shadow: var(--shadow-lg);
-    min-width: 140px;
+    min-width: 160px;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
     transition: var(--transition);
-    z-index: 100;
+    z-index: 10000;
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
   }
-  .lang-switcher:hover .lang-dropdown {
+  .lang-switcher.active .lang-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .top-bar {
+    position: relative;
+    z-index: 1001;
+  }
+  .lang-switcher:hover .lang-dropdown,
+  .lang-switcher.active .lang-dropdown {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -183,15 +195,31 @@
   .lang-dropdown a {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
+    gap: 10px;
+    padding: 12px 16px;
     color: var(--gray-900);
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 500;
     transition: var(--transition);
+    border-bottom: 1px solid var(--gray-100);
   }
+  .lang-dropdown a:last-child { border-bottom: none; }
   .lang-dropdown a:hover { background: var(--gray-100); color: var(--navy); }
-  .lang-dropdown a.active { background: var(--orange); color: var(--white); font-weight: 600; }
-  .flag { font-size: 16px; line-height: 1; }
+  .lang-dropdown a.active { background: var(--orange); color: var(--navy); font-weight: 700; }
+  .flag {
+    font-size: 18px;
+    line-height: 1;
+    display: inline-block;
+    width: 24px;
+    height: 18px;
+    text-align: center;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Android Emoji", sans-serif;
+  }
+  .lang-code {
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
 
   /* ============ HEADER ============ */
   .header {
@@ -976,12 +1004,19 @@
   @media (max-width: 968px) {
     .menu-toggle {
       display: flex;
+      align-items: center;
+      justify-content: center;
       background: transparent;
-      border: none;
+      border: 1px solid rgba(255,255,255,0.2);
       color: var(--white);
-      font-size: 24px;
+      font-size: 22px;
       cursor: pointer;
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
     }
+    .header { padding: 12px 0; }
+    .header-inner { gap: 12px; }
     .nav {
       display: none;
       position: absolute;
@@ -992,23 +1027,67 @@
       flex-direction: column;
       padding: 16px;
       border-top: 1px solid rgba(255,255,255,0.1);
+      box-shadow: var(--shadow-lg);
+      z-index: 999;
     }
     .nav.open { display: flex; }
-    .nav a { width: 100%; }
+    .nav a {
+      width: 100%;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 15px;
+    }
+    .nav a:last-child { border-bottom: none; }
+    .header-cta {
+      margin-top: 8px;
+      text-align: center;
+      justify-content: center;
+    }
     .logo-svg { width: 180px; max-height: 56px; }
     .about-inner { grid-template-columns: 1fr; gap: 40px; }
     .about-img img { height: 380px; }
     .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
-    .top-info { display: none; }
+    .top-bar-inner { gap: 8px; padding: 0 16px; }
+    .top-info { gap: 14px; font-size: 12px; }
+    .top-info span:nth-child(2) { display: none; }
     section { padding: 56px 20px; }
-    .hero { min-height: 600px; padding: 60px 20px; }
+    .hero { min-height: auto; padding: 50px 20px 40px; }
+    .hero h1 { font-size: clamp(28px, 7vw, 44px); line-height: 1.2; }
+    .hero p { font-size: 15px; padding: 0 8px; }
+    .hero-eyebrow { font-size: 11px; padding: 6px 14px; }
+    .hero-regions { gap: 8px; }
+    .hero-regions a { padding: 11px 16px; font-size: 11px; flex: 1; min-width: 0; text-align: center; }
+    .search-box { padding: 8px; flex-direction: column; }
+    .search-tabs { width: 100%; gap: 3px; }
+    .search-tab { padding: 10px 6px; font-size: 11px; }
+    .search-input { width: 100%; padding: 13px 16px; }
+    .search-btn { width: 100%; padding: 14px; }
+    .lang-dropdown { right: -8px; min-width: 180px; }
+    .listing-features { gap: 10px; flex-wrap: wrap; }
+    .listing-features span { font-size: 12px; }
+    .listing-price { font-size: 20px; }
   }
   @media (max-width: 540px) {
+    .top-bar { font-size: 11px; }
+    .top-info span:first-child { display: none; }
+    .top-right { gap: 12px; }
+    .top-social { gap: 10px; }
     .logo-svg { width: 150px; max-height: 48px; }
-    .footer-inner { grid-template-columns: 1fr; }
-    .hero-regions a { padding: 12px 18px; font-size: 12px; }
-    .search-box { padding: 12px; }
+    .footer-inner { grid-template-columns: 1fr; gap: 28px; }
+    .hero { padding: 40px 16px 32px; }
+    .hero h1 { font-size: 30px; }
+    .hero-regions { flex-direction: column; }
+    .hero-regions a { width: 100%; }
     .search-tabs { flex-wrap: wrap; }
+    .search-tab { font-size: 10px; padding: 9px 4px; }
+    .category-grid { grid-template-columns: 1fr; }
+    .listings-grid { grid-template-columns: 1fr; }
+    .why-grid { grid-template-columns: 1fr; gap: 24px; }
+    .blog-grid { grid-template-columns: 1fr; }
+    .section-header h2 { font-size: 26px; }
+    .cta-buttons { flex-direction: column; }
+    .cta-buttons a { width: 100%; justify-content: center; }
+    section { padding: 48px 16px; }
   }
 </style>
 </head>
@@ -1029,17 +1108,25 @@
         <a href="https://wa.me/905075188482" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
         <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
       </div>
-      <div class="lang-switcher">
-        <div class="lang-current">
+      <div class="lang-switcher" id="langSwitcher">
+        <div class="lang-current" id="langCurrent">
           <span class="flag">🇹🇷</span>
-          <span id="currentLang">TR</span>
+          <span class="lang-code" id="currentLang">TR</span>
           <i class="fa-solid fa-chevron-down" style="font-size:10px"></i>
         </div>
         <div class="lang-dropdown">
-          <a href="#" class="lang-option active" data-lang="tr"><span class="flag">🇹🇷</span> Türkçe</a>
-          <a href="#" class="lang-option" data-lang="en"><span class="flag">🇬🇧</span> English</a>
-          <a href="#" class="lang-option" data-lang="fr"><span class="flag">🇫🇷</span> Français</a>
-          <a href="#" class="lang-option" data-lang="de"><span class="flag">🇩🇪</span> Deutsch</a>
+          <a href="#" class="lang-option active" data-lang="tr">
+            <span class="flag">🇹🇷</span> <span>Türkçe</span>
+          </a>
+          <a href="#" class="lang-option" data-lang="en">
+            <span class="flag">🇬🇧</span> <span>English</span>
+          </a>
+          <a href="#" class="lang-option" data-lang="fr">
+            <span class="flag">🇫🇷</span> <span>Français</span>
+          </a>
+          <a href="#" class="lang-option" data-lang="de">
+            <span class="flag">🇩🇪</span> <span>Deutsch</span>
+          </a>
         </div>
       </div>
     </div>
@@ -1878,11 +1965,29 @@ function setLanguage(lang) {
   document.documentElement.setAttribute('lang', lang);
 }
 
+// Language switcher click toggle (mobile support)
+const langSwitcher = document.getElementById('langSwitcher');
+const langCurrent = document.getElementById('langCurrent');
+
+langCurrent.addEventListener('click', (e) => {
+  e.stopPropagation();
+  langSwitcher.classList.toggle('active');
+});
+
+// Close when clicking outside
+document.addEventListener('click', (e) => {
+  if (!langSwitcher.contains(e.target)) {
+    langSwitcher.classList.remove('active');
+  }
+});
+
 // Language switcher events
 document.querySelectorAll('.lang-option').forEach(a => {
   a.addEventListener('click', (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setLanguage(a.getAttribute('data-lang'));
+    langSwitcher.classList.remove('active');
   });
 });
 
