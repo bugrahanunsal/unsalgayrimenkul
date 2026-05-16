@@ -2052,6 +2052,32 @@ document.querySelectorAll('.search-tab').forEach(tab => {
     tab.classList.add('active');
   });
 });
+
+// Mobile menu auto-close
+// When a link is clicked, close the mobile hamburger menu
+const mainNav = document.getElementById('mainNav');
+mainNav.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    mainNav.classList.remove('open');
+  });
+});
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', (e) => {
+  const menuToggle = document.querySelector('.menu-toggle');
+  if (mainNav.classList.contains('open') && 
+      !mainNav.contains(e.target) && 
+      !menuToggle.contains(e.target)) {
+    mainNav.classList.remove('open');
+  }
+});
+
+// Close mobile menu on window resize (when going from mobile to desktop)
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 968) {
+    mainNav.classList.remove('open');
+  }
+});
 </script>
 
 </body>
