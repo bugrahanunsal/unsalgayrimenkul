@@ -123,6 +123,8 @@
     color: var(--white);
     padding: 8px 0;
     font-size: 13px;
+    position: relative;
+    z-index: 10000;
   }
   .top-bar-inner {
     max-width: 1320px;
@@ -182,10 +184,6 @@
     visibility: visible;
     transform: translateY(0);
   }
-  .top-bar {
-    position: relative;
-    z-index: 1001;
-  }
   .lang-switcher:hover .lang-dropdown,
   .lang-switcher.active .lang-dropdown {
     opacity: 1;
@@ -207,13 +205,19 @@
   .lang-dropdown a:hover { background: var(--gray-100); color: var(--navy); }
   .lang-dropdown a.active { background: var(--orange); color: var(--navy); font-weight: 700; }
   .flag {
-    font-size: 18px;
-    line-height: 1;
     display: inline-block;
     width: 24px;
-    height: 18px;
-    text-align: center;
-    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Android Emoji", sans-serif;
+    height: 16px;
+    border-radius: 2px;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+    vertical-align: middle;
+  }
+  .flag svg {
+    width: 100%;
+    height: 100%;
+    display: block;
   }
   .lang-code {
     font-weight: 600;
@@ -227,7 +231,7 @@
     padding: 16px 0;
     position: sticky;
     top: 0;
-    z-index: 999;
+    z-index: 100;
     box-shadow: var(--shadow-md);
   }
   .header-inner {
@@ -1110,22 +1114,60 @@
       </div>
       <div class="lang-switcher" id="langSwitcher">
         <div class="lang-current" id="langCurrent">
-          <span class="flag">🇹🇷</span>
+          <span class="flag" id="currentFlag">
+            <svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+              <rect width="60" height="40" fill="#E30A17"/>
+              <circle cx="22" cy="20" r="8" fill="#fff"/>
+              <circle cx="24" cy="20" r="6.4" fill="#E30A17"/>
+              <polygon fill="#fff" points="32,20 28.5,21.1 30.7,18.2 30.7,21.8 28.5,18.9"/>
+            </svg>
+          </span>
           <span class="lang-code" id="currentLang">TR</span>
           <i class="fa-solid fa-chevron-down" style="font-size:10px"></i>
         </div>
         <div class="lang-dropdown">
           <a href="#" class="lang-option active" data-lang="tr">
-            <span class="flag">🇹🇷</span> <span>Türkçe</span>
+            <span class="flag">
+              <svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+                <rect width="60" height="40" fill="#E30A17"/>
+                <circle cx="22" cy="20" r="8" fill="#fff"/>
+                <circle cx="24" cy="20" r="6.4" fill="#E30A17"/>
+                <polygon fill="#fff" points="32,20 28.5,21.1 30.7,18.2 30.7,21.8 28.5,18.9"/>
+              </svg>
+            </span>
+            <span>Türkçe</span>
           </a>
           <a href="#" class="lang-option" data-lang="en">
-            <span class="flag">🇬🇧</span> <span>English</span>
+            <span class="flag">
+              <svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+                <rect width="60" height="40" fill="#012169"/>
+                <path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="6"/>
+                <path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="3"/>
+                <path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="10"/>
+                <path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="6"/>
+              </svg>
+            </span>
+            <span>English</span>
           </a>
           <a href="#" class="lang-option" data-lang="fr">
-            <span class="flag">🇫🇷</span> <span>Français</span>
+            <span class="flag">
+              <svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+                <rect width="20" height="40" fill="#002395"/>
+                <rect x="20" width="20" height="40" fill="#fff"/>
+                <rect x="40" width="20" height="40" fill="#ED2939"/>
+              </svg>
+            </span>
+            <span>Français</span>
           </a>
           <a href="#" class="lang-option" data-lang="de">
-            <span class="flag">🇩🇪</span> <span>Deutsch</span>
+            <span class="flag">
+              <svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+                <rect width="60" height="13.33" y="0" fill="#000"/>
+                <rect width="60" height="13.33" y="13.33" fill="#DD0000"/>
+                <rect width="60" height="13.34" y="26.66" fill="#FFCE00"/>
+              </svg>
+            </span>
+            <span>Deutsch</span>
           </a>
         </div>
       </div>
@@ -1930,7 +1972,12 @@ const translations = {
   }
 };
 
-const flagMap = { tr: '🇹🇷', en: '🇬🇧', fr: '🇫🇷', de: '🇩🇪' };
+const flagSVG = {
+  tr: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#E30A17"/><circle cx="22" cy="20" r="8" fill="#fff"/><circle cx="24" cy="20" r="6.4" fill="#E30A17"/><polygon fill="#fff" points="32,20 28.5,21.1 30.7,18.2 30.7,21.8 28.5,18.9"/></svg>',
+  en: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#012169"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="3"/><path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="6"/></svg>',
+  fr: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg>',
+  de: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#000"/><rect width="60" height="13.33" y="13.33" fill="#DD0000"/><rect width="60" height="13.34" y="26.66" fill="#FFCE00"/></svg>'
+};
 const langCodeMap = { tr: 'TR', en: 'EN', fr: 'FR', de: 'DE' };
 
 function setLanguage(lang) {
@@ -1951,8 +1998,11 @@ function setLanguage(lang) {
     if (dict[key]) el.setAttribute('placeholder', dict[key]);
   });
 
-  // Update language indicator
-  document.querySelector('.lang-current .flag').textContent = flagMap[lang];
+  // Update language indicator (SVG flag)
+  const currentFlag = document.getElementById('currentFlag');
+  if (currentFlag && flagSVG[lang]) {
+    currentFlag.innerHTML = flagSVG[lang];
+  }
   document.getElementById('currentLang').textContent = langCodeMap[lang];
 
   // Update active state
