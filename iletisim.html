@@ -3,39 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>İletişim | ÜNSAL Gayrimenkul - Yalova Emlak Danışmanı</title>
-<meta name="description" content="Yalova emlak danışmanı İsmail Ünsal ile iletişime geçin. Telefon, WhatsApp, e-posta ile ulaşabilirsiniz. Ücretsiz danışmanlık.">
-<meta name="keywords" content="yalova emlak iletişim, ismail ünsal, yalova gayrimenkul danışmanı, ünsal gayrimenkul">
+<title>İletişim | TURYAP İsmail Ünsal - Yalova Emlak Danışmanı</title>
+<meta name="description" content="İsmail Ünsal ile iletişime geçin. Yalova'nın TURYAP yetkili emlak danışmanı. Telefon, WhatsApp, LinkedIn ile 7/24 ulaşabilirsiniz.">
+<meta name="keywords" content="ismail ünsal iletişim, turyap yalova iletişim, yalova emlak telefon, yalova emlak whatsapp">
+<meta name="robots" content="index, follow">
 <link rel="canonical" href="https://www.unsalgayrimenkul.com/iletisim.html">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
 
 <style>
-.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; max-width: 1100px; margin: 0 auto; }
-@media (max-width: 968px) { .contact-grid { grid-template-columns: 1fr; gap: 40px; } }
-.contact-info-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
-.contact-card { background: var(--white); padding: 24px; border-radius: 12px; box-shadow: var(--shadow-md); text-align: center; transition: var(--transition); }
-.contact-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-.contact-card-icon { width: 60px; height: 60px; background: var(--orange); color: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 22px; }
-.contact-card h4 { font-family: 'League Spartan', 'Montserrat', sans-serif; color: var(--navy); margin-bottom: 6px; }
-.contact-card a, .contact-card p { color: var(--gray-700); font-size: 14px; }
-.contact-card a:hover { color: var(--orange); }
-.contact-form { background: var(--white); padding: 40px; border-radius: 12px; box-shadow: var(--shadow-md); }
-.contact-form h3 { font-family: 'League Spartan', 'Montserrat', sans-serif; color: var(--navy); font-size: 24px; margin-bottom: 8px; }
-.contact-form p { color: var(--gray-500); margin-bottom: 24px; font-size: 14px; }
-.form-group { margin-bottom: 18px; }
-.form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; }
-.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 14px; font-family: inherit; transition: var(--transition); }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--orange); }
-.form-group textarea { resize: vertical; min-height: 100px; }
-.form-submit { background: var(--orange); color: var(--navy); padding: 14px 32px; border-radius: 8px; font-weight: 700; font-size: 14px; width: 100%; transition: var(--transition); }
-.form-submit:hover { background: var(--orange-light); transform: translateY(-2px); }
-.map-section { padding: 0; }
-.map-iframe { width: 100%; height: 400px; border: 0; }
+.top-bar { background: #0A2A5E !important; color: #FFFFFF !important; }
+.top-bar a, .top-bar i, .top-info span { color: #FFFFFF !important; }
+.top-social a:hover { color: #F49B1C !important; }
+.header { background: #FFFFFF !important; border-bottom: 2px solid #F49B1C !important; box-shadow: 0 2px 12px rgba(10,42,94,0.08) !important; }
+.nav a { color: #0A2A5E !important; font-weight: 700 !important; }
+.nav a:hover, .nav a.active { color: #F49B1C !important; }
+.nav-badge { background: #F49B1C !important; color: #0A2A5E !important; }
+.btn-call { background: #0A2A5E !important; color: #FFFFFF !important; border: 2px solid #0A2A5E !important; }
+.btn-call:hover { background: #FFFFFF !important; color: #0A2A5E !important; }
+.menu-toggle { color: #0A2A5E !important; background: transparent !important; }
+.logo-svg { height: 56px !important; width: auto !important; max-width: 280px; }
+.lang-switcher .lang-current { background: rgba(255,255,255,0.15) !important; border: 1px solid rgba(255,255,255,0.2) !important; }
+.lang-switcher .lang-current:hover { background: #F49B1C !important; color: #0A2A5E !important; }
+.lang-dropdown { background: #FFFFFF !important; border: 1px solid rgba(10,42,94,0.1) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important; }
+.lang-option { color: #0A2A5E !important; display: flex !important; align-items: center !important; gap: 10px !important; padding: 8px 14px !important; text-decoration: none !important; }
+.lang-option span { color: #0A2A5E !important; font-weight: 600 !important; }
+.lang-option:hover { background: rgba(244,155,28,0.1) !important; }
+.lang-option.active { background: #0A2A5E !important; }
+.lang-option.active span { color: #FFFFFF !important; }
+.lang-option .flag { display: inline-flex !important; align-items: center !important; width: 24px !important; }
+.lang-option .flag svg { width: 24px !important; height: auto !important; border-radius: 2px !important; }
+.footer { background: #0A2A5E !important; }
+.turyap-badge { display: inline-block; background: rgba(244,155,28,0.15); color: #F49B1C; padding: 8px 18px; border-radius: 6px; font-size: 11px; font-weight: 800; letter-spacing: 2px; border: 1px solid rgba(244,155,28,0.4); margin-bottom: 14px; }
+
+@media (max-width: 968px) {
+  .btn-call { padding: 10px 14px !important; font-size: 12px !important; }
+  .nav { background: #FFFFFF !important; }
+  .nav a { color: #0A2A5E !important; }
+  .logo-svg { height: 44px !important; }
+}
+
+.contact-hero {
+  background: linear-gradient(135deg, #0A2A5E 0%, #1B4380 100%);
+  color: #FFFFFF;
+  padding: 100px 24px 80px;
+  text-align: center;
+}
+.contact-hero h1 {
+  font-family: 'League Spartan', 'Montserrat', sans-serif;
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+.contact-hero p {
+  font-size: 17px;
+  color: rgba(255,255,255,0.85);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-section {
+  padding: 80px 24px;
+  background: #F9FAFB;
+}
+.contact-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+@media (max-width: 900px) { .contact-inner { grid-template-columns: 1fr; } }
+
+.contact-info {
+  background: #FFFFFF;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+.contact-info h2 {
+  font-family: 'League Spartan', 'Montserrat', sans-serif;
+  font-size: 28px;
+  color: #0A2A5E;
+  margin-bottom: 12px;
+}
+.contact-info > p {
+  color: #6B7280;
+  margin-bottom: 28px;
+  font-size: 15px;
+}
+.contact-method {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 0;
+  border-bottom: 1px solid #E5E7EB;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+}
+.contact-method:last-child { border-bottom: none; }
+.contact-method:hover { padding-left: 8px; }
+.contact-method-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(244,155,28,0.15);
+  color: #F49B1C;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.contact-method-text strong {
+  color: #0A2A5E;
+  font-size: 13px;
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.contact-method-text span {
+  color: #374151;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.quick-contact {
+  background: linear-gradient(135deg, #0A2A5E 0%, #1B4380 100%);
+  padding: 40px;
+  border-radius: 16px;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.quick-contact h3 {
+  font-family: 'League Spartan', 'Montserrat', sans-serif;
+  font-size: 26px;
+  margin-bottom: 12px;
+}
+.quick-contact p {
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 28px;
+  font-size: 15px;
+}
+.quick-contact-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.qc-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s;
+  font-size: 15px;
+}
+.qc-btn i { font-size: 22px; }
+.qc-phone { background: #F49B1C; color: #0A2A5E; }
+.qc-phone:hover { background: #FFB547; transform: translateX(8px); }
+.qc-wa { background: #25D366; color: #FFFFFF; }
+.qc-wa:hover { background: #1DA851; transform: translateX(8px); }
+.qc-li { background: #0A66C2; color: #FFFFFF; }
+.qc-li:hover { background: #084E97; transform: translateX(8px); }
 </style>
 </head>
 
@@ -44,29 +185,29 @@
 <div class="top-bar">
   <div class="top-bar-inner">
     <div class="top-info">
-      <span><i class="fa-solid fa-location-dot"></i> Yalova, Türkiye</span>
-      <span><i class="fa-solid fa-clock"></i> Pzt-Cmt: 09:00 - 19:00</span>
+      <span><i class="fa-solid fa-location-dot"></i> <span>Yalova, Türkiye</span></span>
+      <span><i class="fa-solid fa-clock"></i> <span>Pzt-Cmt: 09:00 - 19:00</span></span>
       <span><i class="fa-solid fa-phone"></i> +90 507 518 84 82</span>
     </div>
     <div class="top-right">
       <div class="top-social">
-        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
-        <a href="https://wa.me/905075188482" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-        <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        <a href="https://www.linkedin.com/in/ismail-unsal-5802b2406/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        <a href="https://wa.me/905075188482"><i class="fa-brands fa-whatsapp"></i></a>
       </div>
       <div class="lang-switcher" id="langSwitcher">
         <div class="lang-current" id="langCurrent">
-          <span class="flag" id="currentFlag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#E30A17"/><circle cx="22" cy="20" r="8" fill="#fff"/><circle cx="24" cy="20" r="6.4" fill="#E30A17"/><polygon fill="#fff" points="32,20 28.5,21.1 30.7,18.2 30.7,21.8 28.5,18.9"/></svg></span>
-          <span class="lang-code" id="currentLang">TR</span>
+          <span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#E30A17"/><circle cx="22" cy="20" r="8" fill="#fff"/><circle cx="24" cy="20" r="6.4" fill="#E30A17"/><polygon fill="#fff" points="32,20 28.5,21.1 30.7,18.2 30.7,21.8 28.5,18.9"/></svg></span>
+          <span class="lang-code">TR</span>
           <i class="fa-solid fa-chevron-down" style="font-size:10px"></i>
         </div>
         <div class="lang-dropdown">
-          <a href="#" class="lang-option active" data-lang="tr"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#E30A17"/><circle cx="22" cy="20" r="8" fill="#fff"/><circle cx="24" cy="20" r="6.4" fill="#E30A17"/><polygon fill="#fff" points="32,20 28.5,21.1 30.7,18.2 30.7,21.8 28.5,18.9"/></svg></span><span>Türkçe</span></a>
-          <a href="#" class="lang-option" data-lang="en"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#012169"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="3"/><path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="6"/></svg></span><span>English</span></a>
-          <a href="#" class="lang-option" data-lang="fr"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg></span><span>Français</span></a>
-          <a href="#" class="lang-option" data-lang="de"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#000"/><rect width="60" height="13.33" y="13.33" fill="#DD0000"/><rect width="60" height="13.34" y="26.66" fill="#FFCE00"/></svg></span><span>Deutsch</span></a>
-          <a href="#" class="lang-option" data-lang="ru"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#fff"/><rect width="60" height="13.33" y="13.33" fill="#0039A6"/><rect width="60" height="13.34" y="26.66" fill="#D52B1E"/></svg></span><span>Русский</span></a>
+          <a href="iletisim.html" class="lang-option active"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#E30A17"/><circle cx="22" cy="20" r="8" fill="#fff"/><circle cx="24" cy="20" r="6.4" fill="#E30A17"/><polygon fill="#fff" points="32,20 28.5,21.1 30.7,18.2 30.7,21.8 28.5,18.9"/></svg></span><span>Türkçe</span></a>
+          <a href="en/contact.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#012169"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="3"/><path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="6"/></svg></span><span>English</span></a>
+          <a href="fr/contact.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg></span><span>Français</span></a>
+          <a href="de/contact.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#000"/><rect width="60" height="13.33" y="13.33" fill="#DD0000"/><rect width="60" height="13.34" y="26.66" fill="#FFCE00"/></svg></span><span>Deutsch</span></a>
+          <a href="ru/contact.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#fff"/><rect width="60" height="13.33" y="13.33" fill="#0039A6"/><rect width="60" height="13.34" y="26.66" fill="#D52B1E"/></svg></span><span>Русский</span></a>
         </div>
       </div>
     </div>
@@ -75,15 +216,13 @@
 
 <header class="header">
   <div class="header-inner">
-    <a href="index.html" class="logo" aria-label="ÜNSAL Gayrimenkul">
-      <svg class="logo-svg" viewBox="0 0 280 110" xmlns="http://www.w3.org/2000/svg">
-        <g fill="none" stroke="#F49B1C" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
-          <path d="M 30,75 L 30,42 L 55,22 L 80,42 L 80,75 Z"/>
-          <path d="M 55,75 L 55,55 L 70,55 L 70,75"/>
-        </g>
-        <text x="95" y="58" font-family="League Spartan, Montserrat, sans-serif" font-size="32" font-weight="700" fill="white" letter-spacing="3">ÜNSAL</text>
-        <line x1="95" y1="65" x2="200" y2="65" stroke="#F49B1C" stroke-width="1.5"/>
-        <text x="95" y="82" font-family="Poppins, DM Sans, sans-serif" font-size="9" font-weight="500" fill="#F49B1C" letter-spacing="3">GAYRİMENKUL</text>
+    <a href="index.html" class="logo">
+      <svg class="logo-svg" viewBox="0 0 340 80" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="10" width="80" height="60" rx="4" fill="#0A2A5E"/>
+        <text x="40" y="46" font-family="League Spartan, Montserrat, sans-serif" font-size="18" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">TURYAP</text>
+        <line x1="92" y1="20" x2="92" y2="60" stroke="#0A2A5E" stroke-width="2"/>
+        <text x="100" y="42" font-family="League Spartan, Montserrat, sans-serif" font-size="20" font-weight="800" fill="#0A2A5E" letter-spacing="2">İSMAİL ÜNSAL</text>
+        <text x="100" y="60" font-family="Poppins, DM Sans, sans-serif" font-size="9" font-weight="600" fill="#555555" letter-spacing="3">REAL ESTATE</text>
       </svg>
     </a>
     <nav class="nav" id="mainNav">
@@ -96,132 +235,114 @@
       <a href="iletisim.html" class="active">İLETİŞİM</a>
     </nav>
     <div class="header-cta">
-      <a href="tel:+905075188482" class="btn-call"><i class="fa-solid fa-phone"></i> HEMEN ARA</a>
-      <button class="menu-toggle" onclick="document.getElementById('mainNav').classList.toggle('open')" aria-label="Menü"><i class="fa-solid fa-bars"></i></button>
+      <a href="tel:+905075188482" class="btn-call"><i class="fa-solid fa-phone"></i> <span>HEMEN ARA</span></a>
+      <button class="menu-toggle" onclick="document.getElementById('mainNav').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
     </div>
   </div>
 </header>
 
-<section class="page-hero">
-  <div class="page-hero-inner">
-    <div class="breadcrumb"><a href="index.html">Anasayfa</a><i class="fa-solid fa-chevron-right"></i><span>İletişim</span></div>
-    <div class="page-hero-eyebrow">BİZE ULAŞIN</div>
-    <h1>Sizinle <span class="highlight">Tanışmak</span> İçin Sabırsızlanıyoruz</h1>
-    <p>Yalova'da gayrimenkul yatırımı veya yaşam için doğru adımı birlikte atalım. Ücretsiz danışmanlık için hemen bizi arayın.</p>
-  </div>
+<section class="contact-hero">
+  <span style="display:inline-block; background: rgba(244,155,28,0.18); color: #F49B1C; border:1px solid rgba(244,155,28,0.4); padding: 6px 18px; border-radius: 50px; font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 20px;">BİZE ULAŞIN</span>
+  <h1>İletişim</h1>
+  <p>Yalova'da hayalinizdeki mülk için profesyonel danışmanlık. 7/24 ulaşabilirsiniz.</p>
 </section>
 
-<section style="padding: 80px 24px;">
-  <div class="contact-grid">
-    <div>
-      <h2 style="font-family:'Playfair Display',Georgia,serif;font-size:32px;color:var(--navy);margin-bottom:16px;">İletişim Bilgileri</h2>
-      <p style="color:var(--gray-700);margin-bottom:32px;font-size:16px;">
-        Yalova'da emlak alım, satım, kiralama veya yatırım konularında profesyonel danışmanlık için bize ulaşın.
-        İlk görüşme ücretsizdir.
-      </p>
+<section class="contact-section">
+  <div class="contact-inner">
+    <div class="contact-info">
+      <h2>İletişim Bilgileri</h2>
+      <p>Aşağıdaki kanallardan dilediğiniz şekilde ulaşabilirsiniz. En hızlı yanıt için WhatsApp önerilir.</p>
 
-      <div class="contact-info-cards">
-        <div class="contact-card">
-          <div class="contact-card-icon"><i class="fa-solid fa-phone"></i></div>
-          <h4>Telefon</h4>
-          <a href="tel:+905075188482">+90 507 518 84 82</a>
+      <a href="tel:+905075188482" class="contact-method">
+        <div class="contact-method-icon"><i class="fa-solid fa-phone"></i></div>
+        <div class="contact-method-text">
+          <strong>Telefon</strong>
+          <span>+90 507 518 84 82</span>
         </div>
-        <div class="contact-card">
-          <div class="contact-card-icon" style="background:#25D366;color:white;"><i class="fa-brands fa-whatsapp"></i></div>
-          <h4>WhatsApp</h4>
-          <a href="https://wa.me/905075188482">+90 507 518 84 82</a>
+      </a>
+
+      <a href="https://wa.me/905075188482" class="contact-method">
+        <div class="contact-method-icon"><i class="fa-brands fa-whatsapp"></i></div>
+        <div class="contact-method-text">
+          <strong>WhatsApp</strong>
+          <span>+90 507 518 84 82</span>
         </div>
-        <div class="contact-card">
-          <div class="contact-card-icon"><i class="fa-solid fa-envelope"></i></div>
-          <h4>E-posta</h4>
-          <a href="mailto:info@unsalgayrimenkul.com">info@unsalgayrimenkul.com</a>
+      </a>
+
+      <a href="https://www.linkedin.com/in/ismail-unsal-5802b2406/" target="_blank" class="contact-method">
+        <div class="contact-method-icon"><i class="fa-brands fa-linkedin"></i></div>
+        <div class="contact-method-text">
+          <strong>LinkedIn</strong>
+          <span>İsmail Ünsal - Profesyonel Profil</span>
         </div>
-        <div class="contact-card">
-          <div class="contact-card-icon"><i class="fa-solid fa-location-dot"></i></div>
-          <h4>Ofis Adresi</h4>
-          <p>Yalova, Türkiye</p>
+      </a>
+
+      <div class="contact-method">
+        <div class="contact-method-icon"><i class="fa-solid fa-location-dot"></i></div>
+        <div class="contact-method-text">
+          <strong>Konum</strong>
+          <span>Yalova, Türkiye</span>
         </div>
       </div>
 
-      <div style="margin-top:32px;padding:24px;background:var(--gray-50);border-radius:12px;">
-        <h4 style="font-family:'Playfair Display',Georgia,serif;color:var(--navy);margin-bottom:12px;"><i class="fa-solid fa-clock" style="color:var(--orange);"></i> Çalışma Saatleri</h4>
-        <p style="color:var(--gray-700);margin-bottom:6px;"><strong>Pazartesi - Cumartesi:</strong> 09:00 - 19:00</p>
-        <p style="color:var(--gray-700);"><strong>Pazar:</strong> Randevu ile</p>
+      <div class="contact-method">
+        <div class="contact-method-icon"><i class="fa-solid fa-clock"></i></div>
+        <div class="contact-method-text">
+          <strong>Çalışma Saatleri</strong>
+          <span>Pazartesi - Cumartesi: 09:00 - 19:00</span>
+        </div>
       </div>
     </div>
 
-    <div class="contact-form">
-      <h3>Bize Mesaj Gönderin</h3>
-      <p>Formu doldurun, en kısa sürede size dönüş yapalım.</p>
-
-      <form onsubmit="event.preventDefault();alert('Mesajınız alındı! En kısa sürede dönüş yapacağız.');">
-        <div class="form-group">
-          <label>Ad Soyad *</label>
-          <input type="text" required placeholder="Adınız ve soyadınız">
-        </div>
-        <div class="form-group">
-          <label>Telefon *</label>
-          <input type="tel" required placeholder="+90 5XX XXX XX XX">
-        </div>
-        <div class="form-group">
-          <label>E-posta</label>
-          <input type="email" placeholder="ornek@email.com">
-        </div>
-        <div class="form-group">
-          <label>İlgilendiğiniz Hizmet</label>
-          <select>
-            <option>Satılık Daire Arıyorum</option>
-            <option>Kiralık Daire Arıyorum</option>
-            <option>Satılık Arsa - Yatırım</option>
-            <option>Lüks Villa Arıyorum</option>
-            <option>Gayrimenkul Satmak İstiyorum</option>
-            <option>Genel Danışmanlık</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Mesajınız</label>
-          <textarea placeholder="İhtiyacınızı detaylıca yazın..."></textarea>
-        </div>
-        <button type="submit" class="form-submit">
-          <i class="fa-solid fa-paper-plane"></i> MESAJI GÖNDER
-        </button>
-      </form>
-    </div>
-  </div>
-</section>
-
-<section class="map-section">
-  <iframe class="map-iframe"
-    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6014.5!2d29.275!3d40.65!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDM5JzAwLjAiTiAyOcKwMTYnMzAuMCJF!5e0!3m2!1str!2str!4v1234567890"
-    allowfullscreen="" loading="lazy"></iframe>
-</section>
-
-<section class="cta-section">
-  <div>
-    <h2>Hemen Bizi Arayın</h2>
-    <p>Ücretsiz danışmanlık ve portföy önerileri için tek bir telefon yeterli.</p>
-    <div class="cta-buttons">
-      <a href="tel:+905075188482" class="cta-call"><i class="fa-solid fa-phone"></i> HEMEN ARA: +90 507 518 84 82</a>
-      <a href="https://wa.me/905075188482" class="cta-wa"><i class="fa-brands fa-whatsapp"></i> WHATSAPP</a>
+    <div class="quick-contact">
+      <h3>Hızlı İletişim</h3>
+      <p>Tek tıkla ulaşın. Telefon, WhatsApp ya da LinkedIn — size en uygun yöntemi seçin.</p>
+      <div class="quick-contact-buttons">
+        <a href="tel:+905075188482" class="qc-btn qc-phone">
+          <i class="fa-solid fa-phone"></i>
+          <div>
+            <div style="font-size: 11px; opacity: 0.8;">HEMEN ARA</div>
+            <div>+90 507 518 84 82</div>
+          </div>
+        </a>
+        <a href="https://wa.me/905075188482" class="qc-btn qc-wa">
+          <i class="fa-brands fa-whatsapp"></i>
+          <div>
+            <div style="font-size: 11px; opacity: 0.8;">EN HIZLI</div>
+            <div>WhatsApp Yaz</div>
+          </div>
+        </a>
+        <a href="https://www.linkedin.com/in/ismail-unsal-5802b2406/" target="_blank" class="qc-btn qc-li">
+          <i class="fa-brands fa-linkedin"></i>
+          <div>
+            <div style="font-size: 11px; opacity: 0.8;">PROFESYONEL</div>
+            <div>LinkedIn Bağlan</div>
+          </div>
+        </a>
+      </div>
     </div>
   </div>
 </section>
 
 <footer class="footer">
+  <div style="text-align: center; padding: 20px 0 10px;">
+    <div class="turyap-badge"><i class="fa-solid fa-star" style="margin-right: 6px;"></i>RESMİ TURYAP YETKİLİ DANIŞMANI<i class="fa-solid fa-star" style="margin-left: 6px;"></i></div>
+  </div>
   <div class="footer-inner">
     <div class="footer-brand">
-      <svg class="logo-svg" viewBox="0 0 280 110" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:16px">
-        <g fill="none" stroke="#F49B1C" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M 30,75 L 30,42 L 55,22 L 80,42 L 80,75 Z"/><path d="M 55,75 L 55,55 L 70,55 L 70,75"/></g>
-        <text x="95" y="58" font-family="League Spartan, Montserrat, sans-serif" font-size="32" font-weight="700" fill="white" letter-spacing="3">ÜNSAL</text>
-        <line x1="95" y1="65" x2="200" y2="65" stroke="#F49B1C" stroke-width="1.5"/>
-        <text x="95" y="82" font-family="Poppins, DM Sans, sans-serif" font-size="9" font-weight="500" fill="#F49B1C" letter-spacing="3">GAYRİMENKUL</text>
+      <svg class="logo-svg" viewBox="0 0 340 80" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:16px">
+        <rect x="0" y="10" width="80" height="60" rx="4" fill="#FFFFFF"/>
+        <text x="40" y="46" font-family="League Spartan, Montserrat, sans-serif" font-size="18" font-weight="800" fill="#0A2A5E" text-anchor="middle" letter-spacing="2">TURYAP</text>
+        <line x1="92" y1="20" x2="92" y2="60" stroke="#F49B1C" stroke-width="2"/>
+        <text x="100" y="42" font-family="League Spartan, Montserrat, sans-serif" font-size="20" font-weight="800" fill="#FFFFFF" letter-spacing="2">İSMAİL ÜNSAL</text>
+        <text x="100" y="60" font-family="Poppins, DM Sans, sans-serif" font-size="9" font-weight="600" fill="#F49B1C" letter-spacing="3">REAL ESTATE</text>
       </svg>
-      <p class="footer-about">Yalova'da güvenilir gayrimenkul danışmanlığı. Satılık daire, kiralık ev, arsa ve villa için Turyap güvencesinde profesyonel hizmet.</p>
+      <p class="footer-about">Yalova'da güvenilir gayrimenkul danışmanlığı.</p>
       <div class="footer-social">
+        <a href="https://www.linkedin.com/in/ismail-unsal-5802b2406/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
         <a href="#"><i class="fa-brands fa-instagram"></i></a>
         <a href="#"><i class="fa-brands fa-facebook"></i></a>
         <a href="https://wa.me/905075188482"><i class="fa-brands fa-whatsapp"></i></a>
-        <a href="#"><i class="fa-brands fa-youtube"></i></a>
       </div>
     </div>
     <div class="footer-col">
@@ -230,7 +351,7 @@
         <li><a href="yalova-satilik-daire.html">Satılık Daire</a></li>
         <li><a href="yalova-kiralik-daire.html">Kiralık Daire</a></li>
         <li><a href="yalova-satilik-arsa.html">Satılık Arsa</a></li>
-        <li><a href="yalova-kiralik-villa.html">Kiralık Villa</a></li>
+        <li><a href="yalova-kiralik-villa.html">Lüks Villa</a></li>
         <li><a href="blog.html">Blog</a></li>
       </ul>
     </div>
@@ -241,6 +362,7 @@
         <li><a href="#">Çınarcık</a></li>
         <li><a href="#">Termal</a></li>
         <li><a href="#">Altınova</a></li>
+        <li><a href="#">Armutlu</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -249,16 +371,25 @@
         <li><span><i class="fa-solid fa-location-dot"></i> Yalova, Türkiye</span></li>
         <li><a href="tel:+905075188482"><i class="fa-solid fa-phone"></i> +90 507 518 84 82</a></li>
         <li><a href="https://wa.me/905075188482"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
+        <li><a href="https://www.linkedin.com/in/ismail-unsal-5802b2406/" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a></li>
       </ul>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2026 ÜNSAL Gayrimenkul. Tüm hakları saklıdır. • İsmail Ünsal</p>
+    <p>© 2026 TURYAP İsmail Ünsal Real Estate.</p>
   </div>
 </footer>
 
 <a href="https://wa.me/905075188482" class="wa-float"><i class="fa-brands fa-whatsapp"></i></a>
 
-<script src="script.js"></script>
+<script>
+document.addEventListener('click', (e) => {
+  const switcher = document.getElementById('langSwitcher');
+  if (switcher && !switcher.contains(e.target)) switcher.classList.remove('active');
+});
+document.getElementById('langCurrent')?.addEventListener('click', () => {
+  document.getElementById('langSwitcher')?.classList.toggle('active');
+});
+</script>
 </body>
 </html>

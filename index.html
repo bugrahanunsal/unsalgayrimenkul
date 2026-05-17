@@ -303,16 +303,56 @@
 .lang-dropdown {
   background: #FFFFFF !important;
   border: 1px solid rgba(10,42,94,0.1) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
 }
 .lang-option {
   color: #0A2A5E !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 14px !important;
+  text-decoration: none !important;
+}
+.lang-option span {
+  color: #0A2A5E !important;
+  font-weight: 600 !important;
 }
 .lang-option:hover {
   background: rgba(244,155,28,0.1) !important;
 }
+.lang-option:hover span {
+  color: #0A2A5E !important;
+}
 .lang-option.active {
   background: #0A2A5E !important;
   color: #FFFFFF !important;
+}
+.lang-option.active span {
+  color: #FFFFFF !important;
+}
+.lang-option .flag {
+  display: inline-flex !important;
+  align-items: center !important;
+  width: 24px !important;
+}
+.lang-option .flag svg {
+  width: 24px !important;
+  height: auto !important;
+  border-radius: 2px !important;
+}
+
+/* Search suggestions dropdown - alttan kesilme sorununu çöz */
+.search-suggestions {
+  max-height: 380px !important;
+  overflow-y: auto !important;
+  z-index: 9999 !important;
+}
+.hero {
+  overflow: visible !important;
+}
+.smart-search-box {
+  position: relative !important;
+  z-index: 100 !important;
 }
 
 /* Hero - turyap rozeti */
@@ -349,6 +389,57 @@
     border-bottom: 1px solid rgba(10,42,94,0.08) !important;
   }
   .logo-svg { height: 44px !important; }
+
+  /* MOBILE HEMEN ARA - kompakt versiyon */
+  .btn-call {
+    padding: 10px 14px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-width: auto !important;
+    width: auto !important;
+    line-height: 1 !important;
+  }
+  .btn-call span {
+    white-space: nowrap !important;
+    display: inline !important;
+  }
+  .btn-call i {
+    font-size: 12px !important;
+  }
+
+  /* Header inner mobile düzen */
+  .header-inner {
+    gap: 8px !important;
+  }
+  .header-cta {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+}
+
+/* Mobil küçük ekran - ekstra optimizasyon */
+@media (max-width: 480px) {
+  .btn-call {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+  }
+  .btn-call span {
+    font-size: 11px !important;
+  }
+  .logo-svg {
+    height: 36px !important;
+    max-width: 180px !important;
+  }
+  .top-bar {
+    font-size: 11px !important;
+  }
+  .top-info span {
+    font-size: 11px !important;
+  }
 }
 </style>
 </head>
@@ -451,7 +542,7 @@
     </div>
 
     <p class="search-ai-hint">
-      <span class="ai-tag">🤖 AI</span>
+      <span class="ai-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: -2px; margin-right: 4px;"><path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" fill="currentColor"/><path d="M19 3L19.7 5.3L22 6L19.7 6.7L19 9L18.3 6.7L16 6L18.3 5.3L19 3Z" fill="currentColor" opacity="0.7"/><path d="M5 14L5.5 15.5L7 16L5.5 16.5L5 18L4.5 16.5L3 16L4.5 15.5L5 14Z" fill="currentColor" opacity="0.6"/></svg>AI POWERED</span>
       <span data-i18n="search.ai.hint">Akıllı arama — doğal dilde yazın, anında bulalım</span>
     </p>
   </div>
@@ -977,8 +1068,8 @@ function showSuggestions() {
 
 function showAllSuggestions() {
   suggestionsBox.innerHTML = `
-    <div style="padding: 14px 18px; font-size: 11px; font-weight: 700; color: var(--gray-500); letter-spacing: 1px; border-bottom: 1px solid var(--gray-100);">
-      🔥 POPÜLER ARAMALAR
+    <div style="padding: 14px 18px; font-size: 15px; font-weight: 700; color: var(--navy); letter-spacing: 1.5px; border-bottom: 1px solid var(--gray-100);">
+      POPÜLER ARAMALAR
     </div>
     ${popularSearches.slice(0, 6).map(s => `
       <a href="${s.link}" class="suggestion-item">
