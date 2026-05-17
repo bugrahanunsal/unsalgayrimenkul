@@ -324,3 +324,121 @@ section { padding: 80px 24px; }
   .hero-stats { gap: 18px; }
   .hero-stat .num { font-size: 24px; }
 }
+
+/* ========================================================
+   TURYAP İSMAİL ÜNSAL — TÜM DÜZELTMELER v2
+   Bu kısmı style.css dosyanızın EN SONUNA yapıştırın.
+
+   Düzeltmeler:
+   1. Lang dropdown - dil isimleri beyaz görünmüyordu
+   2. Search suggestions - alttan kesiliyor
+   3. Mobile "HEMEN ARA" - iki satıra düşmüştü
+   4. Küçük ekran optimizasyonu
+   ======================================================== */
+
+/* ----- 1. LANG DROPDOWN ----- */
+.lang-dropdown {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(10,42,94,0.1) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+}
+.lang-option {
+  color: #0A2A5E !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 14px !important;
+  text-decoration: none !important;
+}
+.lang-option span {
+  color: #0A2A5E !important;
+  font-weight: 600 !important;
+}
+.lang-option:hover {
+  background: rgba(244,155,28,0.1) !important;
+}
+.lang-option:hover span {
+  color: #0A2A5E !important;
+}
+.lang-option.active {
+  background: #0A2A5E !important;
+}
+.lang-option.active span {
+  color: #FFFFFF !important;
+}
+.lang-option .flag {
+  display: inline-flex !important;
+  align-items: center !important;
+  width: 24px !important;
+  flex-shrink: 0 !important;
+}
+.lang-option .flag svg {
+  width: 24px !important;
+  height: auto !important;
+  border-radius: 2px !important;
+}
+
+/* ----- 2. SEARCH SUGGESTIONS ----- */
+.search-suggestions {
+  max-height: 380px !important;
+  overflow-y: auto !important;
+  z-index: 9999 !important;
+}
+.hero {
+  overflow: visible !important;
+}
+.smart-search-box {
+  position: relative !important;
+  z-index: 100 !important;
+}
+
+/* ----- 3. MOBILE "HEMEN ARA" BUTONU ----- */
+@media (max-width: 968px) {
+  .btn-call {
+    padding: 10px 14px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-width: auto !important;
+    width: auto !important;
+    line-height: 1 !important;
+  }
+  .btn-call span {
+    white-space: nowrap !important;
+    display: inline !important;
+  }
+  .btn-call i {
+    font-size: 12px !important;
+  }
+  .header-inner {
+    gap: 8px !important;
+  }
+  .header-cta {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+}
+
+/* ----- 4. KÜÇÜK EKRAN OPTİMİZASYONU ----- */
+@media (max-width: 480px) {
+  .btn-call {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+  }
+  .btn-call span {
+    font-size: 11px !important;
+  }
+  .logo-svg {
+    height: 36px !important;
+    max-width: 180px !important;
+  }
+  .top-bar {
+    font-size: 11px !important;
+  }
+  .top-info span {
+    font-size: 11px !important;
+  }
+}
