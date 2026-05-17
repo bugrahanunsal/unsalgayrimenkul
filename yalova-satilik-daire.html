@@ -183,6 +183,45 @@
 .pillar-cta-buttons .pcta-wa:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(37,211,102,0.4); }
 .pillar-cta-buttons .pcta-li { background: #FFFFFF; color: #0A66C2; }
 .pillar-cta-buttons .pcta-li:hover { transform: translateY(-3px); }
+
+
+/* MOBILE - Tüm dillerde uyumlu */
+@media (max-width: 968px) {
+  .header-inner { gap: 8px !important; }
+  .btn-call {
+    padding: 9px 12px !important;
+    font-size: 11px !important;
+    max-width: 110px !important;
+    gap: 5px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+  }
+  .btn-call span { font-size: 11px !important; white-space: nowrap !important; }
+  .btn-call i { font-size: 11px !important; }
+  .nav { background: #FFFFFF !important; }
+  .nav a { color: #0A2A5E !important; }
+  .logo-svg { height: 44px !important; max-width: 180px !important; }
+  .top-info span:nth-child(2) { display: none !important; }
+}
+
+@media (max-width: 480px) {
+  .btn-call {
+    padding: 8px 10px !important;
+    font-size: 10px !important;
+    max-width: 95px !important;
+  }
+  .btn-call span { font-size: 10px !important; }
+  .logo-svg { height: 36px !important; max-width: 150px !important; }
+  .top-bar { font-size: 11px !important; }
+  .top-info span { font-size: 11px !important; }
+  .top-info span:first-child { display: none !important; }
+}
+
+@media (max-width: 480px) {
+  .lang-current .lang-code { font-size: 11px !important; }
+  .lang-dropdown { right: 0 !important; min-width: 160px !important; }
+}
+
 </style>
 </head>
 <body>
@@ -209,6 +248,10 @@
         </div>
         <div class="lang-dropdown">
           <a href="yalova-satilik-daire.html" class="lang-option active"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#E30A17"/><circle cx="22" cy="20" r="8" fill="#fff"/><circle cx="24" cy="20" r="6.4" fill="#E30A17"/><polygon fill="#fff" points="32,20 28.5,21.1 30.7,18.2 30.7,21.8 28.5,18.9"/></svg></span><span>Türkçe</span></a>
+          <a href="en/apartments-for-sale.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#012169"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="3"/><path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="6"/></svg></span><span>English</span></a>
+          <a href="fr/appartements-a-vendre.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg></span><span>Français</span></a>
+          <a href="de/wohnungen-zum-verkauf.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#000"/><rect width="60" height="13.33" y="13.33" fill="#DD0000"/><rect width="60" height="13.34" y="26.66" fill="#FFCE00"/></svg></span><span>Deutsch</span></a>
+          <a href="ru/kvartiry-na-prodazhu.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#fff"/><rect width="60" height="13.33" y="13.33" fill="#0039A6"/><rect width="60" height="13.34" y="26.66" fill="#D52B1E"/></svg></span><span>Русский</span></a>
         </div>
       </div>
     </div>
