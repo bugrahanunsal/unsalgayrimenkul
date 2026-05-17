@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+    <loc>https://www.unsalgayrimenkul.com/</loc>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://www.unsalgayrimenkul.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.unsalgayrimenkul.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.unsalgayrimenkul.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.unsalgayrimenkul.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.unsalgayrimenkul.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.unsalgayrimenkul.com/"/>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://www.unsalgayrimenkul.com/en/</loc>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://www.unsalgayrimenkul.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.unsalgayrimenkul.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.unsalgayrimenkul.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.unsalgayrimenkul.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.unsalgayrimenkul.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.unsalgayrimenkul.com/"/>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://www.unsalgayrimenkul.com/fr/</loc>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://www.unsalgayrimenkul.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.unsalgayrimenkul.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.unsalgayrimenkul.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.unsalgayrimenkul.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.unsalgayrimenkul.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.unsalgayrimenkul.com/"/>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://www.unsalgayrimenkul.com/de/</loc>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://www.unsalgayrimenkul.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.unsalgayrimenkul.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.unsalgayrimenkul.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.unsalgayrimenkul.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.unsalgayrimenkul.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.unsalgayrimenkul.com/"/>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://www.unsalgayrimenkul.com/ru/</loc>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://www.unsalgayrimenkul.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.unsalgayrimenkul.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.unsalgayrimenkul.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.unsalgayrimenkul.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.unsalgayrimenkul.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.unsalgayrimenkul.com/"/>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+</urlset>
