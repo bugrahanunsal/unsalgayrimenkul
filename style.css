@@ -48,7 +48,7 @@ section { padding: 80px 24px; }
   padding: 8px 0;
   font-size: 13px;
   position: relative;
-  z-index: 10000;
+  z-index: 99999;
 }
 .top-bar-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1280px; margin: 0 auto; padding: 0 24px; }
 .top-info { display: flex; gap: 24px; align-items: center; }
@@ -79,7 +79,7 @@ section { padding: 80px 24px; }
   visibility: hidden;
   transform: translateY(-8px);
   transition: var(--transition);
-  z-index: 10000;
+  z-index: 99999;
   border: 1px solid var(--gray-200);
   overflow: hidden;
 }
