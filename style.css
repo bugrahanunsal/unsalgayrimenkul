@@ -27,7 +27,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Poppins', 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--gray-900);
   line-height: 1.6;
   background: var(--white);
@@ -151,7 +151,7 @@ section { padding: 80px 24px; }
   margin-bottom: 20px;
 }
 .page-hero h1 {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'League Spartan', 'Montserrat', sans-serif;
   font-size: clamp(32px, 5vw, 52px);
   font-weight: 700;
   margin-bottom: 20px;
@@ -200,7 +200,7 @@ section { padding: 80px 24px; }
 /* ============ SECTION HEADERS ============ */
 .section-header { text-align: center; margin-bottom: 48px; max-width: 700px; margin-left: auto; margin-right: auto; }
 .section-eyebrow { display: inline-block; background: rgba(244,155,28,0.15); color: var(--orange); padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 16px; }
-.section-header h2 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(28px, 4vw, 40px); font-weight: 700; color: var(--navy); margin-bottom: 12px; line-height: 1.2; }
+.section-header h2 { font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: clamp(28px, 4vw, 40px); font-weight: 700; color: var(--navy); margin-bottom: 12px; line-height: 1.2; }
 .section-header p { color: var(--gray-500); font-size: 16px; }
 
 /* ============ LISTINGS GRID ============ */
@@ -218,7 +218,7 @@ section { padding: 80px 24px; }
 .listing-content { padding: 20px; }
 .listing-location { display: flex; align-items: center; gap: 6px; color: var(--gray-500); font-size: 13px; margin-bottom: 8px; }
 .listing-location i { color: var(--orange); }
-.listing-title { font-family: 'Playfair Display', Georgia, serif; font-size: 19px; font-weight: 600; color: var(--navy); margin-bottom: 12px; line-height: 1.3; }
+.listing-title { font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: 19px; font-weight: 600; color: var(--navy); margin-bottom: 12px; line-height: 1.3; }
 .listing-features { display: flex; gap: 14px; padding: 12px 0; border-top: 1px solid var(--gray-100); border-bottom: 1px solid var(--gray-100); margin-bottom: 14px; flex-wrap: wrap; }
 .listing-features span { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--gray-700); }
 .listing-features i { color: var(--orange); }
@@ -229,14 +229,14 @@ section { padding: 80px 24px; }
 
 .no-listings-soon { text-align: center; padding: 80px 20px; background: var(--gray-50); border-radius: 12px; max-width: 700px; margin: 0 auto; }
 .no-listings-soon i { font-size: 60px; color: var(--orange); margin-bottom: 20px; }
-.no-listings-soon h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 26px; color: var(--navy); margin-bottom: 12px; }
+.no-listings-soon h3 { font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: 26px; color: var(--navy); margin-bottom: 12px; }
 .no-listings-soon p { color: var(--gray-500); margin-bottom: 20px; }
 
 /* ============ SEO CONTENT BLOCK ============ */
 .seo-content { background: var(--gray-50); padding: 80px 24px; }
 .seo-content-inner { max-width: 900px; margin: 0 auto; }
-.seo-content h2 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(26px, 3vw, 34px); color: var(--navy); margin-bottom: 20px; line-height: 1.2; }
-.seo-content h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 22px; color: var(--navy); margin: 28px 0 12px; }
+.seo-content h2 { font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: clamp(26px, 3vw, 34px); color: var(--navy); margin-bottom: 20px; line-height: 1.2; }
+.seo-content h3 { font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: 22px; color: var(--navy); margin: 28px 0 12px; }
 .seo-content p { color: var(--gray-700); margin-bottom: 16px; font-size: 16px; line-height: 1.8; }
 .seo-content ul { padding-left: 24px; margin-bottom: 16px; }
 .seo-content li { color: var(--gray-700); margin-bottom: 8px; }
@@ -244,7 +244,7 @@ section { padding: 80px 24px; }
 
 /* ============ CTA SECTION ============ */
 .cta-section { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); color: var(--white); padding: 80px 24px; text-align: center; }
-.cta-section h2 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(28px, 4vw, 38px); margin-bottom: 16px; }
+.cta-section h2 { font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: clamp(28px, 4vw, 38px); margin-bottom: 16px; }
 .cta-section p { font-size: 17px; color: rgba(255,255,255,0.9); margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto; }
 .cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 .cta-buttons a { padding: 16px 36px; border-radius: 8px; font-weight: 700; font-size: 15px; transition: var(--transition); display: inline-flex; align-items: center; gap: 10px; }
@@ -255,12 +255,12 @@ section { padding: 80px 24px; }
 
 /* ============ RELATED PAGES ============ */
 .related-pages { padding: 60px 24px; max-width: 1280px; margin: 0 auto; }
-.related-pages h2 { text-align: center; font-family: 'Playfair Display', Georgia, serif; font-size: 28px; color: var(--navy); margin-bottom: 32px; }
+.related-pages h2 { text-align: center; font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: 28px; color: var(--navy); margin-bottom: 32px; }
 .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
 .related-card { background: var(--white); padding: 24px; border: 1px solid var(--gray-200); border-radius: 10px; transition: var(--transition); text-align: center; }
 .related-card:hover { border-color: var(--orange); transform: translateY(-4px); box-shadow: var(--shadow-md); }
 .related-card i { font-size: 32px; color: var(--orange); margin-bottom: 12px; }
-.related-card h4 { font-family: 'Playfair Display', Georgia, serif; font-size: 17px; color: var(--navy); margin-bottom: 6px; }
+.related-card h4 { font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: 17px; color: var(--navy); margin-bottom: 6px; }
 .related-card p { font-size: 12px; color: var(--gray-500); }
 
 /* ============ FOOTER ============ */
@@ -271,7 +271,7 @@ section { padding: 80px 24px; }
 .footer-social { display: flex; gap: 12px; }
 .footer-social a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); transition: var(--transition); }
 .footer-social a:hover { background: var(--orange); color: var(--navy); transform: translateY(-3px); }
-.footer-col h4 { font-family: 'Playfair Display', Georgia, serif; font-size: 17px; margin-bottom: 18px; color: var(--orange); }
+.footer-col h4 { font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: 17px; margin-bottom: 18px; color: var(--orange); }
 .footer-col ul { list-style: none; }
 .footer-col li { margin-bottom: 10px; }
 .footer-col a, .footer-col span { color: rgba(255,255,255,0.7); font-size: 14px; transition: var(--transition); display: flex; align-items: center; gap: 8px; }
