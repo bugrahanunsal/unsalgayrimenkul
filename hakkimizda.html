@@ -5,21 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Hakkımızda | İsmail Ünsal - TURYAP Yalova Emlak Danışmanı</title>
-<meta name="description" content="İsmail Ünsal hakkında: Yalova'nın deneyimli gayrimenkul danışmanı, TURYAP yetkili temsilcisi. Profesyonel emlak hizmeti, yatırım danışmanlığı ve 5 dilde uluslararası destek.">
-<meta name="keywords" content="ismail ünsal, yalova emlak danışmanı, turyap yalova, hakkımızda, ismail ünsal biyografi, yalova gayrimenkul">
+<meta name="description" content="İsmail Ünsal hakkında: Yalova'nın TURYAP yetkili gayrimenkul danışmanı. Konut, ticari gayrimenkul ve arsa alım-satım süreçlerinde şeffaf, çözüm odaklı hizmet.">
+<meta name="keywords" content="ismail ünsal, yalova emlak danışmanı, turyap yalova, hakkımızda, yalova gayrimenkul, anadolu üniversitesi">
 <meta name="author" content="İsmail Ünsal - TURYAP">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://www.unsalgayrimenkul.com/hakkimizda.html">
 
-<link rel="alternate" hreflang="tr" href="https://www.unsalgayrimenkul.com/hakkimizda.html">
-<link rel="alternate" hreflang="en" href="https://www.unsalgayrimenkul.com/en/about.html">
-<link rel="alternate" hreflang="fr" href="https://www.unsalgayrimenkul.com/fr/about.html">
-<link rel="alternate" hreflang="de" href="https://www.unsalgayrimenkul.com/de/about.html">
-<link rel="alternate" hreflang="ru" href="https://www.unsalgayrimenkul.com/ru/about.html">
-
 <meta property="og:type" content="profile">
 <meta property="og:title" content="İsmail Ünsal - TURYAP Yalova Emlak Danışmanı">
-<meta property="og:description" content="Yalova'nın deneyimli emlak danışmanı. TURYAP güvencesinde profesyonel hizmet.">
+<meta property="og:description" content="TURYAP güvencesinde Yalova'da profesyonel gayrimenkul danışmanlığı. Şeffaf, güvenilir, çözüm odaklı hizmet.">
 <meta property="og:image" content="https://www.unsalgayrimenkul.com/ismail-unsal.jpg">
 <meta property="og:url" content="https://www.unsalgayrimenkul.com/hakkimizda.html">
 
@@ -34,6 +28,7 @@
   "address": {"@type": "PostalAddress", "addressLocality": "Yalova", "addressCountry": "TR"},
   "sameAs": ["https://www.linkedin.com/in/ismail-unsal-5802b2406/"],
   "worksFor": {"@type": "Organization", "name": "TURYAP", "url": "https://www.turyap.com.tr/"},
+  "alumniOf": {"@type": "CollegeOrUniversity", "name": "Anadolu Üniversitesi"},
   "areaServed": ["Yalova", "Çınarcık", "Termal", "Altınova", "Çiftlikköy", "Akköy"]
 }
 </script>
@@ -50,8 +45,7 @@
 .top-social a:hover { color: #F49B1C !important; }
 .header { background: #FFFFFF !important; border-bottom: 2px solid #F49B1C !important; box-shadow: 0 2px 12px rgba(10,42,94,0.08) !important; }
 .nav a { color: #0A2A5E !important; font-weight: 700 !important; }
-.nav a:hover { color: #F49B1C !important; }
-.nav a.active { color: #F49B1C !important; }
+.nav a:hover, .nav a.active { color: #F49B1C !important; }
 .nav-badge { background: #F49B1C !important; color: #0A2A5E !important; }
 .btn-call { background: #0A2A5E !important; color: #FFFFFF !important; border: 2px solid #0A2A5E !important; }
 .btn-call:hover { background: #FFFFFF !important; color: #0A2A5E !important; }
@@ -78,7 +72,6 @@
   .logo-svg { height: 44px !important; }
 }
 
-/* ABOUT HERO */
 .about-hero {
   background: linear-gradient(135deg, #0A2A5E 0%, #1B4380 100%);
   color: #FFFFFF;
@@ -182,27 +175,45 @@
 }
 .about-role i { color: #F49B1C; margin-right: 10px; }
 
-.about-quick-stats {
+/* DÜRÜST İSTATİSTİKLER - sayı yerine marka değeri */
+.about-trust-badges {
   display: flex;
-  gap: 36px;
+  gap: 16px;
   margin-bottom: 32px;
   flex-wrap: wrap;
 }
-@media (max-width: 900px) { .about-quick-stats { justify-content: center; } }
-.about-stat .num {
-  font-size: 36px;
-  font-weight: 800;
-  color: #F49B1C;
-  display: block;
-  line-height: 1;
-  font-family: 'League Spartan', sans-serif;
+@media (max-width: 900px) { .about-trust-badges { justify-content: center; } }
+.trust-badge {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(244,155,28,0.3);
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s;
 }
-.about-stat .label {
+.trust-badge:hover {
+  background: rgba(244,155,28,0.1);
+  border-color: rgba(244,155,28,0.6);
+  transform: translateY(-2px);
+}
+.trust-badge i {
+  color: #F49B1C;
+  font-size: 22px;
+}
+.trust-badge .tb-text strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+.trust-badge .tb-text span {
   font-size: 11px;
   color: rgba(255,255,255,0.7);
-  letter-spacing: 1.5px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  margin-top: 6px;
 }
 
 .about-cta {
@@ -256,7 +267,6 @@
   box-shadow: 0 12px 24px rgba(37,211,102,0.5);
 }
 
-/* BIO SECTION */
 .bio-section {
   padding: 100px 24px;
   background: #FFFFFF;
@@ -294,10 +304,76 @@
   font-weight: 700;
 }
 
-/* UZMANLIK BLOCKS */
+/* EĞİTİM & KARİYER TIMELINE */
+.career-section {
+  padding: 80px 24px;
+  background: #F9FAFB;
+}
+.career-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.career-inner h2 {
+  font-family: 'League Spartan', sans-serif;
+  font-size: clamp(28px, 4vw, 38px);
+  color: #0A2A5E;
+  margin-bottom: 40px;
+  text-align: center;
+}
+.career-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 768px) { .career-grid { grid-template-columns: 1fr; } }
+.career-card {
+  background: #FFFFFF;
+  padding: 28px;
+  border-radius: 16px;
+  border-left: 4px solid #F49B1C;
+  box-shadow: 0 4px 12px rgba(10,42,94,0.06);
+  transition: all 0.3s;
+}
+.career-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(10,42,94,0.12);
+}
+.career-card .career-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(244,155,28,0.15);
+  color: #F49B1C;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+.career-card .career-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B7280;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.career-card h3 {
+  font-family: 'League Spartan', sans-serif;
+  font-size: 20px;
+  color: #0A2A5E;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.career-card p {
+  color: #6B7280;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 .expertise-section {
   padding: 100px 24px;
-  background: #F9FAFB;
+  background: #FFFFFF;
 }
 .expertise-inner { max-width: 1100px; margin: 0 auto; }
 .expertise-grid {
@@ -307,7 +383,7 @@
   margin-top: 40px;
 }
 .expertise-card {
-  background: #FFFFFF;
+  background: #F9FAFB;
   padding: 32px 28px;
   border-radius: 16px;
   border: 1px solid #E5E7EB;
@@ -358,7 +434,6 @@
   line-height: 1.7;
 }
 
-/* WHY ME SECTION */
 .whyme-section {
   padding: 100px 24px;
   background: linear-gradient(135deg, #0A2A5E 0%, #1B4380 100%);
@@ -412,7 +487,6 @@
   margin: 0;
 }
 
-/* CONTACT CTA */
 .contact-cta-about {
   padding: 80px 24px;
   background: #F49B1C;
@@ -503,10 +577,6 @@
         </div>
         <div class="lang-dropdown">
           <a href="hakkimizda.html" class="lang-option active"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#E30A17"/><circle cx="22" cy="20" r="8" fill="#fff"/><circle cx="24" cy="20" r="6.4" fill="#E30A17"/><polygon fill="#fff" points="32,20 28.5,21.1 30.7,18.2 30.7,21.8 28.5,18.9"/></svg></span><span>Türkçe</span></a>
-          <a href="en/about.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#012169"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="3"/><path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="6"/></svg></span><span>English</span></a>
-          <a href="fr/about.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg></span><span>Français</span></a>
-          <a href="de/about.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#000"/><rect width="60" height="13.33" y="13.33" fill="#DD0000"/><rect width="60" height="13.34" y="26.66" fill="#FFCE00"/></svg></span><span>Deutsch</span></a>
-          <a href="ru/about.html" class="lang-option"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#fff"/><rect width="60" height="13.33" y="13.33" fill="#0039A6"/><rect width="60" height="13.34" y="26.66" fill="#D52B1E"/></svg></span><span>Русский</span></a>
         </div>
       </div>
     </div>
@@ -556,18 +626,28 @@
       <h1>İsmail Ünsal</h1>
       <p class="about-role"><i class="fa-solid fa-building"></i>TURYAP Yetkili Gayrimenkul Danışmanı</p>
 
-      <div class="about-quick-stats">
-        <div class="about-stat">
-          <span class="num">20+</span>
-          <span class="label">Yıllık Deneyim</span>
+      <!-- DÜRÜST İSTATİSTİKLER: Marka odaklı, sayı yerine değer -->
+      <div class="about-trust-badges">
+        <div class="trust-badge">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div class="tb-text">
+            <strong>TURYAP</strong>
+            <span>40 Yıl Marka Güvencesi</span>
+          </div>
         </div>
-        <div class="about-stat">
-          <span class="num">500+</span>
-          <span class="label">Mutlu Müşteri</span>
+        <div class="trust-badge">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <div class="tb-text">
+            <strong>Yalova</strong>
+            <span>Bölge Uzmanı</span>
+          </div>
         </div>
-        <div class="about-stat">
-          <span class="num">5</span>
-          <span class="label">Dil Desteği</span>
+        <div class="trust-badge">
+          <i class="fa-solid fa-language"></i>
+          <div class="tb-text">
+            <strong>5 Dil</strong>
+            <span>TR / EN / FR / DE / RU</span>
+          </div>
         </div>
       </div>
 
@@ -589,11 +669,34 @@
 <section class="bio-section">
   <div class="bio-inner">
     <h2>Hakkımda</h2>
-    <p>Yalova'nın gelişen gayrimenkul sektöründe <strong>TURYAP</strong> çatısı altında profesyonel danışmanlık hizmeti sunan bir emlak uzmanıyım. 1985 yılında kurulan ve bugün Türkiye'nin her yanında 330 ofisle hizmet veren TURYAP markasının Yalova temsilciliğinde, müşterilerime <strong>kurumsal güvence ve yerel uzmanlığın</strong> bir araya geldiği bir hizmet sunuyorum.</p>
+    <p>Yalova'da <strong>TURYAP</strong> çatısı altında gayrimenkul danışmanlığı hizmeti vermekteyim. TURYAP bünyesinde; <strong>konut, ticari gayrimenkul ve arsa alım-satım süreçlerinde</strong> müşterilerime güvenilir, şeffaf ve çözüm odaklı bir yaklaşımla hizmet sunuyorum.</p>
 
-    <p>Yalova'nın her köşesini — <strong>Merkez'den Çınarcık'a, Termal'den Akköy'e, Altınova'dan Çiftlikköy'e</strong> kadar — yakından tanıyorum. Bölgenin sosyo-ekonomik dinamiklerini, imar planlarını, yatırım potansiyelini ve mahalle bazında fiyat trendlerini analiz ederek, müşterilerime sadece bir mülk değil, <strong>doğru yatırım kararı</strong> sunuyorum.</p>
+    <p>Yalova ve çevresindeki gayrimenkul piyasasına olan hakimiyetim sayesinde, yatırımcılara doğru fırsatları sunmayı ve alıcı-satıcı arasında <strong>kazan-kazan ilişkisi</strong> kurmayı ilke ediniyorum. Bölgenin imar durumlarını, mahalle bazında değer trendlerini ve gelişim alanlarını yakından takip ederek her müşteriye özel danışmanlık veriyorum.</p>
 
-    <p>Emlak işi, sadece alım-satım değil — <strong>insanların hayalleri, birikimleri ve geleceğiyle</strong> ilgilenmektir. Her müşterimi bireysel olarak dinler, ihtiyaçlarını anlar ve <strong>uzun vadeli güvene dayalı ilişki</strong> kurmayı hedeflerim. İstanbul'a 1 saat mesafedeki Yalova'nın yatırım fırsatlarını size profesyonelce sunmak için buradayım.</p>
+    <p>Emlak işi benim için sadece alım-satım değil — <strong>insanların hayalleri, birikimleri ve geleceğiyle</strong> ilgilenmek demek. İster ilk evinizi alıyor olun, ister yatırım amaçlı arsa bakıyor olun, isterse mülkünüzü satıyor olun — sürecin her aşamasında profesyonelce yanınızdayım.</p>
+
+    <p>Yalova'nın <strong>İstanbul'a 1 saat mesafedeki konumu, deniz, dağ ve termal turizm imkânları</strong> bölgeyi hem yaşamak hem de yatırım yapmak için cazip kılıyor. TURYAP'ın 1985'ten bu yana sürdürdüğü kurumsal güvence ile birleşen yerel uzmanlığım, size doğru kararlar almanızda yardımcı olacak.</p>
+  </div>
+</section>
+
+<section class="career-section">
+  <div class="career-inner">
+    <h2>Eğitim & Kariyer</h2>
+    <div class="career-grid">
+      <div class="career-card">
+        <div class="career-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="career-label">EĞİTİM</div>
+        <h3>Anadolu Üniversitesi</h3>
+        <p>Lisans eğitimini Anadolu Üniversitesi'nde tamamladı.</p>
+      </div>
+
+      <div class="career-card">
+        <div class="career-icon"><i class="fa-solid fa-building-columns"></i></div>
+        <div class="career-label">GÜNCEL POZİSYON</div>
+        <h3>TURYAP Yetkili Danışman</h3>
+        <p>Yalova bölgesinde konut, ticari gayrimenkul ve arsa danışmanlığı.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -602,44 +705,44 @@
     <div style="text-align:center; max-width: 700px; margin: 0 auto;">
       <span class="turyap-badge"><i class="fa-solid fa-briefcase"></i> UZMANLIK ALANLARI</span>
       <h2 style="font-family:'League Spartan', sans-serif; font-size: clamp(28px,4vw,40px); color: #0A2A5E; margin-bottom: 12px;">Hizmet Verdiğim Alanlar</h2>
-      <p style="color: #6B7280; font-size: 16px;">Yalova ve çevresinde profesyonel emlak danışmanlığı</p>
+      <p style="color: #6B7280; font-size: 16px;">Yalova ve çevresinde TURYAP güvencesinde danışmanlık</p>
     </div>
 
     <div class="expertise-grid">
       <div class="expertise-card">
         <div class="expertise-icon"><i class="fa-solid fa-house"></i></div>
-        <h3>Satılık & Kiralık Konut</h3>
-        <p>Yalova merkez ve ilçelerinde daire, müstakil ev portföy yönetimi. 1+1'den 4+1'e tüm tip daireler.</p>
+        <h3>Konut Alım-Satım</h3>
+        <p>Yalova merkez ve ilçelerinde daire, müstakil ev danışmanlığı. 1+1'den 4+1'e kadar her tip konut.</p>
+      </div>
+
+      <div class="expertise-card">
+        <div class="expertise-icon"><i class="fa-solid fa-store"></i></div>
+        <h3>Ticari Gayrimenkul</h3>
+        <p>Dükkan, ofis, depo, ticari bina alım-satım ve yatırım danışmanlığı.</p>
       </div>
 
       <div class="expertise-card">
         <div class="expertise-icon"><i class="fa-solid fa-mountain"></i></div>
-        <h3>Yatırımlık Arsa</h3>
-        <p>Konut/ticari imarlı, deniz manzaralı, gelişim bölgelerinde değerli arsa fırsatları.</p>
+        <h3>Arsa & Tarla</h3>
+        <p>Konut imarlı, ticari imarlı, tarım arazileri. Akköy, Çınarcık, Termal bölgesi uzmanı.</p>
       </div>
 
       <div class="expertise-card">
-        <div class="expertise-icon"><i class="fa-solid fa-house-chimney"></i></div>
-        <h3>Lüks Gayrimenkul</h3>
-        <p>Termal ve Çınarcık bölgesinde villa, havuzlu konut ve özel proje danışmanlığı.</p>
+        <div class="expertise-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <h3>Yatırım Danışmanlığı</h3>
+        <p>Bölge analizi, getiri hesaplaması, doğru zamanda doğru karar için stratejik danışmanlık.</p>
       </div>
 
       <div class="expertise-card">
         <div class="expertise-icon"><i class="fa-solid fa-globe"></i></div>
         <h3>Yabancı Yatırımcı</h3>
-        <p>Türkiye'de gayrimenkul alımında EN, FR, DE, RU dillerinde tam destek ve danışmanlık.</p>
+        <p>Türkiye'de gayrimenkul alım sürecinde 5 dilde (TR/EN/FR/DE/RU) destek.</p>
       </div>
 
       <div class="expertise-card">
-        <div class="expertise-icon"><i class="fa-solid fa-chart-line"></i></div>
-        <h3>Değer Tespit</h3>
-        <p>Mülkünüzün gerçek piyasa değerini belirleme, ekspertiz ve karşılaştırmalı analiz.</p>
-      </div>
-
-      <div class="expertise-card">
-        <div class="expertise-icon"><i class="fa-solid fa-handshake"></i></div>
-        <h3>Tapu & Kredi Süreci</h3>
-        <p>Tapu işlemleri, banka kredi süreçleri, noter işlemlerinde A'dan Z'ye refakat.</p>
+        <div class="expertise-icon"><i class="fa-solid fa-file-contract"></i></div>
+        <h3>Tapu & Sözleşme</h3>
+        <p>Tapu işlemleri, satış sözleşmeleri, kira kontratlarında A'dan Z'ye refakat.</p>
       </div>
     </div>
   </div>
@@ -650,28 +753,44 @@
     <div style="text-align:center; max-width: 700px; margin: 0 auto;">
       <span style="display:inline-block; background: rgba(244,155,28,0.18); color: #F49B1C; border:1px solid rgba(244,155,28,0.4); padding: 6px 18px; border-radius: 50px; font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 16px;"><i class="fa-solid fa-award"></i> AVANTAJLAR</span>
       <h2 style="font-family:'League Spartan', sans-serif; font-size: clamp(28px,4vw,40px); margin-bottom: 12px;">Neden Beni Seçmelisiniz?</h2>
-      <p style="color: rgba(255,255,255,0.85); font-size: 16px;">TURYAP güvencesinde, fark yaratan emlak hizmeti</p>
+      <p style="color: rgba(255,255,255,0.85); font-size: 16px;">Şeffaf, güvenilir ve çözüm odaklı yaklaşım</p>
     </div>
 
     <div class="whyme-grid">
       <div class="whyme-card">
-        <div class="whyme-check"><i class="fa-solid fa-check"></i></div>
+        <div class="whyme-check"><i class="fa-solid fa-shield-halved"></i></div>
         <div>
           <h4>TURYAP Kurumsal Güvencesi</h4>
-          <p>Türkiye'nin en köklü emlak markası altında garantili işlemler ve şeffaf süreç.</p>
+          <p>1985'ten beri Türkiye'nin köklü emlak markası altında güvenli işlemler.</p>
         </div>
       </div>
 
       <div class="whyme-card">
-        <div class="whyme-check"><i class="fa-solid fa-check"></i></div>
+        <div class="whyme-check"><i class="fa-solid fa-eye"></i></div>
+        <div>
+          <h4>Şeffaf Süreç</h4>
+          <p>Tapu işlemlerinden kredi sürecine kadar her adımda açık iletişim.</p>
+        </div>
+      </div>
+
+      <div class="whyme-card">
+        <div class="whyme-check"><i class="fa-solid fa-handshake"></i></div>
+        <div>
+          <h4>Çözüm Odaklı</h4>
+          <p>Alıcı-satıcı arasında adil ve sürdürülebilir kazan-kazan ilişkisi.</p>
+        </div>
+      </div>
+
+      <div class="whyme-card">
+        <div class="whyme-check"><i class="fa-solid fa-map-location-dot"></i></div>
         <div>
           <h4>Yerel Uzmanlık</h4>
-          <p>Yalova'nın her sokağını bilen, bölge dinamiklerine hakim danışmanlık.</p>
+          <p>Yalova ve ilçelerini, imar durumlarını, fiyat trendlerini iyi bilen danışmanlık.</p>
         </div>
       </div>
 
       <div class="whyme-card">
-        <div class="whyme-check"><i class="fa-solid fa-check"></i></div>
+        <div class="whyme-check"><i class="fa-solid fa-language"></i></div>
         <div>
           <h4>5 Dilde Hizmet</h4>
           <p>TR, EN, FR, DE, RU dillerinde uluslararası müşteri desteği.</p>
@@ -679,26 +798,10 @@
       </div>
 
       <div class="whyme-card">
-        <div class="whyme-check"><i class="fa-solid fa-check"></i></div>
+        <div class="whyme-check"><i class="fa-solid fa-headset"></i></div>
         <div>
-          <h4>7/24 Erişilebilirlik</h4>
-          <p>WhatsApp ve telefon ile mesai dışında bile ulaşabilirsiniz.</p>
-        </div>
-      </div>
-
-      <div class="whyme-card">
-        <div class="whyme-check"><i class="fa-solid fa-check"></i></div>
-        <div>
-          <h4>Şeffaf Süreç</h4>
-          <p>Tapu işlemlerinden kredi sürecine kadar her adımda yanınızdayım.</p>
-        </div>
-      </div>
-
-      <div class="whyme-card">
-        <div class="whyme-check"><i class="fa-solid fa-check"></i></div>
-        <div>
-          <h4>Yatırım Odaklı</h4>
-          <p>Sadece mülk değil, gerçek getiri sağlayacak yatırım fırsatları sunuyorum.</p>
+          <h4>7/24 Ulaşılabilirlik</h4>
+          <p>WhatsApp ve telefon ile mesai dışında bile destek.</p>
         </div>
       </div>
     </div>
@@ -725,7 +828,6 @@
   <div style="text-align: center; padding: 20px 0 10px;">
     <div class="turyap-badge"><i class="fa-solid fa-star" style="margin-right: 6px;"></i>RESMİ TURYAP YETKİLİ DANIŞMANI<i class="fa-solid fa-star" style="margin-left: 6px;"></i></div>
   </div>
-
   <div class="footer-inner">
     <div class="footer-brand">
       <svg class="logo-svg" viewBox="0 0 340 80" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:16px">
@@ -735,7 +837,7 @@
         <text x="100" y="42" font-family="League Spartan, Montserrat, sans-serif" font-size="20" font-weight="800" fill="#FFFFFF" letter-spacing="2">İSMAİL ÜNSAL</text>
         <text x="100" y="60" font-family="Poppins, DM Sans, sans-serif" font-size="9" font-weight="600" fill="#F49B1C" letter-spacing="3">REAL ESTATE</text>
       </svg>
-      <p class="footer-about">Yalova'da güvenilir gayrimenkul danışmanlığı. Turyap güvencesinde profesyonel hizmet.</p>
+      <p class="footer-about">Yalova'da güvenilir gayrimenkul danışmanlığı.</p>
       <div class="footer-social">
         <a href="https://www.linkedin.com/in/ismail-unsal-5802b2406/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
         <a href="#"><i class="fa-brands fa-instagram"></i></a>
@@ -783,9 +885,7 @@
 <script>
 document.addEventListener('click', (e) => {
   const switcher = document.getElementById('langSwitcher');
-  if (switcher && !switcher.contains(e.target)) {
-    switcher.classList.remove('active');
-  }
+  if (switcher && !switcher.contains(e.target)) switcher.classList.remove('active');
 });
 document.getElementById('langCurrent')?.addEventListener('click', () => {
   document.getElementById('langSwitcher')?.classList.toggle('active');
