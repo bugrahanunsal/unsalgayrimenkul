@@ -72,15 +72,15 @@ section { padding: 80px 24px; }
   right: 0;
   margin-top: 4px;
   background: var(--white);
-  border-radius: 6px;
-  box-shadow: var(--shadow-lg);
-  min-width: 160px;
+  border-radius: 8px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.08);
+  min-width: 180px;
   opacity: 0;
   visibility: hidden;
   transform: translateY(-8px);
   transition: var(--transition);
   z-index: 99999;
-  border: 1px solid var(--gray-200);
+  border: 2px solid var(--gray-200);
   overflow: hidden;
 }
 .lang-switcher:hover .lang-dropdown,
