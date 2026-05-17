@@ -717,21 +717,20 @@ const translations = {
 // ÇEVİRİ MOTORU
 // ==========================================
 
-// URL path'inden mevcut dili tespit et (/en/ -> 'en', / -> 'tr', vs.)
-// Bu, kullanıcı /en/ sayfasındayken localStorage'da TR olsa bile EN gösterilir.
-function detectLangFromPath() {
+// AKILLI DİL TESPİTİ: Önce URL'den, sonra localStorage'dan, son çare TR
+function detectLangFromURL() {
   const path = window.location.pathname;
-  const match = path.match(/^\/(en|fr|de|ru)(\/|$)/);
-  if (match) return match[1];
-  // Alt yolda barındırılıyorsa (GitHub Pages: /repo/en/) yine yakala
-  const match2 = path.match(/\/(en|fr|de|ru)(\/|$)/);
-  if (match2) return match2[1];
-  return 'tr';
+  if (path.includes('/en/')) return 'en';
+  if (path.includes('/fr/')) return 'fr';
+  if (path.includes('/de/')) return 'de';
+  if (path.includes('/ru/')) return 'ru';
+  return null;
 }
 
-let currentLang = detectLangFromPath();
-// localStorage'ı kaydet ki diğer sayfalara geçişte tutarlı olsun
-localStorage.setItem('ungLang', currentLang);
+const urlLang = detectLangFromURL();
+let currentLang = urlLang || localStorage.getItem('ungLang') || 'tr';
+// URL'de dil varsa localStorage'a da yaz (sonraki ziyaretler için)
+if (urlLang) localStorage.setItem('ungLang', urlLang);
 
 function setLanguage(lang) {
   if (!translations[lang]) return;
@@ -810,21 +809,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Dil seçenekleri
-  // Yeni: href varsa, tarayıcı doğal olarak gerçek URL'ye gitsin (SEO için kritik).
-  // Sadece href olmayan (eski yapı) durumda JS ile çevir.
   document.querySelectorAll('.lang-option').forEach(opt => {
     opt.addEventListener('click', (e) => {
-      const lang = opt.getAttribute('data-lang');
-      const href = opt.getAttribute('href');
-      // href varsa ve gerçek bir URL'ye işaret ediyorsa (# değil), JS ile uğraşma
-      if (href && href !== '#' && href !== '') {
-        // Browser'ın doğal navigation davranışına izin ver
-        // Dropdown'ı yine de kapatabiliriz
-        if (langSwitcher) langSwitcher.classList.remove('active');
-        return; // preventDefault yapma, normal link gibi davransın
-      }
-      // Eski davranış: SPA tarzı JS çevirisi
       e.preventDefault();
+      const lang = opt.getAttribute('data-lang');
       setLanguage(lang);
       if (langSwitcher) langSwitcher.classList.remove('active');
     });
