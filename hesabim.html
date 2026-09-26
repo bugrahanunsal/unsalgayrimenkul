@@ -470,20 +470,62 @@
         return;
       }
 
+      // Admin kontrolü - Admin ise panele yönlendir
+      const { data: adminCheck } = await supabase
+        .from('admin_users')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (adminCheck) {
+        // Admin, admin panele yönlendir
+        document.body.innerHTML = `
+          <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0a1929;color:white;text-align:center;padding:40px;">
+            <div>
+              <div style="font-size:60px;margin-bottom:20px;">🔐</div>
+              <h1 style="font-size:24px;margin-bottom:12px;">Bu hesap admin hesabıdır</h1>
+              <p style="opacity:0.8;margin-bottom:24px;">Müşteri hesap sayfası yerine admin paneline yönlendiriliyorsunuz...</p>
+              <a href="/admin/index.html" style="display:inline-block;background:#d4a54e;color:#0a1929;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;">Admin Panele Git →</a>
+            </div>
+          </div>
+        `;
+        setTimeout(() => window.location.href = '/admin/index.html', 2000);
+        return;
+      }
+
       currentUser = user;
       document.getElementById('accountContent').style.display = 'block';
 
-      // Profile yükle
-      const { data: profile } = await supabase
+      // Profile yükle (maybeSingle - profile yoksa null döner, hata vermez)
+      const { data: profile, error: profileErr } = await supabase
         .from('customer_profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      currentProfile = profile;
+      if (profileErr) console.error('Profile load error:', profileErr);
+
+      // Profile yoksa oluştur
+      if (!profile) {
+        const { data: newProfile } = await supabase
+          .from('customer_profiles')
+          .insert({
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || '',
+            language: user.user_metadata?.language || 'tr'
+          })
+          .select()
+          .single();
+        currentProfile = newProfile;
+      } else {
+        currentProfile = profile;
+      }
+
+      const p = currentProfile || {};
 
       // Header'daki bilgileri doldur
-      const name = profile?.full_name || user.email.split('@')[0];
+      const name = p.full_name || user.email.split('@')[0];
       const initial = name.charAt(0).toUpperCase();
 
       document.getElementById('userAvatar').textContent = initial;
@@ -492,21 +534,21 @@
 
       // Profile form
       const pf = document.getElementById('profileForm');
-      pf.full_name.value = profile?.full_name || '';
-      pf.phone.value = profile?.phone || '';
+      pf.full_name.value = p.full_name || '';
+      pf.phone.value = p.phone || '';
       pf.email.value = user.email;
 
       // Preferences form
       const prf = document.getElementById('prefsForm');
-      const kats = profile?.ilgi_kategoriler || [];
+      const kats = p.ilgi_kategoriler || [];
       prf.querySelectorAll('input[name="kat"]').forEach(cb => {
         cb.checked = kats.includes(cb.value);
       });
-      prf.islem_tipi.value = profile?.islem_tipi || 'her_ikisi';
-      prf.language.value = profile?.language || 'tr';
-      prf.min_fiyat.value = profile?.min_fiyat || '';
-      prf.max_fiyat.value = profile?.max_fiyat || '';
-      prf.bulten_abone.checked = profile?.bulten_abone !== false;
+      prf.islem_tipi.value = p.islem_tipi || 'her_ikisi';
+      prf.language.value = p.language || 'tr';
+      prf.min_fiyat.value = p.min_fiyat || '';
+      prf.max_fiyat.value = p.max_fiyat || '';
+      prf.bulten_abone.checked = p.bulten_abone !== false;
     }
 
     window.showTab = function(tab, el) {
