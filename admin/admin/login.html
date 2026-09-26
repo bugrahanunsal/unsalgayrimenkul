@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin Girişi - İsmail Ünsal Gayrimenkul</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      background: #0a1929;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated gradient background */
+    .bg-gradient {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #0a1929 0%, #1a3a5f 50%, #0a1929 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      z-index: -3;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      z-index: -2;
+      pointer-events: none;
+      animation: float 20s ease-in-out infinite;
+    }
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #d4a54e, transparent);
+      top: -10%; right: -10%;
+      animation-duration: 25s;
+    }
+    .orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #1a3a5f, transparent);
+      bottom: -10%; left: -10%;
+      animation-duration: 30s;
+      animation-delay: -5s;
+    }
+    .orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #b8912e, transparent);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation-duration: 20s;
+      animation-delay: -10s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(50px, -50px) scale(1.1); }
+      66% { transform: translate(-30px, 30px) scale(0.9); }
+    }
+
+    /* Grid pattern overlay */
+    .bg-pattern {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(212, 165, 78, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 165, 78, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(212, 165, 78, 0.2);
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(20px);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card header with brand */
+    .card-header {
+      background: linear-gradient(135deg, #0a1929 0%, #1a3a5f 100%);
+      padding: 40px 40px 60px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(212, 165, 78, 0.15), transparent 70%);
+      pointer-events: none;
+    }
+
+    .brand-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #d4a54e, #b8912e);
+      border-radius: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(212, 165, 78, 0.3);
+      position: relative;
+    }
+
+    .brand-icon svg {
+      width: 32px;
+      height: 32px;
+      fill: #0a1929;
+    }
+
+    .brand-name {
+      font-size: 24px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+      position: relative;
+    }
+
+    .brand-name .accent {
+      color: #d4a54e;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 500;
+      position: relative;
+    }
+
+    /* Card body */
+    .card-body {
+      padding: 40px;
+      margin-top: -30px;
+      background: white;
+      border-radius: 24px 24px 0 0;
+      position: relative;
+    }
+
+    .welcome-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0a1929;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .welcome-subtitle {
+      font-size: 13px;
+      color: #6b7280;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #4b5563;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .required { color: #ef4444; }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      fill: #9ca3af;
+      pointer-events: none;
+      transition: fill 0.15s;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 14px 14px 44px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 14px;
+      color: #0a1929;
+      background: #f9fafb;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #d4a54e;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(212, 165, 78, 0.1);
+    }
+
+    .form-input:focus ~ .input-icon {
+      fill: #d4a54e;
+    }
+
+    .form-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: #9ca3af;
+      transition: color 0.15s;
+    }
+
+    .password-toggle:hover { color: #d4a54e; }
+
+    .password-toggle svg { width: 18px; height: 18px; fill: currentColor; }
+
+    /* Alert */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .alert.show { display: block; animation: shake 0.4s; }
+    .alert-error { background: #fef2f2; color: #991b1b; border-left: 3px solid #ef4444; }
+    .alert-success { background: #f0fdf4; color: #166534; border-left: 3px solid #22c55e; }
+    .alert-info { background: #eff6ff; color: #1e40af; border-left: 3px solid #3b82f6; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    /* Login button */
+    .btn-login {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #d4a54e 0%, #b8912e 100%);
+      color: #0a1929;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-top: 8px;
+      letter-spacing: 0.3px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-login::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-login:hover::before { left: 100%; }
+    .btn-login:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(212, 165, 78, 0.4);
+    }
+
+    .btn-login:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(10, 25, 41, 0.3);
+      border-top-color: #0a1929;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Divider & footer */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0 16px 0;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    .trust-badges {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      padding-top: 8px;
+    }
+
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .trust-badge svg {
+      width: 14px;
+      height: 14px;
+      fill: #10b981;
+    }
+
+    /* Footer text */
+    .card-footer {
+      background: #f9fafb;
+      padding: 16px 40px;
+      text-align: center;
+      font-size: 11px;
+      color: #9ca3af;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .card-footer a {
+      color: #d4a54e;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Back to site */
+    .back-to-site {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s;
+      z-index: 10;
+    }
+
+    .back-to-site:hover { color: #d4a54e; }
+
+    .back-to-site svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      .container { padding: 12px; }
+      .card-header { padding: 32px 24px 48px 24px; }
+      .card-body { padding: 32px 24px; }
+      .brand-name { font-size: 20px; }
+      .back-to-site { top: 12px; left: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="bg-pattern"></div>
+
+  <a href="/" class="back-to-site">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5m0 0l7-7m-7 7l7 7"/></svg>
+    Ana Siteye Dön
+  </a>
+
+  <div class="container">
+    <div class="login-card">
+      <!-- Header -->
+      <div class="card-header">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 12L12 3l9 9v9a2 2 0 01-2 2h-3v-7H10v7H5a2 2 0 01-2-2v-9z"/></svg>
+        </div>
+        <div class="brand-name">İSMAİL <span class="accent">ÜNSAL</span></div>
+        <div class="brand-subtitle">Gayrimenkul Yönetim</div>
+      </div>
+
+      <!-- Body -->
+      <div class="card-body">
+        <h1 class="welcome-title">Yönetim Paneli</h1>
+        <p class="welcome-subtitle">Devam etmek için giriş yapın</p>
+
+        <div id="alertBox" class="alert"></div>
+
+        <form id="loginForm" novalidate autocomplete="off">
+          <div class="form-group">
+            <label class="form-label" for="email">
+              E-posta Adresi <span class="required">*</span>
+            </label>
+            <div class="input-wrapper">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-input"
+                placeholder="ornek@email.com"
+                required
+                maxlength="254"
+                autocomplete="email"
+                autocapitalize="off"
+                spellcheck="false">
+              <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">
+              Şifre <span class="required">*</span>
+            </label>
+            <div class="input-wrapper">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="form-input"
+                placeholder="••••••••"
+                required
+                minlength="8"
+                maxlength="128"
+                autocomplete="current-password">
+              <svg class="input-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+              <button type="button" class="password-toggle" id="togglePass" aria-label="Şifreyi göster">
+                <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-login" id="loginBtn">
+            Giriş Yap
+          </button>
+        </form>
+
+        <div class="divider">Güvenli Bağlantı</div>
+
+        <div class="trust-badges">
+          <div class="trust-badge">
+            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+            SSL Şifreli
+          </div>
+          <div class="trust-badge">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+            KVKK Uyumlu
+          </div>
+          <div class="trust-badge">
+            <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg>
+            2FA Hazır
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="card-footer">
+        © 2026 İsmail Ünsal Gayrimenkul • <a href="https://ismailunsal.com.tr">ismailunsal.com.tr</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+
+  <script>
+    // Password toggle
+    const passInput = document.getElementById('password');
+    const toggleBtn = document.getElementById('togglePass');
+    toggleBtn.addEventListener('click', () => {
+      const isPass = passInput.type === 'password';
+      passInput.type = isPass ? 'text' : 'password';
+      toggleBtn.innerHTML = isPass
+        ? '<svg viewBox="0 0 24 24"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27z"/></svg>'
+        : '<svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5z"/></svg>';
+    });
+
+    function showAlert(message, type = 'error') {
+      const box = document.getElementById('alertBox');
+      box.className = `alert alert-${type} show`;
+      box.textContent = message;
+    }
+
+    // Login handler
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('loginBtn');
+
+      // Rate limit
+      if (!Security.rateLimiter.check('login_' + email, 5, 60000)) {
+        showAlert('Çok fazla deneme. Lütfen 1 dakika bekleyin.', 'error');
+        return;
+      }
+
+      // Validation
+      if (!Security.isValidEmail(email)) {
+        showAlert('Geçerli bir email adresi girin.', 'error');
+        return;
+      }
+
+      if (password.length < 8) {
+        showAlert('Şifre en az 8 karakter olmalı.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Giriş yapılıyor...';
+
+      const result = await Auth.login(email, password);
+
+      if (result.success) {
+        showAlert('✅ Giriş başarılı! Yönlendiriliyorsunuz...', 'success');
+        setTimeout(() => {
+          window.location.href = '/admin/index.html';
+        }, 500);
+      } else {
+        showAlert(result.error || 'Giriş başarısız. Email veya şifrenizi kontrol edin.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = 'Giriş Yap';
+      }
+    });
+
+    // Auto-focus email
+    document.getElementById('email').focus();
+
+    // Zaten giriş yapmışsa dashboard'a yönlendir
+    (async () => {
+      const user = await Auth.getCurrentUser();
+      if (user) window.location.href = '/admin/index.html';
+    })();
+  </script>
+</body>
+</html>
