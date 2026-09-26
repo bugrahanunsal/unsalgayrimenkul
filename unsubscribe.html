@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Aboneliği İptal - İsmail Ünsal Gayrimenkul</title>
+  <link rel="icon" href="/favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0a1929 0%, #1a3a5f 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 48px 40px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+    }
+    .logo { color: #d4a54e; font-size: 24px; font-weight: 700; letter-spacing: 2px; }
+    .subtitle { color: #6b7280; font-size: 11px; letter-spacing: 2px; margin-bottom: 32px; }
+    .icon { font-size: 64px; margin: 20px 0; display: block; }
+    h1 { font-size: 24px; color: #0a1929; margin-bottom: 12px; }
+    p { color: #4b5563; line-height: 1.6; margin-bottom: 20px; }
+    .email {
+      background: #f9fafb;
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: #0a1929;
+      font-weight: 600;
+      margin: 16px 0;
+      word-break: break-all;
+    }
+    .form-group { margin-bottom: 16px; text-align: left; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .btn {
+      display: inline-block;
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 15px;
+      margin: 6px;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-outline {
+      background: transparent;
+      color: #0a1929;
+      border: 2px solid #e5e7eb;
+    }
+    .btn-outline:hover { border-color: #d4a54e; color: #d4a54e; }
+    .btn-primary { background: #d4a54e; color: white; }
+    .btn-primary:hover { background: #b8912e; }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f4f6;
+      border-top-color: #d4a54e;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .footer {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+    .footer a { color: #d4a54e; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">İSMAİL ÜNSAL</div>
+    <div class="subtitle">GAYRİMENKUL DANIŞMANI</div>
+
+    <div id="content">
+      <div class="spinner"></div>
+      <h1 style="margin-top: 20px;">İşleniyor...</h1>
+    </div>
+
+    <div class="footer">
+      © <span id="year"></span> İsmail Ünsal Gayrimenkul<br>
+      <a href="https://ismailunsal.com.tr">ismailunsal.com.tr</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const SUPABASE_URL = 'https://gosmkthmamloafgtvhpj.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4';
+
+    function esc(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const content = document.getElementById('content');
+
+    if (!token || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token)) {
+      content.innerHTML = `
+        <span class="icon">❌</span>
+        <h1>Geçersiz Link</h1>
+        <p>Unsubscribe linki geçersiz. Lütfen emailinizdeki bağlantıya tıkladığınızdan emin olun.</p>
+        <a href="https://ismailunsal.com.tr" class="btn btn-outline">Ana Sayfaya Dön</a>
+      `;
+    } else {
+      showConfirmation(token);
+    }
+
+    function showConfirmation(t) {
+      content.innerHTML = `
+        <span class="icon">📭</span>
+        <h1>Aboneliği İptal Et</h1>
+        <p>Email bültenimizden çıkmak istediğinizden emin misiniz?</p>
+
+        <div class="form-group">
+          <label>Neden ayrılıyorsunuz? (opsiyonel)</label>
+          <select id="reason">
+            <option value="kendi_iptal">Artık ilgilenmiyorum</option>
+            <option value="satin_aldi">Ev satın aldım</option>
+            <option value="kiraladi">Ev kiraladım</option>
+            <option value="ilgilenmiyor">Çok fazla email geliyor</option>
+          </select>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <button onclick="confirmUnsubscribe('${esc(t)}')" class="btn btn-danger">✋ Aboneliği İptal Et</button>
+          <a href="https://ismailunsal.com.tr" class="btn btn-outline">Vazgeç</a>
+        </div>
+
+        <p style="font-size: 12px; color: #9ca3af; margin-top: 20px;">
+          KVKK kapsamında, kişisel verileriniz sistemimizden 30 gün içinde silinecektir.
+        </p>
+      `;
+    }
+
+    window.confirmUnsubscribe = async function(t) {
+      const reason = document.getElementById('reason').value;
+      content.innerHTML = `<div class="spinner"></div><h1 style="margin-top: 20px;">İşleniyor...</h1>`;
+
+      try {
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+          auth: { persistSession: false }
+        });
+
+        const { data, error } = await supabase.rpc('unsubscribe_by_token', {
+          p_token: t,
+          p_reason: reason
+        });
+
+        if (error) throw error;
+
+        const result = data?.[0];
+
+        if (result?.success) {
+          content.innerHTML = `
+            <span class="icon">👋</span>
+            <h1>Aboneliğiniz İptal Edildi</h1>
+            <p>Artık email göndermeyeceğiz. Bültenimizden çıktığınız için üzgünüz!</p>
+            <div class="email">${esc(result.email)}</div>
+            <p style="font-size: 13px; color: #6b7280;">
+              Fikrinizi değiştirirseniz, istediğiniz zaman <a href="https://ismailunsal.com.tr" style="color: #d4a54e;">sitemizden</a> tekrar abone olabilirsiniz.
+            </p>
+            <a href="https://ismailunsal.com.tr" class="btn btn-primary">Ana Sayfaya Dön</a>
+          `;
+        } else {
+          content.innerHTML = `
+            <span class="icon">⚠️</span>
+            <h1>İşlem Yapılamadı</h1>
+            <p>${esc(result?.message || 'Bu link geçersiz olabilir.')}</p>
+            <a href="https://ismailunsal.com.tr" class="btn btn-outline">Ana Sayfaya Dön</a>
+          `;
+        }
+      } catch (err) {
+        console.error('Unsubscribe error:', err);
+        content.innerHTML = `
+          <span class="icon">❌</span>
+          <h1>Bir Hata Oluştu</h1>
+          <p>${esc(err.message || 'Lütfen daha sonra tekrar deneyin.')}</p>
+          <a href="https://ismailunsal.com.tr" class="btn btn-outline">Ana Sayfaya Dön</a>
+        `;
+      }
+    };
+  </script>
+</body>
+</html>
