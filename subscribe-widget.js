@@ -909,6 +909,14 @@
     containers.forEach(container => {
       container.innerHTML = ''; // temizle
 
+      // SVG icons (renksiz, sade)
+      const iconUser = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="flex-shrink:0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+      const iconUserPlus = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="flex-shrink:0"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+      const iconAccount = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="flex-shrink:0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+      const iconHeart = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+      const iconSearch = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+      const iconLogout = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+
       if (IUAuth.user) {
         // Giriş yapmış kullanıcı
         const initial = (IUAuth.user.user_metadata?.full_name || IUAuth.user.email || 'U').charAt(0).toUpperCase();
@@ -920,16 +928,16 @@
               <div class="iu-authbar-avatar">${Security.escapeHtml(initial)}</div>
               <div class="iu-authbar-name">${Security.escapeHtml(name)}</div>
             </div>
-            <div class="iu-user-menu" id="iu-user-menu-${Math.random().toString(36).substr(2, 5)}">
+            <div class="iu-user-menu">
               <div class="iu-user-menu-header">
                 <div style="font-weight: 600;">${Security.escapeHtml(name)}</div>
                 <div class="iu-user-menu-email">${Security.escapeHtml(IUAuth.user.email)}</div>
               </div>
-              <a href="${CONFIG.ACCOUNT_URL}">👤 Hesabım</a>
-              <a href="/favorilerim">❤️ Favorilerim</a>
-              <a href="/aramalarim">🔍 Kayıtlı Aramalar</a>
+              <a href="${CONFIG.ACCOUNT_URL}">${iconAccount} Hesabım</a>
+              <a href="/favorilerim">${iconHeart} Favorilerim</a>
+              <a href="/aramalarim">${iconSearch} Kayıtlı Aramalar</a>
               <div class="iu-user-menu-divider"></div>
-              <a href="#" onclick="IUAuth.logout(event)" class="iu-user-menu-logout">🚪 Çıkış Yap</a>
+              <a href="#" onclick="IUAuth.logout(event)" class="iu-user-menu-logout">${iconLogout} Çıkış Yap</a>
             </div>
           </div>
         `;
@@ -937,8 +945,8 @@
         // Giriş yapmamış
         container.innerHTML = `
           <div class="iu-authbar">
-            <button class="iu-authbar-btn iu-authbar-login" onclick="IUAuth.open('login')">🔐 Giriş</button>
-            <button class="iu-authbar-btn iu-authbar-signup" onclick="IUAuth.open('signup')">✨ Üye Ol</button>
+            <button class="iu-authbar-btn iu-authbar-login" onclick="IUAuth.open('login')">${iconUser} Giriş</button>
+            <button class="iu-authbar-btn iu-authbar-signup" onclick="IUAuth.open('signup')">${iconUserPlus} Üye Ol</button>
           </div>
         `;
       }
