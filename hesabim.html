@@ -9,347 +9,582 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --primary: #0a1929;
-      --accent: #d4a54e;
-      --accent-dark: #b8912e;
-      --bg: #f9fafb;
-      --border: #e5e7eb;
-      --text: #0a1929;
-      --text-muted: #6b7280;
+      --navy: #0A2A5E;
+      --navy-dark: #061A3D;
+      --orange: #F49B1C;
+      --orange-light: #FFB543;
+      --white: #FFFFFF;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-300: #D1D5DB;
+      --gray-500: #6B7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --danger: #EF4444;
+      --success: #10B981;
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Poppins', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f0f4f9 0%, #e8eef7 100%);
+      color: var(--navy);
       min-height: 100vh;
+      line-height: 1.5;
     }
-    /* Header */
-    .header {
-      background: white;
-      border-bottom: 1px solid var(--border);
+
+    /* ===== HEADER ===== */
+    .site-header {
+      background: var(--white);
+      border-bottom: 3px solid var(--orange);
+      box-shadow: 0 2px 16px rgba(10,42,94,0.08);
       padding: 16px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 100;
     }
-    .header a { color: var(--text); text-decoration: none; }
-    .logo {
-      font-size: 18px;
+    .site-header a { color: var(--navy); text-decoration: none; }
+    .brand {
+      font-family: 'League Spartan', 'Montserrat', sans-serif;
+      font-size: 22px;
       font-weight: 800;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
+      color: var(--navy);
     }
-    .logo .accent { color: var(--accent); }
-    .container {
-      max-width: 1000px;
+    .brand .orange { color: var(--orange); }
+    .header-actions { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      background: var(--gray-100);
+      color: var(--navy);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .btn-back:hover { background: var(--gray-200); }
+    .btn-back svg { width: 14px; height: 14px; fill: currentColor; }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      color: white;
+      padding: 60px 24px 100px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -20%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(244,155,28,0.15), transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 40px 20px;
+      position: relative;
     }
-    /* Layout */
+    .hero-eyebrow {
+      display: inline-block;
+      background: rgba(244,155,28,0.15);
+      color: var(--orange);
+      border: 1px solid rgba(244,155,28,0.4);
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-family: 'League Spartan', sans-serif;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.15;
+    }
+    .hero p { opacity: 0.85; font-size: 15px; }
+
+    /* ===== MAIN LAYOUT ===== */
+    .container {
+      max-width: 1100px;
+      margin: -70px auto 60px auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
     .layout {
       display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 32px;
+      grid-template-columns: 260px 1fr;
+      gap: 24px;
       align-items: start;
     }
-    @media (max-width: 768px) { .layout { grid-template-columns: 1fr; } }
-    /* Sidebar */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .container { margin-top: -80px; }
+    }
+
+    /* ===== SIDEBAR ===== */
     .sidebar {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      background: var(--white);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(10,42,94,0.08);
       position: sticky;
       top: 90px;
     }
     .profile-card {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      color: white;
+      padding: 32px 20px 24px 20px;
       text-align: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 16px;
+      position: relative;
     }
     .avatar {
-      width: 64px; height: 64px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-      color: var(--primary);
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      color: var(--navy);
       border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 28px; font-weight: 700;
-      margin: 0 auto 12px auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      box-shadow: 0 8px 24px rgba(244,155,28,0.4);
     }
-    .profile-name { font-weight: 700; font-size: 15px; }
-    .profile-email { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      color: var(--text);
-      text-decoration: none;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.15s;
+    .profile-name {
+      font-weight: 700;
+      font-size: 16px;
       margin-bottom: 2px;
     }
-    .nav-item:hover { background: var(--bg); }
-    .nav-item.active { background: rgba(212,165,78,0.1); color: var(--accent-dark); font-weight: 600; }
-    .nav-item.logout { color: #ef4444; }
-    /* Content */
+    .profile-email {
+      font-size: 12px;
+      opacity: 0.75;
+    }
+    .role-badge {
+      display: inline-block;
+      background: rgba(244,155,28,0.2);
+      color: var(--orange);
+      border: 1px solid rgba(244,155,28,0.3);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-top: 8px;
+    }
+    .sidebar-nav {
+      padding: 12px 12px 20px 12px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--gray-700);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.15s;
+      margin-bottom: 2px;
+      text-decoration: none;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+    .nav-item:hover {
+      background: var(--gray-100);
+      color: var(--navy);
+    }
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--navy), var(--navy-dark));
+      color: white;
+    }
+    .nav-item.active svg { opacity: 1; }
+    .nav-item.logout {
+      color: var(--danger);
+      margin-top: 8px;
+      border-top: 1px solid var(--gray-200);
+      padding-top: 16px;
+      border-radius: 0 0 10px 10px;
+    }
+    .nav-item.logout:hover { background: #fef2f2; }
+
+    /* ===== CONTENT CARDS ===== */
     .content { display: flex; flex-direction: column; gap: 20px; }
     .card {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      background: var(--white);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 10px 40px rgba(10,42,94,0.06);
     }
     .card-title {
-      font-size: 18px;
+      font-family: 'League Spartan', sans-serif;
+      font-size: 22px;
       font-weight: 700;
+      color: var(--navy);
       margin-bottom: 4px;
-      display: flex; align-items: center; gap: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+    .card-title svg { width: 22px; height: 22px; fill: var(--orange); }
     .card-subtitle {
-      color: var(--text-muted);
+      color: var(--gray-500);
       font-size: 13px;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
-    /* Form */
+
+    /* ===== FORM ===== */
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 14px;
     }
     @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
-    .form-group { margin-bottom: 14px; }
+    .form-group { margin-bottom: 16px; }
     .form-label {
       display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: #374151;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray-700);
       margin-bottom: 6px;
       text-transform: uppercase;
-      letter-spacing: 0.3px;
+      letter-spacing: 1px;
     }
     .form-input, .form-select {
       width: 100%;
-      padding: 10px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
+      padding: 12px 16px;
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
       font-size: 14px;
       font-family: inherit;
+      background: var(--gray-50);
+      transition: all 0.15s;
+      color: var(--gray-900);
     }
     .form-input:focus, .form-select:focus {
       outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(212,165,78,0.1);
+      border-color: var(--orange);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(244,155,28,0.1);
+    }
+    .form-input[readonly] {
+      background: var(--gray-100);
+      color: var(--gray-500);
+      cursor: not-allowed;
     }
     .checkboxes {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 8px;
     }
     .checkbox-label {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
       cursor: pointer;
       font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s;
+      background: var(--gray-50);
     }
-    .checkbox-label:hover { border-color: var(--accent); }
-    .checkbox-label input { accent-color: var(--accent); }
+    .checkbox-label:hover { border-color: var(--orange); background: white; }
+    .checkbox-label input { accent-color: var(--orange); width: 16px; height: 16px; }
+    .checkbox-label input:checked ~ span { color: var(--navy); font-weight: 700; }
+
+    /* ===== BUTTONS ===== */
     .btn {
-      display: inline-block;
-      padding: 11px 22px;
-      background: var(--accent);
-      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 26px;
+      background: var(--orange);
+      color: var(--navy);
       border: none;
-      border-radius: 8px;
-      font-weight: 600;
+      border-radius: 10px;
+      font-weight: 700;
       font-size: 14px;
       cursor: pointer;
       transition: all 0.15s;
       font-family: inherit;
+      text-decoration: none;
     }
-    .btn:hover { background: var(--accent-dark); }
+    .btn:hover {
+      background: var(--orange-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(244,155,28,0.3);
+    }
+    .btn-navy { background: var(--navy); color: white; }
+    .btn-navy:hover { background: var(--navy-dark); }
     .btn-outline {
       background: transparent;
-      border: 1.5px solid var(--border);
-      color: var(--text);
+      border: 2px solid var(--gray-200);
+      color: var(--gray-700);
     }
-    .btn-outline:hover { border-color: var(--accent); color: var(--accent-dark); background: transparent; }
-    .btn-danger { background: #ef4444; color: white; }
-    .msg {
-      padding: 12px 14px;
-      border-radius: 8px;
+    .btn-outline:hover { border-color: var(--orange); color: var(--orange); background: transparent; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+    /* ===== ALERTS ===== */
+    .alert {
+      padding: 14px 18px;
+      border-radius: 10px;
       font-size: 13px;
       margin: 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.5;
     }
-    .msg-success { background: #d1fae5; color: #065f46; }
-    .msg-error { background: #fee2e2; color: #991b1b; }
+    .alert svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid var(--success); }
+    .alert-error { background: #fee2e2; color: #991b1b; border-left: 4px solid var(--danger); }
+    .alert-info { background: #dbeafe; color: #1e40af; border-left: 4px solid #3b82f6; }
+    .alert-warning { background: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
+
+    /* ===== EMPTY STATE ===== */
     .empty {
       text-align: center;
-      padding: 40px 20px;
-      color: var(--text-muted);
+      padding: 60px 24px;
+      color: var(--gray-500);
     }
-    .empty-icon { font-size: 48px; margin-bottom: 12px; }
-    .property-item {
-      display: flex;
-      gap: 16px;
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 12px;
-      transition: all 0.15s;
+    .empty svg {
+      width: 80px; height: 80px;
+      opacity: 0.3;
+      margin-bottom: 16px;
     }
-    .property-item:hover { border-color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .property-item img {
-      width: 100px; height: 80px;
-      object-fit: cover;
-      border-radius: 8px;
+    .empty h3 {
+      font-size: 18px;
+      color: var(--navy);
+      margin-bottom: 8px;
     }
-    .property-info { flex: 1; }
-    .property-title { font-weight: 600; margin-bottom: 4px; }
-    .property-price { color: var(--accent-dark); font-weight: 700; }
-    .toast {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      color: white;
-      z-index: 999;
-      animation: slideIn 0.3s;
-    }
-    @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { opacity: 1; } }
-    .loading {
+
+    /* ===== LOADER ===== */
+    .loader {
       text-align: center;
-      padding: 40px;
-      color: var(--text-muted);
+      padding: 60px 24px;
     }
     .spinner {
       display: inline-block;
-      width: 20px; height: 20px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
+      width: 40px; height: 40px;
+      border: 4px solid var(--gray-200);
+      border-top-color: var(--orange);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      padding: 14px 24px;
+      border-radius: 10px;
+      color: white;
+      z-index: 999;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      animation: slideIn 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .toast-success { background: var(--success); }
+    .toast-error { background: var(--danger); }
+
+    /* ===== TAB CONTENT ===== */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
-  <header class="header">
-    <a href="/" class="logo">İSMAİL <span class="accent">ÜNSAL</span></a>
-    <div data-iu-auth></div>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <a href="/" class="brand">İSMAİL <span class="orange">ÜNSAL</span></a>
+    <div class="header-actions">
+      <a href="/" class="btn-back">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Ana Sayfa
+      </a>
+    </div>
   </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow" id="heroEyebrow">HESABIM</div>
+      <h1 id="heroTitle">Hoş Geldiniz</h1>
+      <p id="heroSubtitle">Hesap bilgilerinizi ve tercihlerinizi yönetin</p>
+    </div>
+  </section>
 
   <div class="container">
     <div id="loginRequired" style="display: none;" class="card">
       <div class="empty">
-        <div class="empty-icon">🔐</div>
-        <h2>Giriş yapmanız gerekiyor</h2>
-        <p style="margin-top: 8px;">Bu sayfayı görmek için lütfen hesabınıza giriş yapın.</p>
-        <button onclick="IUAuth.open('login')" class="btn" style="margin-top: 20px;">Giriş Yap</button>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        <h3>Giriş yapmanız gerekiyor</h3>
+        <p style="margin-bottom: 24px;">Bu sayfayı görmek için lütfen hesabınıza giriş yapın.</p>
+        <a onclick="if(window.IUAuth) IUAuth.open('login')" class="btn">Giriş Yap</a>
+      </div>
+    </div>
+
+    <div id="adminRedirect" style="display: none;" class="card">
+      <div class="empty">
+        <svg viewBox="0 0 24 24" fill="var(--orange)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+        <h3>Bu bir admin hesabıdır</h3>
+        <p style="margin-bottom: 24px;">Yönetici hesaplarının profil sayfası admin panelinde yer alır. Yönlendiriliyorsunuz...</p>
+        <a href="/admin/index.html" class="btn btn-navy">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+          Admin Panele Git
+        </a>
       </div>
     </div>
 
     <div id="accountContent" style="display: none;">
       <div class="layout">
-        <!-- Sidebar -->
+
+        <!-- SIDEBAR -->
         <aside class="sidebar">
           <div class="profile-card">
             <div class="avatar" id="userAvatar">?</div>
             <div class="profile-name" id="userName">-</div>
             <div class="profile-email" id="userEmail">-</div>
+            <div class="role-badge">MÜŞTERİ</div>
           </div>
-          <nav>
-            <a class="nav-item active" onclick="showTab('profile', this)">
-              <span>👤</span> Profilim
-            </a>
-            <a class="nav-item" onclick="showTab('favorites', this)">
-              <span>❤️</span> Favorilerim
-            </a>
-            <a class="nav-item" onclick="showTab('searches', this)">
-              <span>🔍</span> Kayıtlı Aramalar
-            </a>
-            <a class="nav-item" onclick="showTab('preferences', this)">
-              <span>⚙️</span> Bülten Tercihleri
-            </a>
-            <a class="nav-item" onclick="showTab('security', this)">
-              <span>🔒</span> Güvenlik
-            </a>
-            <a class="nav-item logout" onclick="IUAuth.logout()">
-              <span>🚪</span> Çıkış Yap
-            </a>
+          <nav class="sidebar-nav">
+            <button class="nav-item active" onclick="showTab('profile', this)">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              Profilim
+            </button>
+            <button class="nav-item" onclick="showTab('favorites', this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              Favorilerim
+            </button>
+            <button class="nav-item" onclick="showTab('searches', this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Kayıtlı Aramalar
+            </button>
+            <button class="nav-item" onclick="showTab('preferences', this)">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94 0 .31.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+              Bülten Tercihleri
+            </button>
+            <button class="nav-item" onclick="showTab('security', this)">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+              Güvenlik
+            </button>
+            <button class="nav-item logout" onclick="handleLogout()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Çıkış Yap
+            </button>
           </nav>
         </aside>
 
-        <!-- Content -->
+        <!-- CONTENT -->
         <main class="content">
-          <!-- Profile Tab -->
-          <div id="tab-profile" class="tab-content">
+
+          <!-- PROFILE TAB -->
+          <div id="tab-profile" class="tab-content active">
             <div class="card">
-              <div class="card-title">👤 Profil Bilgileri</div>
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                Profil Bilgileri
+              </div>
               <div class="card-subtitle">Kişisel bilgilerinizi güncelleyin</div>
               <form id="profileForm">
                 <div class="form-row">
                   <div class="form-group">
                     <label class="form-label">Ad Soyad</label>
-                    <input type="text" name="full_name" class="form-input" maxlength="100">
+                    <input type="text" name="full_name" class="form-input" maxlength="100" placeholder="Ahmet Yılmaz">
                   </div>
                   <div class="form-group">
                     <label class="form-label">Telefon</label>
-                    <input type="tel" name="phone" class="form-input" maxlength="20">
+                    <input type="tel" name="phone" class="form-input" maxlength="20" placeholder="+90 555 000 00 00">
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Email</label>
+                  <label class="form-label">Email (değiştirilemez)</label>
                   <input type="email" name="email" class="form-input" readonly>
                 </div>
                 <div id="profileMsg"></div>
-                <button type="submit" class="btn">💾 Profili Kaydet</button>
+                <button type="submit" class="btn">
+                  <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+                  Profili Kaydet
+                </button>
               </form>
             </div>
           </div>
 
-          <!-- Favorites Tab -->
-          <div id="tab-favorites" class="tab-content" style="display: none;">
+          <!-- FAVORITES TAB -->
+          <div id="tab-favorites" class="tab-content">
             <div class="card">
-              <div class="card-title">❤️ Favori İlanlarım</div>
-              <div class="card-subtitle">Kaydettiğiniz ilanlar</div>
-              <div id="favoritesList"><div class="loading"><div class="spinner"></div></div></div>
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                Favori İlanlarım
+              </div>
+              <div class="card-subtitle">Kaydettiğiniz ilanlar burada listelenir</div>
+              <div id="favoritesList"><div class="loader"><div class="spinner"></div></div></div>
             </div>
           </div>
 
-          <!-- Searches Tab -->
-          <div id="tab-searches" class="tab-content" style="display: none;">
+          <!-- SEARCHES TAB -->
+          <div id="tab-searches" class="tab-content">
             <div class="card">
-              <div class="card-title">🔍 Kayıtlı Aramalarım</div>
-              <div class="card-subtitle">Kriterlerinize uyan yeni ilanlar geldiğinde bildirim alın</div>
-              <div id="searchesList"><div class="loading"><div class="spinner"></div></div></div>
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg>
+                Kayıtlı Aramalarım
+              </div>
+              <div class="card-subtitle">Kriterlerinize uyan yeni ilanlarda otomatik bildirim alın</div>
+              <div id="searchesList"><div class="loader"><div class="spinner"></div></div></div>
             </div>
           </div>
 
-          <!-- Preferences Tab -->
-          <div id="tab-preferences" class="tab-content" style="display: none;">
+          <!-- PREFERENCES TAB -->
+          <div id="tab-preferences" class="tab-content">
             <div class="card">
-              <div class="card-title">⚙️ Bülten & Bildirim Tercihleri</div>
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94 0 .31.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                Bülten & Bildirim Tercihleri
+              </div>
               <div class="card-subtitle">Hangi ilanlar ilginizi çekiyor?</div>
               <form id="prefsForm">
                 <div class="form-group">
                   <label class="form-label">İlgi Kategorileri</label>
                   <div class="checkboxes">
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="arsa"> 🏞️ Arsa</label>
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="daire"> 🏢 Daire</label>
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="villa"> 🏡 Villa</label>
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="isyeri"> 🏪 İşyeri</label>
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="mustakil"> 🏘️ Müstakil</label>
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="dukkan"> 🏬 Dükkan</label>
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="arsa"> <span>Arsa</span></label>
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="daire"> <span>Daire</span></label>
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="villa"> <span>Villa</span></label>
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="isyeri"> <span>İşyeri</span></label>
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="mustakil"> <span>Müstakil</span></label>
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="dukkan"> <span>Dükkan</span></label>
                   </div>
                 </div>
-
                 <div class="form-row">
                   <div class="form-group">
                     <label class="form-label">İşlem Tipi</label>
@@ -362,15 +597,14 @@
                   <div class="form-group">
                     <label class="form-label">Email Dili</label>
                     <select name="language" class="form-select">
-                      <option value="tr">🇹🇷 Türkçe</option>
-                      <option value="en">🇬🇧 English</option>
-                      <option value="de">🇩🇪 Deutsch</option>
-                      <option value="fr">🇫🇷 Français</option>
-                      <option value="ru">🇷🇺 Русский</option>
+                      <option value="tr">Türkçe</option>
+                      <option value="en">English</option>
+                      <option value="de">Deutsch</option>
+                      <option value="fr">Français</option>
+                      <option value="ru">Русский</option>
                     </select>
                   </div>
                 </div>
-
                 <div class="form-row">
                   <div class="form-group">
                     <label class="form-label">Min. Fiyat (₺)</label>
@@ -381,45 +615,56 @@
                     <input type="number" name="max_fiyat" class="form-input" min="0" placeholder="Sınırsız">
                   </div>
                 </div>
-
-                <div class="form-group" style="border-top: 1px solid var(--border); padding-top: 16px; margin-top: 20px;">
+                <div class="form-group" style="border-top: 2px solid var(--gray-100); padding-top: 20px; margin-top: 24px;">
                   <label class="checkbox-label">
                     <input type="checkbox" name="bulten_abone" checked>
-                    📧 Haftalık bülten emaili almak istiyorum
+                    <span>Haftalık bülten emaili almak istiyorum</span>
                   </label>
                 </div>
-
                 <div id="prefsMsg"></div>
-                <button type="submit" class="btn">💾 Tercihleri Kaydet</button>
+                <button type="submit" class="btn">
+                  <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+                  Tercihleri Kaydet
+                </button>
               </form>
             </div>
           </div>
 
-          <!-- Security Tab -->
-          <div id="tab-security" class="tab-content" style="display: none;">
+          <!-- SECURITY TAB -->
+          <div id="tab-security" class="tab-content">
             <div class="card">
-              <div class="card-title">🔒 Şifre Değiştir</div>
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                Şifre Değiştir
+              </div>
               <div class="card-subtitle">Güçlü bir şifre kullanmanızı öneririz</div>
               <form id="passwordForm">
                 <div class="form-group">
                   <label class="form-label">Yeni Şifre</label>
-                  <input type="password" name="new_password" class="form-input" required minlength="8">
+                  <input type="password" name="new_password" class="form-input" required minlength="8" placeholder="En az 8 karakter">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Yeni Şifre (Tekrar)</label>
                   <input type="password" name="confirm_password" class="form-input" required minlength="8">
                 </div>
                 <div id="passwordMsg"></div>
-                <button type="submit" class="btn">🔒 Şifreyi Değiştir</button>
+                <button type="submit" class="btn btn-navy">Şifreyi Değiştir</button>
               </form>
             </div>
 
-            <div class="card" style="margin-top: 20px;">
-              <div class="card-title" style="color: #ef4444;">⚠️ Hesabı Sil</div>
-              <div class="card-subtitle">Hesabınızı silmek geri alınamaz. Tüm favorileriniz ve verileriniz silinecektir.</div>
-              <button onclick="deleteAccount()" class="btn btn-danger">🗑️ Hesabımı Sil</button>
+            <div class="card" style="border: 2px solid #fee2e2;">
+              <div class="card-title" style="color: var(--danger);">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                Tehlikeli Bölge
+              </div>
+              <div class="card-subtitle">Hesabınızı silmek geri alınamaz</div>
+              <p style="font-size: 13px; color: var(--gray-700); margin-bottom: 20px; line-height: 1.6;">
+                Hesabınızı silerseniz tüm favorileriniz, kayıtlı aramalarınız ve tercihleriniz kalıcı olarak silinecektir. Bu işlem geri alınamaz.
+              </p>
+              <button onclick="deleteAccount()" class="btn btn-danger">Hesabımı Sil</button>
             </div>
           </div>
+
         </main>
       </div>
     </div>
@@ -434,111 +679,114 @@
     let currentUser;
     let currentProfile;
 
-    function esc(t) {
-      const d = document.createElement('div');
-      d.textContent = t || '';
-      return d.innerHTML;
-    }
+    function esc(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
 
     function toast(msg, type = 'success') {
       const t = document.createElement('div');
-      t.className = 'toast';
-      t.style.background = type === 'success' ? '#10b981' : '#ef4444';
+      t.className = `toast toast-${type}`;
       t.textContent = msg;
       document.body.appendChild(t);
-      setTimeout(() => t.remove(), 3000);
+      setTimeout(() => {
+        t.style.opacity = '0';
+        setTimeout(() => t.remove(), 300);
+      }, 3000);
     }
 
     function showMsg(id, text, type = 'success') {
       const el = document.getElementById(id);
-      el.innerHTML = `<div class="msg msg-${type}">${esc(text)}</div>`;
+      el.innerHTML = `<div class="alert alert-${type}">${esc(text)}</div>`;
       setTimeout(() => el.innerHTML = '', 4000);
     }
 
     async function init() {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-        auth: {
-          persistSession: true,
-          storageKey: 'ismailunsal-customer-session'
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+          auth: {
+            persistSession: true,
+            storageKey: 'ismailunsal-customer-session'
+          }
+        });
+
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          document.getElementById('heroTitle').textContent = 'Hesap Bilgileri';
+          document.getElementById('loginRequired').style.display = 'block';
+          return;
         }
-      });
 
-      const { data: { user } } = await supabase.auth.getUser();
+        // Admin kontrolü
+        const { data: adminCheck } = await supabase
+          .from('admin_users')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
 
-      if (!user) {
-        document.getElementById('loginRequired').style.display = 'block';
-        return;
-      }
+        if (adminCheck) {
+          document.getElementById('heroTitle').textContent = 'Admin Hesap';
+          document.getElementById('adminRedirect').style.display = 'block';
+          setTimeout(() => window.location.href = '/admin/index.html', 3000);
+          return;
+        }
 
-      // Admin kontrolü - Admin ise panele yönlendir
-      const { data: adminCheck } = await supabase
-        .from('admin_users')
-        .select('role')
-        .eq('id', user.id)
-        .maybeSingle();
+        currentUser = user;
 
-      if (adminCheck) {
-        // Admin, admin panele yönlendir
-        document.body.innerHTML = `
-          <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0a1929;color:white;text-align:center;padding:40px;">
-            <div>
-              <div style="font-size:60px;margin-bottom:20px;">🔐</div>
-              <h1 style="font-size:24px;margin-bottom:12px;">Bu hesap admin hesabıdır</h1>
-              <p style="opacity:0.8;margin-bottom:24px;">Müşteri hesap sayfası yerine admin paneline yönlendiriliyorsunuz...</p>
-              <a href="/admin/index.html" style="display:inline-block;background:#d4a54e;color:#0a1929;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;">Admin Panele Git →</a>
-            </div>
+        // Profile yükle (maybeSingle - hata vermez)
+        const { data: profile } = await supabase
+          .from('customer_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        // Profile yoksa oluştur
+        if (!profile) {
+          const { data: newProfile } = await supabase
+            .from('customer_profiles')
+            .insert({
+              id: user.id,
+              email: user.email,
+              full_name: user.user_metadata?.full_name || '',
+              language: user.user_metadata?.language || 'tr'
+            })
+            .select()
+            .maybeSingle();
+          currentProfile = newProfile || {};
+        } else {
+          currentProfile = profile;
+        }
+
+        renderProfile();
+        document.getElementById('accountContent').style.display = 'block';
+
+      } catch (err) {
+        console.error('Init error:', err);
+        document.getElementById('heroTitle').textContent = 'Bir Hata Oluştu';
+        document.getElementById('loginRequired').innerHTML = `
+          <div class="empty">
+            <h3>Bir hata oluştu</h3>
+            <p>${esc(err.message)}</p>
+            <a href="/" class="btn" style="margin-top:20px;">Ana Sayfaya Dön</a>
           </div>
         `;
-        setTimeout(() => window.location.href = '/admin/index.html', 2000);
-        return;
+        document.getElementById('loginRequired').style.display = 'block';
       }
+    }
 
-      currentUser = user;
-      document.getElementById('accountContent').style.display = 'block';
-
-      // Profile yükle (maybeSingle - profile yoksa null döner, hata vermez)
-      const { data: profile, error: profileErr } = await supabase
-        .from('customer_profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (profileErr) console.error('Profile load error:', profileErr);
-
-      // Profile yoksa oluştur
-      if (!profile) {
-        const { data: newProfile } = await supabase
-          .from('customer_profiles')
-          .insert({
-            id: user.id,
-            email: user.email,
-            full_name: user.user_metadata?.full_name || '',
-            language: user.user_metadata?.language || 'tr'
-          })
-          .select()
-          .single();
-        currentProfile = newProfile;
-      } else {
-        currentProfile = profile;
-      }
-
+    function renderProfile() {
       const p = currentProfile || {};
-
-      // Header'daki bilgileri doldur
-      const name = p.full_name || user.email.split('@')[0];
+      const name = p.full_name || currentUser.email.split('@')[0];
       const initial = name.charAt(0).toUpperCase();
 
       document.getElementById('userAvatar').textContent = initial;
       document.getElementById('userName').textContent = name;
-      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('heroTitle').textContent = `Merhaba, ${name}!`;
 
-      // Profile form
       const pf = document.getElementById('profileForm');
       pf.full_name.value = p.full_name || '';
       pf.phone.value = p.phone || '';
-      pf.email.value = user.email;
+      pf.email.value = currentUser.email;
 
-      // Preferences form
       const prf = document.getElementById('prefsForm');
       const kats = p.ilgi_kategoriler || [];
       prf.querySelectorAll('input[name="kat"]').forEach(cb => {
@@ -552,10 +800,10 @@
     }
 
     window.showTab = function(tab, el) {
-      document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-      document.getElementById(`tab-${tab}`).style.display = 'block';
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      el.classList.add('active');
+      if (el) el.classList.add('active');
 
       if (tab === 'favorites') loadFavorites();
       if (tab === 'searches') loadSearches();
@@ -563,41 +811,48 @@
 
     async function loadFavorites() {
       const container = document.getElementById('favoritesList');
-      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      container.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
 
-      const { data, error } = await supabase
-        .from('favorites')
-        .select('*, properties(id, baslik_tr, fiyat, kategori, tip, property_images(url, is_main))')
-        .eq('customer_id', currentUser.id)
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('favorites')
+          .select('*, properties(id, baslik_tr, fiyat, kategori, tip, property_images(url, is_main))')
+          .eq('customer_id', currentUser.id)
+          .order('created_at', { ascending: false });
 
-      if (error || !data?.length) {
-        container.innerHTML = `
-          <div class="empty">
-            <div class="empty-icon">💔</div>
-            <div>Henüz favori ilanınız yok</div>
-            <a href="/" class="btn" style="margin-top: 16px; display: inline-block;">İlanları İncele</a>
-          </div>
-        `;
-        return;
-      }
+        if (error) throw error;
 
-      container.innerHTML = data.map(f => {
-        const p = f.properties;
-        if (!p) return '';
-        const img = p.property_images?.find(i => i.is_main)?.url || p.property_images?.[0]?.url || '/placeholder.jpg';
-        return `
-          <div class="property-item">
-            <img src="${esc(img)}" alt="">
-            <div class="property-info">
-              <div class="property-title">${esc(p.baslik_tr)}</div>
-              <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">${esc(p.kategori)} • ${esc(p.tip)}</div>
-              <div class="property-price">${new Intl.NumberFormat('tr-TR').format(p.fiyat)} ₺</div>
+        if (!data?.length) {
+          container.innerHTML = `
+            <div class="empty">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <h3>Henüz favori ilanınız yok</h3>
+              <p style="margin-bottom: 24px;">İlanlarda kalp ikonuna tıklayarak favorilerinize ekleyebilirsiniz.</p>
+              <a href="/" class="btn">İlanları İncele</a>
             </div>
-            <button onclick="removeFavorite('${p.id}')" class="btn btn-outline" style="align-self: flex-start;">🗑️</button>
-          </div>
-        `;
-      }).join('');
+          `;
+          return;
+        }
+
+        container.innerHTML = data.map(f => {
+          const p = f.properties;
+          if (!p) return '';
+          const img = p.property_images?.find(i => i.is_main)?.url || p.property_images?.[0]?.url || '';
+          return `
+            <div style="display:flex;gap:16px;padding:16px;border:2px solid var(--gray-100);border-radius:14px;margin-bottom:12px;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--gray-100)'">
+              ${img ? `<img src="${esc(img)}" style="width:120px;height:90px;object-fit:cover;border-radius:10px;">` : ''}
+              <div style="flex:1;">
+                <div style="font-weight:700;color:var(--navy);margin-bottom:4px;">${esc(p.baslik_tr)}</div>
+                <div style="font-size:12px;color:var(--gray-500);">${esc(p.kategori)} • ${esc(p.tip)}</div>
+                <div style="color:var(--orange);font-weight:800;font-size:18px;margin-top:8px;">${new Intl.NumberFormat('tr-TR').format(p.fiyat)} ₺</div>
+              </div>
+              <button onclick="removeFavorite('${p.id}')" class="btn btn-outline" style="align-self:flex-start;padding:8px 14px;">Kaldır</button>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        container.innerHTML = `<div class="alert alert-error">Hata: ${esc(err.message)}</div>`;
+      }
     }
 
     window.removeFavorite = async function(propId) {
@@ -608,40 +863,46 @@
 
     async function loadSearches() {
       const container = document.getElementById('searchesList');
-      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      container.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
 
-      const { data, error } = await supabase
-        .from('saved_searches')
-        .select('*')
-        .eq('customer_id', currentUser.id)
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('saved_searches')
+          .select('*')
+          .eq('customer_id', currentUser.id)
+          .order('created_at', { ascending: false });
 
-      if (error || !data?.length) {
-        container.innerHTML = `
-          <div class="empty">
-            <div class="empty-icon">🔍</div>
-            <div>Henüz kayıtlı aramanız yok</div>
-            <p style="margin-top: 8px; font-size: 13px;">Ana sayfada arama yaparken "Bu aramayı kaydet" seçeneğini kullanın.</p>
+        if (error) throw error;
+
+        if (!data?.length) {
+          container.innerHTML = `
+            <div class="empty">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg>
+              <h3>Henüz kayıtlı aramanız yok</h3>
+              <p>Ana sayfada arama yaparken "Bu aramayı kaydet" seçeneğini kullanın.</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = data.map(s => `
+          <div style="display:flex;gap:16px;padding:16px;border:2px solid var(--gray-100);border-radius:14px;margin-bottom:12px;">
+            <div style="flex:1;">
+              <div style="font-weight:700;color:var(--navy);">${esc(s.arama_adi)}</div>
+              <div style="font-size:12px;color:var(--gray-500);margin-top:4px;">
+                ${(s.kategoriler || []).join(', ') || 'Tüm kategoriler'} •
+                ${s.min_fiyat ? new Intl.NumberFormat('tr-TR').format(s.min_fiyat) : '0'} - ${s.max_fiyat ? new Intl.NumberFormat('tr-TR').format(s.max_fiyat) : '∞'} ₺
+              </div>
+              <div style="font-size:12px;color:var(--gray-500);margin-top:4px;">
+                Bildirim: <strong>${esc(s.bildirim_sikligi)}</strong> ${s.bildirim_aktif ? '✓ Aktif' : '✗ Pasif'}
+              </div>
+            </div>
+            <button onclick="deleteSearch('${s.id}')" class="btn btn-outline" style="align-self:flex-start;">Sil</button>
           </div>
-        `;
-        return;
+        `).join('');
+      } catch (err) {
+        container.innerHTML = `<div class="alert alert-error">Hata: ${esc(err.message)}</div>`;
       }
-
-      container.innerHTML = data.map(s => `
-        <div class="property-item">
-          <div class="property-info">
-            <div class="property-title">${esc(s.arama_adi)}</div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">
-              ${(s.kategoriler || []).join(', ') || 'Tüm kategoriler'} •
-              ${s.min_fiyat ? new Intl.NumberFormat('tr-TR').format(s.min_fiyat) : '0'} - ${s.max_fiyat ? new Intl.NumberFormat('tr-TR').format(s.max_fiyat) : '∞'} ₺
-            </div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">
-              Bildirim: ${s.bildirim_sikligi} ${s.bildirim_aktif ? '✅' : '❌'}
-            </div>
-          </div>
-          <button onclick="deleteSearch('${s.id}')" class="btn btn-outline">🗑️</button>
-        </div>
-      `).join('');
     }
 
     window.deleteSearch = async function(id) {
@@ -651,6 +912,7 @@
       loadSearches();
     };
 
+    // Profile form
     document.getElementById('profileForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
@@ -661,11 +923,12 @@
 
       if (error) showMsg('profileMsg', 'Hata: ' + error.message, 'error');
       else {
-        showMsg('profileMsg', '✅ Profil güncellendi');
-        init();
+        showMsg('profileMsg', 'Profil güncellendi ✓', 'success');
+        toast('Profil güncellendi');
       }
     });
 
+    // Preferences form
     document.getElementById('prefsForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
@@ -681,49 +944,49 @@
       }).eq('id', currentUser.id);
 
       if (error) showMsg('prefsMsg', 'Hata: ' + error.message, 'error');
-      else showMsg('prefsMsg', '✅ Tercihler güncellendi');
+      else {
+        showMsg('prefsMsg', 'Tercihler güncellendi ✓', 'success');
+        toast('Tercihler güncellendi');
+      }
     });
 
+    // Password form
     document.getElementById('passwordForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
       const newPass = fd.get('new_password');
       const confirmPass = fd.get('confirm_password');
 
-      if (newPass !== confirmPass) {
-        showMsg('passwordMsg', 'Şifreler eşleşmiyor', 'error');
-        return;
-      }
-      if (newPass.length < 8) {
-        showMsg('passwordMsg', 'Şifre en az 8 karakter olmalı', 'error');
-        return;
-      }
+      if (newPass !== confirmPass) return showMsg('passwordMsg', 'Şifreler eşleşmiyor', 'error');
+      if (newPass.length < 8) return showMsg('passwordMsg', 'Şifre en az 8 karakter olmalı', 'error');
 
       const { error } = await supabase.auth.updateUser({ password: newPass });
       if (error) showMsg('passwordMsg', 'Hata: ' + error.message, 'error');
       else {
-        showMsg('passwordMsg', '✅ Şifre güncellendi');
+        showMsg('passwordMsg', 'Şifre güncellendi ✓', 'success');
         e.target.reset();
       }
     });
+
+    window.handleLogout = async function() {
+      if (!confirm('Çıkış yapmak istediğinize emin misiniz?')) return;
+      await supabase.auth.signOut();
+      window.location.href = '/';
+    };
 
     window.deleteAccount = async function() {
       if (!confirm('Hesabınızı silmek istediğinize EMİN misiniz? Bu işlem GERİ ALINAMAZ!')) return;
       if (!confirm('Son onay: Tüm favorileriniz, aramalarınız silinecek. Devam edilsin mi?')) return;
 
-      // Profile'ı sil (auth user'ı manuel silmek gerekir - şimdilik profile sil)
       const { error } = await supabase.from('customer_profiles').delete().eq('id', currentUser.id);
-
-      if (error) {
-        alert('Hata: ' + error.message);
-        return;
-      }
+      if (error) return alert('Hata: ' + error.message);
 
       await supabase.auth.signOut();
-      alert('✅ Hesabınız silindi. Ana sayfaya yönlendiriliyorsunuz.');
+      alert('Hesabınız silindi. Ana sayfaya yönlendiriliyorsunuz.');
       window.location.href = '/';
     };
 
+    // Init
     init();
   </script>
 </body>
