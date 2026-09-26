@@ -311,12 +311,28 @@
       <a href="blog.html" data-i18n="nav.blog">BLOG</a>
       <a href="hakkimizda.html" data-i18n="nav.hakkimizda">HAKKIMIZDA</a>
       <a href="iletisim.html" data-i18n="nav.iletisim">İLETİŞİM</a>
+      <!-- Auth butonları: nav içinde, mobile'da hamburger ile beraber açılır -->
+      <div data-iu-auth class="nav-auth"></div>
     </nav>
     <div class="header-cta">
       <a href="tel:+905075188482" class="btn-call"><i class="fa-solid fa-phone"></i> <span data-i18n="nav.cta">HEMEN ARA</span></a>
-      <div data-iu-auth style="display:inline-flex;"></div>
       <button class="menu-toggle" onclick="document.getElementById('mainNav').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
     </div>
+
+    <style>
+      /* Auth butonları: nav içinde konumlanır */
+      .nav-auth { display: inline-flex; gap: 8px; align-items: center; margin-left: 12px; }
+      .nav-auth .iu-authbar { gap: 6px; }
+      .nav-auth .iu-authbar-btn { padding: 8px 14px; font-size: 12px; }
+
+      /* Mobile: nav açıldığında (hamburger tıklanınca) auth butonları dikey */
+      @media (max-width: 900px) {
+        .nav-auth { display: block !important; margin: 12px 0 0 0; width: 100%; padding-top: 12px; border-top: 1px solid rgba(10,42,94,0.1); }
+        .nav-auth .iu-authbar { flex-direction: column !important; gap: 8px; width: 100%; }
+        .nav-auth .iu-authbar-btn { width: 100%; padding: 12px 16px; font-size: 14px; justify-content: center; }
+        .nav-auth .iu-authbar-user { width: 100%; justify-content: center; }
+      }
+    </style>
   </div>
 </header>
 
