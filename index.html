@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- FAVICON -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="shortcut icon" href="/favicon.ico">
+<meta name="theme-color" content="#0A2A5E">
+
 <title>Yalova Emlak | ÜNSAL Gayrimenkul - Satılık & Kiralık Daire, Arsa</title>
 <meta name="description" content="Yalova'nın en güvenilir gayrimenkul danışmanı. Satılık daire, kiralık ev, arsa ve lüks villa için ÜNSAL Gayrimenkul - Turyap güvencesinde profesyonel hizmet.">
 <meta name="keywords" content="yalova emlak, yalova satılık daire, yalova kiralık, yalova arsa, çınarcık emlak, termal gayrimenkul, ünsal gayrimenkul">
@@ -375,6 +383,64 @@
       .topbar-auth .iu-authbar-name {
         color: #FFFFFF !important;
         font-size: 11px !important;
+      }
+
+      /* ============================================ */
+      /* DROPDOWN MENÜ (Kullanıcı Menüsü) — Beyaz bg, koyu yazı */
+      /* .top-bar override'ını yenmek için !important */
+      /* ============================================ */
+      .topbar-auth .iu-user-menu {
+        background: #ffffff !important;
+        border: 1px solid #e5e7eb !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+        top: calc(100% + 12px) !important;
+        min-width: 240px !important;
+      }
+      .topbar-auth .iu-user-menu-header {
+        background: #f9fafb !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        padding: 14px 16px !important;
+      }
+      .topbar-auth .iu-user-menu-header > div {
+        color: #0a1929 !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+      }
+      .topbar-auth .iu-user-menu-email {
+        color: #6b7280 !important;
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        margin-top: 2px !important;
+      }
+      /* Menü linkleri - KOYU RENK ZORLAMA */
+      .topbar-auth .iu-user-menu a,
+      .top-bar .iu-user-menu a {
+        color: #0a1929 !important;
+        background: #ffffff !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        text-decoration: none !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+      }
+      .topbar-auth .iu-user-menu a:hover,
+      .top-bar .iu-user-menu a:hover {
+        background: #f3f4f6 !important;
+        color: #0a1929 !important;
+      }
+      .topbar-auth .iu-user-menu-logout,
+      .top-bar .iu-user-menu-logout {
+        color: #ef4444 !important;
+      }
+      .topbar-auth .iu-user-menu-logout:hover,
+      .top-bar .iu-user-menu-logout:hover {
+        background: #fef2f2 !important;
+        color: #dc2626 !important;
+      }
+      .topbar-auth .iu-user-menu-divider {
+        background: #e5e7eb !important;
+        height: 1px !important;
       }
 
       /* Mobile: sadece kompakt "Giriş" göster, taşma olmasın */
