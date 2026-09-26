@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Dashboard - Admin Panel</title>
+
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">Dashboard</h1>
+        <div class="topbar-actions">
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="stat-icon">🏡</div>
+            <div class="stat-value" id="statProperties">-</div>
+            <div class="stat-label">Aktif İlan</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">💬</div>
+            <div class="stat-value" id="statLeads">-</div>
+            <div class="stat-label">Yeni Mesaj</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">👁️</div>
+            <div class="stat-value" id="statViews">-</div>
+            <div class="stat-label">Toplam Görüntülenme</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-value" id="statBlog">-</div>
+            <div class="stat-label">Blog Yazısı</div>
+          </div>
+        </div>
+
+        <!-- İki kolon: Son ilanlar + Son mesajlar -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;" id="dashGrid">
+
+          <!-- Son İlanlar -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📋 Son Eklenen İlanlar</div>
+                <div class="card-subtitle">Son 5 ilan</div>
+              </div>
+              <a href="/admin/properties.html" class="btn btn-outline btn-sm">Tümü →</a>
+            </div>
+            <div id="recentProperties">
+              <div class="loading">Yükleniyor...</div>
+            </div>
+          </div>
+
+          <!-- Son Mesajlar -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">💌 Son Müşteri Mesajları</div>
+                <div class="card-subtitle">Yeni gelen mesajlar</div>
+              </div>
+              <a href="/admin/leads.html" class="btn btn-outline btn-sm">Tümü →</a>
+            </div>
+            <div id="recentLeads">
+              <div class="loading">Yükleniyor...</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">⚡ Hızlı İşlemler</div>
+              <div class="card-subtitle">En sık kullanılan aksiyonlar</div>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+            <a href="/admin/property-new.html" class="btn btn-primary">
+              ➕ Yeni İlan Ekle
+            </a>
+            <a href="/admin/site-content.html" class="btn btn-outline">
+              🎨 Ana Sayfayı Düzenle
+            </a>
+            <a href="/admin/team.html" class="btn btn-outline">
+              👥 Ekip Yönetimi
+            </a>
+            <a href="/admin/leads.html" class="btn btn-outline">
+              💬 Mesajlara Bak
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    (async () => {
+      // Sayfa başlat
+      const authed = await App.init('dashboard');
+      if (!authed) return;
+
+      // İstatistikleri yükle
+      loadStats();
+      loadRecentProperties();
+      loadRecentLeads();
+    })();
+
+    async function loadStats() {
+      try {
+        // Properties
+        const { count: propCount } = await supabaseClient
+          .from('properties')
+          .select('*', { count: 'exact', head: true })
+          .eq('durum', 'aktif');
+        document.getElementById('statProperties').textContent = propCount || 0;
+
+        // Leads
+        const { count: leadCount } = await supabaseClient
+          .from('leads')
+          .select('*', { count: 'exact', head: true })
+          .eq('durum', 'yeni');
+        document.getElementById('statLeads').textContent = leadCount || 0;
+
+        // Total views
+        const { data: propsData } = await supabaseClient
+          .from('properties')
+          .select('goruntulenme');
+        const totalViews = (propsData || []).reduce((sum, p) => sum + (p.goruntulenme || 0), 0);
+        document.getElementById('statViews').textContent = totalViews.toLocaleString('tr-TR');
+
+        // Blog
+        const { count: blogCount } = await supabaseClient
+          .from('blog_posts')
+          .select('*', { count: 'exact', head: true })
+          .eq('durum', 'yayinda');
+        document.getElementById('statBlog').textContent = blogCount || 0;
+
+      } catch (error) {
+        console.error('Stats error:', error);
+      }
+    }
+
+    async function loadRecentProperties() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('properties')
+          .select('id, baslik_tr, fiyat, para_birimi, tip, kategori, ilce, durum, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5);
+
+        if (error) throw error;
+
+        const container = document.getElementById('recentProperties');
+        if (!data || data.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">🏡</div>
+              <div>Henüz ilan yok</div>
+              <a href="/admin/property-new.html" class="btn btn-primary btn-sm" style="margin-top: 16px;">İlk İlanı Ekle</a>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="table-container" style="border: none;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>İlan</th>
+                  <th>Fiyat</th>
+                  <th>Durum</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.map(p => `
+                  <tr onclick="window.location.href='/admin/property-edit.html?id=${p.id}'" style="cursor:pointer;">
+                    <td>
+                      <div style="font-weight: 600;">${Security.escapeHtml(p.baslik_tr || 'İsimsiz')}</div>
+                      <div style="font-size: 12px; color: var(--text-muted);">
+                        ${Security.escapeHtml(p.ilce || '-')} • ${Security.escapeHtml(p.tip)}
+                      </div>
+                    </td>
+                    <td style="font-weight: 700; color: var(--accent-dark);">
+                      ${App.formatPrice(p.fiyat, p.para_birimi)}
+                    </td>
+                    <td>
+                      <span class="badge badge-${p.durum === 'aktif' ? 'success' : 'gray'}">
+                        ${Security.escapeHtml(p.durum)}
+                      </span>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Recent properties error:', error);
+        document.getElementById('recentProperties').innerHTML = '<div class="alert alert-error">Yükleme hatası</div>';
+      }
+    }
+
+    async function loadRecentLeads() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('leads')
+          .select('id, isim, telefon, email, mesaj, durum, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5);
+
+        if (error) throw error;
+
+        const container = document.getElementById('recentLeads');
+        if (!data || data.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">💬</div>
+              <div>Henüz mesaj yok</div>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = data.map(l => `
+          <div style="padding: 12px; border-bottom: 1px solid var(--border);" onclick="window.location.href='/admin/leads.html#${l.id}'" ${l.durum === 'yeni' ? 'style="background:#fef3c7;cursor:pointer;"' : 'style="cursor:pointer;"'}>
+            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:4px;">
+              <div style="font-weight: 600;">${Security.escapeHtml(l.isim || 'İsimsiz')}</div>
+              <span class="badge badge-${l.durum === 'yeni' ? 'warning' : 'gray'}">${Security.escapeHtml(l.durum)}</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">
+              📞 ${Security.escapeHtml(l.telefon || '-')} • ${App.timeAgo(l.created_at)}
+            </div>
+            <div style="font-size: 13px; color: var(--text-primary);">
+              ${Security.escapeHtml((l.mesaj || '').substring(0, 100))}${(l.mesaj || '').length > 100 ? '...' : ''}
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Recent leads error:', error);
+        document.getElementById('recentLeads').innerHTML = '<div class="alert alert-error">Yükleme hatası</div>';
+      }
+    }
+
+    // Responsive
+    if (window.innerWidth < 900) {
+      document.getElementById('dashGrid').style.gridTemplateColumns = '1fr';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Ekip - Admin Panel</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">👥 Ekip Yönetimi</h1>
+        <div class="topbar-actions">
+          <button onclick="openAddModal()" class="btn btn-primary btn-sm">➕ Yeni Üye</button>
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div id="teamList">
+          <div class="loading">Yükleniyor...</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div id="memberModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: white; border-radius: var(--radius-lg); max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;">
+      <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 18px; font-weight: 700;" id="modalTitle">Yeni Ekip Üyesi</div>
+        <button onclick="closeModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+      </div>
+
+      <form id="memberForm" style="padding: 20px;">
+        <input type="hidden" name="id" id="memberId">
+
+        <div class="form-group">
+          <label class="form-label">Fotoğraf</label>
+          <input type="file" id="photoFile" accept="image/*" class="form-input">
+          <div id="photoPreview" style="margin-top: 8px;"></div>
+          <input type="hidden" name="fotograf_url" id="photoUrl">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">İsim <span class="required">*</span></label>
+          <input type="text" name="isim" class="form-input" required maxlength="100">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Pozisyon (TR) <span class="required">*</span></label>
+            <input type="text" name="pozisyon_tr" class="form-input" required maxlength="100">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Pozisyon (EN)</label>
+            <input type="text" name="pozisyon_en" class="form-input" maxlength="100">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Telefon</label>
+            <input type="tel" name="telefon" class="form-input" maxlength="20">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-input" maxlength="100">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">WhatsApp</label>
+            <input type="text" name="whatsapp" class="form-input" maxlength="20" placeholder="905075188482">
+          </div>
+          <div class="form-group">
+            <label class="form-label">LinkedIn</label>
+            <input type="url" name="linkedin" class="form-input" maxlength="200">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Biyografi (TR)</label>
+          <textarea name="biyografi_tr" class="form-textarea" maxlength="2000"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Sıra</label>
+            <input type="number" name="sira" class="form-input" min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Aktif</label>
+            <label class="form-checkbox" style="margin-top: 12px;">
+              <input type="checkbox" name="aktif" checked> Sitede göster
+            </label>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+          <button type="button" onclick="closeModal()" class="btn btn-outline">İptal</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">💾 Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    let members = [];
+
+    (async () => {
+      const authed = await App.init('team');
+      if (!authed) return;
+      await loadTeam();
+    })();
+
+    async function loadTeam() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('team_members')
+          .select('*')
+          .order('sira', { ascending: true });
+
+        if (error) throw error;
+        members = data || [];
+        renderTeam();
+      } catch (error) {
+        document.getElementById('teamList').innerHTML =
+          '<div class="alert alert-error">Hata: ' + Security.escapeHtml(error.message) + '</div>';
+      }
+    }
+
+    function renderTeam() {
+      const container = document.getElementById('teamList');
+
+      if (members.length === 0) {
+        container.innerHTML = `
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-icon">👥</div>
+              <div>Henüz ekip üyesi yok</div>
+              <button onclick="openAddModal()" class="btn btn-primary btn-sm" style="margin-top: 16px;">İlk Üyeyi Ekle</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+          ${members.map(m => `
+            <div class="card" style="${!m.aktif ? 'opacity: 0.5;' : ''}">
+              <div style="display: flex; gap: 16px; margin-bottom: 12px;">
+                ${m.fotograf_url
+                  ? `<img src="${Security.escapeHtml(m.fotograf_url)}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">`
+                  : `<div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; font-weight: 700;">${m.isim.charAt(0)}</div>`
+                }
+                <div style="flex: 1;">
+                  <div style="font-weight: 700; font-size: 16px;">${Security.escapeHtml(m.isim)}</div>
+                  <div style="color: var(--text-muted); font-size: 13px;">${Security.escapeHtml(m.pozisyon_tr)}</div>
+                  ${m.telefon ? `<div style="font-size: 12px; margin-top: 4px;">📞 ${Security.escapeHtml(m.telefon)}</div>` : ''}
+                </div>
+              </div>
+
+              ${!m.aktif ? '<div class="badge badge-gray" style="margin-bottom: 8px;">Pasif</div>' : ''}
+
+              <div style="display: flex; gap: 8px;">
+                <button onclick="editMember('${m.id}')" class="btn btn-outline btn-sm">✏️ Düzenle</button>
+                <button onclick="deleteMember('${m.id}', '${Security.escapeHtml(m.isim)}')" class="btn btn-danger btn-sm">🗑️</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Yeni Ekip Üyesi';
+      document.getElementById('memberForm').reset();
+      document.getElementById('memberId').value = '';
+      document.getElementById('photoUrl').value = '';
+      document.getElementById('photoPreview').innerHTML = '';
+      document.getElementById('memberModal').style.display = 'flex';
+    }
+    window.openAddModal = openAddModal;
+
+    function editMember(id) {
+      const m = members.find(x => x.id === id);
+      if (!m) return;
+
+      document.getElementById('modalTitle').textContent = 'Üye Düzenle';
+      document.getElementById('memberId').value = m.id;
+
+      const form = document.getElementById('memberForm');
+      Object.keys(m).forEach(key => {
+        const field = form.elements[key];
+        if (field) {
+          if (field.type === 'checkbox') {
+            field.checked = m[key];
+          } else {
+            field.value = m[key] || '';
+          }
+        }
+      });
+
+      document.getElementById('photoUrl').value = m.fotograf_url || '';
+      if (m.fotograf_url) {
+        document.getElementById('photoPreview').innerHTML =
+          `<img src="${Security.escapeHtml(m.fotograf_url)}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">`;
+      }
+
+      document.getElementById('memberModal').style.display = 'flex';
+    }
+    window.editMember = editMember;
+
+    function closeModal() {
+      document.getElementById('memberModal').style.display = 'none';
+    }
+    window.closeModal = closeModal;
+
+    async function deleteMember(id, name) {
+      const confirmed = await App.confirm(`"${name}" adlı üyeyi silmek istediğinize emin misiniz?`);
+      if (!confirmed) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('team_members')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        App.toast('Üye silindi', 'success');
+        await loadTeam();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    }
+    window.deleteMember = deleteMember;
+
+    // Photo upload
+    document.getElementById('photoFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 5 * 1024 * 1024) {
+        App.toast('Foto 5MB\'dan büyük', 'error');
+        return;
+      }
+
+      try {
+        const ext = file.name.split('.').pop();
+        const filename = `team/${Date.now()}.${ext}`;
+
+        const { error: uploadError } = await supabaseClient
+          .storage
+          .from('team-photos')
+          .upload(filename, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabaseClient
+          .storage
+          .from('team-photos')
+          .getPublicUrl(filename);
+
+        document.getElementById('photoUrl').value = urlData.publicUrl;
+        document.getElementById('photoPreview').innerHTML =
+          `<img src="${urlData.publicUrl}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">`;
+
+        App.toast('Foto yüklendi', 'success');
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    });
+
+    // Form submit
+    document.getElementById('memberForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Kaydediliyor...';
+
+      try {
+        const fd = new FormData(e.target);
+        const data = {
+          isim: Security.sanitizeInput(fd.get('isim'), { maxLength: 100 }),
+          pozisyon_tr: Security.sanitizeInput(fd.get('pozisyon_tr'), { maxLength: 100 }),
+          pozisyon_en: Security.sanitizeInput(fd.get('pozisyon_en'), { maxLength: 100 }) || null,
+          telefon: fd.get('telefon') || null,
+          email: fd.get('email') || null,
+          whatsapp: fd.get('whatsapp') || null,
+          linkedin: fd.get('linkedin') || null,
+          biyografi_tr: Security.sanitizeInput(fd.get('biyografi_tr'), { maxLength: 2000 }) || null,
+          fotograf_url: fd.get('fotograf_url') || null,
+          sira: parseInt(fd.get('sira')) || 0,
+          aktif: fd.get('aktif') === 'on'
+        };
+
+        const id = fd.get('id');
+        let error;
+
+        if (id) {
+          const result = await supabaseClient
+            .from('team_members')
+            .update(data)
+            .eq('id', id);
+          error = result.error;
+        } else {
+          const result = await supabaseClient
+            .from('team_members')
+            .insert(data);
+          error = result.error;
+        }
+
+        if (error) throw error;
+
+        App.toast(id ? 'Üye güncellendi' : 'Üye eklendi', 'success');
+        closeModal();
+        await loadTeam();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 Kaydet';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Mesajlar - Admin Panel</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">💬 Müşteri Mesajları</h1>
+        <div class="topbar-actions">
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- Filter -->
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Durum</label>
+              <select id="filterDurum" class="form-select">
+                <option value="">Tümü</option>
+                <option value="yeni">Yeni</option>
+                <option value="aranildi">Arandı</option>
+                <option value="gorusme">Görüşme Yapılıyor</option>
+                <option value="satildi">Satıldı</option>
+                <option value="takip">Takip</option>
+                <option value="spam">Spam</option>
+                <option value="kapali">Kapalı</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Arama</label>
+              <input type="text" id="searchInput" class="form-input" placeholder="İsim, telefon...">
+            </div>
+          </div>
+        </div>
+
+        <!-- Mesajlar -->
+        <div id="leadsList">
+          <div class="loading">Yükleniyor...</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    let allLeads = [];
+
+    (async () => {
+      const authed = await App.init('leads');
+      if (!authed) return;
+
+      await loadLeads();
+      setupFilters();
+    })();
+
+    async function loadLeads() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('leads')
+          .select('*, properties(baslik_tr, fiyat, para_birimi)')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        allLeads = data || [];
+        renderLeads(allLeads);
+      } catch (error) {
+        console.error('Load error:', error);
+        document.getElementById('leadsList').innerHTML =
+          '<div class="alert alert-error">Yükleme hatası: ' + Security.escapeHtml(error.message) + '</div>';
+      }
+    }
+
+    function renderLeads(leads) {
+      const container = document.getElementById('leadsList');
+
+      if (leads.length === 0) {
+        container.innerHTML = `
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-icon">💬</div>
+              <div>Henüz mesaj yok</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = leads.map(l => `
+        <div class="card" style="margin-bottom: 12px; ${l.durum === 'yeni' ? 'border-left: 4px solid var(--warning);' : ''}">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <div>
+              <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">
+                ${Security.escapeHtml(l.isim || 'İsimsiz')}
+              </div>
+              <div style="color: var(--text-muted); font-size: 13px;">
+                📅 ${App.timeAgo(l.created_at)} • ${App.formatDate(l.created_at, true)}
+              </div>
+            </div>
+            <select onchange="updateStatus('${l.id}', this.value)" class="form-select" style="width: auto;">
+              ${['yeni','aranildi','gorusme','satildi','takip','spam','kapali'].map(s =>
+                `<option value="${s}" ${l.durum === s ? 'selected' : ''}>${s}</option>`
+              ).join('')}
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
+            ${l.telefon ? `
+              <div>
+                <div style="color: var(--text-muted); font-size: 11px; text-transform: uppercase;">Telefon</div>
+                <div style="font-weight: 600;">
+                  <a href="tel:${Security.escapeHtml(l.telefon)}" style="color: var(--accent-dark); text-decoration: none;">
+                    📞 ${Security.escapeHtml(l.telefon)}
+                  </a>
+                </div>
+              </div>
+            ` : ''}
+
+            ${l.email ? `
+              <div>
+                <div style="color: var(--text-muted); font-size: 11px; text-transform: uppercase;">Email</div>
+                <div style="font-weight: 600;">
+                  <a href="mailto:${Security.escapeHtml(l.email)}" style="color: var(--accent-dark); text-decoration: none;">
+                    📧 ${Security.escapeHtml(l.email)}
+                  </a>
+                </div>
+              </div>
+            ` : ''}
+
+            ${l.properties ? `
+              <div>
+                <div style="color: var(--text-muted); font-size: 11px; text-transform: uppercase;">İlgili İlan</div>
+                <div style="font-weight: 600;">
+                  🏡 ${Security.escapeHtml(l.properties.baslik_tr)}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+
+          ${l.mesaj ? `
+            <div style="background: var(--bg); padding: 12px; border-radius: var(--radius); margin-bottom: 12px;">
+              <div style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; margin-bottom: 4px;">Mesaj</div>
+              <div style="white-space: pre-wrap;">${Security.escapeHtml(l.mesaj)}</div>
+            </div>
+          ` : ''}
+
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            ${l.telefon ? `
+              <a href="tel:${Security.escapeHtml(l.telefon)}" class="btn btn-success btn-sm">📞 Ara</a>
+              <a href="https://wa.me/${Security.escapeHtml(l.telefon.replace(/\D/g, ''))}" target="_blank" class="btn btn-outline btn-sm">💬 WhatsApp</a>
+            ` : ''}
+            ${l.email ? `
+              <a href="mailto:${Security.escapeHtml(l.email)}" class="btn btn-outline btn-sm">📧 Email</a>
+            ` : ''}
+            <button onclick="deleteLead('${l.id}')" class="btn btn-danger btn-sm">🗑️ Sil</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function updateStatus(id, newStatus) {
+      try {
+        const { error } = await supabaseClient
+          .from('leads')
+          .update({ durum: newStatus })
+          .eq('id', id);
+
+        if (error) throw error;
+        App.toast('Durum güncellendi', 'success');
+        await loadLeads();
+      } catch (error) {
+        console.error(error);
+        App.toast(error.message, 'error');
+      }
+    }
+    window.updateStatus = updateStatus;
+
+    async function deleteLead(id) {
+      const confirmed = await App.confirm('Bu mesajı silmek istediğinize emin misiniz?');
+      if (!confirmed) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('leads')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        App.toast('Mesaj silindi', 'success');
+        await loadLeads();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    }
+    window.deleteLead = deleteLead;
+
+    function setupFilters() {
+      document.getElementById('filterDurum').addEventListener('change', applyFilter);
+      document.getElementById('searchInput').addEventListener('input', applyFilter);
+    }
+
+    function applyFilter() {
+      const durum = document.getElementById('filterDurum').value;
+      const search = document.getElementById('searchInput').value.toLowerCase();
+
+      const filtered = allLeads.filter(l => {
+        if (durum && l.durum !== durum) return false;
+        if (search) {
+          const text = `${l.isim} ${l.telefon} ${l.email} ${l.mesaj}`.toLowerCase();
+          if (!text.includes(search)) return false;
+        }
+        return true;
+      });
+
+      renderLeads(filtered);
+    }
+  </script>
+</body>
+</html>

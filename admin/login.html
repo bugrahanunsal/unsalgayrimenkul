@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin Girişi - İsmail Ünsal Emlak</title>
+
+  <!-- Security Headers -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="login-page">
+
+  <div class="login-container">
+    <div class="login-header">
+      <div class="login-logo">TURYAP</div>
+      <div class="login-subtitle">Yönetim Paneli</div>
+    </div>
+
+    <form id="loginForm" class="login-form" autocomplete="on">
+      <div id="alertBox"></div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">
+          E-posta Adresi <span class="required">*</span>
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-input"
+          placeholder="ornek@gmail.com"
+          required
+          autocomplete="email"
+          maxlength="100"
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">
+          Şifre <span class="required">*</span>
+        </label>
+        <div class="password-wrapper">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-input"
+            placeholder="••••••••"
+            required
+            autocomplete="current-password"
+            minlength="8"
+            maxlength="128"
+          >
+          <button type="button" class="password-toggle" id="togglePassword" aria-label="Şifreyi göster/gizle">
+            👁️
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="loginBtn">
+        <span id="btnText">Giriş Yap</span>
+        <span id="btnLoader" class="spinner" style="display: none;"></span>
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <div class="security-badge">
+        🛡️ SSL Şifreli & KVKK Uyumlu
+      </div>
+      <div>İsmail Ünsal Emlak © 2026 | Yalova</div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+
+  <script>
+    // Password toggle
+    document.getElementById('togglePassword').addEventListener('click', () => {
+      const input = document.getElementById('password');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+
+    // URL'den reason parametresini al (session expired vb.)
+    const urlParams = new URLSearchParams(window.location.search);
+    const reason = urlParams.get('reason');
+    if (reason) {
+      showAlert('warning', decodeURIComponent(reason));
+    }
+
+    // Zaten giriş yapmışsa dashboard'a yönlendir
+    (async () => {
+      const validation = await Security.validateSession();
+      if (validation.valid) {
+        window.location.href = '/admin/index.html';
+      }
+    })();
+
+    // Alert göster
+    function showAlert(type, message) {
+      const box = document.getElementById('alertBox');
+      const icons = { error: '❌', success: '✅', warning: '⚠️', info: 'ℹ️' };
+      box.innerHTML = `
+        <div class="alert alert-${type}">
+          <span>${icons[type] || ''}</span>
+          <span>${Security.escapeHtml(message)}</span>
+        </div>
+      `;
+      setTimeout(() => { box.innerHTML = ''; }, 5000);
+    }
+
+    // Login form submit
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('loginBtn');
+      const btnText = document.getElementById('btnText');
+      const btnLoader = document.getElementById('btnLoader');
+
+      // UI Loading
+      btn.disabled = true;
+      btnText.textContent = 'Giriş yapılıyor...';
+      btnLoader.style.display = 'inline-block';
+
+      try {
+        const result = await Auth.login(email, password);
+
+        if (result.success) {
+          btnText.textContent = 'Giriş başarılı, yönlendiriliyor...';
+          showAlert('success', `Hoş geldiniz! ${result.user.email}`);
+
+          setTimeout(() => {
+            window.location.href = '/admin/index.html';
+          }, 1000);
+        } else {
+          showAlert('error', result.error);
+          btn.disabled = false;
+          btnText.textContent = 'Giriş Yap';
+          btnLoader.style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showAlert('error', 'Bir hata oluştu, tekrar deneyin');
+        btn.disabled = false;
+        btnText.textContent = 'Giriş Yap';
+        btnLoader.style.display = 'none';
+      }
+    });
+
+    // Enter tuşu ile submit
+    document.getElementById('password').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('loginForm').requestSubmit();
+      }
+    });
+  </script>
+</body>
+</html>

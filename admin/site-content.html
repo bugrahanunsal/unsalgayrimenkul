@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Site İçeriği - Admin Panel</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .lang-tabs { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 2px solid var(--border); }
+    .lang-tab { padding: 8px 16px; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; font-weight: 600; color: var(--text-muted); }
+    .lang-tab.active { color: var(--accent-dark); border-color: var(--accent); }
+    .lang-content { display: none; }
+    .lang-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">🎨 Site İçeriği Editörü</h1>
+        <div class="topbar-actions">
+          <a href="https://ismailunsal.com.tr" target="_blank" class="btn btn-outline btn-sm">🌐 Siteyi Aç</a>
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="alert alert-info" style="margin-bottom: 20px;">
+          ℹ️ Burada yaptığın değişiklikler sitede otomatik güncellenir. Her sayfa için farklı içerik bölümleri var.
+        </div>
+
+        <!-- Sayfa Seçimi -->
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="form-group">
+            <label class="form-label">Sayfa Seçin</label>
+            <select id="pageSelect" class="form-select">
+              <option value="homepage">🏠 Ana Sayfa</option>
+              <option value="about">💡 Hakkımızda</option>
+              <option value="contact">📞 İletişim</option>
+              <option value="services">🏆 Hizmetler</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- İçerik Listesi -->
+        <div id="contentSections">
+          <div class="loading">Yükleniyor...</div>
+        </div>
+
+        <div style="margin-top: 20px; text-align: right;">
+          <button onclick="addNewSection()" class="btn btn-outline">➕ Yeni Bölüm Ekle</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    let currentPage = 'homepage';
+    let sections = [];
+
+    (async () => {
+      const authed = await App.init('site-content');
+      if (!authed) return;
+
+      await loadContent();
+
+      document.getElementById('pageSelect').addEventListener('change', async (e) => {
+        currentPage = e.target.value;
+        await loadContent();
+      });
+    })();
+
+    async function loadContent() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('site_content')
+          .select('*')
+          .eq('sayfa', currentPage)
+          .order('sira', { ascending: true });
+
+        if (error) throw error;
+        sections = data || [];
+        renderContent();
+      } catch (error) {
+        document.getElementById('contentSections').innerHTML =
+          '<div class="alert alert-error">' + Security.escapeHtml(error.message) + '</div>';
+      }
+    }
+
+    function renderContent() {
+      const container = document.getElementById('contentSections');
+
+      if (sections.length === 0) {
+        container.innerHTML = `
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-icon">📄</div>
+              <div>Bu sayfa için içerik yok</div>
+              <button onclick="addNewSection()" class="btn btn-primary btn-sm" style="margin-top: 16px;">İlk Bölümü Ekle</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = sections.map(s => `
+        <div class="card" style="margin-bottom: 16px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">${Security.escapeHtml(s.bolum_key)}</div>
+              <div class="card-subtitle">Sıra: ${s.sira} • ${s.aktif ? 'Aktif' : 'Pasif'}</div>
+            </div>
+            <button onclick="deleteSection('${s.id}', '${Security.escapeHtml(s.bolum_key)}')" class="btn btn-danger btn-sm">🗑️</button>
+          </div>
+
+          <div class="lang-tabs">
+            <button class="lang-tab active" onclick="switchLang(this, '${s.id}', 'tr')">🇹🇷 TR</button>
+            <button class="lang-tab" onclick="switchLang(this, '${s.id}', 'en')">🇬🇧 EN</button>
+            <button class="lang-tab" onclick="switchLang(this, '${s.id}', 'de')">🇩🇪 DE</button>
+            <button class="lang-tab" onclick="switchLang(this, '${s.id}', 'fr')">🇫🇷 FR</button>
+            <button class="lang-tab" onclick="switchLang(this, '${s.id}', 'ru')">🇷🇺 RU</button>
+          </div>
+
+          ${['tr','en','de','fr','ru'].map(lang => `
+            <div class="lang-content ${lang === 'tr' ? 'active' : ''}" data-lang="${lang}" data-section="${s.id}">
+              <textarea
+                id="content-${s.id}-${lang}"
+                class="form-textarea"
+                data-original="${Security.escapeHtml(s['icerik_' + lang] || '')}"
+                placeholder="${lang.toUpperCase()} içeriği...">${Security.escapeHtml(s['icerik_' + lang] || '')}</textarea>
+            </div>
+          `).join('')}
+
+          <div style="margin-top: 12px;">
+            <label class="form-label">Görsel URL (opsiyonel)</label>
+            <input type="text" id="photo-${s.id}" class="form-input" value="${Security.escapeHtml(s.foto_url || '')}" placeholder="https://...">
+            <input type="file" id="photoFile-${s.id}" accept="image/*" style="display: none;" onchange="uploadSectionPhoto('${s.id}', this)">
+            <button onclick="document.getElementById('photoFile-${s.id}').click()" class="btn btn-outline btn-sm" style="margin-top: 8px;">📷 Foto Yükle</button>
+          </div>
+
+          <div style="margin-top: 16px; text-align: right;">
+            <button onclick="saveSection('${s.id}')" class="btn btn-primary btn-sm">💾 Kaydet</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function switchLang(btn, sectionId, lang) {
+      // Tab active
+      btn.parentElement.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Content active
+      const parent = btn.parentElement.parentElement;
+      parent.querySelectorAll('.lang-content').forEach(c => c.classList.remove('active'));
+      parent.querySelector(`.lang-content[data-lang="${lang}"][data-section="${sectionId}"]`).classList.add('active');
+    }
+    window.switchLang = switchLang;
+
+    async function saveSection(id) {
+      try {
+        const data = {
+          icerik_tr: document.getElementById(`content-${id}-tr`).value,
+          icerik_en: document.getElementById(`content-${id}-en`).value,
+          icerik_de: document.getElementById(`content-${id}-de`).value,
+          icerik_fr: document.getElementById(`content-${id}-fr`).value,
+          icerik_ru: document.getElementById(`content-${id}-ru`).value,
+          foto_url: document.getElementById(`photo-${id}`).value || null
+        };
+
+        const { error } = await supabaseClient
+          .from('site_content')
+          .update(data)
+          .eq('id', id);
+
+        if (error) throw error;
+        App.toast('İçerik kaydedildi', 'success');
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    }
+    window.saveSection = saveSection;
+
+    async function deleteSection(id, key) {
+      const confirmed = await App.confirm(`"${key}" bölümünü silmek istediğinize emin misiniz?`);
+      if (!confirmed) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('site_content')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        App.toast('Bölüm silindi', 'success');
+        await loadContent();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    }
+    window.deleteSection = deleteSection;
+
+    async function addNewSection() {
+      const key = prompt('Bölüm anahtar adı (örn: hero_title, about_text):');
+      if (!key) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('site_content')
+          .insert({
+            sayfa: currentPage,
+            bolum_key: Security.sanitizeInput(key, { maxLength: 100 }),
+            icerik_tr: '',
+            sira: sections.length,
+            aktif: true
+          });
+
+        if (error) throw error;
+        App.toast('Bölüm eklendi', 'success');
+        await loadContent();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    }
+    window.addNewSection = addNewSection;
+
+    async function uploadSectionPhoto(sectionId, input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      try {
+        const ext = file.name.split('.').pop();
+        const filename = `site/${Date.now()}.${ext}`;
+
+        const { error: uploadError } = await supabaseClient
+          .storage
+          .from('property-photos')
+          .upload(filename, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabaseClient
+          .storage
+          .from('property-photos')
+          .getPublicUrl(filename);
+
+        document.getElementById(`photo-${sectionId}`).value = urlData.publicUrl;
+        App.toast('Foto yüklendi', 'success');
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    }
+    window.uploadSectionPhoto = uploadSectionPhoto;
+  </script>
+</body>
+</html>

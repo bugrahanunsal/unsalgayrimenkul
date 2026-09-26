@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Ayarlar - Admin Panel</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">⚙️ Ayarlar</h1>
+        <div class="topbar-actions">
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- Profil -->
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="card-header">
+            <div class="card-title">👤 Profil Bilgileri</div>
+          </div>
+          <form id="profileForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Ad Soyad</label>
+                <input type="text" name="full_name" class="form-input" maxlength="100">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Telefon</label>
+                <input type="tel" name="phone" class="form-input" maxlength="20">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email (değiştirilemez)</label>
+              <input type="email" name="email" class="form-input" readonly disabled>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Rol (değiştirilemez)</label>
+              <input type="text" name="role" class="form-input" readonly disabled>
+            </div>
+            <button type="submit" class="btn btn-primary">💾 Profili Kaydet</button>
+          </form>
+        </div>
+
+        <!-- Şifre Değiştir -->
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="card-header">
+            <div class="card-title">🔑 Şifre Değiştir</div>
+          </div>
+          <form id="passwordForm">
+            <div class="form-group">
+              <label class="form-label">Yeni Şifre <span class="required">*</span></label>
+              <input type="password" name="new_password" class="form-input" required minlength="8">
+              <div class="password-strength">
+                <div class="password-strength-bar" id="strengthBar"></div>
+              </div>
+              <div class="password-feedback" id="strengthFeedback">En az 8 karakter, büyük/küçük harf, rakam, özel karakter</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Yeni Şifre (Tekrar) <span class="required">*</span></label>
+              <input type="password" name="confirm_password" class="form-input" required minlength="8">
+            </div>
+            <button type="submit" class="btn btn-primary">🔒 Şifreyi Değiştir</button>
+          </form>
+        </div>
+
+        <!-- Login Geçmişi -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📊 Son Girişler</div>
+          </div>
+          <div id="loginHistory">
+            <div class="loading">Yükleniyor...</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    (async () => {
+      const authed = await App.init('settings');
+      if (!authed) return;
+
+      loadProfile();
+      loadLoginHistory();
+      setupPasswordStrength();
+    })();
+
+    function loadProfile() {
+      const user = App.currentUser;
+      const profile = user?.profile;
+
+      const form = document.getElementById('profileForm');
+      form.elements.full_name.value = profile?.full_name || '';
+      form.elements.phone.value = profile?.phone || '';
+      form.elements.email.value = user?.email || '';
+      form.elements.role.value = profile?.role === 'super_admin' ? 'Super Admin' : 'Admin';
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      try {
+        const fd = new FormData(e.target);
+        const { error } = await supabaseClient
+          .from('admin_users')
+          .update({
+            full_name: Security.sanitizeInput(fd.get('full_name'), { maxLength: 100 }),
+            phone: fd.get('phone') || null
+          })
+          .eq('id', App.currentUser.id);
+
+        if (error) throw error;
+        App.toast('Profil güncellendi', 'success');
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    });
+
+    function setupPasswordStrength() {
+      const input = document.querySelector('input[name="new_password"]');
+      const bar = document.getElementById('strengthBar');
+      const feedback = document.getElementById('strengthFeedback');
+
+      input.addEventListener('input', () => {
+        const result = Security.checkPasswordStrength(input.value);
+        bar.className = `password-strength-bar strength-${result.score}`;
+        feedback.textContent = `Güç: ${result.level}${result.feedback.length ? ' - ' + result.feedback.join(', ') : ''}`;
+      });
+    }
+
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fd = new FormData(e.target);
+      const newPass = fd.get('new_password');
+      const confirmPass = fd.get('confirm_password');
+
+      if (newPass !== confirmPass) {
+        App.toast('Şifreler eşleşmiyor', 'error');
+        return;
+      }
+
+      const strength = Security.checkPasswordStrength(newPass);
+      if (!strength.valid) {
+        App.toast('Şifre yeterince güçlü değil: ' + strength.feedback.join(', '), 'error');
+        return;
+      }
+
+      try {
+        const { error } = await supabaseClient.auth.updateUser({
+          password: newPass
+        });
+
+        if (error) throw error;
+
+        await Security.logSecurityEvent('password_changed', {}, 'info');
+        App.toast('Şifre güncellendi', 'success');
+        e.target.reset();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    });
+
+    async function loadLoginHistory() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('admin_login_log')
+          .select('*')
+          .eq('admin_id', App.currentUser.id)
+          .order('logged_in_at', { ascending: false })
+          .limit(10);
+
+        if (error) throw error;
+
+        const container = document.getElementById('loginHistory');
+
+        if (!data || data.length === 0) {
+          container.innerHTML = '<div class="empty-state">Henüz login kaydı yok</div>';
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="table-container" style="border: none;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Zaman</th>
+                  <th>IP Adresi</th>
+                  <th>Tarayıcı</th>
+                  <th>Durum</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.map(l => `
+                  <tr>
+                    <td>${App.formatDate(l.logged_in_at, true)}</td>
+                    <td style="font-family: monospace; font-size: 12px;">${Security.escapeHtml(l.ip_address || '-')}</td>
+                    <td style="font-size: 12px;">${Security.escapeHtml((l.user_agent || '').substring(0, 50))}...</td>
+                    <td><span class="badge badge-${l.success ? 'success' : 'danger'}">${l.success ? 'Başarılı' : 'Başarısız'}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } catch (error) {
+        document.getElementById('loginHistory').innerHTML =
+          '<div class="alert alert-error">' + Security.escapeHtml(error.message) + '</div>';
+      }
+    }
+  </script>
+</body>
+</html>

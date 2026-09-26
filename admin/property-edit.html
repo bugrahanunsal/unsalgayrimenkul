@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>İlan Düzenle - Admin Panel</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .photo-uploader { border: 2px dashed var(--border); border-radius: var(--radius); padding: 30px; text-align: center; cursor: pointer; transition: var(--transition); }
+    .photo-uploader:hover { border-color: var(--accent); background: rgba(212, 165, 78, 0.05); }
+    .photo-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 16px; }
+    .photo-preview { position: relative; aspect-ratio: 4/3; border-radius: var(--radius); overflow: hidden; border: 2px solid var(--border); }
+    .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-preview .remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(239,68,68,0.9); color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; }
+    .photo-preview.main { border-color: var(--accent); }
+    .photo-preview .main-badge { position: absolute; bottom: 4px; left: 4px; background: var(--accent); color: white; font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 600; }
+    .photo-preview .make-main-btn { position: absolute; bottom: 4px; right: 4px; background: rgba(0,0,0,0.6); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title" id="pageTitle">✏️ İlan Düzenle</h1>
+        <div class="topbar-actions">
+          <a href="/admin/properties.html" class="btn btn-outline btn-sm">← Geri</a>
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div id="loadingState" class="loading">Yükleniyor...</div>
+
+        <form id="propertyForm" style="display: none;">
+          <input type="hidden" id="propertyId">
+
+          <!-- Fotoğraflar -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div class="card-title">📸 Fotoğraflar</div>
+              <div id="photoCount"></div>
+            </div>
+
+            <div class="photo-uploader" onclick="document.getElementById('photoInput').click()">
+              <div style="font-size: 40px;">📷</div>
+              <div style="font-weight: 600; margin-top: 8px;">Fotoğraf ekle</div>
+              <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
+            </div>
+
+            <div class="photo-preview-grid" id="photoPreviewGrid"></div>
+          </div>
+
+          <!-- Başlıklar -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header"><div class="card-title">📝 Başlıklar</div></div>
+
+            <div class="form-group">
+              <label class="form-label">Başlık (TR) *</label>
+              <input type="text" name="baslik_tr" class="form-input" required maxlength="200">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">TR EN</label><input type="text" name="baslik_en" class="form-input" maxlength="200"></div>
+              <div class="form-group"><label class="form-label">DE</label><input type="text" name="baslik_de" class="form-input" maxlength="200"></div>
+              <div class="form-group"><label class="form-label">FR</label><input type="text" name="baslik_fr" class="form-input" maxlength="200"></div>
+              <div class="form-group"><label class="form-label">RU</label><input type="text" name="baslik_ru" class="form-input" maxlength="200"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Açıklama (TR) *</label>
+              <textarea name="aciklama_tr" class="form-textarea" required maxlength="5000"></textarea>
+            </div>
+          </div>
+
+          <!-- Kategori & Fiyat -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header"><div class="card-title">💰 Kategori & Fiyat</div></div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Tip *</label>
+                <select name="tip" class="form-select" required>
+                  <option value="satilik">Satılık</option>
+                  <option value="kiralik">Kiralık</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Kategori *</label>
+                <select name="kategori" class="form-select" required>
+                  <option value="daire">Daire</option>
+                  <option value="villa">Villa</option>
+                  <option value="arsa">Arsa</option>
+                  <option value="mustakil_ev">Müstakil Ev</option>
+                  <option value="isyeri">İşyeri</option>
+                  <option value="yazlik">Yazlık</option>
+                  <option value="tarla">Tarla</option>
+                  <option value="bina">Bina</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fiyat *</label>
+                <input type="number" name="fiyat" class="form-input" required min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Para Birimi</label>
+                <select name="para_birimi" class="form-select">
+                  <option value="TL">TL</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Özellikler -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header"><div class="card-title">🏗️ Özellikler</div></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">m²</label><input type="number" name="m2" class="form-input" min="0"></div>
+              <div class="form-group">
+                <label class="form-label">Oda Sayısı</label>
+                <select name="oda_sayisi" class="form-select">
+                  <option value="">-</option>
+                  <option value="Stüdyo">Stüdyo</option>
+                  <option value="1+0">1+0</option>
+                  <option value="1+1">1+1</option>
+                  <option value="2+1">2+1</option>
+                  <option value="3+1">3+1</option>
+                  <option value="4+1">4+1</option>
+                  <option value="5+1">5+1</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Banyo</label><input type="number" name="banyo_sayisi" class="form-input" min="0" max="10"></div>
+              <div class="form-group"><label class="form-label">Kat</label><input type="text" name="kat" class="form-input"></div>
+              <div class="form-group"><label class="form-label">Bina Yaşı</label><input type="number" name="bina_yasi" class="form-input" min="0"></div>
+              <div class="form-group">
+                <label class="form-label">Isınma</label>
+                <select name="isinma" class="form-select">
+                  <option value="">-</option>
+                  <option value="kombi">Kombi</option>
+                  <option value="klima">Klima</option>
+                  <option value="soba">Soba</option>
+                  <option value="merkezi">Merkezi</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-top: 12px;">
+              <label class="form-label">Ek Özellikler</label>
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px;">
+                <label class="form-checkbox"><input type="checkbox" data-ozellik="deniz_manzarali"> Deniz Manzaralı</label>
+                <label class="form-checkbox"><input type="checkbox" data-ozellik="havuzlu"> Havuzlu</label>
+                <label class="form-checkbox"><input type="checkbox" data-ozellik="otoparkli"> Otoparklı</label>
+                <label class="form-checkbox"><input type="checkbox" data-ozellik="esyali"> Eşyalı</label>
+                <label class="form-checkbox"><input type="checkbox" data-ozellik="bahceli"> Bahçeli</label>
+                <label class="form-checkbox"><input type="checkbox" data-ozellik="asansorlu"> Asansörlü</label>
+                <label class="form-checkbox"><input type="checkbox" data-ozellik="guvenlikli"> Güvenlikli</label>
+                <label class="form-checkbox"><input type="checkbox" data-ozellik="balkonlu"> Balkonlu</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Konum -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header"><div class="card-title">📍 Konum</div></div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">İlçe *</label>
+                <select name="ilce" class="form-select" required>
+                  <option value="">Seçin</option>
+                  <option value="Merkez">Merkez</option>
+                  <option value="Çınarcık">Çınarcık</option>
+                  <option value="Termal">Termal</option>
+                  <option value="Altınova">Altınova</option>
+                  <option value="Armutlu">Armutlu</option>
+                  <option value="Çiftlikköy">Çiftlikköy</option>
+                  <option value="Akköy">Akköy</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Mahalle</label><input type="text" name="mahalle" class="form-input"></div>
+              <div class="form-group"><label class="form-label">Ada/Parsel</label><input type="text" name="ada_parsel" class="form-input"></div>
+              <div class="form-group">
+                <label class="form-label">İmar Durumu</label>
+                <select name="imar_durumu" class="form-select">
+                  <option value="">-</option>
+                  <option value="konut">Konut</option>
+                  <option value="ticari">Ticari</option>
+                  <option value="tarim">Tarım</option>
+                  <option value="sanayi">Sanayi</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Emsal</label><input type="text" name="emsal" class="form-input"></div>
+            </div>
+          </div>
+
+          <!-- Yayın -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header"><div class="card-title">🚀 Yayın</div></div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Durum</label>
+                <select name="durum" class="form-select">
+                  <option value="aktif">Aktif</option>
+                  <option value="taslak">Taslak</option>
+                  <option value="pasif">Pasif</option>
+                  <option value="satildi">Satıldı</option>
+                  <option value="kiralandi">Kiralandı</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Öne Çıkan</label>
+                <label class="form-checkbox" style="margin-top: 12px;">
+                  <input type="checkbox" name="one_cikan"> Öne çıkar
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Turyap Link</label>
+              <input type="url" name="turyap_link" class="form-input">
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <a href="/admin/properties.html" class="btn btn-outline">İptal</a>
+            <button type="submit" class="btn btn-primary" id="submitBtn">💾 Değişiklikleri Kaydet</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    let property = null;
+    let images = [];
+    let newPhotos = [];
+
+    (async () => {
+      const authed = await App.init('properties');
+      if (!authed) return;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      if (!id) {
+        window.location.href = '/admin/properties.html';
+        return;
+      }
+
+      document.getElementById('propertyId').value = id;
+      await loadProperty(id);
+      setupPhotoUpload();
+      setupForm();
+    })();
+
+    async function loadProperty(id) {
+      try {
+        const { data, error } = await supabaseClient
+          .from('properties')
+          .select('*, property_images(*)')
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+
+        property = data;
+        images = data.property_images || [];
+
+        // Form'u doldur
+        const form = document.getElementById('propertyForm');
+        Object.keys(data).forEach(key => {
+          const field = form.elements[key];
+          if (field && key !== 'ozellikler') {
+            if (field.type === 'checkbox') {
+              field.checked = !!data[key];
+            } else {
+              field.value = data[key] ?? '';
+            }
+          }
+        });
+
+        // Özellikleri işaretle
+        if (data.ozellikler) {
+          document.querySelectorAll('input[data-ozellik]').forEach(cb => {
+            cb.checked = !!data.ozellikler[cb.dataset.ozellik];
+          });
+        }
+
+        renderPhotos();
+
+        document.getElementById('pageTitle').textContent = '✏️ ' + (data.baslik_tr || 'İlan Düzenle');
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('propertyForm').style.display = 'block';
+      } catch (error) {
+        document.getElementById('loadingState').innerHTML =
+          '<div class="alert alert-error">Hata: ' + Security.escapeHtml(error.message) + '</div>';
+      }
+    }
+
+    function renderPhotos() {
+      const grid = document.getElementById('photoPreviewGrid');
+      document.getElementById('photoCount').textContent = `${images.length + newPhotos.length} foto`;
+
+      const existingHtml = images.map(img => `
+        <div class="photo-preview ${img.ana_foto ? 'main' : ''}">
+          <img src="${Security.escapeHtml(img.url)}">
+          ${img.ana_foto ? '<span class="main-badge">ANA</span>' : `<button type="button" class="make-main-btn" onclick="makeMainPhoto('${img.id}')">Ana yap</button>`}
+          <button type="button" class="remove-btn" onclick="deletePhoto('${img.id}')">×</button>
+        </div>
+      `).join('');
+
+      const newHtml = newPhotos.map((p, i) => `
+        <div class="photo-preview" style="border-color: var(--success);">
+          <img src="${p.url}">
+          <span class="main-badge" style="background: var(--success);">YENİ</span>
+          <button type="button" class="remove-btn" onclick="removeNewPhoto(${i})">×</button>
+        </div>
+      `).join('');
+
+      grid.innerHTML = existingHtml + newHtml;
+    }
+
+    function setupPhotoUpload() {
+      document.getElementById('photoInput').addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        files.forEach(file => {
+          if (!file.type.startsWith('image/')) return;
+          if (file.size > 5 * 1024 * 1024) {
+            App.toast(`${file.name} 5MB'dan büyük`, 'error');
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            newPhotos.push({ file, url: ev.target.result });
+            renderPhotos();
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    }
+
+    async function makeMainPhoto(imageId) {
+      try {
+        // Önce tüm ana foto'ları false yap
+        await supabaseClient
+          .from('property_images')
+          .update({ ana_foto: false })
+          .eq('property_id', property.id);
+
+        // Sonra bunu true yap
+        await supabaseClient
+          .from('property_images')
+          .update({ ana_foto: true })
+          .eq('id', imageId);
+
+        images = images.map(img => ({
+          ...img,
+          ana_foto: img.id === imageId
+        }));
+        renderPhotos();
+        App.toast('Ana foto değiştirildi', 'success');
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    }
+    window.makeMainPhoto = makeMainPhoto;
+
+    async function deletePhoto(imageId) {
+      const confirmed = await App.confirm('Bu fotoğrafı silmek istediğinize emin misiniz?');
+      if (!confirmed) return;
+
+      try {
+        await supabaseClient
+          .from('property_images')
+          .delete()
+          .eq('id', imageId);
+
+        images = images.filter(img => img.id !== imageId);
+        renderPhotos();
+        App.toast('Foto silindi', 'success');
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    }
+    window.deletePhoto = deletePhoto;
+
+    function removeNewPhoto(index) {
+      newPhotos.splice(index, 1);
+      renderPhotos();
+    }
+    window.removeNewPhoto = removeNewPhoto;
+
+    function setupForm() {
+      document.getElementById('propertyForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Kaydediliyor...';
+
+        try {
+          const fd = new FormData(e.target);
+
+          const ozellikler = {};
+          document.querySelectorAll('input[data-ozellik]').forEach(cb => {
+            ozellikler[cb.dataset.ozellik] = cb.checked;
+          });
+
+          const data = {
+            baslik_tr: Security.sanitizeInput(fd.get('baslik_tr'), { maxLength: 200 }),
+            baslik_en: fd.get('baslik_en') || null,
+            baslik_de: fd.get('baslik_de') || null,
+            baslik_fr: fd.get('baslik_fr') || null,
+            baslik_ru: fd.get('baslik_ru') || null,
+            aciklama_tr: Security.sanitizeInput(fd.get('aciklama_tr'), { maxLength: 5000 }),
+            tip: fd.get('tip'),
+            kategori: fd.get('kategori'),
+            fiyat: parseFloat(fd.get('fiyat')),
+            para_birimi: fd.get('para_birimi'),
+            m2: fd.get('m2') ? parseInt(fd.get('m2')) : null,
+            oda_sayisi: fd.get('oda_sayisi') || null,
+            banyo_sayisi: fd.get('banyo_sayisi') ? parseInt(fd.get('banyo_sayisi')) : null,
+            kat: fd.get('kat') || null,
+            bina_yasi: fd.get('bina_yasi') ? parseInt(fd.get('bina_yasi')) : null,
+            isinma: fd.get('isinma') || null,
+            ilce: fd.get('ilce'),
+            mahalle: fd.get('mahalle') || null,
+            ada_parsel: fd.get('ada_parsel') || null,
+            imar_durumu: fd.get('imar_durumu') || null,
+            emsal: fd.get('emsal') || null,
+            ozellikler,
+            one_cikan: fd.get('one_cikan') === 'on',
+            durum: fd.get('durum'),
+            turyap_link: fd.get('turyap_link') || null
+          };
+
+          const { error } = await supabaseClient
+            .from('properties')
+            .update(data)
+            .eq('id', property.id);
+
+          if (error) throw error;
+
+          // Yeni fotoğrafları yükle
+          if (newPhotos.length > 0) {
+            btn.textContent = `Fotoğraflar yükleniyor...`;
+            const startOrder = images.length;
+
+            for (let i = 0; i < newPhotos.length; i++) {
+              const photo = newPhotos[i];
+              const ext = photo.file.name.split('.').pop();
+              const filename = `${property.id}/${Date.now()}-${i}.${ext}`;
+
+              const { error: uploadErr } = await supabaseClient
+                .storage.from('property-photos').upload(filename, photo.file);
+
+              if (uploadErr) continue;
+
+              const { data: urlData } = supabaseClient
+                .storage.from('property-photos').getPublicUrl(filename);
+
+              await supabaseClient.from('property_images').insert({
+                property_id: property.id,
+                url: urlData.publicUrl,
+                sira: startOrder + i,
+                ana_foto: images.length === 0 && i === 0
+              });
+            }
+          }
+
+          App.toast('İlan güncellendi', 'success');
+          setTimeout(() => window.location.href = '/admin/properties.html', 1000);
+        } catch (error) {
+          App.toast(error.message, 'error');
+          btn.disabled = false;
+          btn.textContent = '💾 Değişiklikleri Kaydet';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

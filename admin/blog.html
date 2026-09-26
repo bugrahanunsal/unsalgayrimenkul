@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Blog - Admin Panel</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">📝 Blog Yönetimi</h1>
+        <div class="topbar-actions">
+          <button onclick="openEditor()" class="btn btn-primary btn-sm">➕ Yeni Yazı</button>
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div id="blogList"><div class="loading">Yükleniyor...</div></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Editor Modal -->
+  <div id="editorModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: white; border-radius: var(--radius-lg); max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto;">
+      <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 18px; font-weight: 700;" id="editorTitle">Yeni Blog Yazısı</div>
+        <button onclick="closeEditor()" style="background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+      </div>
+
+      <form id="blogForm" style="padding: 20px;">
+        <input type="hidden" name="id" id="blogId">
+
+        <div class="form-group">
+          <label class="form-label">Başlık (TR) *</label>
+          <input type="text" name="baslik_tr" class="form-input" required maxlength="200">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Kapak Foto URL</label>
+            <input type="url" name="kapak_foto" class="form-input" id="kapakFotoInput">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Foto Yükle</label>
+            <input type="file" id="kapakFotoFile" accept="image/*" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">İçerik (TR) *</label>
+          <textarea name="icerik_tr" class="form-textarea" required style="min-height: 300px;"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Özet (TR)</label>
+          <textarea name="ozet_tr" class="form-textarea" maxlength="500"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Kategori</label>
+            <input type="text" name="kategori" class="form-input" placeholder="Rehber, Yatırım, vs.">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Durum</label>
+            <select name="durum" class="form-select">
+              <option value="taslak">Taslak</option>
+              <option value="yayinda">Yayında</option>
+              <option value="arsiv">Arşiv</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" onclick="closeEditor()" class="btn btn-outline">İptal</button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">💾 Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    let posts = [];
+
+    (async () => {
+      const authed = await App.init('blog');
+      if (!authed) return;
+      await loadPosts();
+    })();
+
+    async function loadPosts() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('blog_posts')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        posts = data || [];
+        renderPosts();
+      } catch (error) {
+        document.getElementById('blogList').innerHTML =
+          '<div class="alert alert-error">' + Security.escapeHtml(error.message) + '</div>';
+      }
+    }
+
+    function renderPosts() {
+      const container = document.getElementById('blogList');
+
+      if (posts.length === 0) {
+        container.innerHTML = `
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <div>Henüz blog yazısı yok</div>
+              <button onclick="openEditor()" class="btn btn-primary btn-sm" style="margin-top: 16px;">İlk Yazıyı Yaz</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Başlık</th>
+                <th>Kategori</th>
+                <th>Durum</th>
+                <th>Görüntülenme</th>
+                <th>Tarih</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${posts.map(p => `
+                <tr>
+                  <td>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                      ${p.kapak_foto ? `<img src="${Security.escapeHtml(p.kapak_foto)}" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">` : ''}
+                      <div style="font-weight: 600;">${Security.escapeHtml(p.baslik_tr)}</div>
+                    </div>
+                  </td>
+                  <td>${Security.escapeHtml(p.kategori || '-')}</td>
+                  <td><span class="badge badge-${p.durum === 'yayinda' ? 'success' : 'gray'}">${p.durum}</span></td>
+                  <td>${(p.goruntulenme || 0).toLocaleString('tr-TR')}</td>
+                  <td>${App.formatDate(p.created_at)}</td>
+                  <td>
+                    <button onclick="editPost('${p.id}')" class="btn btn-outline btn-sm">✏️</button>
+                    <button onclick="deletePost('${p.id}', '${Security.escapeHtml(p.baslik_tr)}')" class="btn btn-danger btn-sm">🗑️</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function openEditor() {
+      document.getElementById('editorTitle').textContent = 'Yeni Blog Yazısı';
+      document.getElementById('blogForm').reset();
+      document.getElementById('blogId').value = '';
+      document.getElementById('editorModal').style.display = 'flex';
+    }
+    window.openEditor = openEditor;
+
+    function editPost(id) {
+      const p = posts.find(x => x.id === id);
+      if (!p) return;
+
+      document.getElementById('editorTitle').textContent = 'Yazıyı Düzenle';
+      document.getElementById('blogId').value = p.id;
+
+      const form = document.getElementById('blogForm');
+      Object.keys(p).forEach(key => {
+        const field = form.elements[key];
+        if (field) field.value = p[key] || '';
+      });
+
+      document.getElementById('editorModal').style.display = 'flex';
+    }
+    window.editPost = editPost;
+
+    function closeEditor() {
+      document.getElementById('editorModal').style.display = 'none';
+    }
+    window.closeEditor = closeEditor;
+
+    async function deletePost(id, title) {
+      const confirmed = await App.confirm(`"${title}" yazısını silmek istediğinize emin misiniz?`);
+      if (!confirmed) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('blog_posts')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        App.toast('Yazı silindi', 'success');
+        await loadPosts();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    }
+    window.deletePost = deletePost;
+
+    document.getElementById('kapakFotoFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const ext = file.name.split('.').pop();
+        const filename = `blog/${Date.now()}.${ext}`;
+
+        const { error } = await supabaseClient
+          .storage.from('blog-photos').upload(filename, file);
+        if (error) throw error;
+
+        const { data: urlData } = supabaseClient
+          .storage.from('blog-photos').getPublicUrl(filename);
+
+        document.getElementById('kapakFotoInput').value = urlData.publicUrl;
+        App.toast('Foto yüklendi', 'success');
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    });
+
+    document.getElementById('blogForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true;
+      btn.textContent = 'Kaydediliyor...';
+
+      try {
+        const fd = new FormData(e.target);
+        const data = {
+          baslik_tr: Security.sanitizeInput(fd.get('baslik_tr'), { maxLength: 200 }),
+          icerik_tr: fd.get('icerik_tr'),
+          ozet_tr: fd.get('ozet_tr') || null,
+          kategori: fd.get('kategori') || null,
+          kapak_foto: fd.get('kapak_foto') || null,
+          durum: fd.get('durum') || 'taslak',
+          slug: App.slugify(fd.get('baslik_tr')) + '-' + Date.now(),
+          yayin_tarihi: fd.get('durum') === 'yayinda' ? new Date().toISOString() : null
+        };
+
+        const id = fd.get('id');
+        const { error } = id
+          ? await supabaseClient.from('blog_posts').update(data).eq('id', id)
+          : await supabaseClient.from('blog_posts').insert(data);
+
+        if (error) throw error;
+
+        App.toast(id ? 'Yazı güncellendi' : 'Yazı eklendi', 'success');
+        closeEditor();
+        await loadPosts();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 Kaydet';
+      }
+    });
+  </script>
+</body>
+</html>

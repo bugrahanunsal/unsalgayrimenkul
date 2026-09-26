@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Yeni İlan - Admin Panel</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .photo-uploader {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .photo-uploader:hover, .photo-uploader.dragging {
+      border-color: var(--accent);
+      background: rgba(212, 165, 78, 0.05);
+    }
+    .photo-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .photo-preview {
+      position: relative;
+      aspect-ratio: 4/3;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 2px solid var(--border);
+    }
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .photo-preview .remove-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .photo-preview.main {
+      border-color: var(--accent);
+    }
+    .photo-preview .main-badge {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      background: var(--accent);
+      color: white;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">➕ Yeni İlan Ekle</h1>
+        <div class="topbar-actions">
+          <a href="/admin/properties.html" class="btn btn-outline btn-sm">← İlanlara Dön</a>
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <form id="propertyForm">
+          <!-- Fotoğraflar -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div class="card-title">📸 Fotoğraflar</div>
+            </div>
+
+            <div class="photo-uploader" id="photoUploader" onclick="document.getElementById('photoInput').click()">
+              <div style="font-size: 48px; margin-bottom: 8px;">📷</div>
+              <div style="font-weight: 600; margin-bottom: 4px;">Fotoğraf yüklemek için tıklayın veya sürükleyip bırakın</div>
+              <div style="color: var(--text-muted); font-size: 13px;">JPG, PNG, WEBP • Max 5MB per foto • İlk foto ana foto olur</div>
+              <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
+            </div>
+
+            <div class="photo-preview-grid" id="photoPreviewGrid"></div>
+          </div>
+
+          <!-- Temel Bilgiler -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div class="card-title">📝 Temel Bilgiler</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Başlık (Türkçe) <span class="required">*</span></label>
+              <input type="text" name="baslik_tr" class="form-input" required maxlength="200" placeholder="Örn: Akköy'de Deniz Manzaralı 435m² Arsa">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Başlık (İngilizce)</label>
+                <input type="text" name="baslik_en" class="form-input" maxlength="200">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Başlık (Almanca)</label>
+                <input type="text" name="baslik_de" class="form-input" maxlength="200">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Başlık (Fransızca)</label>
+                <input type="text" name="baslik_fr" class="form-input" maxlength="200">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Başlık (Rusça)</label>
+                <input type="text" name="baslik_ru" class="form-input" maxlength="200">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Açıklama (Türkçe) <span class="required">*</span></label>
+              <textarea name="aciklama_tr" class="form-textarea" required maxlength="5000" placeholder="İlan detayları..."></textarea>
+            </div>
+          </div>
+
+          <!-- Kategori & Fiyat -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div class="card-title">💰 Kategori & Fiyat</div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">İlan Tipi <span class="required">*</span></label>
+                <select name="tip" class="form-select" required>
+                  <option value="satilik">Satılık</option>
+                  <option value="kiralik">Kiralık</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Kategori <span class="required">*</span></label>
+                <select name="kategori" class="form-select" required>
+                  <option value="daire">Daire</option>
+                  <option value="villa">Villa</option>
+                  <option value="arsa">Arsa</option>
+                  <option value="mustakil_ev">Müstakil Ev</option>
+                  <option value="isyeri">İşyeri</option>
+                  <option value="yazlik">Yazlık</option>
+                  <option value="tarla">Tarla</option>
+                  <option value="bina">Bina</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Fiyat <span class="required">*</span></label>
+                <input type="number" name="fiyat" class="form-input" required min="0" step="0.01" placeholder="3500000">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Para Birimi</label>
+                <select name="para_birimi" class="form-select">
+                  <option value="TL">TL</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Özellikler -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div class="card-title">🏗️ Özellikler</div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">m² (Alan)</label>
+                <input type="number" name="m2" class="form-input" min="0" placeholder="435">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Oda Sayısı</label>
+                <select name="oda_sayisi" class="form-select">
+                  <option value="">-</option>
+                  <option value="Stüdyo">Stüdyo</option>
+                  <option value="1+0">1+0</option>
+                  <option value="1+1">1+1</option>
+                  <option value="2+1">2+1</option>
+                  <option value="3+1">3+1</option>
+                  <option value="4+1">4+1</option>
+                  <option value="5+1">5+1</option>
+                  <option value="6+1">6+1</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Banyo Sayısı</label>
+                <input type="number" name="banyo_sayisi" class="form-input" min="0" max="10">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Kat</label>
+                <input type="text" name="kat" class="form-input" placeholder="2. Kat">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Bina Yaşı</label>
+                <input type="number" name="bina_yasi" class="form-input" min="0" max="200">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Isınma</label>
+                <select name="isinma" class="form-select">
+                  <option value="">-</option>
+                  <option value="kombi">Kombi</option>
+                  <option value="klima">Klima</option>
+                  <option value="soba">Soba</option>
+                  <option value="merkezi">Merkezi</option>
+                  <option value="dogalgaz">Doğalgaz Sobası</option>
+                  <option value="yok">Yok</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-top: 12px;">
+              <label class="form-label">Ek Özellikler</label>
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px;">
+                <label class="form-checkbox"><input type="checkbox" name="deniz_manzarali"> Deniz Manzaralı</label>
+                <label class="form-checkbox"><input type="checkbox" name="havuzlu"> Havuzlu</label>
+                <label class="form-checkbox"><input type="checkbox" name="otoparkli"> Otoparklı</label>
+                <label class="form-checkbox"><input type="checkbox" name="esyali"> Eşyalı</label>
+                <label class="form-checkbox"><input type="checkbox" name="bahceli"> Bahçeli</label>
+                <label class="form-checkbox"><input type="checkbox" name="asansorlu"> Asansörlü</label>
+                <label class="form-checkbox"><input type="checkbox" name="guvenlikli"> Güvenlikli Site</label>
+                <label class="form-checkbox"><input type="checkbox" name="balkonlu"> Balkonlu</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Konum -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div class="card-title">📍 Konum</div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">İl</label>
+                <input type="text" name="il" class="form-input" value="Yalova" readonly>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">İlçe <span class="required">*</span></label>
+                <select name="ilce" class="form-select" required>
+                  <option value="">Seçin</option>
+                  <option value="Merkez">Merkez</option>
+                  <option value="Çınarcık">Çınarcık</option>
+                  <option value="Termal">Termal</option>
+                  <option value="Altınova">Altınova</option>
+                  <option value="Armutlu">Armutlu</option>
+                  <option value="Çiftlikköy">Çiftlikköy</option>
+                  <option value="Akköy">Akköy</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Mahalle</label>
+                <input type="text" name="mahalle" class="form-input" placeholder="Akköy Köyü">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Ada / Parsel</label>
+                <input type="text" name="ada_parsel" class="form-input" placeholder="607/4">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">İmar Durumu</label>
+                <select name="imar_durumu" class="form-select">
+                  <option value="">-</option>
+                  <option value="konut">Konut</option>
+                  <option value="ticari">Ticari</option>
+                  <option value="tarim">Tarım</option>
+                  <option value="sanayi">Sanayi</option>
+                  <option value="turistik">Turistik</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Emsal</label>
+                <input type="text" name="emsal" class="form-input" placeholder="0.30">
+              </div>
+            </div>
+          </div>
+
+          <!-- Yayın Ayarları -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div class="card-title">🚀 Yayın Ayarları</div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Durum</label>
+                <select name="durum" class="form-select">
+                  <option value="aktif">Aktif (Yayında)</option>
+                  <option value="taslak">Taslak (Yayında Değil)</option>
+                  <option value="pasif">Pasif</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Öne Çıkan</label>
+                <label class="form-checkbox" style="margin-top: 12px;">
+                  <input type="checkbox" name="one_cikan"> Bu ilanı ana sayfada öne çıkar
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Turyap Link (opsiyonel)</label>
+              <input type="url" name="turyap_link" class="form-input" placeholder="https://turyap.com.tr/...">
+              <div class="form-help">Turyap'taki orijinal ilanın linki (varsa)</div>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <a href="/admin/properties.html" class="btn btn-outline">İptal</a>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+              <span id="btnText">💾 İlanı Kaydet</span>
+              <span id="btnLoader" class="spinner" style="display: none;"></span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    let uploadedPhotos = []; // {file, url, name}
+
+    (async () => {
+      const authed = await App.init('property-new');
+      if (!authed) return;
+
+      setupPhotoUpload();
+      setupForm();
+    })();
+
+    function setupPhotoUpload() {
+      const uploader = document.getElementById('photoUploader');
+      const input = document.getElementById('photoInput');
+
+      // Drag & Drop
+      ['dragenter', 'dragover'].forEach(e => {
+        uploader.addEventListener(e, (ev) => {
+          ev.preventDefault();
+          uploader.classList.add('dragging');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(e => {
+        uploader.addEventListener(e, (ev) => {
+          ev.preventDefault();
+          uploader.classList.remove('dragging');
+        });
+      });
+
+      uploader.addEventListener('drop', (e) => {
+        const files = Array.from(e.dataTransfer.files);
+        handleFiles(files);
+      });
+
+      input.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        handleFiles(files);
+      });
+    }
+
+    function handleFiles(files) {
+      const validFiles = files.filter(f => {
+        if (!f.type.startsWith('image/')) {
+          App.toast('Sadece resim dosyaları yüklenebilir', 'error');
+          return false;
+        }
+        if (f.size > 5 * 1024 * 1024) {
+          App.toast(`${f.name} 5MB'dan büyük`, 'error');
+          return false;
+        }
+        return true;
+      });
+
+      validFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          uploadedPhotos.push({
+            file,
+            url: e.target.result,
+            name: file.name
+          });
+          renderPhotoPreviews();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderPhotoPreviews() {
+      const grid = document.getElementById('photoPreviewGrid');
+      grid.innerHTML = uploadedPhotos.map((p, i) => `
+        <div class="photo-preview ${i === 0 ? 'main' : ''}">
+          <img src="${p.url}" alt="${Security.escapeHtml(p.name)}">
+          ${i === 0 ? '<span class="main-badge">ANA FOTO</span>' : ''}
+          <button type="button" class="remove-btn" onclick="removePhoto(${i})">×</button>
+        </div>
+      `).join('');
+    }
+
+    function removePhoto(index) {
+      uploadedPhotos.splice(index, 1);
+      renderPhotoPreviews();
+    }
+    window.removePhoto = removePhoto;
+
+    function setupForm() {
+      document.getElementById('propertyForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const btn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnLoader = document.getElementById('btnLoader');
+
+        btn.disabled = true;
+        btnText.textContent = 'Kaydediliyor...';
+        btnLoader.style.display = 'inline-block';
+
+        try {
+          // Form data topla
+          const form = e.target;
+          const fd = new FormData(form);
+
+          // Özellikleri JSON'a çevir
+          const ozellikler = {
+            deniz_manzarali: fd.get('deniz_manzarali') === 'on',
+            havuzlu: fd.get('havuzlu') === 'on',
+            otoparkli: fd.get('otoparkli') === 'on',
+            esyali: fd.get('esyali') === 'on',
+            bahceli: fd.get('bahceli') === 'on',
+            asansorlu: fd.get('asansorlu') === 'on',
+            guvenlikli: fd.get('guvenlikli') === 'on',
+            balkonlu: fd.get('balkonlu') === 'on'
+          };
+
+          // İlan verisi
+          const propertyData = {
+            baslik_tr: Security.sanitizeInput(fd.get('baslik_tr'), { maxLength: 200 }),
+            baslik_en: Security.sanitizeInput(fd.get('baslik_en'), { maxLength: 200 }) || null,
+            baslik_de: Security.sanitizeInput(fd.get('baslik_de'), { maxLength: 200 }) || null,
+            baslik_fr: Security.sanitizeInput(fd.get('baslik_fr'), { maxLength: 200 }) || null,
+            baslik_ru: Security.sanitizeInput(fd.get('baslik_ru'), { maxLength: 200 }) || null,
+            aciklama_tr: Security.sanitizeInput(fd.get('aciklama_tr'), { maxLength: 5000 }),
+            tip: fd.get('tip'),
+            kategori: fd.get('kategori'),
+            fiyat: parseFloat(fd.get('fiyat')),
+            para_birimi: fd.get('para_birimi'),
+            m2: fd.get('m2') ? parseInt(fd.get('m2')) : null,
+            oda_sayisi: fd.get('oda_sayisi') || null,
+            banyo_sayisi: fd.get('banyo_sayisi') ? parseInt(fd.get('banyo_sayisi')) : null,
+            kat: Security.sanitizeInput(fd.get('kat'), { maxLength: 20 }) || null,
+            bina_yasi: fd.get('bina_yasi') ? parseInt(fd.get('bina_yasi')) : null,
+            isinma: fd.get('isinma') || null,
+            il: 'Yalova',
+            ilce: fd.get('ilce'),
+            mahalle: Security.sanitizeInput(fd.get('mahalle'), { maxLength: 100 }) || null,
+            ada_parsel: Security.sanitizeInput(fd.get('ada_parsel'), { maxLength: 50 }) || null,
+            imar_durumu: fd.get('imar_durumu') || null,
+            emsal: Security.sanitizeInput(fd.get('emsal'), { maxLength: 20 }) || null,
+            ozellikler,
+            one_cikan: fd.get('one_cikan') === 'on',
+            durum: fd.get('durum') || 'aktif',
+            turyap_link: fd.get('turyap_link') || null,
+            slug: App.slugify(fd.get('baslik_tr')) + '-' + Date.now()
+          };
+
+          // İlanı kaydet
+          const { data: newProperty, error } = await supabaseClient
+            .from('properties')
+            .insert(propertyData)
+            .select()
+            .single();
+
+          if (error) throw error;
+
+          // Fotoğrafları yükle
+          if (uploadedPhotos.length > 0) {
+            btnText.textContent = `Fotoğraflar yükleniyor (0/${uploadedPhotos.length})...`;
+
+            for (let i = 0; i < uploadedPhotos.length; i++) {
+              const photo = uploadedPhotos[i];
+              const ext = photo.file.name.split('.').pop();
+              const filename = `${newProperty.id}/${Date.now()}-${i}.${ext}`;
+
+              // Storage'a yükle
+              const { error: uploadError } = await supabaseClient
+                .storage
+                .from('property-photos')
+                .upload(filename, photo.file, {
+                  cacheControl: '3600',
+                  upsert: false
+                });
+
+              if (uploadError) {
+                console.error('Upload error:', uploadError);
+                continue;
+              }
+
+              // Public URL al
+              const { data: urlData } = supabaseClient
+                .storage
+                .from('property-photos')
+                .getPublicUrl(filename);
+
+              // Database'e kaydet
+              await supabaseClient.from('property_images').insert({
+                property_id: newProperty.id,
+                url: urlData.publicUrl,
+                sira: i,
+                ana_foto: i === 0
+              });
+
+              btnText.textContent = `Fotoğraflar yükleniyor (${i + 1}/${uploadedPhotos.length})...`;
+            }
+          }
+
+          App.toast('İlan başarıyla kaydedildi!', 'success', 'Başarılı');
+
+          setTimeout(() => {
+            window.location.href = '/admin/properties.html';
+          }, 1000);
+
+        } catch (error) {
+          console.error('Save error:', error);
+          App.toast(error.message, 'error', 'Hata');
+          btn.disabled = false;
+          btnText.textContent = '💾 İlanı Kaydet';
+          btnLoader.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
