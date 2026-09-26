@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hesabım - İsmail Ünsal Gayrimenkul</title>
+  <link rel="icon" href="/favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #0a1929;
+      --accent: #d4a54e;
+      --accent-dark: #b8912e;
+      --bg: #f9fafb;
+      --border: #e5e7eb;
+      --text: #0a1929;
+      --text-muted: #6b7280;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    /* Header */
+    .header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header a { color: var(--text); text-decoration: none; }
+    .logo {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    .logo .accent { color: var(--accent); }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+    @media (max-width: 768px) { .layout { grid-template-columns: 1fr; } }
+    /* Sidebar */
+    .sidebar {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      position: sticky;
+      top: 90px;
+    }
+    .profile-card {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .avatar {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 700;
+      margin: 0 auto 12px auto;
+    }
+    .profile-name { font-weight: 700; font-size: 15px; }
+    .profile-email { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 2px;
+    }
+    .nav-item:hover { background: var(--bg); }
+    .nav-item.active { background: rgba(212,165,78,0.1); color: var(--accent-dark); font-weight: 600; }
+    .nav-item.logout { color: #ef4444; }
+    /* Content */
+    .content { display: flex; flex-direction: column; gap: 20px; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-subtitle {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+    /* Form */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .form-input, .form-select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(212,165,78,0.1);
+    }
+    .checkboxes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+    }
+    .checkbox-label {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .checkbox-label:hover { border-color: var(--accent); }
+    .checkbox-label input { accent-color: var(--accent); }
+    .btn {
+      display: inline-block;
+      padding: 11px 22px;
+      background: var(--accent);
+      color: var(--primary);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .btn:hover { background: var(--accent-dark); }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent-dark); background: transparent; }
+    .btn-danger { background: #ef4444; color: white; }
+    .msg {
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin: 12px 0;
+    }
+    .msg-success { background: #d1fae5; color: #065f46; }
+    .msg-error { background: #fee2e2; color: #991b1b; }
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .property-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      transition: all 0.15s;
+    }
+    .property-item:hover { border-color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .property-item img {
+      width: 100px; height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .property-info { flex: 1; }
+    .property-title { font-weight: 600; margin-bottom: 4px; }
+    .property-price { color: var(--accent-dark); font-weight: 700; }
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      z-index: 999;
+      animation: slideIn 0.3s;
+    }
+    @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { opacity: 1; } }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+    .spinner {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a href="/" class="logo">İSMAİL <span class="accent">ÜNSAL</span></a>
+    <div data-iu-auth></div>
+  </header>
+
+  <div class="container">
+    <div id="loginRequired" style="display: none;" class="card">
+      <div class="empty">
+        <div class="empty-icon">🔐</div>
+        <h2>Giriş yapmanız gerekiyor</h2>
+        <p style="margin-top: 8px;">Bu sayfayı görmek için lütfen hesabınıza giriş yapın.</p>
+        <button onclick="IUAuth.open('login')" class="btn" style="margin-top: 20px;">Giriş Yap</button>
+      </div>
+    </div>
+
+    <div id="accountContent" style="display: none;">
+      <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="profile-card">
+            <div class="avatar" id="userAvatar">?</div>
+            <div class="profile-name" id="userName">-</div>
+            <div class="profile-email" id="userEmail">-</div>
+          </div>
+          <nav>
+            <a class="nav-item active" onclick="showTab('profile', this)">
+              <span>👤</span> Profilim
+            </a>
+            <a class="nav-item" onclick="showTab('favorites', this)">
+              <span>❤️</span> Favorilerim
+            </a>
+            <a class="nav-item" onclick="showTab('searches', this)">
+              <span>🔍</span> Kayıtlı Aramalar
+            </a>
+            <a class="nav-item" onclick="showTab('preferences', this)">
+              <span>⚙️</span> Bülten Tercihleri
+            </a>
+            <a class="nav-item" onclick="showTab('security', this)">
+              <span>🔒</span> Güvenlik
+            </a>
+            <a class="nav-item logout" onclick="IUAuth.logout()">
+              <span>🚪</span> Çıkış Yap
+            </a>
+          </nav>
+        </aside>
+
+        <!-- Content -->
+        <main class="content">
+          <!-- Profile Tab -->
+          <div id="tab-profile" class="tab-content">
+            <div class="card">
+              <div class="card-title">👤 Profil Bilgileri</div>
+              <div class="card-subtitle">Kişisel bilgilerinizi güncelleyin</div>
+              <form id="profileForm">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Ad Soyad</label>
+                    <input type="text" name="full_name" class="form-input" maxlength="100">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Telefon</label>
+                    <input type="tel" name="phone" class="form-input" maxlength="20">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input type="email" name="email" class="form-input" readonly>
+                </div>
+                <div id="profileMsg"></div>
+                <button type="submit" class="btn">💾 Profili Kaydet</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Favorites Tab -->
+          <div id="tab-favorites" class="tab-content" style="display: none;">
+            <div class="card">
+              <div class="card-title">❤️ Favori İlanlarım</div>
+              <div class="card-subtitle">Kaydettiğiniz ilanlar</div>
+              <div id="favoritesList"><div class="loading"><div class="spinner"></div></div></div>
+            </div>
+          </div>
+
+          <!-- Searches Tab -->
+          <div id="tab-searches" class="tab-content" style="display: none;">
+            <div class="card">
+              <div class="card-title">🔍 Kayıtlı Aramalarım</div>
+              <div class="card-subtitle">Kriterlerinize uyan yeni ilanlar geldiğinde bildirim alın</div>
+              <div id="searchesList"><div class="loading"><div class="spinner"></div></div></div>
+            </div>
+          </div>
+
+          <!-- Preferences Tab -->
+          <div id="tab-preferences" class="tab-content" style="display: none;">
+            <div class="card">
+              <div class="card-title">⚙️ Bülten & Bildirim Tercihleri</div>
+              <div class="card-subtitle">Hangi ilanlar ilginizi çekiyor?</div>
+              <form id="prefsForm">
+                <div class="form-group">
+                  <label class="form-label">İlgi Kategorileri</label>
+                  <div class="checkboxes">
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="arsa"> 🏞️ Arsa</label>
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="daire"> 🏢 Daire</label>
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="villa"> 🏡 Villa</label>
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="isyeri"> 🏪 İşyeri</label>
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="mustakil"> 🏘️ Müstakil</label>
+                    <label class="checkbox-label"><input type="checkbox" name="kat" value="dukkan"> 🏬 Dükkan</label>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">İşlem Tipi</label>
+                    <select name="islem_tipi" class="form-select">
+                      <option value="her_ikisi">Satılık ve Kiralık</option>
+                      <option value="satilik">Sadece Satılık</option>
+                      <option value="kiralik">Sadece Kiralık</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Email Dili</label>
+                    <select name="language" class="form-select">
+                      <option value="tr">🇹🇷 Türkçe</option>
+                      <option value="en">🇬🇧 English</option>
+                      <option value="de">🇩🇪 Deutsch</option>
+                      <option value="fr">🇫🇷 Français</option>
+                      <option value="ru">🇷🇺 Русский</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Min. Fiyat (₺)</label>
+                    <input type="number" name="min_fiyat" class="form-input" min="0" placeholder="0">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Max. Fiyat (₺)</label>
+                    <input type="number" name="max_fiyat" class="form-input" min="0" placeholder="Sınırsız">
+                  </div>
+                </div>
+
+                <div class="form-group" style="border-top: 1px solid var(--border); padding-top: 16px; margin-top: 20px;">
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="bulten_abone" checked>
+                    📧 Haftalık bülten emaili almak istiyorum
+                  </label>
+                </div>
+
+                <div id="prefsMsg"></div>
+                <button type="submit" class="btn">💾 Tercihleri Kaydet</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Security Tab -->
+          <div id="tab-security" class="tab-content" style="display: none;">
+            <div class="card">
+              <div class="card-title">🔒 Şifre Değiştir</div>
+              <div class="card-subtitle">Güçlü bir şifre kullanmanızı öneririz</div>
+              <form id="passwordForm">
+                <div class="form-group">
+                  <label class="form-label">Yeni Şifre</label>
+                  <input type="password" name="new_password" class="form-input" required minlength="8">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Yeni Şifre (Tekrar)</label>
+                  <input type="password" name="confirm_password" class="form-input" required minlength="8">
+                </div>
+                <div id="passwordMsg"></div>
+                <button type="submit" class="btn">🔒 Şifreyi Değiştir</button>
+              </form>
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+              <div class="card-title" style="color: #ef4444;">⚠️ Hesabı Sil</div>
+              <div class="card-subtitle">Hesabınızı silmek geri alınamaz. Tüm favorileriniz ve verileriniz silinecektir.</div>
+              <button onclick="deleteAccount()" class="btn btn-danger">🗑️ Hesabımı Sil</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <script src="/subscribe-widget.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://gosmkthmamloafgtvhpj.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4';
+
+    let supabase;
+    let currentUser;
+    let currentProfile;
+
+    function esc(t) {
+      const d = document.createElement('div');
+      d.textContent = t || '';
+      return d.innerHTML;
+    }
+
+    function toast(msg, type = 'success') {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.style.background = type === 'success' ? '#10b981' : '#ef4444';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+
+    function showMsg(id, text, type = 'success') {
+      const el = document.getElementById(id);
+      el.innerHTML = `<div class="msg msg-${type}">${esc(text)}</div>`;
+      setTimeout(() => el.innerHTML = '', 4000);
+    }
+
+    async function init() {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth: {
+          persistSession: true,
+          storageKey: 'ismailunsal-customer-session'
+        }
+      });
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        document.getElementById('loginRequired').style.display = 'block';
+        return;
+      }
+
+      currentUser = user;
+      document.getElementById('accountContent').style.display = 'block';
+
+      // Profile yükle
+      const { data: profile } = await supabase
+        .from('customer_profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      currentProfile = profile;
+
+      // Header'daki bilgileri doldur
+      const name = profile?.full_name || user.email.split('@')[0];
+      const initial = name.charAt(0).toUpperCase();
+
+      document.getElementById('userAvatar').textContent = initial;
+      document.getElementById('userName').textContent = name;
+      document.getElementById('userEmail').textContent = user.email;
+
+      // Profile form
+      const pf = document.getElementById('profileForm');
+      pf.full_name.value = profile?.full_name || '';
+      pf.phone.value = profile?.phone || '';
+      pf.email.value = user.email;
+
+      // Preferences form
+      const prf = document.getElementById('prefsForm');
+      const kats = profile?.ilgi_kategoriler || [];
+      prf.querySelectorAll('input[name="kat"]').forEach(cb => {
+        cb.checked = kats.includes(cb.value);
+      });
+      prf.islem_tipi.value = profile?.islem_tipi || 'her_ikisi';
+      prf.language.value = profile?.language || 'tr';
+      prf.min_fiyat.value = profile?.min_fiyat || '';
+      prf.max_fiyat.value = profile?.max_fiyat || '';
+      prf.bulten_abone.checked = profile?.bulten_abone !== false;
+    }
+
+    window.showTab = function(tab, el) {
+      document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+      document.getElementById(`tab-${tab}`).style.display = 'block';
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      el.classList.add('active');
+
+      if (tab === 'favorites') loadFavorites();
+      if (tab === 'searches') loadSearches();
+    };
+
+    async function loadFavorites() {
+      const container = document.getElementById('favoritesList');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+      const { data, error } = await supabase
+        .from('favorites')
+        .select('*, properties(id, baslik_tr, fiyat, kategori, tip, property_images(url, is_main))')
+        .eq('customer_id', currentUser.id)
+        .order('created_at', { ascending: false });
+
+      if (error || !data?.length) {
+        container.innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">💔</div>
+            <div>Henüz favori ilanınız yok</div>
+            <a href="/" class="btn" style="margin-top: 16px; display: inline-block;">İlanları İncele</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = data.map(f => {
+        const p = f.properties;
+        if (!p) return '';
+        const img = p.property_images?.find(i => i.is_main)?.url || p.property_images?.[0]?.url || '/placeholder.jpg';
+        return `
+          <div class="property-item">
+            <img src="${esc(img)}" alt="">
+            <div class="property-info">
+              <div class="property-title">${esc(p.baslik_tr)}</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">${esc(p.kategori)} • ${esc(p.tip)}</div>
+              <div class="property-price">${new Intl.NumberFormat('tr-TR').format(p.fiyat)} ₺</div>
+            </div>
+            <button onclick="removeFavorite('${p.id}')" class="btn btn-outline" style="align-self: flex-start;">🗑️</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.removeFavorite = async function(propId) {
+      await supabase.from('favorites').delete().eq('customer_id', currentUser.id).eq('property_id', propId);
+      toast('Favori kaldırıldı');
+      loadFavorites();
+    };
+
+    async function loadSearches() {
+      const container = document.getElementById('searchesList');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+      const { data, error } = await supabase
+        .from('saved_searches')
+        .select('*')
+        .eq('customer_id', currentUser.id)
+        .order('created_at', { ascending: false });
+
+      if (error || !data?.length) {
+        container.innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">🔍</div>
+            <div>Henüz kayıtlı aramanız yok</div>
+            <p style="margin-top: 8px; font-size: 13px;">Ana sayfada arama yaparken "Bu aramayı kaydet" seçeneğini kullanın.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = data.map(s => `
+        <div class="property-item">
+          <div class="property-info">
+            <div class="property-title">${esc(s.arama_adi)}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">
+              ${(s.kategoriler || []).join(', ') || 'Tüm kategoriler'} •
+              ${s.min_fiyat ? new Intl.NumberFormat('tr-TR').format(s.min_fiyat) : '0'} - ${s.max_fiyat ? new Intl.NumberFormat('tr-TR').format(s.max_fiyat) : '∞'} ₺
+            </div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">
+              Bildirim: ${s.bildirim_sikligi} ${s.bildirim_aktif ? '✅' : '❌'}
+            </div>
+          </div>
+          <button onclick="deleteSearch('${s.id}')" class="btn btn-outline">🗑️</button>
+        </div>
+      `).join('');
+    }
+
+    window.deleteSearch = async function(id) {
+      if (!confirm('Bu aramayı silmek istediğinize emin misiniz?')) return;
+      await supabase.from('saved_searches').delete().eq('id', id);
+      toast('Arama silindi');
+      loadSearches();
+    };
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const { error } = await supabase.from('customer_profiles').update({
+        full_name: fd.get('full_name')?.trim().substring(0, 100),
+        phone: fd.get('phone')?.trim() || null
+      }).eq('id', currentUser.id);
+
+      if (error) showMsg('profileMsg', 'Hata: ' + error.message, 'error');
+      else {
+        showMsg('profileMsg', '✅ Profil güncellendi');
+        init();
+      }
+    });
+
+    document.getElementById('prefsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const kats = Array.from(e.target.querySelectorAll('input[name="kat"]:checked')).map(c => c.value);
+
+      const { error } = await supabase.from('customer_profiles').update({
+        ilgi_kategoriler: kats,
+        islem_tipi: fd.get('islem_tipi'),
+        language: fd.get('language'),
+        min_fiyat: fd.get('min_fiyat') || null,
+        max_fiyat: fd.get('max_fiyat') || null,
+        bulten_abone: fd.get('bulten_abone') === 'on'
+      }).eq('id', currentUser.id);
+
+      if (error) showMsg('prefsMsg', 'Hata: ' + error.message, 'error');
+      else showMsg('prefsMsg', '✅ Tercihler güncellendi');
+    });
+
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const newPass = fd.get('new_password');
+      const confirmPass = fd.get('confirm_password');
+
+      if (newPass !== confirmPass) {
+        showMsg('passwordMsg', 'Şifreler eşleşmiyor', 'error');
+        return;
+      }
+      if (newPass.length < 8) {
+        showMsg('passwordMsg', 'Şifre en az 8 karakter olmalı', 'error');
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({ password: newPass });
+      if (error) showMsg('passwordMsg', 'Hata: ' + error.message, 'error');
+      else {
+        showMsg('passwordMsg', '✅ Şifre güncellendi');
+        e.target.reset();
+      }
+    });
+
+    window.deleteAccount = async function() {
+      if (!confirm('Hesabınızı silmek istediğinize EMİN misiniz? Bu işlem GERİ ALINAMAZ!')) return;
+      if (!confirm('Son onay: Tüm favorileriniz, aramalarınız silinecek. Devam edilsin mi?')) return;
+
+      // Profile'ı sil (auth user'ı manuel silmek gerekir - şimdilik profile sil)
+      const { error } = await supabase.from('customer_profiles').delete().eq('id', currentUser.id);
+
+      if (error) {
+        alert('Hata: ' + error.message);
+        return;
+      }
+
+      await supabase.auth.signOut();
+      alert('✅ Hesabınız silindi. Ana sayfaya yönlendiriliyorsunuz.');
+      window.location.href = '/';
+    };
+
+    init();
+  </script>
+</body>
+</html>

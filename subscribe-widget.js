@@ -1,51 +1,74 @@
 /**
- * SUBSCRIBE WIDGET & AUTH MODAL
- * ismailunsal.com.tr - Ana site için
+ * ============================================================
+ * İSMAİL ÜNSAL GAYRİMENKUL - AUTH & SUBSCRIBE WIDGET v2.0
+ * ============================================================
  *
- * Kullanım: Herhangi bir sayfaya bu 2 satırı ekle:
- *   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- *   <script src="/js/subscribe-widget.js"></script>
+ * ANA SITE İÇİN KULLANIM:
  *
- * Otomatik ekler:
- *   - Header'a "Giriş / Üye Ol" butonu
- *   - Footer'a subscribe formu (opsiyonel manuel: <div id="subscribe-form"></div>)
+ * <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ * <script src="/subscribe-widget.js"></script>
  *
- * GÜVENLİK:
- *   - Rate limiting (client-side + server-side)
- *   - Input sanitization
- *   - XSS koruması
- *   - CSRF token
- *   - Bot koruması (honeypot field)
- *   - Double opt-in (email doğrulama zorunlu)
+ * Header'a buton koymak için:
+ *   <div data-iu-auth></div>  (otomatik "Giriş/Üye Ol" butonu ekler)
+ *
+ * Manuel açmak için:
+ *   IUAuth.open('signup')      → Müşteri kayıt
+ *   IUAuth.open('login')       → Müşteri girişi
+ *   IUAuth.open('admin')       → Admin girişi
+ *   IUAuth.open('subscribe')   → Bültene kayıt
+ *
+ * Footer/inline widget için:
+ *   <div id="subscribe-form"></div>  (bültene kayıt formu)
+ *
+ * Kullanıcı durumu:
+ *   IUAuth.user     → Mevcut giriş yapmış kullanıcı (null olabilir)
+ *   IUAuth.logout() → Çıkış
+ *
+ * Favori toggle (property card'larda):
+ *   IUAuth.toggleFavorite('property-id')  → Favori ekle/çıkar
+ *
+ * ============================================================
+ * GÜVENLİK
+ * ============================================================
+ * - CSRF Token
+ * - Rate limiting (client + server)
+ * - Honeypot bot protection
+ * - Input sanitization + XSS koruma
+ * - Double opt-in email verification (KVKK)
+ * - RLS policies (server-side)
  */
 
 (function() {
   'use strict';
 
-  // ==================== KONFIGÜRASYON ====================
   const CONFIG = {
     SUPABASE_URL: 'https://gosmkthmamloafgtvhpj.supabase.co',
     SUPABASE_KEY: 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4',
     ADMIN_URL: '/admin/login.html',
+    ACCOUNT_URL: '/hesabim.html',
     SITE_URL: 'https://ismailunsal.com.tr'
   };
 
-  // ==================== SUPABASE CLIENT ====================
+  // Supabase client (persistent - kullanıcı oturumu kalır)
   let supabase;
   function initSupabase() {
     if (!window.supabase) {
-      console.error('[Subscribe Widget] Supabase JS SDK yüklenmemiş');
+      console.error('[IUAuth] Supabase JS SDK yüklenmemiş');
       return null;
     }
     if (!supabase) {
       supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY, {
-        auth: { persistSession: false, autoRefreshToken: false }
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          storageKey: 'ismailunsal-customer-session'
+        }
       });
     }
     return supabase;
   }
 
-  // ==================== GÜVENLİK UTILITY ====================
+  // ==================== GÜVENLİK ====================
   const Security = {
     escapeHtml(text) {
       if (!text) return '';
@@ -66,119 +89,220 @@
       if (!input) return '';
       return String(input).trim().substring(0, maxLength).replace(/[<>]/g, '');
     },
-    checkClientRateLimit() {
-      const key = 'subscribe_attempts';
+    checkPasswordStrength(pass) {
+      if (!pass || pass.length < 8) return { valid: false, level: 'zayıf', score: 0 };
+      let score = 0;
+      if (pass.length >= 8) score++;
+      if (pass.length >= 12) score++;
+      if (/[a-z]/.test(pass) && /[A-Z]/.test(pass)) score++;
+      if (/\d/.test(pass)) score++;
+      if (/[^A-Za-z0-9]/.test(pass)) score++;
+      const levels = ['çok zayıf', 'zayıf', 'orta', 'iyi', 'güçlü', 'çok güçlü'];
+      return { valid: score >= 3, level: levels[score] || 'zayıf', score };
+    },
+    checkClientRateLimit(key = 'default', maxAttempts = 3, windowMs = 3600000) {
+      const storageKey = `iuauth_rate_${key}`;
       try {
         const now = Date.now();
-        const attempts = JSON.parse(localStorage.getItem(key) || '[]')
-          .filter(t => now - t < 3600000); // son 1 saat
-
-        if (attempts.length >= 3) return false;
-
+        const attempts = JSON.parse(localStorage.getItem(storageKey) || '[]')
+          .filter(t => now - t < windowMs);
+        if (attempts.length >= maxAttempts) return false;
         attempts.push(now);
-        localStorage.setItem(key, JSON.stringify(attempts));
+        localStorage.setItem(storageKey, JSON.stringify(attempts));
         return true;
-      } catch (e) {
-        return true; // localStorage bloklanmışsa geç
-      }
+      } catch (e) { return true; }
     }
   };
 
-  // ==================== STİLLER (INJECT) ====================
+  // ==================== STİLLER ====================
   function injectStyles() {
-    if (document.getElementById('iu-subscribe-styles')) return;
+    if (document.getElementById('iu-widget-styles')) return;
 
     const style = document.createElement('style');
-    style.id = 'iu-subscribe-styles';
+    style.id = 'iu-widget-styles';
     style.textContent = `
-      /* Reset */
-      .iu-modal, .iu-modal *, .iu-widget, .iu-widget * {
+      .iu-modal, .iu-modal *, .iu-widget, .iu-widget *, .iu-authbar, .iu-authbar * {
         box-sizing: border-box;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       }
 
-      /* Header Auth Button */
-      .iu-auth-btn {
-        background: #d4a54e;
-        color: #0a1929 !important;
-        padding: 8px 20px;
-        border-radius: 6px;
-        text-decoration: none;
+      /* Header Auth Bar */
+      .iu-authbar { display: flex; gap: 8px; align-items: center; }
+      .iu-authbar-btn {
+        padding: 9px 18px;
+        border-radius: 8px;
         font-weight: 600;
-        font-size: 14px;
-        border: none;
+        font-size: 13px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.15s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        line-height: 1;
+      }
+      .iu-authbar-signup {
+        background: #d4a54e;
+        color: #0a1929;
+      }
+      .iu-authbar-signup:hover {
+        background: #b8912e;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(212,165,78,0.3);
+      }
+      .iu-authbar-login {
+        background: transparent;
+        color: #d4a54e;
+        border-color: #d4a54e;
+      }
+      .iu-authbar-login:hover {
+        background: #d4a54e;
+        color: #0a1929;
+      }
+      .iu-authbar-user {
+        display: flex; align-items: center; gap: 8px;
+        padding: 6px 14px 6px 6px;
+        background: rgba(212,165,78,0.1);
+        border-radius: 30px;
         cursor: pointer;
         transition: all 0.15s;
+        border: 1px solid rgba(212,165,78,0.3);
       }
-      .iu-auth-btn:hover { background: #b8912e; transform: translateY(-1px); }
+      .iu-authbar-user:hover { background: rgba(212,165,78,0.15); }
+      .iu-authbar-avatar {
+        width: 28px; height: 28px;
+        border-radius: 50%;
+        background: #d4a54e;
+        color: #0a1929;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .iu-authbar-name {
+        font-size: 13px;
+        color: #0a1929;
+        font-weight: 600;
+      }
 
-      /* Modal Overlay */
+      /* User menu dropdown */
+      .iu-user-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        min-width: 220px;
+        overflow: hidden;
+        z-index: 999998;
+        display: none;
+        animation: iuFadeIn 0.15s;
+      }
+      .iu-user-menu.open { display: block; }
+      .iu-user-menu-header {
+        padding: 16px;
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .iu-user-menu-email { font-size: 12px; color: #6b7280; margin-top: 2px; }
+      .iu-user-menu a {
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 16px;
+        color: #0a1929;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.15s;
+      }
+      .iu-user-menu a:hover { background: #f3f4f6; }
+      .iu-user-menu-divider { height: 1px; background: #e5e7eb; }
+      .iu-user-menu-logout { color: #ef4444 !important; }
+
+      /* Modal */
       .iu-modal {
         display: none;
-        position: fixed;
-        inset: 0;
+        position: fixed; inset: 0;
         background: rgba(10, 25, 41, 0.75);
         z-index: 999999;
         padding: 20px;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(4px);
+        align-items: center; justify-content: center;
+        backdrop-filter: blur(6px);
       }
       .iu-modal.active { display: flex; }
 
       .iu-modal-content {
         background: white;
-        border-radius: 16px;
+        border-radius: 20px;
         max-width: 480px;
         width: 100%;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-        animation: iuModalSlide 0.3s ease-out;
+        max-height: 92vh;
+        overflow: hidden;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+        animation: iuModalSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex; flex-direction: column;
       }
       @keyframes iuModalSlide {
-        from { opacity: 0; transform: translateY(20px); }
+        from { opacity: 0; transform: translateY(30px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes iuFadeIn {
+        from { opacity: 0; transform: translateY(-4px); }
         to { opacity: 1; transform: translateY(0); }
       }
 
       .iu-modal-header {
+        background: linear-gradient(135deg, #0a1929, #1a3a5f);
+        color: white;
         padding: 24px 28px;
-        border-bottom: 1px solid #e5e7eb;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        position: relative;
       }
-      .iu-modal-title { font-size: 20px; font-weight: 700; color: #0a1929; margin: 0; }
+      .iu-modal-brand {
+        font-size: 18px; font-weight: 800; letter-spacing: 1px;
+        margin-bottom: 4px;
+      }
+      .iu-modal-brand .accent { color: #d4a54e; }
+      .iu-modal-subtitle {
+        font-size: 11px; letter-spacing: 2px; opacity: 0.7;
+        text-transform: uppercase;
+      }
       .iu-modal-close {
-        background: none;
+        position: absolute; top: 16px; right: 16px;
+        background: rgba(255,255,255,0.1);
         border: none;
-        font-size: 24px;
+        width: 32px; height: 32px;
+        border-radius: 8px;
         cursor: pointer;
-        color: #6b7280;
-        padding: 0;
-        line-height: 1;
+        color: white;
+        font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.15s;
       }
+      .iu-modal-close:hover { background: rgba(255,255,255,0.2); }
 
-      .iu-modal-body { padding: 24px 28px; }
+      .iu-modal-body {
+        padding: 24px 28px;
+        overflow-y: auto;
+        flex: 1;
+      }
 
       /* Tabs */
       .iu-tabs {
         display: flex;
-        gap: 4px;
+        gap: 2px;
         background: #f3f4f6;
         padding: 4px;
         border-radius: 10px;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
       }
       .iu-tab {
         flex: 1;
-        padding: 10px 16px;
+        padding: 10px 12px;
         background: none;
         border: none;
         border-radius: 8px;
         cursor: pointer;
         font-weight: 600;
-        font-size: 14px;
+        font-size: 12px;
         color: #6b7280;
         transition: all 0.15s;
       }
@@ -187,62 +311,66 @@
         color: #0a1929;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       }
-
-      .iu-tab-content { display: none; }
+      .iu-tab-content { display: none; animation: iuFadeIn 0.2s; }
       .iu-tab-content.active { display: block; }
 
+      .iu-intro {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 20px;
+        line-height: 1.5;
+      }
+
       /* Form */
-      .iu-form-group { margin-bottom: 16px; }
+      .iu-form-group { margin-bottom: 14px; }
       .iu-label {
         display: block;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 600;
         color: #374151;
         margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
       }
+      .iu-required { color: #ef4444; }
       .iu-input, .iu-select {
         width: 100%;
-        padding: 12px 14px;
-        border: 1px solid #d1d5db;
+        padding: 11px 14px;
+        border: 1.5px solid #e5e7eb;
         border-radius: 8px;
         font-size: 14px;
         color: #0a1929;
-        transition: border-color 0.15s;
+        transition: all 0.15s;
         background: white;
+        font-family: inherit;
       }
       .iu-input:focus, .iu-select:focus {
         outline: none;
         border-color: #d4a54e;
         box-shadow: 0 0 0 3px rgba(212, 165, 78, 0.1);
       }
-
-      /* Checkbox group */
       .iu-checkboxes {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        gap: 6px;
       }
       .iu-checkbox-label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        border: 1px solid #e5e7eb;
+        display: flex; align-items: center; gap: 8px;
+        padding: 8px 10px;
+        border: 1.5px solid #e5e7eb;
         border-radius: 8px;
         cursor: pointer;
         font-size: 13px;
         transition: all 0.15s;
       }
       .iu-checkbox-label:hover { border-color: #d4a54e; }
-      .iu-checkbox-label input { margin: 0; }
-      .iu-checkbox-label input:checked ~ span { color: #d4a54e; font-weight: 600; }
+      .iu-checkbox-label input { margin: 0; accent-color: #d4a54e; }
 
       /* Buttons */
       .iu-btn {
         display: block;
         width: 100%;
-        padding: 14px 20px;
-        background: #0a1929;
+        padding: 13px 20px;
         color: white;
         border: none;
         border-radius: 8px;
@@ -251,15 +379,27 @@
         cursor: pointer;
         transition: all 0.15s;
         margin-top: 8px;
+        font-family: inherit;
       }
-      .iu-btn:hover:not(:disabled) { background: #1a3a5f; transform: translateY(-1px); }
-      .iu-btn:disabled { opacity: 0.5; cursor: not-allowed; }
       .iu-btn-primary { background: #d4a54e; color: #0a1929; }
-      .iu-btn-primary:hover:not(:disabled) { background: #b8912e; }
+      .iu-btn-primary:hover:not(:disabled) {
+        background: #b8912e;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(212,165,78,0.3);
+      }
+      .iu-btn-dark { background: #0a1929; color: white; }
+      .iu-btn-dark:hover:not(:disabled) { background: #1a3a5f; }
+      .iu-btn-outline {
+        background: transparent;
+        border: 1.5px solid #e5e7eb;
+        color: #374151;
+      }
+      .iu-btn-outline:hover:not(:disabled) { border-color: #d4a54e; color: #d4a54e; }
+      .iu-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
       /* Message boxes */
       .iu-msg {
-        padding: 12px 16px;
+        padding: 11px 14px;
         border-radius: 8px;
         font-size: 13px;
         margin: 12px 0;
@@ -269,7 +409,7 @@
       .iu-msg-error { background: #fee2e2; color: #991b1b; border-left: 3px solid #ef4444; }
       .iu-msg-info { background: #dbeafe; color: #1e40af; border-left: 3px solid #3b82f6; }
 
-      /* Honeypot (bot trap) - hidden from users */
+      /* Honeypot */
       .iu-hp {
         position: absolute !important;
         left: -9999px !important;
@@ -277,23 +417,33 @@
         pointer-events: none !important;
       }
 
-      /* Footer Subscribe Widget */
+      /* Footer widget (bültene kayıt) */
       .iu-widget {
         background: linear-gradient(135deg, #0a1929, #1a3a5f);
         color: white;
-        padding: 40px 24px;
+        padding: 48px 32px;
         border-radius: 16px;
         text-align: center;
         margin: 40px auto;
         max-width: 700px;
+        position: relative;
+        overflow: hidden;
       }
-      .iu-widget h3 { font-size: 24px; margin: 0 0 8px 0; color: #d4a54e; }
-      .iu-widget p { font-size: 15px; opacity: 0.9; margin: 0 0 24px 0; }
+      .iu-widget::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(212,165,78,0.2), transparent 70%);
+        pointer-events: none;
+      }
+      .iu-widget h3 { font-size: 26px; margin: 0 0 8px 0; color: #d4a54e; position: relative; }
+      .iu-widget p { font-size: 15px; opacity: 0.9; margin: 0 0 24px 0; position: relative; }
       .iu-widget-form {
-        display: flex;
-        gap: 8px;
-        max-width: 480px;
-        margin: 0 auto;
+        display: flex; gap: 8px; max-width: 480px; margin: 0 auto;
+        position: relative;
       }
       .iu-widget-form input {
         flex: 1;
@@ -303,19 +453,21 @@
         font-size: 15px;
       }
       .iu-widget-form button {
-        padding: 14px 24px;
+        padding: 14px 28px;
         background: #d4a54e;
         color: #0a1929;
         border: none;
         border-radius: 8px;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
         transition: all 0.15s;
       }
       .iu-widget-form button:hover { background: #b8912e; }
-      .iu-widget small { display: block; margin-top: 12px; opacity: 0.7; font-size: 12px; }
+      .iu-widget small {
+        display: block; margin-top: 16px;
+        opacity: 0.7; font-size: 12px; position: relative;
+      }
 
-      /* KVKK notice */
       .iu-kvkk {
         font-size: 11px;
         color: #6b7280;
@@ -324,13 +476,11 @@
       }
       .iu-kvkk a { color: #d4a54e; text-decoration: none; }
 
-      /* Loading spinner */
       .iu-spinner {
         display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid rgba(255,255,255,0.3);
-        border-top-color: white;
+        width: 16px; height: 16px;
+        border: 2px solid rgba(0,0,0,0.15);
+        border-top-color: #0a1929;
         border-radius: 50%;
         animation: iuSpin 0.8s linear infinite;
         margin-right: 8px;
@@ -338,16 +488,30 @@
       }
       @keyframes iuSpin { to { transform: rotate(360deg); } }
 
+      .iu-forgot-link {
+        display: block;
+        text-align: right;
+        margin-top: -8px;
+        margin-bottom: 12px;
+        font-size: 12px;
+        color: #d4a54e;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .iu-forgot-link:hover { text-decoration: underline; }
+
       @media (max-width: 640px) {
-        .iu-modal-content { max-width: 100%; margin: 10px; }
+        .iu-modal-content { max-width: 100%; }
         .iu-widget-form { flex-direction: column; }
         .iu-checkboxes { grid-template-columns: 1fr; }
+        .iu-authbar { flex-direction: column; gap: 4px; }
+        .iu-authbar-btn { width: 100%; }
       }
     `;
     document.head.appendChild(style);
   }
 
-  // ==================== MODAL HTML ====================
+  // ==================== MODAL ====================
   function createModal() {
     if (document.getElementById('iu-auth-modal')) return;
 
@@ -357,68 +521,117 @@
     modal.innerHTML = `
       <div class="iu-modal-content" onclick="event.stopPropagation()">
         <div class="iu-modal-header">
-          <h2 class="iu-modal-title" id="iu-modal-title">Hoş Geldiniz</h2>
+          <div class="iu-modal-brand">İSMAİL <span class="accent">ÜNSAL</span></div>
+          <div class="iu-modal-subtitle">Gayrimenkul</div>
           <button class="iu-modal-close" onclick="IUAuth.close()" aria-label="Kapat">×</button>
         </div>
+
         <div class="iu-modal-body">
           <div class="iu-tabs">
-            <button class="iu-tab active" data-tab="subscribe" onclick="IUAuth.switchTab('subscribe')">📧 Bültene Kayıt</button>
-            <button class="iu-tab" data-tab="login" onclick="IUAuth.switchTab('login')">🔐 Admin Girişi</button>
+            <button class="iu-tab active" data-tab="signup" onclick="IUAuth.switchTab('signup')">Üye Ol</button>
+            <button class="iu-tab" data-tab="login" onclick="IUAuth.switchTab('login')">Giriş</button>
+            <button class="iu-tab" data-tab="subscribe" onclick="IUAuth.switchTab('subscribe')">Bülten</button>
           </div>
 
-          <!-- SUBSCRIBE TAB -->
-          <div class="iu-tab-content active" id="iu-tab-subscribe">
-            <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">
-              📬 <strong>Yalova gayrimenkul fırsatlarından</strong> ilk siz haberdar olun. Ücretsiz, istediğiniz zaman iptal edebilirsiniz.
-            </p>
+          <!-- SIGNUP (Müşteri Kayıt) -->
+          <div class="iu-tab-content active" id="iu-tab-signup">
+            <p class="iu-intro">🏠 Hesap açarak favori ilanlarınızı kaydedin, kişiselleştirilmiş bildirimlere abone olun.</p>
 
-            <form id="iu-subscribe-form" novalidate>
-              <!-- Honeypot -->
+            <form id="iu-signup-form" novalidate>
               <input type="text" name="website" class="iu-hp" tabindex="-1" autocomplete="off">
 
               <div class="iu-form-group">
-                <label class="iu-label" for="iu-sub-email">Email *</label>
-                <input type="email" id="iu-sub-email" class="iu-input" required maxlength="254" placeholder="ornek@email.com" autocomplete="email">
+                <label class="iu-label">Ad Soyad <span class="iu-required">*</span></label>
+                <input type="text" name="full_name" class="iu-input" required maxlength="100" placeholder="Ahmet Yılmaz" autocomplete="name">
               </div>
 
               <div class="iu-form-group">
-                <label class="iu-label" for="iu-sub-name">Ad Soyad</label>
-                <input type="text" id="iu-sub-name" class="iu-input" maxlength="100" placeholder="Ahmet Yılmaz" autocomplete="name">
+                <label class="iu-label">Email <span class="iu-required">*</span></label>
+                <input type="email" name="email" class="iu-input" required maxlength="254" placeholder="ornek@email.com" autocomplete="email">
               </div>
 
               <div class="iu-form-group">
-                <label class="iu-label" for="iu-sub-phone">Telefon (opsiyonel)</label>
-                <input type="tel" id="iu-sub-phone" class="iu-input" maxlength="20" placeholder="+90 555 123 45 67" autocomplete="tel">
+                <label class="iu-label">Telefon (opsiyonel)</label>
+                <input type="tel" name="phone" class="iu-input" maxlength="20" placeholder="+90 555 123 45 67" autocomplete="tel">
               </div>
 
               <div class="iu-form-group">
-                <label class="iu-label">İlgi Alanları</label>
-                <div class="iu-checkboxes">
-                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="arsa"> <span>🏞️ Arsa</span></label>
-                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="daire"> <span>🏢 Daire</span></label>
-                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="villa"> <span>🏡 Villa</span></label>
-                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="isyeri"> <span>🏪 İşyeri</span></label>
-                </div>
+                <label class="iu-label">Şifre <span class="iu-required">*</span> <small style="font-weight:400;color:#6b7280;text-transform:none;letter-spacing:0">(En az 8 karakter)</small></label>
+                <input type="password" name="password" class="iu-input" required minlength="8" maxlength="128" placeholder="••••••••" autocomplete="new-password">
               </div>
 
               <div class="iu-form-group">
-                <label class="iu-label" for="iu-sub-islem">İşlem Tipi</label>
-                <select id="iu-sub-islem" class="iu-select">
-                  <option value="her_ikisi">Satılık ve Kiralık</option>
-                  <option value="satilik">Sadece Satılık</option>
-                  <option value="kiralik">Sadece Kiralık</option>
-                </select>
-              </div>
-
-              <div class="iu-form-group">
-                <label class="iu-label" for="iu-sub-lang">Email Dili</label>
-                <select id="iu-sub-lang" class="iu-select">
+                <label class="iu-label">Email Dili</label>
+                <select name="language" class="iu-select">
                   <option value="tr">🇹🇷 Türkçe</option>
                   <option value="en">🇬🇧 English</option>
                   <option value="de">🇩🇪 Deutsch</option>
                   <option value="fr">🇫🇷 Français</option>
                   <option value="ru">🇷🇺 Русский</option>
                 </select>
+              </div>
+
+              <div id="iu-signup-msg"></div>
+
+              <button type="submit" class="iu-btn iu-btn-primary" id="iu-signup-btn">
+                🎉 Hesap Oluştur
+              </button>
+
+              <div class="iu-kvkk">
+                Kayıt olarak <a href="/kvkk" target="_blank">KVKK Aydınlatma Metni</a>'ni okuduğunuzu ve <a href="/kullanim-kosullari" target="_blank">Kullanım Koşulları</a>'nı kabul ettiğinizi onaylarsınız.
+              </div>
+            </form>
+          </div>
+
+          <!-- LOGIN (Genel Giriş - Müşteri/Admin otomatik) -->
+          <div class="iu-tab-content" id="iu-tab-login">
+            <p class="iu-intro">👋 Hoş geldiniz! Hesabınıza giriş yapın.</p>
+
+            <form id="iu-login-form" novalidate>
+              <div class="iu-form-group">
+                <label class="iu-label">Email</label>
+                <input type="email" name="email" class="iu-input" required maxlength="254" placeholder="ornek@email.com" autocomplete="email">
+              </div>
+
+              <div class="iu-form-group">
+                <label class="iu-label">Şifre</label>
+                <input type="password" name="password" class="iu-input" required minlength="8" placeholder="••••••••" autocomplete="current-password">
+              </div>
+
+              <a href="#" onclick="IUAuth.forgotPassword(event)" class="iu-forgot-link">Şifremi Unuttum</a>
+
+              <div id="iu-login-msg"></div>
+
+              <button type="submit" class="iu-btn iu-btn-dark" id="iu-login-btn">
+                🔐 Giriş Yap
+              </button>
+
+              <div style="text-align: center; margin-top: 16px; font-size: 13px; color: #6b7280;">
+                Hesabınız yok mu? <a href="#" onclick="IUAuth.switchTab('signup'); return false;" style="color: #d4a54e; font-weight: 600; text-decoration: none;">Üye Ol</a>
+              </div>
+            </form>
+          </div>
+
+          <!-- SUBSCRIBE (Hızlı Bülten - Hesap gerektirmez) -->
+          <div class="iu-tab-content" id="iu-tab-subscribe">
+            <p class="iu-intro">📬 Hesap açmadan hızlı bülten kaydı. Yeni ilanlardan haberdar olun.</p>
+
+            <form id="iu-subscribe-form" novalidate>
+              <input type="text" name="website" class="iu-hp" tabindex="-1" autocomplete="off">
+
+              <div class="iu-form-group">
+                <label class="iu-label">Email <span class="iu-required">*</span></label>
+                <input type="email" name="email" class="iu-input" required maxlength="254" placeholder="ornek@email.com" autocomplete="email">
+              </div>
+
+              <div class="iu-form-group">
+                <label class="iu-label">İlgi Alanlarınız</label>
+                <div class="iu-checkboxes">
+                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="arsa"> 🏞️ Arsa</label>
+                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="daire"> 🏢 Daire</label>
+                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="villa"> 🏡 Villa</label>
+                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="isyeri"> 🏪 İşyeri</label>
+                </div>
               </div>
 
               <div id="iu-sub-msg"></div>
@@ -428,37 +641,7 @@
               </button>
 
               <div class="iu-kvkk">
-                Kayıt olarak, <a href="/kvkk" target="_blank">KVKK Aydınlatma Metni</a>'ni okuduğunuzu ve email bültenimize abone olmayı kabul ettiğinizi onaylarsınız.
-                Her mailin altındaki bağlantıdan aboneliğinizi iptal edebilirsiniz.
-              </div>
-            </form>
-          </div>
-
-          <!-- LOGIN TAB -->
-          <div class="iu-tab-content" id="iu-tab-login">
-            <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">
-              🔐 Admin paneline giriş yapın. Sadece yetkili kullanıcılar erişebilir.
-            </p>
-
-            <form id="iu-login-form" novalidate>
-              <div class="iu-form-group">
-                <label class="iu-label" for="iu-login-email">Email</label>
-                <input type="email" id="iu-login-email" class="iu-input" required maxlength="254" placeholder="admin@email.com" autocomplete="email">
-              </div>
-
-              <div class="iu-form-group">
-                <label class="iu-label" for="iu-login-pass">Şifre</label>
-                <input type="password" id="iu-login-pass" class="iu-input" required minlength="8" placeholder="••••••••" autocomplete="current-password">
-              </div>
-
-              <div id="iu-login-msg"></div>
-
-              <button type="submit" class="iu-btn" id="iu-login-btn">
-                🔐 Giriş Yap
-              </button>
-
-              <div class="iu-kvkk" style="text-align: center; margin-top: 16px;">
-                Admin misiniz? <a href="${CONFIG.ADMIN_URL}">Doğrudan admin paneline git →</a>
+                <a href="/kvkk" target="_blank">KVKK Aydınlatma Metni</a>'ni kabul ediyorum.
               </div>
             </form>
           </div>
@@ -473,196 +656,298 @@
 
   // ==================== FORM HANDLERS ====================
   function setupFormHandlers() {
-    // Subscribe form
-    document.getElementById('iu-subscribe-form').addEventListener('submit', handleSubscribe);
-    // Login form
+    document.getElementById('iu-signup-form').addEventListener('submit', handleSignup);
     document.getElementById('iu-login-form').addEventListener('submit', handleLogin);
+    document.getElementById('iu-subscribe-form').addEventListener('submit', handleSubscribe);
   }
 
-  function showMessage(containerId, text, type = 'info') {
-    const el = document.getElementById(containerId);
-    el.innerHTML = `<div class="iu-msg iu-msg-${type}">${Security.escapeHtml(text)}</div>`;
+  function showMsg(id, text, type = 'info') {
+    document.getElementById(id).innerHTML = `<div class="iu-msg iu-msg-${type}">${Security.escapeHtml(text)}</div>`;
   }
 
-  async function handleSubscribe(e) {
+  // MÜŞTERİ KAYIT
+  async function handleSignup(e) {
     e.preventDefault();
-
-    const btn = document.getElementById('iu-sub-btn');
+    const btn = document.getElementById('iu-signup-btn');
     const originalText = btn.innerHTML;
 
     try {
       const form = e.target;
+      if (form.website.value) return; // honeypot
 
-      // BOT KORUMASI: Honeypot dolu ise reddet
-      if (form.website.value) {
-        console.warn('[Subscribe] Honeypot triggered - possible bot');
-        showMessage('iu-sub-msg', 'Kayıt işlenemedi. Lütfen tekrar deneyin.', 'error');
+      if (!Security.checkClientRateLimit('signup', 3, 3600000)) {
+        showMsg('iu-signup-msg', 'Çok fazla deneme. 1 saat sonra tekrar deneyin.', 'error');
         return;
       }
 
-      // Client-side rate limit
-      if (!Security.checkClientRateLimit()) {
-        showMessage('iu-sub-msg', 'Çok fazla deneme. Lütfen 1 saat sonra tekrar deneyin.', 'error');
+      const email = form.email.value.trim().toLowerCase();
+      const password = form.password.value;
+      const fullName = Security.sanitizeInput(form.full_name.value, 100);
+      const phone = form.phone.value.trim();
+      const language = form.language.value;
+
+      if (!fullName || fullName.length < 2) {
+        showMsg('iu-signup-msg', 'Ad soyad giriniz.', 'error');
         return;
       }
-
-      // Input validation
-      const email = form.querySelector('#iu-sub-email').value.trim().toLowerCase();
       if (!Security.isValidEmail(email)) {
-        showMessage('iu-sub-msg', 'Geçerli bir email adresi girin.', 'error');
+        showMsg('iu-signup-msg', 'Geçerli bir email girin.', 'error');
         return;
       }
-
-      const phone = form.querySelector('#iu-sub-phone').value.trim();
       if (phone && !Security.isValidPhone(phone)) {
-        showMessage('iu-sub-msg', 'Geçerli bir telefon numarası girin.', 'error');
+        showMsg('iu-signup-msg', 'Geçerli bir telefon numarası girin.', 'error');
         return;
       }
 
-      const kategoriler = Array.from(form.querySelectorAll('input[name="kat"]:checked')).map(c => c.value);
-
-      const data = {
-        email,
-        full_name: Security.sanitizeInput(form.querySelector('#iu-sub-name').value, 100) || null,
-        phone: phone || null,
-        ilgi_kategoriler: kategoriler,
-        islem_tipi: form.querySelector('#iu-sub-islem').value,
-        language: form.querySelector('#iu-sub-lang').value,
-        signup_source: 'website',
-        user_agent: navigator.userAgent.substring(0, 500)
-      };
+      const strength = Security.checkPasswordStrength(password);
+      if (!strength.valid) {
+        showMsg('iu-signup-msg', `Şifre çok zayıf (${strength.level}). En az 8 karakter, büyük/küçük harf ve rakam kullanın.`, 'error');
+        return;
+      }
 
       btn.disabled = true;
-      btn.innerHTML = '<span class="iu-spinner"></span> Kaydediliyor...';
+      btn.innerHTML = '<span class="iu-spinner"></span>Kayıt yapılıyor...';
 
       const sb = initSupabase();
 
-      // Insert (RLS ile korunuyor, sadece INSERT yapabilir public user)
-      const { data: newSub, error } = await sb
-        .from('subscribers')
-        .insert(data)
-        .select('id, verification_token')
-        .single();
+      // Supabase Auth signup
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: fullName, language, phone },
+          emailRedirectTo: `${CONFIG.SITE_URL}/verify-account`
+        }
+      });
 
       if (error) {
-        if (error.code === '23505') {
-          // Duplicate email - zaten kayıtlı
-          showMessage('iu-sub-msg', 'Bu email zaten kayıtlı. Eğer aboneliğinizi yeniden aktif etmek istiyorsanız, size gönderilen eski maildeki linkten geri katılabilirsiniz.', 'info');
+        if (error.message.includes('already registered')) {
+          showMsg('iu-signup-msg', 'Bu email zaten kayıtlı. Giriş yapmayı deneyin.', 'info');
         } else {
-          throw error;
+          showMsg('iu-signup-msg', 'Kayıt hatası: ' + error.message, 'error');
         }
         btn.disabled = false;
         btn.innerHTML = originalText;
         return;
       }
 
-      // Verification emaili tetikle (Edge Function)
-      try {
-        await fetch(`${CONFIG.SUPABASE_URL}/functions/v1/send-verification`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': CONFIG.SUPABASE_KEY,
-            'Authorization': `Bearer ${CONFIG.SUPABASE_KEY}`
-          },
-          body: JSON.stringify({ subscriberId: newSub.id })
-        });
-      } catch (emailErr) {
-        console.error('[Subscribe] Verification email error:', emailErr);
-        // Yine de kayıt başarılı sayılır, sadece log
+      // Phone bilgisini profile update et
+      if (phone && data.user) {
+        await sb.from('customer_profiles').update({ phone }).eq('id', data.user.id);
       }
 
-      // Başarı mesajı
-      showMessage('iu-sub-msg',
-        '✅ Kayıt başarılı! Email adresinize bir doğrulama linki gönderdik. ' +
-        'Lütfen mailinizi kontrol edin ve linke tıklayarak aboneliğinizi tamamlayın. ' +
-        '(Spam klasörünüzü de kontrol etmeyi unutmayın)',
+      showMsg('iu-signup-msg',
+        '✅ Kayıt başarılı! Email adresinize doğrulama linki gönderdik. Lütfen mailinizi kontrol edin (spam klasörünü de).',
         'success'
       );
 
       form.reset();
-      btn.innerHTML = '✅ Gönderildi';
       setTimeout(() => {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
+        IUAuth.close();
+        checkUserStatus();
       }, 3000);
 
     } catch (err) {
-      console.error('[Subscribe] Error:', err);
-      showMessage('iu-sub-msg', 'Bir hata oluştu: ' + (err.message || 'Lütfen tekrar deneyin'), 'error');
+      console.error('[Signup]', err);
+      showMsg('iu-signup-msg', 'Beklenmeyen hata: ' + err.message, 'error');
       btn.disabled = false;
       btn.innerHTML = originalText;
     }
   }
 
+  // GİRİŞ (Müşteri veya Admin)
   async function handleLogin(e) {
     e.preventDefault();
-
     const btn = document.getElementById('iu-login-btn');
     const originalText = btn.innerHTML;
 
     try {
-      const email = document.getElementById('iu-login-email').value.trim().toLowerCase();
-      const password = document.getElementById('iu-login-pass').value;
+      const email = e.target.email.value.trim().toLowerCase();
+      const password = e.target.password.value;
 
       if (!Security.isValidEmail(email)) {
-        showMessage('iu-login-msg', 'Geçerli bir email girin.', 'error');
+        showMsg('iu-login-msg', 'Geçerli bir email girin.', 'error');
+        return;
+      }
+      if (password.length < 8) {
+        showMsg('iu-login-msg', 'Şifre en az 8 karakter olmalı.', 'error');
         return;
       }
 
-      if (password.length < 8) {
-        showMessage('iu-login-msg', 'Şifre en az 8 karakter olmalı.', 'error');
+      if (!Security.checkClientRateLimit('login_' + email, 5, 60000)) {
+        showMsg('iu-login-msg', 'Çok fazla deneme. 1 dakika bekleyin.', 'error');
         return;
       }
 
       btn.disabled = true;
-      btn.innerHTML = '<span class="iu-spinner"></span> Giriş yapılıyor...';
+      btn.innerHTML = '<span class="iu-spinner"></span>Giriş yapılıyor...';
 
       const sb = initSupabase();
       const { data, error } = await sb.auth.signInWithPassword({ email, password });
 
       if (error) {
-        showMessage('iu-login-msg', 'Giriş başarısız: ' + (error.message === 'Invalid login credentials' ? 'Email veya şifre hatalı' : error.message), 'error');
+        showMsg('iu-login-msg', error.message === 'Invalid login credentials' ? 'Email veya şifre hatalı.' : error.message, 'error');
         btn.disabled = false;
         btn.innerHTML = originalText;
         return;
       }
 
       // Admin mi kontrol et
-      const { data: adminData } = await sb
-        .from('admin_users')
-        .select('role')
-        .eq('id', data.user.id)
-        .single();
+      const { data: adminData } = await sb.from('admin_users').select('role').eq('id', data.user.id).single();
 
-      if (!adminData) {
-        showMessage('iu-login-msg', 'Bu hesabın admin yetkisi yok.', 'error');
-        await sb.auth.signOut();
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-        return;
+      if (adminData) {
+        showMsg('iu-login-msg', '✅ Admin girişi başarılı! Admin panele yönlendiriliyorsunuz...', 'success');
+        setTimeout(() => window.location.href = '/admin/index.html', 800);
+      } else {
+        showMsg('iu-login-msg', '✅ Hoş geldiniz! Yönlendiriliyorsunuz...', 'success');
+        setTimeout(() => {
+          IUAuth.close();
+          checkUserStatus();
+          // Hesap sayfasına yönlendir
+          if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+            window.location.href = CONFIG.ACCOUNT_URL;
+          } else {
+            window.location.reload();
+          }
+        }, 800);
       }
 
-      // Admin paneline yönlendir
-      showMessage('iu-login-msg', '✅ Giriş başarılı! Yönlendiriliyorsunuz...', 'success');
-      setTimeout(() => {
-        window.location.href = '/admin/index.html';
-      }, 800);
-
     } catch (err) {
-      console.error('[Login] Error:', err);
-      showMessage('iu-login-msg', 'Bir hata oluştu: ' + err.message, 'error');
+      console.error('[Login]', err);
+      showMsg('iu-login-msg', 'Hata: ' + err.message, 'error');
       btn.disabled = false;
       btn.innerHTML = originalText;
     }
   }
 
+  // BÜLTEN KAYIT (Hesap gerektirmez)
+  async function handleSubscribe(e) {
+    e.preventDefault();
+    const btn = document.getElementById('iu-sub-btn');
+    const originalText = btn.innerHTML;
+
+    try {
+      const form = e.target;
+      if (form.website.value) return;
+
+      if (!Security.checkClientRateLimit('subscribe', 3, 3600000)) {
+        showMsg('iu-sub-msg', 'Çok fazla deneme. 1 saat sonra deneyin.', 'error');
+        return;
+      }
+
+      const email = form.email.value.trim().toLowerCase();
+      if (!Security.isValidEmail(email)) {
+        showMsg('iu-sub-msg', 'Geçerli bir email girin.', 'error');
+        return;
+      }
+
+      const kategoriler = Array.from(form.querySelectorAll('input[name="kat"]:checked')).map(c => c.value);
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="iu-spinner"></span>Kaydediliyor...';
+
+      const sb = initSupabase();
+      const { data, error } = await sb.from('subscribers').insert({
+        email,
+        ilgi_kategoriler: kategoriler,
+        language: 'tr',
+        signup_source: 'modal_widget',
+        user_agent: navigator.userAgent.substring(0, 500)
+      }).select('id').single();
+
+      if (error) {
+        if (error.code === '23505') {
+          showMsg('iu-sub-msg', 'Bu email zaten kayıtlı.', 'info');
+        } else {
+          showMsg('iu-sub-msg', 'Hata: ' + error.message, 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        return;
+      }
+
+      // Verification email tetikle
+      fetch(`${CONFIG.SUPABASE_URL}/functions/v1/send-verification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': CONFIG.SUPABASE_KEY,
+          'Authorization': `Bearer ${CONFIG.SUPABASE_KEY}`
+        },
+        body: JSON.stringify({ subscriberId: data.id })
+      }).catch(() => {});
+
+      showMsg('iu-sub-msg', '✅ Kayıt başarılı! Email adresinize doğrulama linki gönderdik.', 'success');
+      form.reset();
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }, 3000);
+
+    } catch (err) {
+      console.error('[Subscribe]', err);
+      showMsg('iu-sub-msg', 'Hata: ' + err.message, 'error');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+
+  // ==================== USER STATUS ====================
+  async function checkUserStatus() {
+    const sb = initSupabase();
+    const { data: { user } } = await sb.auth.getUser();
+    IUAuth.user = user;
+    renderAuthBar();
+  }
+
+  // ==================== HEADER AUTH BAR ====================
+  function renderAuthBar() {
+    // Manuel yerleştirilmiş [data-iu-auth] elementleri
+    const containers = document.querySelectorAll('[data-iu-auth]');
+
+    containers.forEach(container => {
+      container.innerHTML = ''; // temizle
+
+      if (IUAuth.user) {
+        // Giriş yapmış kullanıcı
+        const initial = (IUAuth.user.user_metadata?.full_name || IUAuth.user.email || 'U').charAt(0).toUpperCase();
+        const name = IUAuth.user.user_metadata?.full_name || IUAuth.user.email.split('@')[0];
+
+        container.innerHTML = `
+          <div class="iu-authbar" style="position: relative;">
+            <div class="iu-authbar-user" onclick="IUAuth.toggleUserMenu(event)">
+              <div class="iu-authbar-avatar">${Security.escapeHtml(initial)}</div>
+              <div class="iu-authbar-name">${Security.escapeHtml(name)}</div>
+            </div>
+            <div class="iu-user-menu" id="iu-user-menu-${Math.random().toString(36).substr(2, 5)}">
+              <div class="iu-user-menu-header">
+                <div style="font-weight: 600;">${Security.escapeHtml(name)}</div>
+                <div class="iu-user-menu-email">${Security.escapeHtml(IUAuth.user.email)}</div>
+              </div>
+              <a href="${CONFIG.ACCOUNT_URL}">👤 Hesabım</a>
+              <a href="/favorilerim">❤️ Favorilerim</a>
+              <a href="/aramalarim">🔍 Kayıtlı Aramalar</a>
+              <div class="iu-user-menu-divider"></div>
+              <a href="#" onclick="IUAuth.logout(event)" class="iu-user-menu-logout">🚪 Çıkış Yap</a>
+            </div>
+          </div>
+        `;
+      } else {
+        // Giriş yapmamış
+        container.innerHTML = `
+          <div class="iu-authbar">
+            <button class="iu-authbar-btn iu-authbar-login" onclick="IUAuth.open('login')">🔐 Giriş</button>
+            <button class="iu-authbar-btn iu-authbar-signup" onclick="IUAuth.open('signup')">✨ Üye Ol</button>
+          </div>
+        `;
+      }
+    });
+  }
+
   // ==================== FOOTER WIDGET ====================
   function createFooterWidget() {
-    // Sadece manuel container varsa ekle
     const targets = document.querySelectorAll('#subscribe-form, .subscribe-form-container');
-    if (targets.length === 0) return;
-
     targets.forEach(target => {
       target.innerHTML = `
         <div class="iu-widget">
@@ -672,35 +957,17 @@
             <input type="email" placeholder="email@adres.com" required maxlength="254">
             <button type="submit">Kayıt Ol</button>
           </form>
-          <small>Detaylı tercihler için <a href="#" onclick="IUAuth.open('subscribe'); return false;" style="color: #d4a54e;">buraya tıklayın</a></small>
+          <small>Detaylı tercih ve hesap için <a href="#" onclick="IUAuth.open('signup'); return false;" style="color: #d4a54e;">buraya tıklayın</a></small>
         </div>
       `;
     });
   }
 
-  // ==================== HEADER BUTON ====================
-  function addHeaderButton() {
-    // Kullanıcı manuel eklerse kullansın
-    let container = document.querySelector('[data-iu-auth]');
-
-    // Otomatik header'a eklemeye çalış
-    if (!container) {
-      container = document.querySelector('header nav, header .menu, header .actions, header, nav');
-    }
-
-    if (!container || document.getElementById('iu-header-btn')) return;
-
-    const btn = document.createElement('button');
-    btn.id = 'iu-header-btn';
-    btn.className = 'iu-auth-btn';
-    btn.textContent = '👤 Giriş / Üye Ol';
-    btn.onclick = () => IUAuth.open('subscribe');
-    container.appendChild(btn);
-  }
-
   // ==================== PUBLIC API ====================
   window.IUAuth = {
-    open(tab = 'subscribe') {
+    user: null,
+
+    open(tab = 'signup') {
       const modal = document.getElementById('iu-auth-modal');
       if (!modal) return;
       modal.classList.add('active');
@@ -713,8 +980,10 @@
       if (!modal) return;
       modal.classList.remove('active');
       document.body.style.overflow = '';
-      document.getElementById('iu-sub-msg').innerHTML = '';
-      document.getElementById('iu-login-msg').innerHTML = '';
+      ['iu-signup-msg', 'iu-login-msg', 'iu-sub-msg'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+      });
     },
 
     switchTab(tab) {
@@ -724,66 +993,113 @@
       document.querySelectorAll('.iu-tab-content').forEach(c => {
         c.classList.toggle('active', c.id === `iu-tab-${tab}`);
       });
-      document.getElementById('iu-modal-title').textContent =
-        tab === 'subscribe' ? '📧 Bültene Kaydolun' : '🔐 Admin Girişi';
+    },
+
+    async logout(e) {
+      if (e) e.preventDefault();
+      const sb = initSupabase();
+      await sb.auth.signOut();
+      this.user = null;
+      renderAuthBar();
+      if (window.location.pathname.startsWith('/hesab') || window.location.pathname.startsWith('/favorilerim')) {
+        window.location.href = '/';
+      }
+    },
+
+    toggleUserMenu(e) {
+      e.stopPropagation();
+      const menus = document.querySelectorAll('.iu-user-menu');
+      menus.forEach(m => m.classList.toggle('open'));
+    },
+
+    async forgotPassword(e) {
+      e.preventDefault();
+      const email = prompt('Şifrenizi sıfırlamak için email adresinizi girin:');
+      if (!email || !Security.isValidEmail(email)) return;
+
+      const sb = initSupabase();
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: `${CONFIG.SITE_URL}/sifre-sifirla`
+      });
+
+      if (error) {
+        alert('Hata: ' + error.message);
+      } else {
+        alert('✅ Şifre sıfırlama linki email adresinize gönderildi.');
+      }
     },
 
     async quickSubscribe(e) {
       e.preventDefault();
       const email = e.target.querySelector('input').value.trim().toLowerCase();
-      if (!Security.isValidEmail(email)) {
-        alert('Geçerli bir email girin');
+      if (!Security.isValidEmail(email)) { alert('Geçerli bir email girin'); return; }
+      if (!Security.checkClientRateLimit('quick_sub', 3, 3600000)) { alert('Çok fazla deneme. 1 saat sonra deneyin.'); return; }
+
+      const sb = initSupabase();
+      const { data, error } = await sb.from('subscribers').insert({
+        email, language: 'tr', signup_source: 'footer_widget',
+        user_agent: navigator.userAgent.substring(0, 500)
+      }).select('id').single();
+
+      if (error) {
+        alert(error.code === '23505' ? 'Bu email zaten kayıtlı!' : 'Hata: ' + error.message);
         return;
       }
 
-      if (!Security.checkClientRateLimit()) {
-        alert('Çok fazla deneme. 1 saat sonra tekrar deneyin.');
-        return;
+      fetch(`${CONFIG.SUPABASE_URL}/functions/v1/send-verification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': CONFIG.SUPABASE_KEY,
+          'Authorization': `Bearer ${CONFIG.SUPABASE_KEY}`
+        },
+        body: JSON.stringify({ subscriberId: data.id })
+      }).catch(() => {});
+
+      e.target.reset();
+      alert('✅ Kayıt başarılı! Email doğrulama linki gönderdik.');
+    },
+
+    async toggleFavorite(propertyId) {
+      if (!this.user) {
+        this.open('login');
+        return { requires_login: true };
       }
 
-      try {
-        const sb = initSupabase();
-        const { data, error } = await sb.from('subscribers').insert({
-          email,
-          language: 'tr',
-          signup_source: 'website_footer',
-          user_agent: navigator.userAgent.substring(0, 500)
-        }).select('id').single();
-
-        if (error) {
-          if (error.code === '23505') {
-            alert('Bu email zaten kayıtlı!');
-          } else {
-            alert('Kayıt hatası: ' + error.message);
-          }
-          return;
-        }
-
-        // Verification email
-        fetch(`${CONFIG.SUPABASE_URL}/functions/v1/send-verification`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': CONFIG.SUPABASE_KEY,
-            'Authorization': `Bearer ${CONFIG.SUPABASE_KEY}`
-          },
-          body: JSON.stringify({ subscriberId: data.id })
-        }).catch(() => {});
-
-        e.target.reset();
-        alert('✅ Kayıt başarılı! Doğrulama emaili gönderdik, lütfen mailinizi kontrol edin.');
-      } catch (err) {
-        alert('Hata: ' + err.message);
+      const sb = initSupabase();
+      const { data, error } = await sb.rpc('toggle_favorite', { p_property_id: propertyId });
+      if (error) {
+        console.error('[Favorite]', error);
+        return { error: error.message };
       }
+      return data?.[0] || {};
     }
   };
 
   // ==================== INIT ====================
-  function init() {
+  async function init() {
     injectStyles();
     createModal();
     createFooterWidget();
-    addHeaderButton();
+
+    // Session kontrolü
+    const sb = initSupabase();
+    if (sb) {
+      const { data: { user } } = await sb.auth.getUser();
+      IUAuth.user = user;
+      renderAuthBar();
+
+      // Session değişimini dinle
+      sb.auth.onAuthStateChange((event, session) => {
+        IUAuth.user = session?.user || null;
+        renderAuthBar();
+      });
+    }
+
+    // Dropdown dışına tıklayınca kapat
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.iu-user-menu.open').forEach(m => m.classList.remove('open'));
+    });
   }
 
   if (document.readyState === 'loading') {
