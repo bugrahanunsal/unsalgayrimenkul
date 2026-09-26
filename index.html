@@ -268,6 +268,8 @@
       <span><i class="fa-solid fa-phone"></i> +90 507 518 84 82</span>
     </div>
     <div class="top-right">
+      <!-- Auth butonları (üst bar, sade tasarım) -->
+      <div data-iu-auth class="topbar-auth"></div>
       <div class="top-social">
         <a href="#"><i class="fa-brands fa-instagram"></i></a>
         <a href="#"><i class="fa-brands fa-facebook"></i></a>
@@ -311,8 +313,6 @@
       <a href="blog.html" data-i18n="nav.blog">BLOG</a>
       <a href="hakkimizda.html" data-i18n="nav.hakkimizda">HAKKIMIZDA</a>
       <a href="iletisim.html" data-i18n="nav.iletisim">İLETİŞİM</a>
-      <!-- Auth butonları: nav içinde, mobile'da hamburger ile beraber açılır -->
-      <div data-iu-auth class="nav-auth"></div>
     </nav>
     <div class="header-cta">
       <a href="tel:+905075188482" class="btn-call"><i class="fa-solid fa-phone"></i> <span data-i18n="nav.cta">HEMEN ARA</span></a>
@@ -320,17 +320,77 @@
     </div>
 
     <style>
-      /* Auth butonları: nav içinde konumlanır */
-      .nav-auth { display: inline-flex; gap: 8px; align-items: center; margin-left: 12px; }
-      .nav-auth .iu-authbar { gap: 6px; }
-      .nav-auth .iu-authbar-btn { padding: 8px 14px; font-size: 12px; }
+      /* ============================================ */
+      /* AUTH BUTONLARI - Üst bar tasarımı (sade)     */
+      /* ============================================ */
+      .topbar-auth {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 16px;
+        padding-right: 16px;
+        border-right: 1px solid rgba(255,255,255,0.15);
+      }
+      .topbar-auth .iu-authbar {
+        gap: 4px !important;
+        flex-direction: row !important;
+      }
+      .topbar-auth .iu-authbar-btn {
+        padding: 5px 12px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.3px !important;
+        border-radius: 4px !important;
+        border-width: 1px !important;
+        line-height: 1.4 !important;
+      }
+      .topbar-auth .iu-authbar-signup {
+        background: #F49B1C !important;
+        color: #0A2A5E !important;
+        border-color: #F49B1C !important;
+      }
+      .topbar-auth .iu-authbar-signup:hover {
+        background: #FFB543 !important;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+      .topbar-auth .iu-authbar-login {
+        background: transparent !important;
+        color: #FFFFFF !important;
+        border-color: rgba(255,255,255,0.4) !important;
+      }
+      .topbar-auth .iu-authbar-login:hover {
+        background: rgba(255,255,255,0.1) !important;
+        color: #FFFFFF !important;
+      }
+      /* Giriş yapmış kullanıcı */
+      .topbar-auth .iu-authbar-user {
+        padding: 3px 10px 3px 3px !important;
+        background: rgba(255,255,255,0.1) !important;
+        border-color: rgba(255,255,255,0.2) !important;
+      }
+      .topbar-auth .iu-authbar-avatar {
+        width: 22px !important; height: 22px !important;
+        font-size: 11px !important;
+      }
+      .topbar-auth .iu-authbar-name {
+        color: #FFFFFF !important;
+        font-size: 11px !important;
+      }
 
-      /* Mobile: nav açıldığında (hamburger tıklanınca) auth butonları dikey */
-      @media (max-width: 900px) {
-        .nav-auth { display: block !important; margin: 12px 0 0 0; width: 100%; padding-top: 12px; border-top: 1px solid rgba(10,42,94,0.1); }
-        .nav-auth .iu-authbar { flex-direction: column !important; gap: 8px; width: 100%; }
-        .nav-auth .iu-authbar-btn { width: 100%; padding: 12px 16px; font-size: 14px; justify-content: center; }
-        .nav-auth .iu-authbar-user { width: 100%; justify-content: center; }
+      /* Mobile: sadece kompakt "Giriş" göster, taşma olmasın */
+      @media (max-width: 720px) {
+        .topbar-auth {
+          margin-right: 8px !important;
+          padding-right: 8px !important;
+        }
+        .topbar-auth .iu-authbar-btn {
+          padding: 4px 8px !important;
+          font-size: 10px !important;
+        }
+      }
+      @media (max-width: 480px) {
+        .topbar-auth .iu-authbar-login { display: none !important; }
+        .topbar-auth .iu-authbar-signup { padding: 4px 10px !important; }
       }
     </style>
   </div>
