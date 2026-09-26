@@ -185,38 +185,74 @@
         font-weight: 600;
       }
 
-      /* User menu dropdown */
+      /* User menu dropdown - HER YERDE OKUNUR OLSUN */
       .iu-user-menu {
-        position: absolute;
-        top: calc(100% + 8px);
-        right: 0;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-        min-width: 220px;
-        overflow: hidden;
-        z-index: 999998;
+        position: absolute !important;
+        top: calc(100% + 8px) !important;
+        right: 0 !important;
+        background: #ffffff !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.25) !important;
+        border: 1px solid #e5e7eb !important;
+        min-width: 240px !important;
+        overflow: hidden !important;
+        z-index: 999998 !important;
         display: none;
         animation: iuFadeIn 0.15s;
       }
-      .iu-user-menu.open { display: block; }
+      .iu-user-menu.open { display: block !important; }
       .iu-user-menu-header {
-        padding: 16px;
-        background: #f9fafb;
-        border-bottom: 1px solid #e5e7eb;
+        padding: 16px !important;
+        background: #f9fafb !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        color: #0a1929 !important;
       }
-      .iu-user-menu-email { font-size: 12px; color: #6b7280; margin-top: 2px; }
+      .iu-user-menu-header > div:first-child {
+        color: #0a1929 !important;
+        font-weight: 700 !important;
+      }
+      .iu-user-menu-email {
+        font-size: 12px !important;
+        color: #6b7280 !important;
+        margin-top: 2px !important;
+      }
       .iu-user-menu a {
-        display: flex; align-items: center; gap: 10px;
-        padding: 12px 16px;
-        color: #0a1929;
-        text-decoration: none;
-        font-size: 14px;
-        transition: background 0.15s;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        padding: 12px 16px !important;
+        color: #0a1929 !important;
+        background: #ffffff !important;
+        text-decoration: none !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        transition: background 0.15s !important;
+        border: none !important;
       }
-      .iu-user-menu a:hover { background: #f3f4f6; }
-      .iu-user-menu-divider { height: 1px; background: #e5e7eb; }
-      .iu-user-menu-logout { color: #ef4444 !important; }
+      .iu-user-menu a:hover {
+        background: #f3f4f6 !important;
+        color: #0a1929 !important;
+      }
+      .iu-user-menu a svg {
+        color: #6b7280 !important;
+        flex-shrink: 0;
+      }
+      .iu-user-menu a:hover svg { color: #F49B1C !important; }
+      .iu-user-menu-divider {
+        height: 1px !important;
+        background: #e5e7eb !important;
+      }
+      .iu-user-menu-logout,
+      .iu-user-menu a.iu-user-menu-logout {
+        color: #ef4444 !important;
+      }
+      .iu-user-menu-logout:hover,
+      .iu-user-menu a.iu-user-menu-logout:hover {
+        background: #fef2f2 !important;
+        color: #dc2626 !important;
+      }
+      .iu-user-menu-logout svg,
+      .iu-user-menu a.iu-user-menu-logout svg { color: #ef4444 !important; }
 
       /* Modal */
       .iu-modal {
