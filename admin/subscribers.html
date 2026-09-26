@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Aboneler - Admin Panel</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .filter-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    .filter-bar > * { flex: 1; min-width: 180px; }
+    .subscriber-row td { vertical-align: middle; }
+    .badge-inactive { background: #f3f4f6; color: #6b7280; }
+    .prefs-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+    .prefs-tag { background: #f0f9ff; color: #0369a1; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+    .reason-icon { font-size: 18px; }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">📧 Aboneler</h1>
+        <div class="topbar-actions">
+          <button onclick="exportCSV()" class="btn btn-outline btn-sm">📥 CSV İndir</button>
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- İstatistikler -->
+        <div class="stat-row" id="statsRow">
+          <div class="loading">Yükleniyor...</div>
+        </div>
+
+        <!-- Filtre Barı -->
+        <div class="card" style="margin-bottom: 16px;">
+          <div class="filter-bar">
+            <input type="text" id="searchInput" class="form-input" placeholder="🔍 Email veya isim ara...">
+            <select id="statusFilter" class="form-select">
+              <option value="active">✅ Aktif</option>
+              <option value="pending">⏳ Doğrulama Bekliyor</option>
+              <option value="inactive">❌ Pasif/Çıkarılmış</option>
+              <option value="all">📋 Hepsi</option>
+            </select>
+            <select id="langFilter" class="form-select">
+              <option value="">🌍 Tüm Diller</option>
+              <option value="tr">🇹🇷 Türkçe</option>
+              <option value="en">🇬🇧 İngilizce</option>
+              <option value="de">🇩🇪 Almanca</option>
+              <option value="fr">🇫🇷 Fransızca</option>
+              <option value="ru">🇷🇺 Rusça</option>
+            </select>
+            <select id="reasonFilter" class="form-select">
+              <option value="">🏷️ Tüm Sebepler</option>
+              <option value="satin_aldi">🏠 Satın Aldı</option>
+              <option value="kiraladi">🔑 Kiraladı</option>
+              <option value="ilgilenmiyor">😐 İlgilenmiyor</option>
+              <option value="kendi_iptal">✋ Kendi İptal Etti</option>
+              <option value="admin_iptal">👤 Admin Çıkardı</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Abone Listesi -->
+        <div id="subscribersList"><div class="loading">Yükleniyor...</div></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Çıkarma Modal -->
+  <div id="removeModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: white; border-radius: var(--radius-lg); max-width: 500px; width: 100%;">
+      <div style="padding: 20px; border-bottom: 1px solid var(--border);">
+        <div style="font-size: 18px; font-weight: 700;">Aboneyi Çıkar</div>
+        <div style="color: var(--text-muted); font-size: 13px; margin-top: 4px;" id="removeEmail"></div>
+      </div>
+      <form id="removeForm" style="padding: 20px;">
+        <input type="hidden" id="removeSubId">
+        <div class="form-group">
+          <label class="form-label">Çıkarma Sebebi *</label>
+          <select id="removeReason" class="form-select" required>
+            <option value="">Sebep seçin...</option>
+            <option value="satin_aldi">🏠 Ev Satın Aldı</option>
+            <option value="kiraladi">🔑 Ev Kiraladı</option>
+            <option value="ilgilenmiyor">😐 Artık İlgilenmiyor</option>
+            <option value="admin_iptal">👤 Diğer</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notlar (opsiyonel)</label>
+          <textarea id="removeNotes" class="form-textarea" placeholder="Örn: 3+1 daire satın aldı, teşekkür maili göndersin..."></textarea>
+        </div>
+        <div class="alert alert-info" style="font-size: 12px;">
+          ℹ️ Abone çıkarıldığında artık email listemize alınmaz. İstenirse tekrar aktif edilebilir.
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px;">
+          <button type="button" onclick="closeRemoveModal()" class="btn btn-outline">İptal</button>
+          <button type="submit" class="btn btn-danger">🗑️ Çıkar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detay Modal -->
+  <div id="detailModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: white; border-radius: var(--radius-lg); max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;">
+      <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 18px; font-weight: 700;">Abone Detayları</div>
+        <button onclick="closeDetailModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+      </div>
+      <div id="detailContent" style="padding: 20px;"></div>
+    </div>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    let subscribers = [];
+    let filtered = [];
+
+    (async () => {
+      const authed = await App.init('subscribers');
+      if (!authed) return;
+
+      await loadStats();
+      await loadSubscribers();
+
+      document.getElementById('searchInput').addEventListener('input', applyFilters);
+      document.getElementById('statusFilter').addEventListener('change', applyFilters);
+      document.getElementById('langFilter').addEventListener('change', applyFilters);
+      document.getElementById('reasonFilter').addEventListener('change', applyFilters);
+    })();
+
+    async function loadStats() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('subscriber_stats')
+          .select('*')
+          .single();
+
+        if (error) throw error;
+
+        document.getElementById('statsRow').innerHTML = `
+          <div class="stat-card">
+            <div class="stat-label">Aktif Aboneler</div>
+            <div class="stat-value">${data.active_count.toLocaleString('tr-TR')}</div>
+            <div class="stat-change positive">📧 Email listesinde</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Doğrulama Bekleyen</div>
+            <div class="stat-value">${data.pending_verification.toLocaleString('tr-TR')}</div>
+            <div class="stat-change">⏳ Email onayı yok</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Bu Hafta</div>
+            <div class="stat-value">${data.new_last_week.toLocaleString('tr-TR')}</div>
+            <div class="stat-change positive">🆕 Yeni kayıt</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Satın Alan / Kiralayan</div>
+            <div class="stat-value">${(data.bought + data.rented).toLocaleString('tr-TR')}</div>
+            <div class="stat-change positive">🎉 Kapanan iş</div>
+          </div>
+        `;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async function loadSubscribers() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('subscribers')
+          .select('*')
+          .order('subscribed_at', { ascending: false });
+
+        if (error) throw error;
+        subscribers = data || [];
+        applyFilters();
+      } catch (error) {
+        document.getElementById('subscribersList').innerHTML =
+          '<div class="alert alert-error">' + Security.escapeHtml(error.message) + '</div>';
+      }
+    }
+
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+      const lang = document.getElementById('langFilter').value;
+      const reason = document.getElementById('reasonFilter').value;
+
+      filtered = subscribers.filter(s => {
+        // Status filter
+        if (status === 'active' && (!s.is_active || !s.email_verified)) return false;
+        if (status === 'pending' && s.email_verified) return false;
+        if (status === 'inactive' && s.is_active) return false;
+
+        // Lang filter
+        if (lang && s.language !== lang) return false;
+
+        // Reason filter
+        if (reason && s.unsubscribe_reason !== reason) return false;
+
+        // Search filter
+        if (search) {
+          const searchable = (s.email + ' ' + (s.full_name || '') + ' ' + (s.phone || '')).toLowerCase();
+          if (!searchable.includes(search)) return false;
+        }
+
+        return true;
+      });
+
+      renderList();
+    }
+
+    function renderList() {
+      const container = document.getElementById('subscribersList');
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-icon">📭</div>
+              <div>Filtreye uyan abone yok</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const reasonIcons = {
+        satin_aldi: '🏠', kiraladi: '🔑', ilgilenmiyor: '😐',
+        kendi_iptal: '✋', admin_iptal: '👤', bounce: '⚠️', spam_sikayeti: '🚫'
+      };
+
+      const reasonLabels = {
+        satin_aldi: 'Satın Aldı', kiraladi: 'Kiraladı', ilgilenmiyor: 'İlgilenmiyor',
+        kendi_iptal: 'Kendi İptal', admin_iptal: 'Admin İptal', bounce: 'Bounce', spam_sikayeti: 'Spam Şikayeti'
+      };
+
+      const langFlags = { tr: '🇹🇷', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷', ru: '🇷🇺' };
+
+      container.innerHTML = `
+        <div class="card" style="padding: 12px 20px; margin-bottom: 12px; background: var(--bg-alt);">
+          <strong>${filtered.length}</strong> abone gösteriliyor
+        </div>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Email / İsim</th>
+                <th>Dil</th>
+                <th>Tercihler</th>
+                <th>Kayıt Tarihi</th>
+                <th>Durum</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.map(s => {
+                const prefs = [];
+                if (s.ilgi_kategoriler?.length) prefs.push(...s.ilgi_kategoriler);
+                if (s.islem_tipi && s.islem_tipi !== 'her_ikisi') prefs.push(s.islem_tipi);
+
+                return `
+                <tr class="subscriber-row">
+                  <td>
+                    <div style="font-weight: 600;">${Security.escapeHtml(s.email)}</div>
+                    ${s.full_name ? `<div style="font-size: 12px; color: var(--text-muted);">${Security.escapeHtml(s.full_name)}</div>` : ''}
+                    ${s.phone ? `<div style="font-size: 12px; color: var(--text-muted);">📞 ${Security.escapeHtml(s.phone)}</div>` : ''}
+                  </td>
+                  <td>${langFlags[s.language] || '🌍'} ${s.language?.toUpperCase() || 'TR'}</td>
+                  <td>
+                    <div class="prefs-tags">
+                      ${prefs.length ? prefs.map(p => `<span class="prefs-tag">${Security.escapeHtml(p)}</span>`).join('') : '<span style="color: var(--text-muted); font-size: 12px;">-</span>'}
+                    </div>
+                    ${s.min_fiyat || s.max_fiyat ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">${s.min_fiyat ? App.formatPrice(s.min_fiyat) : '0'} - ${s.max_fiyat ? App.formatPrice(s.max_fiyat) : '∞'}</div>` : ''}
+                  </td>
+                  <td>
+                    <div style="font-size: 13px;">${App.formatDate(s.subscribed_at)}</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">${App.timeAgo(s.subscribed_at)}</div>
+                  </td>
+                  <td>
+                    ${!s.email_verified ? `<span class="badge badge-warning">⏳ Doğrulanmadı</span>` :
+                      s.is_active ? `<span class="badge badge-success">✅ Aktif</span>` :
+                      `<span class="badge badge-inactive">${reasonIcons[s.unsubscribe_reason] || '❌'} ${reasonLabels[s.unsubscribe_reason] || 'Pasif'}</span>`}
+                  </td>
+                  <td>
+                    <button onclick="showDetail('${s.id}')" class="btn btn-outline btn-sm">👁️</button>
+                    ${s.is_active ?
+                      `<button onclick="openRemoveModal('${s.id}', '${Security.escapeHtml(s.email)}')" class="btn btn-danger btn-sm">🗑️</button>` :
+                      `<button onclick="reactivate('${s.id}')" class="btn btn-primary btn-sm">↺</button>`}
+                  </td>
+                </tr>
+              `;}).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function openRemoveModal(id, email) {
+      document.getElementById('removeSubId').value = id;
+      document.getElementById('removeEmail').textContent = email;
+      document.getElementById('removeReason').value = '';
+      document.getElementById('removeNotes').value = '';
+      document.getElementById('removeModal').style.display = 'flex';
+    }
+    window.openRemoveModal = openRemoveModal;
+
+    function closeRemoveModal() {
+      document.getElementById('removeModal').style.display = 'none';
+    }
+    window.closeRemoveModal = closeRemoveModal;
+
+    document.getElementById('removeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('removeSubId').value;
+      const reason = document.getElementById('removeReason').value;
+      const notes = Security.sanitizeInput(document.getElementById('removeNotes').value, { maxLength: 500 });
+
+      try {
+        const { data, error } = await supabaseClient.rpc('admin_remove_subscriber', {
+          p_subscriber_id: id,
+          p_reason: reason,
+          p_notes: notes || null
+        });
+
+        if (error) throw error;
+
+        await Security.logSecurityEvent('subscriber_removed', { subscriber_id: id, reason }, 'info');
+        App.toast('Abone başarıyla çıkarıldı', 'success');
+        closeRemoveModal();
+        await loadStats();
+        await loadSubscribers();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    });
+
+    async function reactivate(id) {
+      const confirmed = await App.confirm('Bu aboneyi tekrar aktif etmek istediğinize emin misiniz?');
+      if (!confirmed) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('subscribers')
+          .update({
+            is_active: true,
+            unsubscribe_reason: null,
+            unsubscribed_at: null,
+            removed_at: null,
+            removed_by_admin_id: null
+          })
+          .eq('id', id);
+
+        if (error) throw error;
+
+        App.toast('Abone tekrar aktif', 'success');
+        await loadStats();
+        await loadSubscribers();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    }
+    window.reactivate = reactivate;
+
+    function showDetail(id) {
+      const s = subscribers.find(x => x.id === id);
+      if (!s) return;
+
+      const langFlags = { tr: '🇹🇷', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷', ru: '🇷🇺' };
+
+      document.getElementById('detailContent').innerHTML = `
+        <div style="display: grid; gap: 16px;">
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Email</div>
+            <div style="font-weight: 600;">${Security.escapeHtml(s.email)}</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Ad Soyad</div>
+            <div>${Security.escapeHtml(s.full_name || '-')}</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Telefon</div>
+            <div>${Security.escapeHtml(s.phone || '-')}</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Dil</div>
+            <div>${langFlags[s.language] || '🌍'} ${s.language?.toUpperCase() || 'TR'}</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">İlgi Kategorileri</div>
+            <div class="prefs-tags">
+              ${s.ilgi_kategoriler?.length ? s.ilgi_kategoriler.map(k => `<span class="prefs-tag">${Security.escapeHtml(k)}</span>`).join('') : '-'}
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Bölgeler</div>
+            <div class="prefs-tags">
+              ${s.ilgi_bolgeler?.length ? s.ilgi_bolgeler.map(b => `<span class="prefs-tag">${Security.escapeHtml(b)}</span>`).join('') : '-'}
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Fiyat Aralığı</div>
+            <div>${s.min_fiyat ? App.formatPrice(s.min_fiyat) : '0'} - ${s.max_fiyat ? App.formatPrice(s.max_fiyat) : '∞'}</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">İşlem Tipi</div>
+            <div>${Security.escapeHtml(s.islem_tipi || 'her_ikisi')}</div>
+          </div>
+          <hr>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted);">Email Gönderim</div>
+              <div style="font-weight: 600;">${s.total_emails_received || 0}</div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted);">Açılan</div>
+              <div style="font-weight: 600;">${s.total_emails_opened || 0}</div>
+            </div>
+          </div>
+          <hr>
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Kayıt IP</div>
+            <div style="font-family: monospace; font-size: 12px;">${Security.escapeHtml(s.ip_address || '-')}</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Kayıt Kaynağı</div>
+            <div>${Security.escapeHtml(s.signup_source || 'website')}</div>
+          </div>
+          ${s.admin_notes ? `
+            <div style="background: var(--bg-alt); padding: 12px; border-radius: 8px;">
+              <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Admin Notu</div>
+              <div>${Security.escapeHtml(s.admin_notes)}</div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      document.getElementById('detailModal').style.display = 'flex';
+    }
+    window.showDetail = showDetail;
+
+    function closeDetailModal() {
+      document.getElementById('detailModal').style.display = 'none';
+    }
+    window.closeDetailModal = closeDetailModal;
+
+    function exportCSV() {
+      const rows = [['Email', 'Ad Soyad', 'Telefon', 'Dil', 'Aktif', 'Doğrulanmış', 'Kayıt Tarihi', 'Kategoriler', 'Sebep']];
+      filtered.forEach(s => {
+        rows.push([
+          s.email,
+          s.full_name || '',
+          s.phone || '',
+          s.language || 'tr',
+          s.is_active ? 'Evet' : 'Hayır',
+          s.email_verified ? 'Evet' : 'Hayır',
+          s.subscribed_at,
+          (s.ilgi_kategoriler || []).join('|'),
+          s.unsubscribe_reason || ''
+        ]);
+      });
+
+      const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `aboneler-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+    }
+    window.exportCSV = exportCSV;
+  </script>
+</body>
+</html>

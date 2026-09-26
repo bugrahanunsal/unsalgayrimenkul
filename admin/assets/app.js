@@ -77,11 +77,20 @@ const App = {
           </div>
 
           <div class="nav-section">
-            <div class="nav-section-title">Müşteriler</div>
+            <div class="nav-section-title">Müşteriler & Email</div>
             <a href="/admin/leads.html" class="nav-item ${activePage === 'leads' ? 'active' : ''}">
               <span class="nav-icon">💬</span>
               <span>Mesajlar</span>
               <span class="nav-badge" id="leadsBadge" style="display:none;">0</span>
+            </a>
+            <a href="/admin/subscribers.html" class="nav-item ${activePage === 'subscribers' ? 'active' : ''}">
+              <span class="nav-icon">📧</span>
+              <span>Aboneler</span>
+              <span class="nav-badge" id="subscribersBadge" style="display:none;">0</span>
+            </a>
+            <a href="/admin/campaigns.html" class="nav-item ${activePage === 'campaigns' ? 'active' : ''}">
+              <span class="nav-icon">📨</span>
+              <span>Email Kampanyaları</span>
             </a>
           </div>
 
