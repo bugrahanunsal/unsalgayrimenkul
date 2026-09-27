@@ -140,41 +140,168 @@
     return d.innerHTML;
   }
 
+  // Cevap metnini güzel formata çevir: 1) 2) 3) → numaralı liste, — → paragraf
+  function formatAnswer(text) {
+    if (!text) return '';
+    const escaped = esc(text);
+
+    // Numaralı liste tespiti: "1) ...., 2) ...., 3) ...."
+    const numberedRegex = /(\d+)\)\s+([^,]+?)(?=,\s*\d+\)|$)/g;
+    const numbers = [...escaped.matchAll(numberedRegex)];
+
+    if (numbers.length >= 3) {
+      // Numaralı listeye dönüştür
+      const intro = escaped.substring(0, numbers[0].index).replace(/[:.]?\s*$/, '');
+      const outroStart = numbers[numbers.length - 1].index + numbers[numbers.length - 1][0].length;
+      const outro = escaped.substring(outroStart).replace(/^[,.\s]+/, '');
+
+      let html = '';
+      if (intro.trim()) html += '<p style="margin-bottom:16px;">' + intro + ':</p>';
+      html += '<ol style="list-style:none;counter-reset:iu-faq-counter;padding-left:0;margin:0 0 16px 0;">';
+      numbers.forEach(m => {
+        html += '<li style="counter-increment:iu-faq-counter;padding:10px 12px 10px 44px;position:relative;margin-bottom:6px;background:rgba(244,155,28,0.05);border-left:3px solid #F49B1C;border-radius:6px;">';
+        html += '<span style="position:absolute;left:12px;top:10px;width:24px;height:24px;background:#F49B1C;color:#0A2A5E;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;">' + m[1] + '</span>';
+        html += m[2].trim();
+        html += '</li>';
+      });
+      html += '</ol>';
+      if (outro.trim()) html += '<p style="margin-top:16px;color:#4B5563;">' + outro + '</p>';
+      return html;
+    }
+
+    // Paragraf ayırıcı: em-dash (—) veya "Ayrıca," gibi ifadeler
+    let html = escaped;
+
+    // Kalın: **text** veya keywords
+    html = html.replace(/(TURYAP|Yalova|Çınarcık|Termal|Altınova|Armutlu)/g, '<strong style="color:#0A2A5E;font-weight:700;">$1</strong>');
+
+    // Fiyatları highlight et
+    html = html.replace(/(\d{1,3}(?:\.\d{3})+)\s*₺/g, '<strong style="color:#F49B1C;font-weight:700;white-space:nowrap;">$1 ₺</strong>');
+    html = html.replace(/(\d+(?:\.\d+)?)\s*(?:₺\/m²|TL\/m²)/g, '<strong style="color:#F49B1C;font-weight:700;white-space:nowrap;">$1 ₺/m²</strong>');
+
+    // Yüzdeler
+    html = html.replace(/(%\d+(?:-\d+)?)/g, '<strong style="color:#10b981;font-weight:700;">$1</strong>');
+
+    // Cümleler arası boşluk
+    return '<p style="margin:0;">' + html + '</p>';
+  }
+
   function renderFAQs(container, faqs, options = {}) {
     const title = options.title || 'Sıkça Sorulan Sorular';
     const subtitle = options.subtitle || 'Yalova gayrimenkul hakkında merak ettikleriniz';
 
     container.innerHTML = `
-      <section class="iu-faq-section" style="max-width:900px;margin:60px auto;padding:0 24px;">
-        <div style="text-align:center;margin-bottom:40px;">
-          <span style="display:inline-block;background:#F49B1C;color:#0A2A5E;padding:6px 20px;border-radius:20px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">
-            SSS · FAQ
+      <section class="iu-faq-section" style="max-width:900px;margin:80px auto;padding:0 24px;">
+        <div style="text-align:center;margin-bottom:48px;">
+          <span style="display:inline-block;background:linear-gradient(135deg, #F49B1C, #d4831a);color:#0A2A5E;padding:8px 22px;border-radius:24px;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;box-shadow:0 4px 12px rgba(244,155,28,0.3);">
+            📋 SSS · FAQ
           </span>
-          <h2 style="font-size:32px;color:#0A2A5E;margin:12px 0 8px;font-weight:800;">${esc(title)}</h2>
-          <p style="color:#6B7280;font-size:15px;">${esc(subtitle)}</p>
+          <h2 style="font-size:36px;color:#0A2A5E;margin:16px 0 12px;font-weight:800;line-height:1.2;font-family:'League Spartan','Montserrat',sans-serif;">${esc(title)}</h2>
+          <p style="color:#6B7280;font-size:16px;max-width:600px;margin:0 auto;">${esc(subtitle)}</p>
         </div>
         <div class="iu-faq-list">
           ${faqs.map((f, i) => `
-            <details class="iu-faq-item" style="background:white;border-radius:12px;margin-bottom:12px;box-shadow:0 2px 8px rgba(10,42,94,0.06);overflow:hidden;">
-              <summary style="cursor:pointer;padding:20px 24px;font-weight:600;color:#0A2A5E;font-size:16px;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-                <span>${esc(f.q)}</span>
-                <span class="iu-faq-icon" style="width:32px;height:32px;background:#F49B1C;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:transform 0.3s;">+</span>
+            <details class="iu-faq-item">
+              <summary>
+                <span class="iu-faq-q">${esc(f.q)}</span>
+                <span class="iu-faq-icon">+</span>
               </summary>
-              <div style="padding:0 24px 24px;color:#374151;line-height:1.7;font-size:15px;">
-                ${esc(f.a)}
-              </div>
+              <div class="iu-faq-a">${formatAnswer(f.a)}</div>
             </details>
           `).join('')}
         </div>
       </section>
       <style>
-        .iu-faq-item[open] .iu-faq-icon { transform: rotate(45deg); }
+        .iu-faq-item {
+          background: #FFFFFF;
+          border-radius: 14px;
+          margin-bottom: 14px;
+          box-shadow: 0 4px 16px rgba(10, 42, 94, 0.06);
+          overflow: hidden;
+          border: 1px solid #E5E7EB;
+          transition: all 0.3s ease;
+        }
+        .iu-faq-item:hover {
+          box-shadow: 0 8px 24px rgba(10, 42, 94, 0.1);
+          border-color: rgba(244, 155, 28, 0.3);
+        }
+        .iu-faq-item[open] {
+          border-color: #F49B1C;
+          box-shadow: 0 8px 32px rgba(244, 155, 28, 0.15);
+        }
+        .iu-faq-item summary {
+          cursor: pointer;
+          padding: 22px 26px;
+          font-weight: 700;
+          color: #0A2A5E;
+          font-size: 16px;
+          list-style: none;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          transition: background 0.2s;
+        }
+        .iu-faq-item summary:hover {
+          background: rgba(244, 155, 28, 0.03);
+        }
         .iu-faq-item summary::-webkit-details-marker { display: none; }
-        .iu-faq-item summary:hover { background: rgba(244, 155, 28, 0.05); }
+        .iu-faq-item summary::marker { display: none; }
+        .iu-faq-q {
+          flex: 1;
+          line-height: 1.4;
+        }
+        .iu-faq-icon {
+          width: 34px;
+          height: 34px;
+          background: linear-gradient(135deg, #F49B1C, #d4831a);
+          color: #FFFFFF;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+          font-weight: 300;
+          flex-shrink: 0;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 8px rgba(244, 155, 28, 0.3);
+        }
+        .iu-faq-item[open] .iu-faq-icon {
+          transform: rotate(45deg);
+          background: linear-gradient(135deg, #dc2626, #b91c1c);
+          box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+        }
+        .iu-faq-a {
+          padding: 4px 26px 26px;
+          color: #374151;
+          line-height: 1.75;
+          font-size: 15px;
+          border-top: 1px solid rgba(244, 155, 28, 0.15);
+          margin-top: -4px;
+          padding-top: 20px;
+          background: linear-gradient(180deg, rgba(244, 155, 28, 0.02), transparent);
+        }
+        .iu-faq-a p { margin: 0 0 12px 0; }
+        .iu-faq-a p:last-child { margin-bottom: 0; }
         @media (max-width: 768px) {
+          .iu-faq-section {
+            margin: 50px auto !important;
+            padding: 0 16px !important;
+          }
           .iu-faq-section h2 { font-size: 24px !important; }
-          .iu-faq-item summary { font-size: 14px !important; padding: 16px 18px !important; }
-          .iu-faq-item > div { padding: 0 18px 18px !important; font-size: 14px !important; }
+          .iu-faq-item summary {
+            font-size: 14px !important;
+            padding: 18px 20px !important;
+          }
+          .iu-faq-a {
+            padding: 16px 20px 20px !important;
+            font-size: 14px !important;
+          }
+          .iu-faq-icon {
+            width: 28px !important;
+            height: 28px !important;
+            font-size: 18px !important;
+          }
         }
       </style>
     `;
