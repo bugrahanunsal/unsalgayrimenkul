@@ -45,41 +45,131 @@
     return div.innerHTML;
   }
 
-  // Kart CSS güvence: !important ile force block layout
+  // Kart CSS: yeni sınıf adları ile (mevcut sayfa CSS'i ile çakışmaz)
   function injectCardSafeCSS() {
-    if (document.getElementById('iu-card-safe-css')) return;
+    if (document.getElementById('iu-card-v2-css')) return;
     const s = document.createElement('style');
-    s.id = 'iu-card-safe-css';
+    s.id = 'iu-card-v2-css';
     s.textContent = `
-      .listings-grid-pillar {
+      /* Grid container */
+      #iu-dynamic-listings {
         display: grid !important;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
         gap: 28px !important;
+        max-width: 1280px !important;
+        margin: 0 auto !important;
+        padding: 0 20px 60px !important;
       }
-      .listings-grid-pillar > .listing-card-pillar {
-        display: flex !important;
-        flex-direction: column !important;
+      /* Card wrapper */
+      article.iu-card-v2 {
+        display: block !important;
         width: 100% !important;
         background: #FFFFFF !important;
         border-radius: 14px !important;
         overflow: hidden !important;
         box-shadow: 0 8px 24px rgba(10,42,94,0.08) !important;
         border: 1px solid #E5E7EB !important;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
       }
-      .listings-grid-pillar > .listing-card-pillar > .listing-image-pillar {
+      article.iu-card-v2:hover {
+        transform: translateY(-6px) !important;
+        box-shadow: 0 20px 40px rgba(10,42,94,0.15) !important;
+        border-color: #F49B1C !important;
+      }
+      /* Image */
+      article.iu-card-v2 > .iu-card-v2__img {
         display: block !important;
         width: 100% !important;
         height: 240px !important;
         position: relative !important;
         background-size: cover !important;
         background-position: center !important;
-        flex-shrink: 0 !important;
+        background-color: #E5E7EB !important;
       }
-      .listings-grid-pillar > .listing-card-pillar > .listing-content-pillar {
+      article.iu-card-v2 > .iu-card-v2__img::after {
+        content: '' !important;
+        position: absolute !important;
+        inset: 0 !important;
+        background: linear-gradient(180deg, transparent 0%, rgba(10,42,94,0.35) 100%) !important;
+      }
+      /* Badges */
+      article.iu-card-v2 .iu-card-v2__tag {
+        position: absolute !important;
+        top: 14px !important; left: 14px !important;
+        background: #F49B1C !important; color: #0A2A5E !important;
+        padding: 6px 14px !important; border-radius: 50px !important;
+        font-size: 11px !important; font-weight: 800 !important;
+        letter-spacing: 1px !important; z-index: 2 !important;
+      }
+      article.iu-card-v2 .iu-card-v2__tag.vip {
+        background: #0A2A5E !important; color: #F49B1C !important;
+      }
+      article.iu-card-v2 .iu-card-v2__type {
+        position: absolute !important;
+        top: 14px !important; right: 14px !important;
+        background: rgba(255,255,255,0.95) !important; color: #0A2A5E !important;
+        padding: 6px 14px !important; border-radius: 50px !important;
+        font-size: 11px !important; font-weight: 700 !important;
+        z-index: 2 !important; backdrop-filter: blur(10px) !important;
+      }
+      /* Content */
+      article.iu-card-v2 > .iu-card-v2__content {
         display: block !important;
         width: 100% !important;
         padding: 22px !important;
-        flex: 1 !important;
+        box-sizing: border-box !important;
+      }
+      article.iu-card-v2 .iu-card-v2__loc {
+        display: flex !important; align-items: center !important; gap: 6px !important;
+        color: #6B7280 !important; font-size: 12px !important;
+        margin: 0 0 8px 0 !important; font-weight: 600 !important; letter-spacing: 0.5px !important;
+      }
+      article.iu-card-v2 .iu-card-v2__loc i { color: #F49B1C !important; }
+      article.iu-card-v2 .iu-card-v2__title {
+        font-family: 'League Spartan', 'Montserrat', sans-serif !important;
+        font-size: 19px !important; font-weight: 700 !important;
+        color: #0A2A5E !important; margin: 0 0 14px 0 !important; line-height: 1.3 !important;
+      }
+      article.iu-card-v2 .iu-card-v2__feats {
+        display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important;
+        padding: 14px 0 !important;
+        border-top: 1px solid #E5E7EB !important; border-bottom: 1px solid #E5E7EB !important;
+        margin: 0 0 14px 0 !important;
+      }
+      article.iu-card-v2 .iu-card-v2__feats span {
+        display: flex !important; align-items: center !important; gap: 6px !important;
+        color: #4B5563 !important; font-size: 13px !important;
+      }
+      article.iu-card-v2 .iu-card-v2__feats i { color: #F49B1C !important; }
+      article.iu-card-v2 .iu-card-v2__price {
+        font-family: 'League Spartan', 'Montserrat', sans-serif !important;
+        font-size: 22px !important; font-weight: 800 !important;
+        color: #0A2A5E !important; margin: 0 0 12px 0 !important;
+      }
+      article.iu-card-v2 .iu-card-v2__desc {
+        color: #6B7280 !important; font-size: 13px !important; line-height: 1.5 !important;
+        margin: 0 0 16px 0 !important;
+      }
+      article.iu-card-v2 .iu-card-v2__cta {
+        display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important;
+      }
+      article.iu-card-v2 .iu-card-v2__cta a {
+        display: flex !important; align-items: center !important; justify-content: center !important;
+        gap: 8px !important; padding: 12px 16px !important; border-radius: 8px !important;
+        font-weight: 700 !important; font-size: 13px !important; text-decoration: none !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+      }
+      article.iu-card-v2 .iu-card-v2__cta .iu-cta-call {
+        background: #0A2A5E !important; color: #FFFFFF !important;
+      }
+      article.iu-card-v2 .iu-card-v2__cta .iu-cta-call:hover {
+        background: #071F44 !important; transform: translateY(-1px) !important;
+      }
+      article.iu-card-v2 .iu-card-v2__cta .iu-cta-wa {
+        background: #25D366 !important; color: #FFFFFF !important;
+      }
+      article.iu-card-v2 .iu-card-v2__cta .iu-cta-wa:hover {
+        background: #1DA851 !important; transform: translateY(-1px) !important;
       }
     `;
     document.head.appendChild(s);
@@ -221,71 +311,49 @@
     return null;
   }
 
-  // DOM API ile bulletproof card oluştur (innerHTML string sorunlarını önlemek için)
+  // BRAND NEW class names to avoid ANY conflict with page CSS
   function renderPillarCard(p) {
     const img = getMainImage(p);
     const wa = 'https://wa.me/905075188482?text=' + encodeURIComponent('Merhaba, ' + (p.baslik_tr || 'İlan') + ' hakkında bilgi almak istiyorum');
     const fiyat = formatPrice(p.fiyat, p.para_birimi);
-
     const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 30 * 86400000;
     const typeUpper = (p.tip || 'satilik').toUpperCase();
 
-    // KART root - use setProperty for guaranteed !important support
-    const card = document.createElement('div');
-    card.className = 'listing-card-pillar';
-    card.style.setProperty('display', 'flex', 'important');
-    card.style.setProperty('flex-direction', 'column', 'important');
-    card.style.setProperty('width', '100%', 'important');
-    card.style.setProperty('background', '#FFFFFF', 'important');
-    card.style.setProperty('border-radius', '14px', 'important');
-    card.style.setProperty('overflow', 'hidden', 'important');
-    card.style.setProperty('box-shadow', '0 8px 24px rgba(10,42,94,0.08)', 'important');
-    card.style.setProperty('border', '1px solid #E5E7EB', 'important');
+    // <article> root — semantic + no external CSS targets it
+    const card = document.createElement('article');
+    card.className = 'iu-card-v2';
 
-    // IMAGE - setProperty for critical layout
+    // Image div
     const imgDiv = document.createElement('div');
-    imgDiv.className = 'listing-image-pillar';
-    imgDiv.style.setProperty('display', 'block', 'important');
-    imgDiv.style.setProperty('width', '100%', 'important');
-    imgDiv.style.setProperty('height', '240px', 'important');
-    imgDiv.style.setProperty('position', 'relative', 'important');
+    imgDiv.className = 'iu-card-v2__img';
     imgDiv.style.setProperty('background-image', 'url("' + img + '")', 'important');
-    imgDiv.style.setProperty('background-size', 'cover', 'important');
-    imgDiv.style.setProperty('background-position', 'center', 'important');
-    imgDiv.style.setProperty('flex-shrink', '0', 'important');
 
     if (p.one_cikan) {
       const t = document.createElement('span');
-      t.className = 'listing-tag-pillar vip';
+      t.className = 'iu-card-v2__tag vip';
       t.textContent = '💎 VIP FIRSAT';
       imgDiv.appendChild(t);
     } else if (isNew) {
       const t = document.createElement('span');
-      t.className = 'listing-tag-pillar';
-      t.style.background = '#F49B1C';
-      t.style.color = '#0A2A5E';
+      t.className = 'iu-card-v2__tag';
       t.textContent = '🆕 YENİ İLAN';
       imgDiv.appendChild(t);
     }
 
     const typeBadge = document.createElement('span');
-    typeBadge.className = 'listing-type-badge-pillar';
+    typeBadge.className = 'iu-card-v2__type';
     typeBadge.textContent = typeUpper;
     imgDiv.appendChild(typeBadge);
 
     card.appendChild(imgDiv);
 
-    // CONTENT - setProperty for width guarantee
+    // Content div
     const contentDiv = document.createElement('div');
-    contentDiv.className = 'listing-content-pillar';
-    contentDiv.style.setProperty('display', 'block', 'important');
-    contentDiv.style.setProperty('width', '100%', 'important');
-    contentDiv.style.setProperty('padding', '22px', 'important');
-    contentDiv.style.setProperty('flex', '1', 'important');
+    contentDiv.className = 'iu-card-v2__content';
 
     // Location
     const loc = document.createElement('div');
-    loc.className = 'listing-location-pillar';
+    loc.className = 'iu-card-v2__loc';
     const locI = document.createElement('i');
     locI.className = 'fa-solid fa-location-dot';
     loc.appendChild(locI);
@@ -294,13 +362,13 @@
 
     // Title
     const title = document.createElement('h3');
-    title.className = 'listing-title-pillar';
+    title.className = 'iu-card-v2__title';
     title.textContent = p.baslik_tr || 'İlan';
     contentDiv.appendChild(title);
 
     // Features
     const feats = document.createElement('div');
-    feats.className = 'listing-features-pillar';
+    feats.className = 'iu-card-v2__feats';
     const featList = [];
     if (p.m2) featList.push({ icon: 'fa-mountain', text: p.m2 + ' m²' });
     if (p.oda_sayisi) featList.push({ icon: 'fa-bed', text: p.oda_sayisi });
@@ -322,7 +390,7 @@
 
     // Price
     const price = document.createElement('div');
-    price.className = 'listing-price-pillar';
+    price.className = 'iu-card-v2__price';
     price.textContent = fiyat;
     contentDiv.appendChild(price);
 
@@ -330,22 +398,23 @@
     const desc = (p.aciklama_tr || '').substring(0, 130).trim();
     if (desc) {
       const dEl = document.createElement('p');
-      dEl.className = 'listing-desc-pillar';
+      dEl.className = 'iu-card-v2__desc';
       dEl.textContent = desc + ((p.aciklama_tr || '').length > 130 ? '...' : '');
       contentDiv.appendChild(dEl);
     }
 
     // CTA
     const cta = document.createElement('div');
-    cta.className = 'listing-cta-pillar';
+    cta.className = 'iu-card-v2__cta';
     const callBtn = document.createElement('a');
     callBtn.href = 'tel:+905075188482';
-    callBtn.className = 'cta-pillar-call';
+    callBtn.className = 'iu-cta-call';
     callBtn.innerHTML = '<i class="fa-solid fa-phone"></i> Ara';
     const waBtn = document.createElement('a');
     waBtn.href = wa;
     waBtn.target = '_blank';
-    waBtn.className = 'cta-pillar-wa';
+    waBtn.rel = 'noopener noreferrer';
+    waBtn.className = 'iu-cta-wa';
     waBtn.innerHTML = '<i class="fa-brands fa-whatsapp"></i> Sor';
     cta.appendChild(callBtn);
     cta.appendChild(waBtn);
@@ -360,13 +429,14 @@
     const oldContainer = findCategoryContainer();
     if (!oldContainer) return;
 
-    // Eski container'ı gizle, yerine yeni bir tane koy (mevcut grid CSS'i bypass et)
+    // Eski static container'ı gizle, yerine kendi container'ımızı koy
+    // (mevcut sayfa CSS'i etkilemesin diye TAMAMEN BYPASS)
     let container = document.getElementById('iu-dynamic-listings');
     if (!container) {
-      oldContainer.style.display = 'none';
+      oldContainer.style.setProperty('display', 'none', 'important');
       container = document.createElement('div');
       container.id = 'iu-dynamic-listings';
-      container.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:28px;max-width:1280px;margin:0 auto;padding:0 20px;';
+      // Layout CSS injectCardSafeCSS() içinde tanımlı, burada tekrar etmeye gerek yok
       oldContainer.parentNode.insertBefore(container, oldContainer.nextSibling);
     }
 
