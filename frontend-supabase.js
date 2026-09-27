@@ -552,9 +552,27 @@
     }
   }
 
+  // ==================== SUBSCRIBE-WIDGET OTOMATIK YÜKLE ====================
+  function autoLoadAuthWidget() {
+    // Admin panelde değilse ve subscribe-widget yüklenmemişse yükle
+    const pathname = window.location.pathname.toLowerCase();
+    if (pathname.includes('/admin')) return;
+
+    if (!document.querySelector('script[src*="subscribe-widget"]')) {
+      const script = document.createElement('script');
+      script.src = '/subscribe-widget.js';
+      script.async = false; // sıralı yükleme
+      document.body.appendChild(script);
+      console.log('[Frontend] Subscribe-widget otomatik yüklendi (auth için)');
+    }
+  }
+
   // ==================== INIT ====================
 
   async function start() {
+    // Auth widget'ı ilk yükle (her sayfada Hesabım/Giriş için)
+    autoLoadAuthWidget();
+
     // Sayfa tipine göre yükleme yap
     await updateCategoryCounts();      // Ana sayfada kategori kartları
     await loadFeaturedProperties();    // Ana sayfada öne çıkan (varsa)
