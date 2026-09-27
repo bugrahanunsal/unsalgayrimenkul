@@ -493,6 +493,65 @@
     }
   }
 
+  // ==================== OTOMATIK FAQ INJECTION ====================
+
+  function autoInjectFAQ() {
+    // Zaten FAQ container varsa dokunma
+    if (document.getElementById('faqContainer')) return;
+
+    const pathname = window.location.pathname.toLowerCase();
+
+    // Ana sayfa, ilan detay, veya /sss'de otomatik ekleme yapma
+    if (pathname === '/' || pathname === '/index.html') return;
+    if (pathname.includes('/sss')) return;
+    if (pathname.includes('/ilan.html')) return;
+    if (pathname.includes('/hesabim')) return;
+    if (pathname.includes('/iletisim')) return;
+    if (pathname.includes('/hakkimizda')) return;
+    if (pathname.includes('/admin')) return;
+
+    // FAQ kategorisi tahmini
+    let category = 'genel';
+    if (pathname.includes('arsa') || pathname.includes('tarla')) category = 'arsa';
+    else if (pathname.includes('daire')) category = 'daire';
+    else if (pathname.includes('villa') || pathname.includes('ev')) category = 'villa';
+    else if (pathname.includes('kiralik')) category = 'kiralik';
+    else if (pathname.includes('isyeri') || pathname.includes('dukkan')) category = 'isyeri';
+
+    // Sayfa başlığı için etiket
+    const categoryLabels = {
+      arsa: 'Yalova Arsa Rehberi',
+      daire: 'Yalova Daire Rehberi',
+      villa: 'Yalova Villa Rehberi',
+      kiralik: 'Yalova Kiralık Rehberi',
+      isyeri: 'Yalova İşyeri Rehberi',
+      genel: 'Yalova Emlak Rehberi'
+    };
+
+    // Sayfaya container ekle (footer'dan önce, yoksa body sonuna)
+    const faqDiv = document.createElement('div');
+    faqDiv.id = 'faqContainer';
+    faqDiv.setAttribute('data-faq-category', category);
+    faqDiv.setAttribute('data-faq-title', categoryLabels[category]);
+    faqDiv.setAttribute('data-faq-subtitle', 'Uzman TURYAP danışmanından cevaplar');
+
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.parentNode.insertBefore(faqDiv, footer);
+    } else {
+      document.body.appendChild(faqDiv);
+    }
+
+    // FAQ script'ini yükle (eğer zaten yüklenmemişse)
+    if (!document.querySelector('script[src*="faq-yalova-emlak"]')) {
+      const script = document.createElement('script');
+      script.src = '/faq-yalova-emlak.js';
+      script.async = true;
+      document.body.appendChild(script);
+      console.log('[Frontend] FAQ otomatik eklendi (' + category + ')');
+    }
+  }
+
   // ==================== INIT ====================
 
   async function start() {
@@ -501,6 +560,9 @@
     await loadFeaturedProperties();    // Ana sayfada öne çıkan (varsa)
     await loadCategoryPageProperties(); // Kategori sayfalarında
     await loadPropertyDetail();        // İlan detay sayfasında
+
+    // Kategori sayfalarına otomatik FAQ ekle (SEO için)
+    autoInjectFAQ();
   }
 
   if (document.readyState === 'loading') {
