@@ -357,8 +357,18 @@
   }
 
   async function loadCategoryPageProperties() {
-    const container = findCategoryContainer();
-    if (!container) return;
+    const oldContainer = findCategoryContainer();
+    if (!oldContainer) return;
+
+    // Eski container'ı gizle, yerine yeni bir tane koy (mevcut grid CSS'i bypass et)
+    let container = document.getElementById('iu-dynamic-listings');
+    if (!container) {
+      oldContainer.style.display = 'none';
+      container = document.createElement('div');
+      container.id = 'iu-dynamic-listings';
+      container.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:28px;max-width:1280px;margin:0 auto;padding:0 20px;';
+      oldContainer.parentNode.insertBefore(container, oldContainer.nextSibling);
+    }
 
     const pathname = window.location.pathname.toLowerCase();
     const filters = {};
