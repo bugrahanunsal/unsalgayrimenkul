@@ -183,51 +183,47 @@
 
   function renderPillarCard(p) {
     const img = getMainImage(p);
-    const phone = '+905075188482';
-    const wa = 'https://wa.me/905075188482?text=' + encodeURIComponent((p.baslik_tr || 'İlan') + ' hakkında bilgi almak istiyorum');
+    const wa = 'https://wa.me/905075188482?text=' + encodeURIComponent('Merhaba, ' + (p.baslik_tr || 'İlan') + ' hakkında bilgi almak istiyorum');
     const fiyat = formatPrice(p.fiyat, p.para_birimi);
 
+    // 4 feature slot (grid 2x2)
     const features = [];
     if (p.m2) features.push('<span><i class="fa-solid fa-mountain"></i> ' + esc(p.m2) + ' m²</span>');
-    if (p.oda_sayisi) features.push('<span><i class="fa-solid fa-door-open"></i> ' + esc(p.oda_sayisi) + '</span>');
+    if (p.oda_sayisi) features.push('<span><i class="fa-solid fa-bed"></i> ' + esc(p.oda_sayisi) + '</span>');
     if (p.emsal) features.push('<span><i class="fa-solid fa-compass"></i> ' + esc(p.emsal) + ' Emsal</span>');
     if (p.ada_parsel) features.push('<span><i class="fa-solid fa-map"></i> ' + esc(p.ada_parsel) + '</span>');
-    if (p.imar_durumu) features.push('<span><i class="fa-solid fa-file-contract"></i> ' + esc(p.imar_durumu) + '</span>');
-    if (features.length === 0) features.push('<span><i class="fa-solid fa-location-dot"></i> ' + esc(p.ilce || 'Yalova') + '</span>');
+    if (features.length < 4 && p.imar_durumu) features.push('<span><i class="fa-solid fa-file-contract"></i> ' + esc(p.imar_durumu) + '</span>');
+    if (features.length < 4 && p.bina_yasi != null) features.push('<span><i class="fa-solid fa-clock"></i> ' + esc(p.bina_yasi) + ' yaş</span>');
+    if (features.length < 2) features.push('<span><i class="fa-solid fa-location-dot"></i> ' + esc(p.ilce || 'Yalova') + '</span>');
 
-    const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7 * 86400000;
-    const tag = p.one_cikan
-      ? '<span class="listing-tag-pillar vip"><i class="fa-solid fa-gem"></i> VIP FIRSAT</span>'
-      : isNew
-        ? '<span class="listing-tag-pillar" style="background:#F49B1C;color:#0A2A5E;"><i class="fa-solid fa-star"></i> YENİ İLAN</span>'
-        : '';
+    const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 30 * 86400000;
+    let tag = '';
+    if (p.one_cikan) tag = '<span class="listing-tag-pillar vip">\u{1F48E} VIP FIRSAT</span>';
+    else if (isNew) tag = '<span class="listing-tag-pillar" style="background:#F49B1C;color:#0A2A5E;">\u{1F195} YENİ İLAN</span>';
 
-    const desc = (p.aciklama_tr || '').substring(0, 130);
-    const typeUpper = (p.tip || '').toUpperCase();
+    const desc = (p.aciklama_tr || '').substring(0, 130).trim();
+    const typeUpper = (p.tip || 'satilik').toUpperCase();
+    const bgImg = 'background-image: url(\'' + img.replace(/'/g, "\\'") + '\');';
 
-    return `
-      <div class="listing-card-pillar" onclick="window.location.href='ilan.html?id=${esc(p.id)}'" style="cursor:pointer;">
-        <div class="listing-image-pillar" style="background-image: url('${esc(img)}');">
-          ${tag}
-          <span class="listing-type-badge-pillar">${esc(typeUpper)}</span>
-        </div>
-        <div class="listing-content-pillar">
-          <div class="listing-location-pillar">
-            <i class="fa-solid fa-location-dot"></i> ${esc((p.ilce || 'YALOVA').toUpperCase())}${p.mahalle ? ', ' + esc(p.mahalle.toUpperCase()) : ''}
-          </div>
-          <h3 class="listing-title-pillar">${esc(p.baslik_tr || 'İlan')}</h3>
-          <div class="listing-features-pillar">
-            ${features.join('')}
-          </div>
-          <div class="listing-price-pillar">${fiyat}</div>
-          <p class="listing-desc-pillar">${esc(desc)}${(p.aciklama_tr || '').length > 130 ? '...' : ''}</p>
-          <div class="listing-cta-pillar">
-            <a href="tel:${phone}" class="cta-pillar-call" onclick="event.stopPropagation();"><i class="fa-solid fa-phone"></i> Ara</a>
-            <a href="${wa}" target="_blank" class="cta-pillar-wa" onclick="event.stopPropagation();"><i class="fa-brands fa-whatsapp"></i> Sor</a>
-          </div>
-        </div>
-      </div>
-    `;
+    return '<div class="listing-card-pillar">' +
+      '<div class="listing-image-pillar" style="' + bgImg + '">' +
+        tag +
+        '<span class="listing-type-badge-pillar">' + esc(typeUpper) + '</span>' +
+      '</div>' +
+      '<div class="listing-content-pillar">' +
+        '<div class="listing-location-pillar">' +
+          '<i class="fa-solid fa-location-dot"></i> ' + esc((p.ilce || 'YALOVA').toUpperCase()) + (p.mahalle ? ', ' + esc(p.mahalle.toUpperCase()) : '') +
+        '</div>' +
+        '<h3 class="listing-title-pillar">' + esc(p.baslik_tr || 'İlan') + '</h3>' +
+        '<div class="listing-features-pillar">' + features.join('') + '</div>' +
+        '<div class="listing-price-pillar">' + fiyat + '</div>' +
+        (desc ? '<p class="listing-desc-pillar">' + esc(desc) + ((p.aciklama_tr || '').length > 130 ? '...' : '') + '</p>' : '') +
+        '<div class="listing-cta-pillar">' +
+          '<a href="tel:+905075188482" class="cta-pillar-call"><i class="fa-solid fa-phone"></i> Ara</a>' +
+          '<a href="' + wa + '" target="_blank" class="cta-pillar-wa"><i class="fa-brands fa-whatsapp"></i> Sor</a>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
   }
 
   async function loadCategoryPageProperties() {

@@ -99,6 +99,40 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('[SiteLoader] Footer logo TURYAP versiyonuyla güncellendi');
 });
 
+// ==================== NAV MENÜYE SSS EKLE ====================
+// Her sayfada nav menüsüne SSS linkini otomatik ekle (İLETİŞİM'den önce)
+document.addEventListener('DOMContentLoaded', () => {
+  const nav = document.getElementById('mainNav');
+  if (!nav) return;
+
+  // Zaten var mı kontrol
+  if (nav.querySelector('a[href*="/sss"], a[href="sss.html"]')) return;
+
+  const sssLink = document.createElement('a');
+  sssLink.href = '/sss';
+  sssLink.textContent = 'SSS';
+
+  // Aktif sayfa kontrolü
+  if (window.location.pathname.toLowerCase().includes('/sss')) {
+    sssLink.className = 'active';
+  }
+
+  // İLETİŞİM'den önce ekle (varsa)
+  const links = nav.querySelectorAll('a');
+  let iletisimLink = null;
+  links.forEach(a => {
+    if (a.textContent.trim().toUpperCase().includes('İLETİŞİM') || a.textContent.trim().toUpperCase().includes('ILETISIM')) {
+      iletisimLink = a;
+    }
+  });
+
+  if (iletisimLink) {
+    nav.insertBefore(sssLink, iletisimLink);
+  } else {
+    nav.appendChild(sssLink);
+  }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   // Mobile menu close on link click
   const mainNav = document.getElementById('mainNav');
