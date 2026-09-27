@@ -1,0 +1,252 @@
+/**
+ * ============================================
+ * YALOVA EMLAK FAQ - SEO OPTIMIZED
+ * İsmail Ünsal Gayrimenkul
+ * ============================================
+ *
+ * Kullanım:
+ *   <div id="faqContainer" data-faq-category="arsa"></div>
+ *   <script src="/faq-yalova-emlak.js"></script>
+ *
+ * Otomatik olarak:
+ * - Google için JSON-LD FAQPage schema ekler
+ * - Accordion FAQ UI render eder
+ * - Kategoriye göre uygun soruları gösterir
+ */
+
+(function() {
+  'use strict';
+
+  // ==================== YALOVA EMLAK FAQ VERİTABANI ====================
+  const FAQS = {
+    // GENEL - Her sayfada gösterilebilir
+    genel: [
+      {
+        q: 'Yalova\'da gayrimenkul yatırımı yapmak mantıklı mı?',
+        a: 'Yalova, İstanbul\'a 1 saat mesafede olması, gelişen altyapısı, deniz manzarası ve termal turizm potansiyeli sayesinde Türkiye\'nin en hızlı büyüyen yatırım bölgelerinden biridir. Son 5 yılda Yalova gayrimenkul fiyatları ortalama %180-220 arasında değer kazanmıştır. Özellikle Çınarcık, Termal ve Altınova bölgeleri yatırımcıların gözdesi konumundadır. İstanbul\'dan yapılan 1 saatlik feribot ulaşımı ve İstanbul-İzmir otoyolu bağlantısı bölgeyi cazip kılıyor.'
+      },
+      {
+        q: 'Yalova\'nın hangi ilçesinde ev almalıyım?',
+        a: 'Tercih ettiğiniz yaşam tarzına bağlıdır: Merkez, tüm imkanlara yakınlığı ile aileler için idealdir. Çınarcık, deniz manzarası ve dinlenme için popülerdir. Termal, kaplıca turizmi ve doğa hayatı arayanlar için harika bir seçenektir. Altınova, otoyola yakınlığı ve gelişen sanayi bölgesi ile yatırımcılar için avantajlıdır. Armutlu, sakin bir yaşam ve deniz kıyısı için tercih edilmektedir.'
+      },
+      {
+        q: 'Yalova\'da ev fiyatları ne kadar?',
+        a: 'Yalova\'da 2+1 daireler merkez konumda 2.500.000 ₺ ile 5.000.000 ₺ arasında değişmektedir. Deniz manzaralı 3+1 daireler 4.000.000 ₺ - 8.000.000 ₺ bandında bulunmaktadır. Villa fiyatları konum ve özelliklere göre 8.000.000 ₺ ile 25.000.000 ₺ arasında seyretmektedir. Termal bölgesinde yazlıklar 3.000.000 ₺ - 7.000.000 ₺, arsalar ise m² başına 2.500 ₺ - 15.000 ₺ arasındadır. Güncel fiyatlar için ilan sayfalarımızı ziyaret edebilirsiniz.'
+      },
+      {
+        q: 'Yalova\'da tapu işlemleri nasıl yürüyor?',
+        a: 'Yalova\'da tapu işlemleri Yalova Tapu Müdürlüğü\'nde yapılır. Alıcı ve satıcı kimlik, tapu senedi, DASK sigortası, emlak beyan değeri ile başvurur. İşlem süresi ortalama 3-5 iş günüdür. Yabancı uyruklu alıcılar için ek belgeler gereklidir. TURYAP Yetkili Danışmanı olarak biz süreç boyunca yanınızdayız ve tüm işlemleri sizin adınıza takip ediyoruz. Alım-satım işlemlerinde noter, tapu harcı, emlak vergisi ödemeleri hakkında detaylı bilgilendirme yapıyoruz.'
+      },
+      {
+        q: 'İsmail Ünsal Gayrimenkul ile nasıl iletişime geçebilirim?',
+        a: 'Bizimle 0507 518 84 82 numaralı telefondan Pazartesi-Cumartesi 09:00-19:00 arasında iletişime geçebilirsiniz. Ayrıca WhatsApp üzerinden mesaj bırakabilir, sitemizden iletişim formunu doldurabilir veya Yalova\'daki ofisimizi ziyaret edebilirsiniz. TURYAP Yetkili Danışmanı olarak 20+ yıllık tecrübemizle Yalova\'nın her bölgesinde size en uygun gayrimenkulü bulmanız için hizmetinizdeyiz.'
+      }
+    ],
+
+    // ARSA & TARLA
+    arsa: [
+      {
+        q: 'Yalova\'da imarlı arsa fiyatları ne kadar?',
+        a: 'Yalova\'da konut imarlı arsalar bölgeye göre m² başına 3.000 ₺ ile 15.000 ₺ arasında değişmektedir. Çınarcık ve Merkez\'de konut imarlı arsalar ortalama 5.000-10.000 ₺/m², Termal ve Armutlu\'da 3.000-7.000 ₺/m², Altınova ticari imarlı arsalar 6.000-12.000 ₺/m² bandındadır. Tarım arazileri ise m² başına 500 ₺ - 2.500 ₺ arasında bulunabilmektedir. Sahile yakın ve manzaralı arsalar prim yapmaktadır.'
+      },
+      {
+        q: 'Yalova\'da arsa alırken nelere dikkat etmeliyim?',
+        a: 'Arsa alırken şu kontrolleri yapmanız çok önemlidir: 1) İmar durumu (konut imarlı, ticari imarlı, tarla?), 2) Emsal ve gabari (kaç kat inşaat yapılabilir), 3) Ada/parsel bilgileri ve tapu kaydı, 4) Yol cephesi ve genişliği, 5) Elektrik-su-doğalgaz altyapısı, 6) Deprem bölgesi risk durumu, 7) Kadastro ölçümü, 8) Üzerinde ipotek/haciz kaydı var mı, 9) Yapı yasağı bölgesinde mi (SİT, orman, tarım koruma), 10) Zemin etüdü. TURYAP olarak tüm bu kontrolleri size ücretsiz raporluyoruz.'
+      },
+      {
+        q: 'Yalova\'da arsaya ev yapabilir miyim?',
+        a: 'Arsanız konut imarlı ise, belediyeden ruhsat alarak ev yapabilirsiniz. Emsal oranı (0.30, 0.60 gibi) arsanızın kaç m² kısmına ev yapabileceğinizi belirler. Örneğin 1000 m² arsanız ve 0.30 emsal varsa, 300 m² taban alanlı yapı inşa edebilirsiniz. Ayrıca gabari (yükseklik) sınırı ve çekme mesafeleri de vardır. Yalova Belediyesi\'nden imar durumu belgesi almak ilk adımdır. Tarla vasfındaki arsalarda ise sadece bahçe kulübesi tipi yapılar (max 90 m²) yapılabilir.'
+      },
+      {
+        q: 'Yalova\'da tarım arazisi almak avantajlı mı?',
+        a: 'Yalova\'da tarım arazileri konut arsalarına göre çok daha uygun fiyatlıdır (m² başına 500-2.500 ₺). Uzun vadede tarım arazilerinin bir kısmı imara açılabilir ve büyük değer kazanabilir. Zeytin, kivi, meyve bahçesi yatırımı yapabilir, hem gelir elde eder hem toprağın kıymetini korursunuz. Ancak 2018 sonrası tarım arazilerinde bölünme kısıtları vardır — minimum satış parseli genellikle 5.000 m²\'dir. Ayrıca sadece çiftçi belgesi olanlara satış yapılabilme kısıtı bazı bölgelerde uygulanabilir.'
+      },
+      {
+        q: 'Çınarcık\'ta arsa yatırımı için hangi bölgeler avantajlı?',
+        a: 'Çınarcık\'ta Şenköy, Koru, Ortaburun ve Kocadere bölgeleri hem deniz manzarası hem de gelişim potansiyeli açısından yatırımcıların ilk tercihi. Şenköy merkeze yakınlığı, Koru sakin doğal yapısı, Ortaburun panoramik manzarası, Kocadere ise sahile yürüme mesafesi ile öne çıkıyor. Son 3 yılda Çınarcık arsa fiyatları %150 civarında değerlendi. TURYAP olarak bu bölgelerde imarlı, tapulu, sorunsuz arsalar sunuyoruz.'
+      }
+    ],
+
+    // DAİRE
+    daire: [
+      {
+        q: 'Yalova\'da satılık daire ararken nelere dikkat etmeliyim?',
+        a: 'Daire alırken şunlara mutlaka dikkat edin: 1) Deprem yönetmeliğine uygunluk (2018 sonrası yapılar tercih edilmeli), 2) İskan (yapı kullanım izin belgesi), 3) Kat mülkiyeti durumu, 4) Aidat miktarı ve site yönetimi, 5) Isıtma sistemi (kombi mi, merkezi mi), 6) Manzara ve gün ışığı, 7) Otopark durumu, 8) Asansör ve güvenlik, 9) Ulaşım imkanları (dolmuş, minibüs), 10) Yakındaki okul, market, hastane. Yalova\'da özellikle deniz manzaralı, güneş alan, 2018 sonrası binalar daha çok tercih edilmektedir.'
+      },
+      {
+        q: 'Yalova merkez daire fiyatları ne kadar?',
+        a: 'Yalova merkez\'de 2+1 daireler yaklaşık 2.500.000 ₺ - 4.500.000 ₺, 3+1 daireler 3.500.000 ₺ - 6.500.000 ₺ arasındadır. Deniz manzaralı, yeni yapı, siteli daireler daha yüksek fiyatlıdır. Rüstem Paşa, Kazım Karabekir, Süleyman Bey mahalleleri en popüler bölgelerdir. Fiyatlar bina yaşı, kat, manzara ve site özelliklerine göre değişir. Güncel fiyatlar için ilan sayfamızı ziyaret edebilirsiniz.'
+      },
+      {
+        q: 'Kiraya vermek için Yalova\'da hangi daireyi almalıyım?',
+        a: 'Yatırımlık daire için: 1) Merkez konumda 2+1 daireler en hızlı kiraya verilen tiplerdir, 2) Aylık kira getirisi 12.000-20.000 ₺ arasındadır, 3) Yıllık kira getirisi/satış fiyatı oranı (kira çarpanı) %4-6 seviyesindedir, 4) Öğrenci ve genç profesyonel bölgeleri (Yalova Üniversitesi çevresi) tercih edilebilir, 5) Deniz manzaralı daireler yazlık kiralamaya (Airbnb) uygundur. Yalova\'da özellikle yaz dönemi kiralama gelirleri 3-4 katına çıkabilmektedir.'
+      },
+      {
+        q: 'Yalova\'da yeni yapı daire projeleri hangileri?',
+        a: 'Yalova\'da son yıllarda birçok kaliteli konut projesi hayata geçti: Merkez\'de deniz manzaralı residence projeleri, Çınarcık\'ta lüks site projeleri, Termal\'de doğa içinde villa siteleri bulunuyor. Yeni yapılar 2018 sonrası deprem yönetmeliği ile inşa edildiği için daha güvenlidir. İskân alınmış, tapu hazır projelerde satın alma süreci hızlıdır. Detaylı proje bilgileri için bizimle iletişime geçebilirsiniz.'
+      }
+    ],
+
+    // VİLLA
+    villa: [
+      {
+        q: 'Yalova\'da villa fiyatları ne kadar?',
+        a: 'Yalova\'da villa fiyatları konum, arsa büyüklüğü, iç m² ve özelliklere göre 6.000.000 ₺ - 30.000.000 ₺ arasında değişmektedir. Çınarcık ve Termal\'de deniz/orman manzaralı villalar 8-15 milyon ₺, havuzlu-bahçeli lüks villalar 15-25 milyon ₺, ultra lüks özel projeler 25-30+ milyon ₺ bandındadır. Villa ararken arsa m², iç m², oda sayısı, havuz-jakuzi, güvenlik, manzara kriterlerini değerlendirmelisiniz.'
+      },
+      {
+        q: 'Termal\'de villa almak avantajlı mı?',
+        a: 'Termal, Yalova\'nın en prestijli bölgelerinden biridir ve villa yatırımı için mükemmel bir tercihtir. Kaplıca sularına yakınlık, doğa manzarası, sessiz yaşam ve İstanbul yakınlığı sayesinde villa fiyatları düzenli değer kazanmaktadır. Termal\'de villalar hem yazlık hem daimi yaşam için ideal olup, kısa dönem kiralama (Airbnb, Booking) ile yüksek getiri elde etme fırsatı sunar. Yaz sezonu haftalık 25.000-50.000 ₺ kiralama bedelleri görülmektedir.'
+      },
+      {
+        q: 'Villa alırken nelere dikkat etmeliyim?',
+        a: 'Villa satın alırken önemli kontroller: 1) Arsa tapusu (müstakil tapu tercih edin), 2) İskan belgesi, 3) İnşaat kalitesi ve deprem dayanımı, 4) Bahçe ve havuz alanı, 5) Otopark ve güvenlik, 6) Isınma sistemi (yerden ısıtma, doğalgaz), 7) Su ve elektrik altyapısı, 8) Villa çevresindeki gelişim planları, 9) Kadastro ölçümleri, 10) Vergiler ve harcamalar. TURYAP olarak size özel villa turlarına eşlik ediyor, tüm kontrolleri sizin adınıza yapıyoruz.'
+      }
+    ],
+
+    // KİRALIK
+    kiralik: [
+      {
+        q: 'Yalova\'da kiralık daire fiyatları ne kadar?',
+        a: 'Yalova\'da kiralık daire fiyatları konum ve özelliklere göre değişir. Merkez\'de 1+1 daireler 8.000-12.000 ₺, 2+1 daireler 12.000-20.000 ₺, 3+1 daireler 18.000-30.000 ₺ arasındadır. Deniz manzaralı, siteli, yeni yapı daireler daha yüksek fiyatlarla kiraya verilmektedir. Çınarcık ve Termal\'de yazlık kısa dönem kiralamalar (haftalık/aylık) genellikle daha yüksek getiri sağlar. Kiracı olarak depozito, hava parası, komisyon konularında bilgi almak için bize danışabilirsiniz.'
+      },
+      {
+        q: 'Yalova\'da yazlık kiralamak mı satın almak mı avantajlı?',
+        a: 'Kısa süre (1-2 yıl) kullanacaksanız kiralamak, uzun vadede (5+ yıl) yatırım yapacaksanız satın almak daha mantıklıdır. Yalova\'da yazlık daireler yıllık %5-8 kira getirisi sağlar. Uzun vadede fiyat artışı da dikkate alındığında satın alma daha karlıdır. Ayrıca kendi mülkünüzde konfor ve özgürlük vardır. Sadece belirli dönemler kullanacaksanız kiralama uygun olabilir. Amacınıza ve bütçenize göre size en uygun seçeneği belirlemek için bizden danışmanlık alabilirsiniz.'
+      },
+      {
+        q: 'Kiralama sözleşmesinde nelere dikkat etmeliyim?',
+        a: 'Kiralama sözleşmesinde dikkat edilecek maddeler: 1) Kira başlangıç ve bitiş tarihi, 2) Kira miktarı ve yıllık artış oranı (TÜFE veya sabit), 3) Depozito miktarı (genellikle 1-3 aylık kira), 4) Ödeme yöntemi ve tarihi, 5) Yakıt-elektrik-su faturaları kimin sorumluluğu, 6) Aidat ödemesi, 7) Tadilat ve boyama yetkisi, 8) Ev sahibi ve kiracının yükümlülükleri, 9) Feshin şartları, 10) Kefil durumu. Sözleşmeyi imzalamadan önce mutlaka okuyun ve gerekirse hukuki danışmanlık alın.'
+      }
+    ],
+
+    // İŞYERİ & TİCARİ
+    isyeri: [
+      {
+        q: 'Yalova\'da işyeri açmak için hangi bölge iyidir?',
+        a: 'Yalova\'da işyeri konumu sektöre göre değişir: Perakende ve restaurant için merkez cadde üzeri, Yaz turizmine yönelik işletmeler için Çınarcık ve Termal, Toptan ticaret ve depo için Altınova sanayi bölgesi, Ofis ve hizmet sektörü için Yalova merkez iş hanları tercih edilebilir. Kira fiyatları merkez perakende dükkanlarda m² başına aylık 300-800 ₺ arasında değişmektedir. Bölge analizi ve pazar araştırması için bizden destek alabilirsiniz.'
+      },
+      {
+        q: 'Yalova\'da satılık dükkan fiyatları ne kadar?',
+        a: 'Yalova\'da satılık dükkan fiyatları konuma ve alana göre değişir: Merkez cadde üzeri 50-100 m² dükkanlar 5.000.000 ₺ - 15.000.000 ₺, ara sokak dükkanlar 2.000.000 ₺ - 5.000.000 ₺, yeni yapı iş merkezlerindeki mağazalar 3.000.000 ₺ - 10.000.000 ₺ bandındadır. Yatırım için m² başına 40.000-150.000 ₺ arasında dükkan fiyatları görülmektedir. Yıllık kira getirisi ortalama %5-7 seviyesindedir.'
+      }
+    ]
+  };
+
+  // ==================== FAQ RENDER ====================
+
+  function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s == null ? '' : s;
+    return d.innerHTML;
+  }
+
+  function renderFAQs(container, faqs, options = {}) {
+    const title = options.title || 'Sıkça Sorulan Sorular';
+    const subtitle = options.subtitle || 'Yalova gayrimenkul hakkında merak ettikleriniz';
+
+    container.innerHTML = `
+      <section class="iu-faq-section" style="max-width:900px;margin:60px auto;padding:0 24px;">
+        <div style="text-align:center;margin-bottom:40px;">
+          <span style="display:inline-block;background:#F49B1C;color:#0A2A5E;padding:6px 20px;border-radius:20px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">
+            SSS · FAQ
+          </span>
+          <h2 style="font-size:32px;color:#0A2A5E;margin:12px 0 8px;font-weight:800;">${esc(title)}</h2>
+          <p style="color:#6B7280;font-size:15px;">${esc(subtitle)}</p>
+        </div>
+        <div class="iu-faq-list">
+          ${faqs.map((f, i) => `
+            <details class="iu-faq-item" style="background:white;border-radius:12px;margin-bottom:12px;box-shadow:0 2px 8px rgba(10,42,94,0.06);overflow:hidden;">
+              <summary style="cursor:pointer;padding:20px 24px;font-weight:600;color:#0A2A5E;font-size:16px;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+                <span>${esc(f.q)}</span>
+                <span class="iu-faq-icon" style="width:32px;height:32px;background:#F49B1C;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:transform 0.3s;">+</span>
+              </summary>
+              <div style="padding:0 24px 24px;color:#374151;line-height:1.7;font-size:15px;">
+                ${esc(f.a)}
+              </div>
+            </details>
+          `).join('')}
+        </div>
+      </section>
+      <style>
+        .iu-faq-item[open] .iu-faq-icon { transform: rotate(45deg); }
+        .iu-faq-item summary::-webkit-details-marker { display: none; }
+        .iu-faq-item summary:hover { background: rgba(244, 155, 28, 0.05); }
+        @media (max-width: 768px) {
+          .iu-faq-section h2 { font-size: 24px !important; }
+          .iu-faq-item summary { font-size: 14px !important; padding: 16px 18px !important; }
+          .iu-faq-item > div { padding: 0 18px 18px !important; font-size: 14px !important; }
+        }
+      </style>
+    `;
+  }
+
+  // JSON-LD FAQPage Schema - Google için (SEO KRİTİK)
+  function injectSchema(faqs) {
+    const existingSchema = document.getElementById('faq-schema');
+    if (existingSchema) existingSchema.remove();
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": f.a
+        }
+      }))
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'faq-schema';
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+  }
+
+  // ==================== INIT ====================
+
+  function init() {
+    const containers = document.querySelectorAll('[id^="faqContainer"], .iu-faq-container');
+    containers.forEach(container => {
+      const category = container.getAttribute('data-faq-category') || 'genel';
+      const showAll = container.getAttribute('data-faq-all') === 'true';
+      const customTitle = container.getAttribute('data-faq-title');
+      const customSubtitle = container.getAttribute('data-faq-subtitle');
+
+      let faqs;
+      if (showAll) {
+        // Tüm FAQ'ları birleştir (SSS sayfası için)
+        faqs = [];
+        Object.keys(FAQS).forEach(key => {
+          faqs = faqs.concat(FAQS[key]);
+        });
+      } else {
+        // Kategori + genel karışımı
+        const catFaqs = FAQS[category] || [];
+        const generalFaqs = FAQS.genel.slice(0, 2); // İlk 2 genel soru
+        faqs = [...catFaqs, ...generalFaqs];
+      }
+
+      renderFAQs(container, faqs, {
+        title: customTitle,
+        subtitle: customSubtitle
+      });
+
+      // Google için schema ekle
+      injectSchema(faqs);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Global erişim
+  window.IUFAQ = { FAQS, renderFAQs, injectSchema };
+
+  console.log('[FAQ] Yalova Emlak FAQ yüklendi');
+})();
