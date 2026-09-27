@@ -23,7 +23,7 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     persistSession: true,
     detectSessionInUrl: true,
     storage: window.localStorage,
-    storageKey: 'ismailunsal-admin-session',
+    storageKey: 'ismailunsal-customer-session', // Ana site ile aynı - tek session
     flowType: 'pkce' // PKCE flow - daha güvenli
   },
   global: {
