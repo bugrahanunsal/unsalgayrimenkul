@@ -230,15 +230,29 @@
     const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 30 * 86400000;
     const typeUpper = (p.tip || 'satilik').toUpperCase();
 
-    // KART root - INLINE styles for max override protection
+    // KART root - use setProperty for guaranteed !important support
     const card = document.createElement('div');
     card.className = 'listing-card-pillar';
-    card.style.cssText = 'display:flex !important; flex-direction:column !important; width:100%; background:#FFFFFF; border-radius:14px; overflow:hidden; box-shadow:0 8px 24px rgba(10,42,94,0.08); border:1px solid #E5E7EB;';
+    card.style.setProperty('display', 'flex', 'important');
+    card.style.setProperty('flex-direction', 'column', 'important');
+    card.style.setProperty('width', '100%', 'important');
+    card.style.setProperty('background', '#FFFFFF', 'important');
+    card.style.setProperty('border-radius', '14px', 'important');
+    card.style.setProperty('overflow', 'hidden', 'important');
+    card.style.setProperty('box-shadow', '0 8px 24px rgba(10,42,94,0.08)', 'important');
+    card.style.setProperty('border', '1px solid #E5E7EB', 'important');
 
-    // IMAGE - INLINE styles
+    // IMAGE - setProperty for critical layout
     const imgDiv = document.createElement('div');
     imgDiv.className = 'listing-image-pillar';
-    imgDiv.style.cssText = 'display:block; width:100%; height:240px; position:relative; background-image:url("' + img + '"); background-size:cover; background-position:center; flex-shrink:0;';
+    imgDiv.style.setProperty('display', 'block', 'important');
+    imgDiv.style.setProperty('width', '100%', 'important');
+    imgDiv.style.setProperty('height', '240px', 'important');
+    imgDiv.style.setProperty('position', 'relative', 'important');
+    imgDiv.style.setProperty('background-image', 'url("' + img + '")', 'important');
+    imgDiv.style.setProperty('background-size', 'cover', 'important');
+    imgDiv.style.setProperty('background-position', 'center', 'important');
+    imgDiv.style.setProperty('flex-shrink', '0', 'important');
 
     if (p.one_cikan) {
       const t = document.createElement('span');
@@ -261,10 +275,13 @@
 
     card.appendChild(imgDiv);
 
-    // CONTENT - INLINE styles for width guarantee
+    // CONTENT - setProperty for width guarantee
     const contentDiv = document.createElement('div');
     contentDiv.className = 'listing-content-pillar';
-    contentDiv.style.cssText = 'display:block; width:100%; padding:22px; flex:1;';
+    contentDiv.style.setProperty('display', 'block', 'important');
+    contentDiv.style.setProperty('width', '100%', 'important');
+    contentDiv.style.setProperty('padding', '22px', 'important');
+    contentDiv.style.setProperty('flex', '1', 'important');
 
     // Location
     const loc = document.createElement('div');
