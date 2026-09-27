@@ -3,12 +3,25 @@
 # Sözdizim: FROM  TO  STATUS
 # 200 = rewrite (URL değişmez, içerik değişir); 301 = kalıcı yönlendirme
 
-# Temiz URL'ler (uzantısız → .html karşılığı)
+# Trailing slash'ı at (relative link'ler bozulmasın)
+/sss/                       /sss                          301
+/faq/                       /faq                          301
+/hakkimizda/                /hakkimizda                   301
+/iletisim/                  /iletisim                     301
+/hesabim/                   /hesabim                      301
+/blog/                      /blog                         301
+
+# Temiz URL'ler (uzantısız → .html karşılığı, aynı URL'de kalır)
 /sss                        /sss.html                     200
-/sss/                       /sss.html                     200
+/faq                        /sss.html                     200
+/faq.html                   /sss.html                     200
+/sikca-sorulan-sorular      /sss.html                     200
 /hakkimizda                 /hakkimizda.html              200
+/hakkimda                   /hakkimizda.html              200
 /iletisim                   /iletisim.html                200
+/contact                    /iletisim.html                200
 /hesabim                    /hesabim.html                 200
+/account                    /hesabim.html                 200
 /blog                       /blog.html                    200
 /verify                     /verify.html                  200
 /unsubscribe                /unsubscribe.html             200
