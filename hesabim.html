@@ -675,7 +675,7 @@
     const SUPABASE_URL = 'https://gosmkthmamloafgtvhpj.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4';
 
-    let supabase;
+    let sbClient;
     let currentUser;
     let currentProfile;
 
@@ -701,14 +701,14 @@
     async function init() {
       console.log('[Hesabim] Init started');
       try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
           auth: {
             persistSession: true,
             storageKey: 'ismailunsal-customer-session'
           }
         });
 
-        const { data: userData, error: userErr } = await supabase.auth.getUser();
+        const { data: userData, error: userErr } = await sbClient.auth.getUser();
         console.log('[Hesabim] getUser result:', userData, userErr);
 
         const user = userData?.user;
@@ -726,7 +726,7 @@
         // Admin kontrolü (opsiyonel - hata verirse devam et)
         let isAdmin = false;
         try {
-          const { data: adminCheck } = await supabase
+          const { data: adminCheck } = await sbClient
             .from('admin_users')
             .select('role')
             .eq('id', user.id)
@@ -745,7 +745,7 @@
 
         // Profile yükle veya oluştur
         try {
-          const { data: profile } = await supabase
+          const { data: profile } = await sbClient
             .from('customer_profiles')
             .select('*')
             .eq('id', user.id)
@@ -753,7 +753,7 @@
 
           if (!profile) {
             console.log('[Hesabim] No profile, creating...');
-            const { data: newProfile, error: createErr } = await supabase
+            const { data: newProfile, error: createErr } = await sbClient
               .from('customer_profiles')
               .insert({
                 id: user.id,
@@ -839,7 +839,7 @@
       container.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
 
       try {
-        const { data, error } = await supabase
+        const { data, error } = await sbClient
           .from('favorites')
           .select('*, properties(id, baslik_tr, fiyat, kategori, tip, property_images(url, is_main))')
           .eq('customer_id', currentUser.id)
@@ -881,7 +881,7 @@
     }
 
     window.removeFavorite = async function(propId) {
-      await supabase.from('favorites').delete().eq('customer_id', currentUser.id).eq('property_id', propId);
+      await sbClient.from('favorites').delete().eq('customer_id', currentUser.id).eq('property_id', propId);
       toast('Favori kaldırıldı');
       loadFavorites();
     };
@@ -891,7 +891,7 @@
       container.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
 
       try {
-        const { data, error } = await supabase
+        const { data, error } = await sbClient
           .from('saved_searches')
           .select('*')
           .eq('customer_id', currentUser.id)
@@ -932,7 +932,7 @@
 
     window.deleteSearch = async function(id) {
       if (!confirm('Bu aramayı silmek istediğinize emin misiniz?')) return;
-      await supabase.from('saved_searches').delete().eq('id', id);
+      await sbClient.from('saved_searches').delete().eq('id', id);
       toast('Arama silindi');
       loadSearches();
     };
@@ -941,7 +941,7 @@
     document.getElementById('profileForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
-      const { error } = await supabase.from('customer_profiles').update({
+      const { error } = await sbClient.from('customer_profiles').update({
         full_name: fd.get('full_name')?.trim().substring(0, 100),
         phone: fd.get('phone')?.trim() || null
       }).eq('id', currentUser.id);
@@ -959,7 +959,7 @@
       const fd = new FormData(e.target);
       const kats = Array.from(e.target.querySelectorAll('input[name="kat"]:checked')).map(c => c.value);
 
-      const { error } = await supabase.from('customer_profiles').update({
+      const { error } = await sbClient.from('customer_profiles').update({
         ilgi_kategoriler: kats,
         islem_tipi: fd.get('islem_tipi'),
         language: fd.get('language'),
@@ -985,7 +985,7 @@
       if (newPass !== confirmPass) return showMsg('passwordMsg', 'Şifreler eşleşmiyor', 'error');
       if (newPass.length < 8) return showMsg('passwordMsg', 'Şifre en az 8 karakter olmalı', 'error');
 
-      const { error } = await supabase.auth.updateUser({ password: newPass });
+      const { error } = await sbClient.auth.updateUser({ password: newPass });
       if (error) showMsg('passwordMsg', 'Hata: ' + error.message, 'error');
       else {
         showMsg('passwordMsg', 'Şifre güncellendi ✓', 'success');
@@ -995,7 +995,7 @@
 
     window.handleLogout = async function() {
       if (!confirm('Çıkış yapmak istediğinize emin misiniz?')) return;
-      await supabase.auth.signOut();
+      await sbClient.auth.signOut();
       window.location.href = '/';
     };
 
@@ -1003,10 +1003,10 @@
       if (!confirm('Hesabınızı silmek istediğinize EMİN misiniz? Bu işlem GERİ ALINAMAZ!')) return;
       if (!confirm('Son onay: Tüm favorileriniz, aramalarınız silinecek. Devam edilsin mi?')) return;
 
-      const { error } = await supabase.from('customer_profiles').delete().eq('id', currentUser.id);
+      const { error } = await sbClient.from('customer_profiles').delete().eq('id', currentUser.id);
       if (error) return alert('Hata: ' + error.message);
 
-      await supabase.auth.signOut();
+      await sbClient.auth.signOut();
       alert('Hesabınız silindi. Ana sayfaya yönlendiriliyorsunuz.');
       window.location.href = '/';
     };
