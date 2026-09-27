@@ -947,6 +947,9 @@
   // ==================== OTOMATIK AUTH INJECTION ====================
   // Sayfada [data-iu-auth] yoksa top-bar/header'a otomatik ekle
   function autoInjectAuthContainer() {
+    // Admin panelde inject yapma
+    if (window.location.pathname.toLowerCase().includes('/admin')) return;
+
     // Zaten varsa dokunma
     if (document.querySelector('[data-iu-auth]')) return;
 
@@ -958,34 +961,39 @@
       '.header-top',
       '.info-bar',
       '.utility-bar',
+      '.lang-switcher',
+      '.language-switcher',
+      '#langSwitcher',
       'header .container',
       'header nav',
       'header'
     ];
 
     let target = null;
+    let injectedIntoHeader = false;
+
     for (const sel of selectors) {
       target = document.querySelector(sel);
-      if (target) break;
+      if (target) {
+        injectedIntoHeader = true;
+        break;
+      }
     }
-
-    if (!target) return;
 
     // Auth container oluştur
     const authDiv = document.createElement('div');
     authDiv.setAttribute('data-iu-auth', '');
-    authDiv.style.cssText = 'display:inline-flex;align-items:center;margin-left:auto;padding-left:16px;';
 
-    // Top-bar tarzı bir container'sa sağa ekle, yoksa sonuna
-    if (target.classList.contains('top-bar') || target.classList.contains('topbar')) {
-      // Top-bar genelde flex ile sağ-sol düzeninde
+    if (injectedIntoHeader) {
+      authDiv.style.cssText = 'display:inline-flex;align-items:center;margin-left:auto;padding-left:16px;';
       target.appendChild(authDiv);
+      console.log('[IUAuth] Auth container header/topbar\'a eklendi');
     } else {
-      // Header/nav içine sonuna ekle
-      target.appendChild(authDiv);
+      // FALLBACK: Sağ üstte fixed floating button
+      authDiv.style.cssText = 'position:fixed;top:12px;right:12px;z-index:9998;display:inline-flex;align-items:center;background:rgba(10,42,94,0.95);padding:6px 10px;border-radius:24px;box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+      document.body.appendChild(authDiv);
+      console.log('[IUAuth] Auth container floating olarak eklendi (fallback)');
     }
-
-    console.log('[IUAuth] Auth container otomatik eklendi');
   }
 
   // ==================== HEADER AUTH BAR ====================
