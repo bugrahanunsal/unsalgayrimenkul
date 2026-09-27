@@ -457,3 +457,130 @@ section { padding: 80px 24px; }
 }
 .lang-dropdown { z-index: 9999 !important; }
 .lang-switcher { z-index: 9999 !important; position: relative !important; }
+
+/* ============================================ */
+/* AUTH BUTONLARI - Tüm sayfalarda tutarlı (home page ile aynı) */
+/* ============================================ */
+.topbar-auth {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 16px;
+  padding-right: 16px;
+  border-right: 1px solid rgba(255,255,255,0.15);
+}
+.topbar-auth .iu-authbar {
+  gap: 4px !important;
+  flex-direction: row !important;
+  display: inline-flex !important;
+  align-items: center;
+}
+.topbar-auth .iu-authbar-btn {
+  padding: 5px 12px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
+  border-radius: 4px !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  line-height: 1.4 !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.topbar-auth .iu-authbar-signup {
+  background: #F49B1C !important;
+  color: #0A2A5E !important;
+  border-color: #F49B1C !important;
+}
+.topbar-auth .iu-authbar-signup:hover {
+  background: #FFB543 !important;
+}
+.topbar-auth .iu-authbar-login {
+  background: transparent !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255,255,255,0.4) !important;
+}
+.topbar-auth .iu-authbar-login:hover {
+  background: rgba(255,255,255,0.1) !important;
+}
+.topbar-auth .iu-authbar-user {
+  padding: 3px 10px 3px 3px !important;
+  background: rgba(255,255,255,0.1) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  border-radius: 20px !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.topbar-auth .iu-authbar-avatar {
+  width: 22px !important; height: 22px !important;
+  font-size: 11px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #F49B1C, #d4831a);
+  color: #0A2A5E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.topbar-auth .iu-authbar-name {
+  color: #FFFFFF !important;
+  font-size: 11px !important;
+  font-weight: 600;
+}
+.topbar-auth .iu-user-menu {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+  top: calc(100% + 12px) !important;
+  min-width: 240px !important;
+}
+.topbar-auth .iu-user-menu-header {
+  background: #f9fafb !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  padding: 14px 16px !important;
+}
+.topbar-auth .iu-user-menu-header > div {
+  color: #0a1929 !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+}
+.topbar-auth .iu-user-menu-email {
+  color: #6b7280 !important;
+  font-size: 12px !important;
+  margin-top: 2px !important;
+}
+.topbar-auth .iu-user-menu a {
+  color: #0a1929 !important;
+  padding: 10px 16px !important;
+  font-size: 13px !important;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.topbar-auth .iu-user-menu a:hover {
+  background: #f3f4f6 !important;
+}
+.topbar-auth .iu-user-menu-logout {
+  color: #dc2626 !important;
+}
+.topbar-auth .iu-user-menu-divider {
+  border-top: 1px solid #e5e7eb;
+  margin: 4px 0;
+}
+@media (max-width: 640px) {
+  .topbar-auth {
+    margin-right: 8px !important;
+    padding-right: 8px !important;
+  }
+  .topbar-auth .iu-authbar-name { display: none !important; }
+  .topbar-auth .iu-authbar-btn {
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+  }
+}
