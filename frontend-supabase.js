@@ -1,20 +1,13 @@
 /**
  * ============================================================
- * FRONTEND SUPABASE INTEGRATION
- * ismailunsal.com.tr - Ana site database bağlantısı
+ * FRONTEND SUPABASE INTEGRATION - v3.0 FINAL
+ * ismailunsal.com.tr
  * ============================================================
- *
- * Bu dosya ana site'nin (index.html + kategori sayfaları) Supabase
- * database'ine bağlanmasını sağlar. Şunları yapar:
- *
- * 1. Ana sayfa kategori kartlarındaki sayıları dinamik günceller
- * 2. Öne çıkan ilanlar bölümünü doldurur (varsa)
- * 3. Kategori sayfalarında ilan listesini çeker
- * 4. Toplam ilan sayısını günceller
- *
- * KULLANIM:
- * <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- * <script src="/frontend-supabase.js"></script>
+ * Gerçek Supabase kolonları kullanır:
+ * - properties: baslik_tr, kategori, tip, ilce, mahalle, fiyat, para_birimi,
+ *   m2, oda_sayisi, banyo_sayisi, bina_yasi, aciklama_tr, ozellikler(JSONB),
+ *   ada_parsel, imar_durumu, emsal, one_cikan, durum
+ * - property_images: property_id, url, sira, ana_foto (is_main DEĞİL!)
  */
 
 (function() {
@@ -29,17 +22,14 @@
       arsa: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80',
       mustakil_ev: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=600&q=80',
       isyeri: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80',
+      yazlik: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80',
       default: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80'
     }
   };
 
   let sbClient;
-
   function init() {
-    if (!window.supabase) {
-      console.warn('[Frontend] Supabase SDK yüklenmemiş');
-      return null;
-    }
+    if (!window.supabase) { console.warn('[Frontend] Supabase SDK yüklenmemiş'); return null; }
     if (!sbClient) {
       sbClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY, {
         auth: { persistSession: false, autoRefreshToken: false }
@@ -48,25 +38,56 @@
     return sbClient;
   }
 
-  // ==================== YARDIMCI FONKSİYONLAR ====================
-
   function esc(text) {
-    if (!text) return '';
+    if (text == null) return '';
     const div = document.createElement('div');
-    div.textContent = text;
+    div.textContent = String(text);
     return div.innerHTML;
   }
 
-  function formatPrice(price) {
-    if (!price) return '-';
-    return new Intl.NumberFormat('tr-TR').format(price) + ' ₺';
+  function formatPrice(price, currency) {
+    if (!price) return 'Bilgi İçin Arayın';
+    const symbols = { TL: '₺', USD: '$', EUR: '€' };
+    return new Intl.NumberFormat('tr-TR').format(price) + ' ' + (symbols[currency] || currency || '₺');
   }
 
-  // Kategori adı → HTML card href eşleştirmesi
+  function getMainImage(p) {
+    // property_images join'den ana_foto=true olan, yoksa ilk, yoksa placeholder
+    if (p.property_images && p.property_images.length) {
+      const main = p.property_images.find(i => i.ana_foto === true) || p.property_images[0];
+      if (main && main.url) return main.url;
+    }
+    return CONFIG.PLACEHOLDER_IMAGES[p.kategori] || CONFIG.PLACEHOLDER_IMAGES.default;
+  }
+
+  // ==================== SORGU FONKSİYONLARI ====================
+
+  // Property fetch - property_images ile join, sıralanmış
+  async function fetchProperties(filters = {}) {
+    const sb = init();
+    if (!sb) return { data: null, error: 'SDK yok' };
+
+    let q = sb.from('properties')
+      .select('*, property_images(url, ana_foto, sira)')
+      .eq('durum', 'aktif');
+
+    if (filters.tip) q = q.eq('tip', filters.tip);
+    if (filters.kategori) q = q.eq('kategori', filters.kategori);
+    if (filters.kategoriIn) q = q.in('kategori', filters.kategoriIn);
+    if (filters.ilce) q = q.eq('ilce', filters.ilce);
+    if (filters.one_cikan === true) q = q.eq('one_cikan', true);
+
+    q = q.order('one_cikan', { ascending: false }).order('created_at', { ascending: false });
+    if (filters.limit) q = q.limit(filters.limit);
+
+    return await q;
+  }
+
+  // ==================== ANA SAYFA: KATEGORİ SAYAÇLARI ====================
+
   function matchCategoryKey(href) {
     if (!href) return null;
     href = href.toLowerCase();
-
     if (href.includes('satilik-daire')) return 'satilik-daire';
     if (href.includes('kiralik-villa')) return 'kiralik-villa';
     if (href.includes('esyali-kiralik')) return 'esyali-kiralik';
@@ -78,7 +99,6 @@
     return null;
   }
 
-  // Property → kategori key
   function classifyProperty(p) {
     const keys = [];
     const kat = (p.kategori || '').toLowerCase();
@@ -94,40 +114,17 @@
     if (esyali && tip === 'kiralik') keys.push('esyali-kiralik');
     if (kat === 'daire' && tip === 'kiralik' && ilce === 'merkez') keys.push('merkez-kiralik-daire');
     if (kat === 'mustakil_ev' && tip === 'kiralik') keys.push('kiralik-ev');
-
     return keys;
   }
 
-  // ==================== ANA SAYFA: KATEGORİ SAYAÇLARINI GÜNCELLE ====================
-
   async function updateCategoryCounts() {
-    const sb = init();
-    if (!sb) return;
-
     try {
-      // Önce property_images ile join dene
-      let { data: properties, error } = await sb
-        .from('properties')
-        .select('id, kategori, tip, ilce, ozellikler, property_images(url, is_main)')
-        .eq('durum', 'aktif');
-
-      // Join başarısız olursa (400 hatası), sadece properties çek
-      if (error) {
-        console.warn('[Frontend] property_images join failed, retrying without join');
-        const fallback = await sb
-          .from('properties')
-          .select('id, kategori, tip, ilce, ozellikler')
-          .eq('durum', 'aktif');
-        properties = fallback.data;
-        error = fallback.error;
-      }
-
+      const { data: properties, error } = await fetchProperties({});
       if (error) throw error;
       if (!properties) return;
 
-      console.log('[Frontend] ' + properties.length + ' aktif ilan yüklendi');
+      console.log('[Frontend] Toplam ' + properties.length + ' aktif ilan');
 
-      // Kategori sayacları
       const counts = {};
       const firstImages = {};
 
@@ -135,17 +132,13 @@
         const keys = classifyProperty(p);
         keys.forEach(key => {
           counts[key] = (counts[key] || 0) + 1;
-
-          // İlk fotoğrafı sakla
           if (!firstImages[key]) {
-            const img = p.property_images?.find(i => i.is_main)?.url ||
-                        p.property_images?.[0]?.url;
-            if (img) firstImages[key] = img;
+            const img = getMainImage(p);
+            if (img && !img.includes('unsplash')) firstImages[key] = img;
           }
         });
       });
 
-      // HTML kartlarını güncelle
       const cards = document.querySelectorAll('.cat-card');
       cards.forEach(card => {
         const href = card.getAttribute('href');
@@ -153,8 +146,6 @@
         if (!key) return;
 
         const count = counts[key] || 0;
-
-        // Sayı güncelle - meta içindeki data-i18n span'ı bul
         const metaSpans = card.querySelectorAll('.cat-card-meta span[data-i18n]');
         metaSpans.forEach(span => {
           const i18nKey = span.getAttribute('data-i18n');
@@ -163,297 +154,131 @@
           }
         });
 
-        // Fotoğrafı güncelle (eğer database'de foto varsa)
         if (firstImages[key]) {
           const imgDiv = card.querySelector('.cat-card-image');
-          if (imgDiv) {
-            imgDiv.style.backgroundImage = `url('${firstImages[key]}')`;
-          }
+          if (imgDiv) imgDiv.style.backgroundImage = `url('${firstImages[key]}')`;
         }
-
-        // Kart href'ini de dinamik yap (kategori sayfası için query param)
-        // Ör: yalova-satilik-daire.html?kategori=daire&tip=satilik
-        // (Kategori sayfaları da database okuyacak - Phase 2)
       });
 
-      // Toplam ilan sayısı
       const totalEl = document.getElementById('totalListings');
-      if (totalEl) {
-        totalEl.textContent = properties.length;
-      }
-
-      // Filter status: gösterilen kategori sayısı (hep 8 gösterelim)
-      const resultEl = document.getElementById('resultCount');
-      if (resultEl) resultEl.textContent = cards.length;
-
+      if (totalEl) totalEl.textContent = properties.length;
     } catch (err) {
-      console.error('[Frontend] Kategori güncellemesi hatası:', err);
+      console.error('[Frontend] Kategori güncelleme hatası:', err);
     }
   }
 
-  // ==================== ÖNE ÇIKAN İLANLAR ====================
+  // ==================== KATEGORİ SAYFASI ====================
 
-  async function loadFeaturedProperties() {
-    const container = document.getElementById('featuredProperties');
-    if (!container) return; // Container yoksa atla
-
-    const sb = init();
-    if (!sb) return;
-
-    try {
-      let { data: properties, error } = await sb
-        .from('properties')
-        .select('*, property_images(url, is_main)')
-        .eq('durum', 'aktif')
-        .eq('one_cikan', true)
-        .order('created_at', { ascending: false })
-        .limit(6);
-
-      // Join başarısız - fallback
-      if (error) {
-        const fallback = await sb
-          .from('properties')
-          .select('*')
-          .eq('durum', 'aktif')
-          .eq('one_cikan', true)
-          .order('created_at', { ascending: false })
-          .limit(6);
-        properties = fallback.data;
-        error = fallback.error;
-      }
-
-      if (error) throw error;
-
-      if (!properties?.length) {
-        // Öne çıkan yoksa en son eklenenlerı göster
-        let { data: latest, error: latestErr } = await sb
-          .from('properties')
-          .select('*, property_images(url, is_main)')
-          .eq('durum', 'aktif')
-          .order('created_at', { ascending: false })
-          .limit(6);
-
-        if (latestErr) {
-          const fb = await sb.from('properties').select('*').eq('durum', 'aktif').order('created_at', { ascending: false }).limit(6);
-          latest = fb.data;
-        }
-
-        renderPropertyGrid(container, latest || []);
-      } else {
-        renderPropertyGrid(container, properties);
-      }
-    } catch (err) {
-      console.error('[Frontend] Öne çıkan ilanlar hatası:', err);
-    }
-  }
-
-  function renderPropertyGrid(container, properties) {
-    if (!properties.length) {
-      container.innerHTML = '<div style="text-align:center;padding:40px;color:#6b7280;">Henüz ilan yok. Yakında eklenecek!</div>';
-      return;
-    }
-
-    container.innerHTML = properties.map(p => {
-      const img = p.property_images?.find(i => i.is_main)?.url ||
-                  p.property_images?.[0]?.url ||
-                  CONFIG.PLACEHOLDER_IMAGES[p.kategori] ||
-                  CONFIG.PLACEHOLDER_IMAGES.default;
-
-      return `
-        <a href="ilan.html?id=${esc(p.id)}" class="property-card" style="display:block;background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(10,42,94,0.08);text-decoration:none;color:inherit;transition:all 0.2s;">
-          <div style="height:220px;background:url('${esc(img)}') center/cover;position:relative;">
-            <span style="position:absolute;top:12px;left:12px;background:${p.tip === 'satilik' ? '#F49B1C' : '#0A2A5E'};color:white;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">
-              ${esc(p.tip)}
-            </span>
-            ${p.one_cikan ? '<span style="position:absolute;top:12px;right:12px;background:#EF4444;color:white;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;">⭐ ÖNE ÇIKAN</span>' : ''}
-          </div>
-          <div style="padding:20px;">
-            <h3 style="font-size:17px;color:#0A2A5E;margin-bottom:8px;line-height:1.3;">${esc(p.baslik_tr || 'İlan')}</h3>
-            <div style="font-size:12px;color:#6B7280;margin-bottom:12px;">
-              📍 ${esc(p.ilce || 'Yalova')} • ${esc(p.kategori || '')}
-              ${p.alan ? `• ${p.alan}m²` : ''}
-              ${p.oda_sayisi ? `• ${esc(p.oda_sayisi)}` : ''}
-            </div>
-            <div style="font-size:22px;font-weight:800;color:#F49B1C;">${formatPrice(p.fiyat)}</div>
-          </div>
-        </a>
-      `;
-    }).join('');
-  }
-
-  // ==================== KATEGORİ SAYFASI: İLAN LİSTESİ ====================
-
-  // Kategori sayfası container'ı otomatik bul (birden fazla olası yer)
   function findCategoryContainer() {
-    // 1. Öncelik: özel ID
     let c = document.getElementById('categoryPropertiesList');
-    if (c) return { el: c, mode: 'replace' };
-
-    // 2. Mevcut sitedeki class'lar (hardcoded ilanlar için)
+    if (c) return c;
     c = document.querySelector('.listings-grid-pillar');
-    if (c) return { el: c, mode: 'replace' };
-
+    if (c) return c;
     c = document.querySelector('.listings-grid');
-    if (c) return { el: c, mode: 'replace' };
-
+    if (c) return c;
     c = document.querySelector('.property-grid');
-    if (c) return { el: c, mode: 'replace' };
-
-    c = document.querySelector('.properties-list');
-    if (c) return { el: c, mode: 'replace' };
-
+    if (c) return c;
     return null;
   }
 
-  // Mevcut siteye uyumlu ilan kartı (listings-grid-pillar için)
   function renderPillarCard(p) {
-    const img = p.property_images?.find(i => i.is_main)?.url ||
-                p.property_images?.[0]?.url ||
-                CONFIG.PLACEHOLDER_IMAGES[p.kategori] ||
-                CONFIG.PLACEHOLDER_IMAGES.default;
-
+    const img = getMainImage(p);
     const phone = '+905075188482';
     const wa = 'https://wa.me/905075188482?text=' + encodeURIComponent((p.baslik_tr || 'İlan') + ' hakkında bilgi almak istiyorum');
+    const fiyat = formatPrice(p.fiyat, p.para_birimi);
 
-    // Fiyat formatı
-    const fiyat = p.fiyat ? formatPrice(p.fiyat) : 'Bilgi İçin Arayın';
-
-    // Alan / oda / kategori bilgileri
     const features = [];
-    if (p.alan) features.push('<span>📐 ' + esc(p.alan) + ' m²</span>');
-    if (p.oda_sayisi) features.push('<span>🛏 ' + esc(p.oda_sayisi) + '</span>');
-    if (p.bina_yasi != null) features.push('<span>🏗 ' + esc(p.bina_yasi) + ' yaş</span>');
-    if (p.emsal) features.push('<span>🧭 ' + esc(p.emsal) + ' Emsal</span>');
-    if (features.length === 0) features.push('<span>📍 ' + esc(p.ilce || 'Yalova') + '</span>');
+    if (p.m2) features.push('<span><i class="fa-solid fa-mountain"></i> ' + esc(p.m2) + ' m²</span>');
+    if (p.oda_sayisi) features.push('<span><i class="fa-solid fa-door-open"></i> ' + esc(p.oda_sayisi) + '</span>');
+    if (p.emsal) features.push('<span><i class="fa-solid fa-compass"></i> ' + esc(p.emsal) + ' Emsal</span>');
+    if (p.ada_parsel) features.push('<span><i class="fa-solid fa-map"></i> ' + esc(p.ada_parsel) + '</span>');
+    if (p.imar_durumu) features.push('<span><i class="fa-solid fa-file-contract"></i> ' + esc(p.imar_durumu) + '</span>');
+    if (features.length === 0) features.push('<span><i class="fa-solid fa-location-dot"></i> ' + esc(p.ilce || 'Yalova') + '</span>');
 
-    // Etiket (öne çıkan / yeni / normal)
+    const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7 * 86400000;
     const tag = p.one_cikan
-      ? '<span class="listing-tag-pillar vip">💎 VIP FIRSAT</span>'
-      : (p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7 * 86400000)
-        ? '<span class="listing-tag-pillar" style="background:#F49B1C;color:white;">🆕 YENİ İLAN</span>'
+      ? '<span class="listing-tag-pillar vip"><i class="fa-solid fa-gem"></i> VIP FIRSAT</span>'
+      : isNew
+        ? '<span class="listing-tag-pillar" style="background:#F49B1C;color:#0A2A5E;"><i class="fa-solid fa-star"></i> YENİ İLAN</span>'
         : '';
 
+    const desc = (p.aciklama_tr || '').substring(0, 130);
     const typeUpper = (p.tip || '').toUpperCase();
 
     return `
-      <a href="ilan.html?id=${esc(p.id)}" class="listing-card-pillar" style="text-decoration:none;color:inherit;display:block;">
-        <div class="listing-image-pillar" style="background-image: url('${esc(img)}'); background-size: cover; background-position: center;">
+      <div class="listing-card-pillar" onclick="window.location.href='ilan.html?id=${esc(p.id)}'" style="cursor:pointer;">
+        <div class="listing-image-pillar" style="background-image: url('${esc(img)}');">
           ${tag}
           <span class="listing-type-badge-pillar">${esc(typeUpper)}</span>
         </div>
         <div class="listing-content-pillar">
           <div class="listing-location-pillar">
-            📍 ${esc((p.ilce || 'YALOVA').toUpperCase())}${p.mahalle ? ', ' + esc(p.mahalle.toUpperCase()) : ''}
+            <i class="fa-solid fa-location-dot"></i> ${esc((p.ilce || 'YALOVA').toUpperCase())}${p.mahalle ? ', ' + esc(p.mahalle.toUpperCase()) : ''}
           </div>
           <h3 class="listing-title-pillar">${esc(p.baslik_tr || 'İlan')}</h3>
           <div class="listing-features-pillar">
             ${features.join('')}
           </div>
           <div class="listing-price-pillar">${fiyat}</div>
-          <p class="listing-desc-pillar">${esc((p.aciklama_tr || p.ozet_tr || '').substring(0, 120))}${(p.aciklama_tr || '').length > 120 ? '...' : ''}</p>
+          <p class="listing-desc-pillar">${esc(desc)}${(p.aciklama_tr || '').length > 130 ? '...' : ''}</p>
           <div class="listing-cta-pillar">
-            <a href="tel:${phone}" class="cta-pillar-call" onclick="event.stopPropagation();">📞 Ara</a>
-            <a href="${wa}" target="_blank" class="cta-pillar-wa" onclick="event.stopPropagation();">💬 Sor</a>
+            <a href="tel:${phone}" class="cta-pillar-call" onclick="event.stopPropagation();"><i class="fa-solid fa-phone"></i> Ara</a>
+            <a href="${wa}" target="_blank" class="cta-pillar-wa" onclick="event.stopPropagation();"><i class="fa-brands fa-whatsapp"></i> Sor</a>
           </div>
         </div>
-      </a>
+      </div>
     `;
   }
 
   async function loadCategoryPageProperties() {
-    const found = findCategoryContainer();
-    if (!found) return; // Kategori sayfası değil
+    const container = findCategoryContainer();
+    if (!container) return;
 
-    const { el: container } = found;
-    const sb = init();
-    if (!sb) return;
-
-    // Sayfa URL'inden kategori tahmini
     const pathname = window.location.pathname.toLowerCase();
-    let query = sb.from('properties')
-      .select('*, property_images(url, is_main)')
-      .eq('durum', 'aktif');
+    const filters = {};
 
-    // URL'ye göre tip filtresi
-    if (pathname.includes('satilik')) query = query.eq('tip', 'satilik');
-    else if (pathname.includes('kiralik')) query = query.eq('tip', 'kiralik');
+    if (pathname.includes('satilik')) filters.tip = 'satilik';
+    else if (pathname.includes('kiralik')) filters.tip = 'kiralik';
 
-    // URL'ye göre kategori filtresi
-    if (pathname.includes('arsa') || pathname.includes('tarla')) query = query.in('kategori', ['arsa', 'tarla']);
-    else if (pathname.includes('daire')) query = query.eq('kategori', 'daire');
-    else if (pathname.includes('villa')) query = query.eq('kategori', 'villa');
-    else if (pathname.includes('mustakil') || pathname.includes('ev')) query = query.in('kategori', ['villa', 'mustakil_ev']);
-    else if (pathname.includes('isyeri') || pathname.includes('dukkan')) query = query.eq('kategori', 'isyeri');
-    else if (pathname.includes('yazlik')) query = query.eq('kategori', 'yazlik');
-    else if (pathname.includes('bina')) query = query.eq('kategori', 'bina');
-    else if (pathname.includes('luks')) query = query.eq('one_cikan', true);
+    if (pathname.includes('arsa') || pathname.includes('tarla')) filters.kategoriIn = ['arsa', 'tarla'];
+    else if (pathname.includes('daire')) filters.kategori = 'daire';
+    else if (pathname.includes('villa')) filters.kategori = 'villa';
+    else if (pathname.includes('mustakil') || pathname.includes('kiralik-ev') || pathname.includes('satilik-ev')) filters.kategoriIn = ['villa', 'mustakil_ev'];
+    else if (pathname.includes('isyeri') || pathname.includes('dukkan')) filters.kategori = 'isyeri';
+    else if (pathname.includes('yazlik')) filters.kategori = 'yazlik';
+    else if (pathname.includes('luks')) filters.one_cikan = true;
 
-    // İlçe filtresi
-    if (pathname.includes('cinarcik')) query = query.eq('ilce', 'Çınarcık');
-    else if (pathname.includes('termal')) query = query.eq('ilce', 'Termal');
-    else if (pathname.includes('altinova')) query = query.eq('ilce', 'Altınova');
-    else if (pathname.includes('armutlu')) query = query.eq('ilce', 'Armutlu');
-    else if (pathname.includes('ciftlikkoy')) query = query.eq('ilce', 'Çiftlikköy');
-    else if (pathname.includes('akkoy')) query = query.eq('ilce', 'Akköy');
-    else if (pathname.includes('merkez')) query = query.eq('ilce', 'Merkez');
-
-    query = query.order('one_cikan', { ascending: false }).order('created_at', { ascending: false });
+    if (pathname.includes('cinarcik')) filters.ilce = 'Çınarcık';
+    else if (pathname.includes('termal')) filters.ilce = 'Termal';
+    else if (pathname.includes('altinova')) filters.ilce = 'Altınova';
+    else if (pathname.includes('armutlu')) filters.ilce = 'Armutlu';
+    else if (pathname.includes('merkez')) filters.ilce = 'Merkez';
 
     try {
-      let { data: properties, error } = await query;
-
-      // Join başarısız - property_images olmadan tekrar dene
-      if (error) {
-        console.warn('[Frontend] Kategori: join failed, retrying without images');
-        let q2 = sb.from('properties').select('*').eq('durum', 'aktif');
-        if (pathname.includes('satilik')) q2 = q2.eq('tip', 'satilik');
-        else if (pathname.includes('kiralik')) q2 = q2.eq('tip', 'kiralik');
-        if (pathname.includes('arsa') || pathname.includes('tarla')) q2 = q2.in('kategori', ['arsa', 'tarla']);
-        else if (pathname.includes('daire')) q2 = q2.eq('kategori', 'daire');
-        else if (pathname.includes('villa')) q2 = q2.eq('kategori', 'villa');
-        else if (pathname.includes('mustakil') || pathname.includes('ev')) q2 = q2.in('kategori', ['villa', 'mustakil_ev']);
-        q2 = q2.order('created_at', { ascending: false });
-        const fb = await q2;
-        properties = fb.data;
-        error = fb.error;
-      }
-
+      const { data: properties, error } = await fetchProperties(filters);
       if (error) throw error;
 
-      console.log('[Frontend] Kategori sayfası: ' + (properties?.length || 0) + ' ilan bulundu');
-
-      // Container'ın class'ına göre render seç
-      const isPillar = container.classList.contains('listings-grid-pillar');
+      console.log('[Frontend] Kategori sayfası: ' + (properties?.length || 0) + ' ilan');
 
       if (!properties || properties.length === 0) {
         container.innerHTML = `
           <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
-            <div style="font-size:48px;margin-bottom:16px;">🏡</div>
-            <h3 style="color:#0A2A5E;margin-bottom:8px;">Bu kategoride henüz ilan yok</h3>
-            <p style="color:#6B7280;">Yakında yeni ilanlar eklenecek. Bültenimize kayıt olun, ilk siz haberdar olun.</p>
+            <div style="font-size:56px;margin-bottom:20px;">🏡</div>
+            <h3 style="color:#0A2A5E;margin-bottom:12px;font-size:22px;">Bu kategoride henüz ilan yok</h3>
+            <p style="color:#6B7280;max-width:400px;margin:0 auto;">Yakında yeni ilanlar eklenecek. Bültenimize kayıt olursanız ilk siz haberdar olursunuz.</p>
           </div>
         `;
         return;
       }
 
-      if (isPillar) {
-        container.innerHTML = properties.map(renderPillarCard).join('');
-      } else {
-        renderPropertyGrid(container, properties);
-      }
+      container.innerHTML = properties.map(renderPillarCard).join('');
 
-      // Sayfa başlığında sayı güncelle
-      const titleEl = document.getElementById('categoryCount');
-      if (titleEl) titleEl.textContent = properties.length;
-
-      // Sayı gösteren tüm elementleri güncelle
       document.querySelectorAll('[data-property-count]').forEach(el => {
         el.textContent = properties.length;
       });
-
     } catch (err) {
       console.error('[Frontend] Kategori sayfası hatası:', err);
-      container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#EF4444;">Yükleme hatası: ' + esc(err.message) + '</div>';
+      container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#EF4444;">Yükleme hatası. Sayfayı yenileyin.</div>';
     }
   }
 
@@ -461,14 +286,11 @@
 
   async function loadPropertyDetail() {
     const container = document.getElementById('propertyDetail');
-    if (!container) return; // Detay sayfasında değiliz
+    if (!container) return;
 
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
-    if (!id) {
-      container.innerHTML = '<p style="text-align:center;padding:40px;">İlan ID bulunamadı</p>';
-      return;
-    }
+    if (!id) return;
 
     const sb = init();
     if (!sb) return;
@@ -476,52 +298,50 @@
     try {
       const { data: p, error } = await sb
         .from('properties')
-        .select('*, property_images(url, is_main)')
+        .select('*, property_images(url, ana_foto, sira)')
         .eq('id', id)
         .eq('durum', 'aktif')
         .maybeSingle();
 
       if (error) throw error;
       if (!p) {
-        container.innerHTML = '<p style="text-align:center;padding:40px;">İlan bulunamadı veya kaldırıldı</p>';
+        container.innerHTML = '<p style="text-align:center;padding:40px;">İlan bulunamadı</p>';
         return;
       }
 
-      // Görüntülenme sayısını arttır
       sb.from('properties').update({ goruntulenme: (p.goruntulenme || 0) + 1 }).eq('id', id).then(() => {});
 
-      const images = p.property_images || [];
-      const mainImg = images.find(i => i.is_main)?.url || images[0]?.url || CONFIG.PLACEHOLDER_IMAGES.default;
+      const images = (p.property_images || []).sort((a, b) => (a.sira || 0) - (b.sira || 0));
+      const mainImg = getMainImage(p);
 
       container.innerHTML = `
         <div style="max-width:1200px;margin:0 auto;padding:40px 24px;">
           <div style="display:grid;grid-template-columns:2fr 1fr;gap:32px;">
             <div>
-              <img src="${esc(mainImg)}" style="width:100%;height:500px;object-fit:cover;border-radius:16px;margin-bottom:16px;">
+              <img id="detailMainImg" src="${esc(mainImg)}" style="width:100%;height:500px;object-fit:cover;border-radius:16px;margin-bottom:16px;">
               ${images.length > 1 ? `
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
-                  ${images.slice(0, 8).map(i => `<img src="${esc(i.url)}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;cursor:pointer;" onclick="document.querySelector('.detail-main-img').src=this.src">`).join('')}
-                </div>
-              ` : ''}
+                  ${images.slice(0, 8).map(i => `<img src="${esc(i.url)}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;cursor:pointer;" onclick="document.getElementById('detailMainImg').src=this.src">`).join('')}
+                </div>` : ''}
             </div>
             <div>
-              <span style="display:inline-block;background:${p.tip === 'satilik' ? '#F49B1C' : '#0A2A5E'};color:white;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;">${esc(p.tip)}</span>
+              <span style="display:inline-block;background:${p.tip === 'satilik' ? '#F49B1C' : '#0A2A5E'};color:white;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;">${esc((p.tip || '').toUpperCase())}</span>
               <h1 style="font-size:28px;color:#0A2A5E;margin:12px 0;">${esc(p.baslik_tr)}</h1>
-              <div style="font-size:36px;font-weight:800;color:#F49B1C;margin:20px 0;">${formatPrice(p.fiyat)}</div>
-
+              <div style="font-size:36px;font-weight:800;color:#F49B1C;margin:20px 0;">${formatPrice(p.fiyat, p.para_birimi)}</div>
               <div style="background:#F9FAFB;border-radius:12px;padding:20px;margin:20px 0;">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px;">
-                  <div><strong>Konum:</strong> ${esc(p.ilce)}, ${esc(p.mahalle || '')}</div>
-                  <div><strong>Alan:</strong> ${p.alan || '-'} m²</div>
+                  <div><strong>Konum:</strong> ${esc(p.ilce || '-')}${p.mahalle ? ', ' + esc(p.mahalle) : ''}</div>
+                  <div><strong>Alan:</strong> ${p.m2 || '-'} m²</div>
                   <div><strong>Oda:</strong> ${esc(p.oda_sayisi || '-')}</div>
-                  <div><strong>Kat:</strong> ${esc(p.bulundugu_kat || '-')}</div>
-                  <div><strong>Yaş:</strong> ${p.bina_yasi || '-'}</div>
-                  <div><strong>Isıtma:</strong> ${esc(p.isitma || '-')}</div>
+                  <div><strong>Banyo:</strong> ${p.banyo_sayisi || '-'}</div>
+                  <div><strong>Kat:</strong> ${esc(p.kat || '-')}</div>
+                  <div><strong>Yaş:</strong> ${p.bina_yasi != null ? p.bina_yasi : '-'}</div>
+                  <div><strong>Isınma:</strong> ${esc(p.isinma || '-')}</div>
+                  <div><strong>İmar:</strong> ${esc(p.imar_durumu || '-')}</div>
                 </div>
               </div>
-
-              <a href="tel:+905075188482" style="display:block;background:#0A2A5E;color:white;padding:16px;border-radius:12px;text-align:center;text-decoration:none;font-weight:700;margin-bottom:8px;">📞 HEMEN ARA</a>
-              <a href="https://wa.me/905075188482" style="display:block;background:#25D366;color:white;padding:16px;border-radius:12px;text-align:center;text-decoration:none;font-weight:700;">💬 WHATSAPP</a>
+              <a href="tel:+905075188482" style="display:block;background:#0A2A5E;color:white;padding:16px;border-radius:12px;text-align:center;text-decoration:none;font-weight:700;margin-bottom:8px;"><i class="fa-solid fa-phone"></i> HEMEN ARA</a>
+              <a href="https://wa.me/905075188482" target="_blank" style="display:block;background:#25D366;color:white;padding:16px;border-radius:12px;text-align:center;text-decoration:none;font-weight:700;"><i class="fa-brands fa-whatsapp"></i> WHATSAPP</a>
             </div>
           </div>
           <div style="margin-top:32px;background:white;padding:24px;border-radius:16px;">
@@ -531,24 +351,36 @@
         </div>
       `;
 
-      // Sayfa title güncelle
       document.title = p.baslik_tr + ' - İsmail Ünsal Gayrimenkul';
-
     } catch (err) {
       console.error('[Frontend] İlan detay hatası:', err);
-      container.innerHTML = '<p style="text-align:center;padding:40px;color:#EF4444;">Hata: ' + esc(err.message) + '</p>';
+      container.innerHTML = '<p style="text-align:center;padding:40px;color:#EF4444;">Yükleme hatası</p>';
     }
   }
 
-  // ==================== OTOMATIK FAQ INJECTION ====================
+  // ==================== ANA SAYFA ÖNE ÇIKAN ====================
+
+  async function loadFeaturedProperties() {
+    const container = document.getElementById('featuredProperties');
+    if (!container) return;
+
+    try {
+      let { data: properties } = await fetchProperties({ one_cikan: true, limit: 6 });
+      if (!properties || properties.length === 0) {
+        const res = await fetchProperties({ limit: 6 });
+        properties = res.data || [];
+      }
+      container.innerHTML = properties.map(renderPillarCard).join('');
+    } catch (err) {
+      console.error('[Frontend] Öne çıkan hatası:', err);
+    }
+  }
+
+  // ==================== OTOMATİK FAQ INJECTION ====================
 
   function autoInjectFAQ() {
-    // Zaten FAQ container varsa dokunma
     if (document.getElementById('faqContainer')) return;
-
     const pathname = window.location.pathname.toLowerCase();
-
-    // Ana sayfa, ilan detay, veya /sss'de otomatik ekleme yapma
     if (pathname === '/' || pathname === '/index.html') return;
     if (pathname.includes('/sss')) return;
     if (pathname.includes('/ilan.html')) return;
@@ -556,17 +388,16 @@
     if (pathname.includes('/iletisim')) return;
     if (pathname.includes('/hakkimizda')) return;
     if (pathname.includes('/admin')) return;
+    if (pathname.includes('/blog')) return;
 
-    // FAQ kategorisi tahmini
     let category = 'genel';
     if (pathname.includes('arsa') || pathname.includes('tarla')) category = 'arsa';
     else if (pathname.includes('daire')) category = 'daire';
     else if (pathname.includes('villa') || pathname.includes('ev')) category = 'villa';
     else if (pathname.includes('kiralik')) category = 'kiralik';
-    else if (pathname.includes('isyeri') || pathname.includes('dukkan')) category = 'isyeri';
+    else if (pathname.includes('isyeri')) category = 'isyeri';
 
-    // Sayfa başlığı için etiket
-    const categoryLabels = {
+    const labels = {
       arsa: 'Yalova Arsa Rehberi',
       daire: 'Yalova Daire Rehberi',
       villa: 'Yalova Villa Rehberi',
@@ -575,58 +406,31 @@
       genel: 'Yalova Emlak Rehberi'
     };
 
-    // Sayfaya container ekle (footer'dan önce, yoksa body sonuna)
     const faqDiv = document.createElement('div');
     faqDiv.id = 'faqContainer';
     faqDiv.setAttribute('data-faq-category', category);
-    faqDiv.setAttribute('data-faq-title', categoryLabels[category]);
-    faqDiv.setAttribute('data-faq-subtitle', 'Uzman TURYAP danışmanından cevaplar');
+    faqDiv.setAttribute('data-faq-title', labels[category]);
 
     const footer = document.querySelector('footer');
-    if (footer) {
-      footer.parentNode.insertBefore(faqDiv, footer);
-    } else {
-      document.body.appendChild(faqDiv);
-    }
+    if (footer) footer.parentNode.insertBefore(faqDiv, footer);
+    else document.body.appendChild(faqDiv);
 
-    // FAQ script'ini yükle (eğer zaten yüklenmemişse)
     if (!document.querySelector('script[src*="faq-yalova-emlak"]')) {
-      const script = document.createElement('script');
-      script.src = '/faq-yalova-emlak.js';
-      script.async = true;
-      document.body.appendChild(script);
+      const s = document.createElement('script');
+      s.src = '/faq-yalova-emlak.js';
+      s.async = true;
+      document.body.appendChild(s);
       console.log('[Frontend] FAQ otomatik eklendi (' + category + ')');
-    }
-  }
-
-  // ==================== SUBSCRIBE-WIDGET OTOMATIK YÜKLE ====================
-  function autoLoadAuthWidget() {
-    // Admin panelde değilse ve subscribe-widget yüklenmemişse yükle
-    const pathname = window.location.pathname.toLowerCase();
-    if (pathname.includes('/admin')) return;
-
-    if (!document.querySelector('script[src*="subscribe-widget"]')) {
-      const script = document.createElement('script');
-      script.src = '/subscribe-widget.js';
-      script.async = false; // sıralı yükleme
-      document.body.appendChild(script);
-      console.log('[Frontend] Subscribe-widget otomatik yüklendi (auth için)');
     }
   }
 
   // ==================== INIT ====================
 
   async function start() {
-    // Auth widget'ı ilk yükle (her sayfada Hesabım/Giriş için)
-    autoLoadAuthWidget();
-
-    // Sayfa tipine göre yükleme yap
-    await updateCategoryCounts();      // Ana sayfada kategori kartları
-    await loadFeaturedProperties();    // Ana sayfada öne çıkan (varsa)
-    await loadCategoryPageProperties(); // Kategori sayfalarında
-    await loadPropertyDetail();        // İlan detay sayfasında
-
-    // Kategori sayfalarına otomatik FAQ ekle (SEO için)
+    await updateCategoryCounts();
+    await loadFeaturedProperties();
+    await loadCategoryPageProperties();
+    await loadPropertyDetail();
     autoInjectFAQ();
   }
 
@@ -636,12 +440,6 @@
     start();
   }
 
-  // Global expose - konsoldan test için
-  window.IUFrontend = {
-    updateCategoryCounts,
-    loadFeaturedProperties,
-    loadCategoryPageProperties,
-    loadPropertyDetail
-  };
+  window.IUFrontend = { updateCategoryCounts, loadFeaturedProperties, loadCategoryPageProperties, loadPropertyDetail };
 
 })();

@@ -945,60 +945,149 @@
   }
 
   // ==================== OTOMATIK AUTH INJECTION ====================
-  // Sayfada [data-iu-auth] yoksa top-bar/header'a otomatik ekle
+  // Site içindeki .top-right (top-bar sağ kısmı) içine, .lang-switcher'dan ÖNCE ekle
   function autoInjectAuthContainer() {
-    // Admin panelde inject yapma
     if (window.location.pathname.toLowerCase().includes('/admin')) return;
-
-    // Zaten varsa dokunma
     if (document.querySelector('[data-iu-auth]')) return;
 
-    // Olası konumlar - sırasıyla dene
-    const selectors = [
-      '.top-bar',
-      '.topbar',
-      '.top-info-bar',
-      '.header-top',
-      '.info-bar',
-      '.utility-bar',
-      '.lang-switcher',
-      '.language-switcher',
-      '#langSwitcher',
-      'header .container',
-      'header nav',
-      'header'
-    ];
-
-    let target = null;
-    let injectedIntoHeader = false;
-
-    for (const sel of selectors) {
-      target = document.querySelector(sel);
-      if (target) {
-        injectedIntoHeader = true;
-        break;
-      }
-    }
-
-    // Auth container oluştur
     const authDiv = document.createElement('div');
     authDiv.setAttribute('data-iu-auth', '');
+    authDiv.className = 'iu-auth-inline';
 
-    if (injectedIntoHeader) {
-      authDiv.style.cssText = 'display:inline-flex;align-items:center;margin-left:auto;padding-left:16px;';
-      target.appendChild(authDiv);
-      console.log('[IUAuth] Auth container header/topbar\'a eklendi');
-    } else {
-      // FALLBACK: Sağ üstte fixed floating button
-      authDiv.style.cssText = 'position:fixed;top:12px;right:12px;z-index:9998;display:inline-flex;align-items:center;background:rgba(10,42,94,0.95);padding:6px 10px;border-radius:24px;box-shadow:0 4px 12px rgba(0,0,0,0.2);';
-      document.body.appendChild(authDiv);
-      console.log('[IUAuth] Auth container floating olarak eklendi (fallback)');
+    // 1. En iyi durum: .top-right (mevcut top bar yapısı)
+    const topRight = document.querySelector('.top-bar-inner .top-right, .top-right');
+    if (topRight) {
+      // .lang-switcher'dan önce ekle
+      const langSw = topRight.querySelector('.lang-switcher, #langSwitcher');
+      if (langSw) {
+        topRight.insertBefore(authDiv, langSw);
+      } else {
+        topRight.appendChild(authDiv);
+      }
+      console.log('[IUAuth] Auth widget top-right\'a eklendi');
+      return;
     }
+
+    // 2. Fallback: floating sağ üst
+    authDiv.style.cssText = `
+      position: fixed;
+      top: 14px;
+      right: 20px;
+      z-index: 99998;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(10, 42, 94, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 8px 14px;
+      border-radius: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      border: 1px solid rgba(244, 155, 28, 0.3);
+    `;
+    document.body.appendChild(authDiv);
+    console.log('[IUAuth] Auth widget floating olarak eklendi (fallback)');
+  }
+
+  // Auth widget için tutarlı stil ekle (bir kez)
+  function injectAuthStyles() {
+    if (document.getElementById('iu-auth-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'iu-auth-styles';
+    style.textContent = `
+      .iu-auth-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-right: 12px;
+      }
+      .iu-auth-inline .iu-authbar-btn,
+      #iu-floating-auth .iu-authbar-btn {
+        border-radius: 20px;
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        font-family: inherit;
+      }
+      .iu-auth-inline .iu-authbar-login,
+      #iu-floating-auth .iu-authbar-login {
+        background: transparent;
+        color: white;
+        border: 1px solid rgba(255,255,255,0.5);
+      }
+      .iu-auth-inline .iu-authbar-login:hover,
+      #iu-floating-auth .iu-authbar-login:hover {
+        background: rgba(255,255,255,0.15);
+      }
+      .iu-auth-inline .iu-authbar-signup,
+      #iu-floating-auth .iu-authbar-signup {
+        background: #F49B1C;
+        color: #0A2A5E;
+      }
+      .iu-auth-inline .iu-authbar-signup:hover,
+      #iu-floating-auth .iu-authbar-signup:hover {
+        background: #ffb340;
+      }
+      .iu-auth-inline .iu-authbar-user,
+      #iu-floating-auth .iu-authbar-user {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        padding: 4px 10px 4px 4px;
+        border-radius: 20px;
+        transition: background 0.2s;
+      }
+      .iu-auth-inline .iu-authbar-user:hover,
+      #iu-floating-auth .iu-authbar-user:hover {
+        background: rgba(255,255,255,0.15);
+      }
+      .iu-auth-inline .iu-authbar-avatar,
+      #iu-floating-auth .iu-authbar-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #F49B1C, #d4831a);
+        color: #0A2A5E;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .iu-auth-inline .iu-authbar-name,
+      #iu-floating-auth .iu-authbar-name {
+        color: white;
+        font-weight: 600;
+        font-size: 13px;
+      }
+      @media (max-width: 640px) {
+        .iu-auth-inline { margin-right: 6px; }
+        .iu-auth-inline .iu-authbar-name,
+        #iu-floating-auth .iu-authbar-name { display: none; }
+        .iu-auth-inline .iu-authbar-btn,
+        #iu-floating-auth .iu-authbar-btn {
+          padding: 5px 10px;
+          font-size: 11px;
+        }
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   // ==================== HEADER AUTH BAR ====================
   function renderAuthBar() {
-    // Önce otomatik enjekte et (yoksa)
+    // Önce stil ekle + otomatik enjekte et (yoksa)
+    injectAuthStyles();
     autoInjectAuthContainer();
 
     // Manuel yerleştirilmiş [data-iu-auth] elementleri
