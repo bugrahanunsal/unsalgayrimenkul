@@ -1,42 +1,21 @@
-# Cloudflare Pages URL rewrite rules
+# Cloudflare Pages URL redirect rules
 # Kaynak: https://developers.cloudflare.com/pages/configuration/redirects/
-# Sözdizim: FROM  TO  STATUS
-# 200 = rewrite (URL değişmez, içerik değişir); 301 = kalıcı yönlendirme
+#
+# ÖNEMLİ: Cloudflare Pages TEMİZ URL'LERİ OTOMATİK yönetir.
+# /sss.html → otomatik /sss URL'inde servis edilir.
+# Buraya sadece ALIAS'lar ve LEGACY yönlendirmeler yazılır.
 
-# Trailing slash'ı at (relative link'ler bozulmasın)
-/sss/                       /sss                          301
-/faq/                       /faq                          301
-/hakkimizda/                /hakkimizda                   301
-/iletisim/                  /iletisim                     301
-/hesabim/                   /hesabim                      301
-/blog/                      /blog                         301
+# ---- Aliaslar (FAQ sayfası için ek URL'ler) ----
+/faq                        /sss                          301
+/faq.html                   /sss                          301
+/sikca-sorulan-sorular      /sss                          301
 
-# Temiz URL'ler (uzantısız → .html karşılığı, aynı URL'de kalır)
-/sss                        /sss.html                     200
-/faq                        /sss.html                     200
-/faq.html                   /sss.html                     200
-/sikca-sorulan-sorular      /sss.html                     200
-/hakkimizda                 /hakkimizda.html              200
-/hakkimda                   /hakkimizda.html              200
-/iletisim                   /iletisim.html                200
-/contact                    /iletisim.html                200
-/hesabim                    /hesabim.html                 200
-/account                    /hesabim.html                 200
-/blog                       /blog.html                    200
-/verify                     /verify.html                  200
-/unsubscribe                /unsubscribe.html             200
+# ---- Türkçe/İngilizce alias'lar ----
+/hakkimda                   /hakkimizda                   301
+/contact                    /iletisim                     301
+/account                    /hesabim                      301
 
-# Kategori sayfaları (temiz URL'ler)
-/yalova-satilik-daire       /yalova-satilik-daire.html    200
-/yalova-satilik-arsa        /yalova-satilik-arsa.html     200
-/yalova-satilik-ev          /yalova-satilik-ev.html       200
-/yalova-kiralik-daire       /yalova-kiralik-daire.html    200
-/yalova-kiralik-villa       /yalova-kiralik-villa.html    200
-/yalova-kiralik-ev          /yalova-kiralik-ev.html       200
-/yalova-esyali-kiralik-daire /yalova-esyali-kiralik-daire.html 200
-/yalova-merkez-kiralik-daire /yalova-merkez-kiralik-daire.html 200
-
-# Eski/genel kategori URL'leri → gerçek sayfaya
-/yalova-satilik             /yalova-satilik-daire.html    200
-/yalova-kiralik             /yalova-kiralik-daire.html    200
-/luks                       /yalova-kiralik-villa.html    200
+# ---- Kısa/genel kategori URL'leri → gerçek sayfaya ----
+/yalova-satilik             /yalova-satilik-daire         301
+/yalova-kiralik             /yalova-kiralik-daire         301
+/luks                       /yalova-kiralik-villa         301
