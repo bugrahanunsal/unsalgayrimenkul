@@ -222,12 +222,26 @@
         Object.keys(FAQS).forEach(key => {
           faqs = faqs.concat(FAQS[key]);
         });
+      } else if (category === 'genel') {
+        // Ana sayfa: genel + her kategoriden 1 = 8+ soru
+        faqs = [...FAQS.genel];
+        faqs.push(FAQS.arsa[0], FAQS.daire[0], FAQS.villa[0], FAQS.kiralik[0]);
       } else {
-        // Kategori + genel karışımı
+        // Kategori sayfası: kategori soruları + genel = min 8 soru
         const catFaqs = FAQS[category] || [];
-        const generalFaqs = FAQS.genel.slice(0, 2); // İlk 2 genel soru
+        // Genel sorulardan yeterli sayıda al (toplam 8'e ulaşacak şekilde)
+        const needed = Math.max(0, 8 - catFaqs.length);
+        const generalFaqs = FAQS.genel.slice(0, needed + 1);
         faqs = [...catFaqs, ...generalFaqs];
       }
+
+      // Duplicate temizle (aynı soru varsa çıkar)
+      const seen = new Set();
+      faqs = faqs.filter(f => {
+        if (seen.has(f.q)) return false;
+        seen.add(f.q);
+        return true;
+      });
 
       renderFAQs(container, faqs, {
         title: customTitle,
