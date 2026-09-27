@@ -321,6 +321,8 @@
       <a href="blog.html" data-i18n="nav.blog">BLOG</a>
       <a href="hakkimizda.html" data-i18n="nav.hakkimizda">HAKKIMIZDA</a>
       <a href="iletisim.html" data-i18n="nav.iletisim">İLETİŞİM</a>
+      <!-- Mobile: hamburger içinde auth butonları -->
+      <div data-iu-auth class="nav-auth-mobile"></div>
     </nav>
     <div class="header-cta">
       <a href="tel:+905075188482" class="btn-call"><i class="fa-solid fa-phone"></i> <span data-i18n="nav.cta">HEMEN ARA</span></a>
@@ -443,20 +445,79 @@
         height: 1px !important;
       }
 
-      /* Mobile: sadece kompakt "Giriş" göster, taşma olmasın */
-      @media (max-width: 720px) {
-        .topbar-auth {
-          margin-right: 8px !important;
-          padding-right: 8px !important;
+      /* ============================================ */
+      /* MOBILE: Hamburger İçinde Auth Butonları */
+      /* ============================================ */
+      .nav-auth-mobile { display: none; } /* Desktop'ta gizle */
+
+      /* Desktop üst bar için mobile'da top-info gizle */
+      @media (max-width: 900px) {
+        /* Üst bar'daki auth GİZLE (hamburger'a taşıdık) */
+        .topbar-auth { display: none !important; }
+
+        /* Top-info gizle mobile'da yer açmak için */
+        .top-info span:nth-child(2) { display: none !important; }
+
+        /* Hamburger nav içindeki auth butonlarını göster */
+        .nav-auth-mobile {
+          display: block !important;
+          width: 100%;
+          margin-top: 16px !important;
+          padding-top: 20px !important;
+          border-top: 1px solid rgba(255,255,255,0.15);
         }
-        .topbar-auth .iu-authbar-btn {
-          padding: 4px 8px !important;
-          font-size: 10px !important;
+        .nav-auth-mobile .iu-authbar {
+          flex-direction: column !important;
+          gap: 10px !important;
+          width: 100%;
         }
-      }
-      @media (max-width: 480px) {
-        .topbar-auth .iu-authbar-login { display: none !important; }
-        .topbar-auth .iu-authbar-signup { padding: 4px 10px !important; }
+        .nav-auth-mobile .iu-authbar-btn {
+          width: 100% !important;
+          padding: 14px 18px !important;
+          font-size: 15px !important;
+          justify-content: center !important;
+          border-radius: 10px !important;
+        }
+        .nav-auth-mobile .iu-authbar-signup {
+          background: #F49B1C !important;
+          color: #0A2A5E !important;
+          border-color: #F49B1C !important;
+        }
+        .nav-auth-mobile .iu-authbar-login {
+          background: transparent !important;
+          color: #0A2A5E !important;
+          border-color: #0A2A5E !important;
+        }
+        .nav-auth-mobile .iu-authbar-user {
+          width: 100% !important;
+          justify-content: center !important;
+          padding: 12px !important;
+          background: #f0f4f9 !important;
+        }
+        .nav-auth-mobile .iu-authbar-avatar {
+          width: 32px !important; height: 32px !important;
+          font-size: 14px !important;
+        }
+        .nav-auth-mobile .iu-authbar-name {
+          color: #0A2A5E !important;
+          font-size: 14px !important;
+        }
+        /* Mobile dropdown menü - hamburger içinde: her zaman açık */
+        .nav-auth-mobile .iu-user-menu {
+          position: static !important;
+          box-shadow: none !important;
+          border: none !important;
+          background: transparent !important;
+          margin-top: 8px !important;
+          min-width: unset !important;
+          display: block !important;
+        }
+        .nav-auth-mobile .iu-user-menu-header { display: none !important; }
+        .nav-auth-mobile .iu-user-menu a {
+          background: white !important;
+          border-radius: 8px !important;
+          margin-bottom: 4px !important;
+        }
       }
     </style>
   </div>
