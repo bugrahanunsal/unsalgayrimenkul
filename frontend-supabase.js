@@ -300,7 +300,11 @@
   // ==================== KATEGORİ SAYFASI ====================
 
   function findCategoryContainer() {
-    let c = document.getElementById('categoryPropertiesList');
+    // Yeni temiz container (kategori sayfaları için)
+    let c = document.getElementById('iu-dynamic-listings');
+    if (c) return c;
+    // Eski selector'lar (geriye uyumluluk için)
+    c = document.getElementById('categoryPropertiesList');
     if (c) return c;
     c = document.querySelector('.listings-grid-pillar');
     if (c) return c;
@@ -426,18 +430,23 @@
   }
 
   async function loadCategoryPageProperties() {
-    const oldContainer = findCategoryContainer();
-    if (!oldContainer) return;
+    const found = findCategoryContainer();
+    if (!found) return;
 
-    // Eski static container'ı gizle, yerine kendi container'ımızı koy
-    // (mevcut sayfa CSS'i etkilemesin diye TAMAMEN BYPASS)
-    let container = document.getElementById('iu-dynamic-listings');
-    if (!container) {
-      oldContainer.style.setProperty('display', 'none', 'important');
-      container = document.createElement('div');
-      container.id = 'iu-dynamic-listings';
-      // Layout CSS injectCardSafeCSS() içinde tanımlı, burada tekrar etmeye gerek yok
-      oldContainer.parentNode.insertBefore(container, oldContainer.nextSibling);
+    // Yeni temiz container mı yoksa eski legacy container mı?
+    let container;
+    if (found.id === 'iu-dynamic-listings') {
+      // Yeni format: doğrudan kullan
+      container = found;
+    } else {
+      // Eski format: gizle, yerine yeni container koy
+      found.style.setProperty('display', 'none', 'important');
+      container = document.getElementById('iu-dynamic-listings');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'iu-dynamic-listings';
+        found.parentNode.insertBefore(container, found.nextSibling);
+      }
     }
 
     const pathname = window.location.pathname.toLowerCase();
