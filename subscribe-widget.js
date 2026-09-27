@@ -944,8 +944,55 @@
     renderAuthBar();
   }
 
+  // ==================== OTOMATIK AUTH INJECTION ====================
+  // Sayfada [data-iu-auth] yoksa top-bar/header'a otomatik ekle
+  function autoInjectAuthContainer() {
+    // Zaten varsa dokunma
+    if (document.querySelector('[data-iu-auth]')) return;
+
+    // Olası konumlar - sırasıyla dene
+    const selectors = [
+      '.top-bar',
+      '.topbar',
+      '.top-info-bar',
+      '.header-top',
+      '.info-bar',
+      '.utility-bar',
+      'header .container',
+      'header nav',
+      'header'
+    ];
+
+    let target = null;
+    for (const sel of selectors) {
+      target = document.querySelector(sel);
+      if (target) break;
+    }
+
+    if (!target) return;
+
+    // Auth container oluştur
+    const authDiv = document.createElement('div');
+    authDiv.setAttribute('data-iu-auth', '');
+    authDiv.style.cssText = 'display:inline-flex;align-items:center;margin-left:auto;padding-left:16px;';
+
+    // Top-bar tarzı bir container'sa sağa ekle, yoksa sonuna
+    if (target.classList.contains('top-bar') || target.classList.contains('topbar')) {
+      // Top-bar genelde flex ile sağ-sol düzeninde
+      target.appendChild(authDiv);
+    } else {
+      // Header/nav içine sonuna ekle
+      target.appendChild(authDiv);
+    }
+
+    console.log('[IUAuth] Auth container otomatik eklendi');
+  }
+
   // ==================== HEADER AUTH BAR ====================
   function renderAuthBar() {
+    // Önce otomatik enjekte et (yoksa)
+    autoInjectAuthContainer();
+
     // Manuel yerleştirilmiş [data-iu-auth] elementleri
     const containers = document.querySelectorAll('[data-iu-auth]');
 
