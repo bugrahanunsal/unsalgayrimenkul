@@ -599,48 +599,71 @@
   // ==================== OTOMATİK FAQ INJECTION ====================
 
   function autoInjectFAQ() {
-    if (document.getElementById('faqContainer')) return;
     const pathname = window.location.pathname.toLowerCase();
-    if (pathname === '/' || pathname === '/index.html') return;
-    if (pathname.includes('/sss')) return;
+    if (pathname.includes('/sss') || pathname.includes('/faq')) return;
     if (pathname.includes('/ilan.html')) return;
-    if (pathname.includes('/hesabim')) return;
-    if (pathname.includes('/iletisim')) return;
-    if (pathname.includes('/hakkimizda')) return;
+    if (pathname.includes('/hesabim') || pathname.includes('/account')) return;
+    if (pathname.includes('/iletisim') || pathname.includes('/contact')) return;
+    if (pathname.includes('/hakkimizda') || pathname.includes('/hakkimda')) return;
     if (pathname.includes('/admin')) return;
-    if (pathname.includes('/blog')) return;
+    if (pathname.includes('/verify') || pathname.includes('/unsubscribe')) return;
 
-    let category = 'genel';
-    if (pathname.includes('arsa') || pathname.includes('tarla')) category = 'arsa';
-    else if (pathname.includes('daire')) category = 'daire';
-    else if (pathname.includes('villa') || pathname.includes('ev')) category = 'villa';
-    else if (pathname.includes('kiralik')) category = 'kiralik';
-    else if (pathname.includes('isyeri')) category = 'isyeri';
+    // Container zaten var mı?
+    let container = document.getElementById('faqContainer');
+    let hadContainer = !!container;
 
-    const labels = {
-      arsa: 'Yalova Arsa Rehberi',
-      daire: 'Yalova Daire Rehberi',
-      villa: 'Yalova Villa Rehberi',
-      kiralik: 'Yalova Kiralık Rehberi',
-      isyeri: 'Yalova İşyeri Rehberi',
-      genel: 'Yalova Emlak Rehberi'
-    };
+    if (!container) {
+      // Homepage (index.html) için genel FAQ, kategori sayfaları için o kategori
+      let category = 'genel';
+      let title = 'Yalova Emlak Hakkında Sıkça Sorulan Sorular';
+      let subtitle = 'Uzman TURYAP danışmanından cevaplar';
 
-    const faqDiv = document.createElement('div');
-    faqDiv.id = 'faqContainer';
-    faqDiv.setAttribute('data-faq-category', category);
-    faqDiv.setAttribute('data-faq-title', labels[category]);
+      if (pathname.includes('arsa') || pathname.includes('tarla')) {
+        category = 'arsa'; title = 'Yalova Arsa Rehberi';
+      } else if (pathname.includes('daire')) {
+        category = 'daire'; title = 'Yalova Daire Rehberi';
+      } else if (pathname.includes('villa') || pathname.includes('satilik-ev') || pathname.includes('kiralik-ev')) {
+        category = 'villa'; title = 'Yalova Villa Rehberi';
+      } else if (pathname.includes('kiralik')) {
+        category = 'kiralik'; title = 'Yalova Kiralık Rehberi';
+      } else if (pathname.includes('isyeri') || pathname.includes('dukkan')) {
+        category = 'isyeri'; title = 'Yalova İşyeri Rehberi';
+      }
 
-    const footer = document.querySelector('footer');
-    if (footer) footer.parentNode.insertBefore(faqDiv, footer);
-    else document.body.appendChild(faqDiv);
+      container = document.createElement('div');
+      container.id = 'faqContainer';
+      container.setAttribute('data-faq-category', category);
+      container.setAttribute('data-faq-title', title);
+      container.setAttribute('data-faq-subtitle', subtitle);
 
-    if (!document.querySelector('script[src*="faq-yalova-emlak"]')) {
-      const s = document.createElement('script');
-      s.src = '/faq-yalova-emlak.js';
-      s.async = true;
-      document.body.appendChild(s);
-      console.log('[Frontend] FAQ otomatik eklendi (' + category + ')');
+      const footer = document.querySelector('footer');
+      if (footer) footer.parentNode.insertBefore(container, footer);
+      else document.body.appendChild(container);
+
+      console.log('[Frontend] FAQ container otomatik eklendi: ' + category);
+    }
+
+    // FAQ script zaten yüklüyse, doğrudan render et
+    if (window.IUFAQ && !hadContainer) {
+      const cat = container.getAttribute('data-faq-category') || 'genel';
+      const title = container.getAttribute('data-faq-title');
+      const subtitle = container.getAttribute('data-faq-subtitle');
+
+      let faqs;
+      if (cat === 'genel') {
+        faqs = [...window.IUFAQ.FAQS.genel];
+        faqs.push(window.IUFAQ.FAQS.arsa[0], window.IUFAQ.FAQS.daire[0], window.IUFAQ.FAQS.villa[0], window.IUFAQ.FAQS.kiralik[0]);
+      } else {
+        const catFaqs = window.IUFAQ.FAQS[cat] || [];
+        const needed = Math.max(0, 8 - catFaqs.length);
+        const generalFaqs = window.IUFAQ.FAQS.genel.slice(0, needed + 1);
+        faqs = [...catFaqs, ...generalFaqs];
+      }
+      const seen = new Set();
+      faqs = faqs.filter(f => { if (seen.has(f.q)) return false; seen.add(f.q); return true; });
+      window.IUFAQ.renderFAQs(container, faqs, { title, subtitle });
+      window.IUFAQ.injectSchema(faqs);
+      console.log('[Frontend] FAQ elle render edildi (' + faqs.length + ' soru)');
     }
   }
 
