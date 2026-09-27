@@ -45,6 +45,24 @@
     return div.innerHTML;
   }
 
+  // Kart CSS güvence: grid'in kart alt-öğeleri kartlaştırmasını önle
+  function injectCardSafeCSS() {
+    if (document.getElementById('iu-card-safe-css')) return;
+    const s = document.createElement('style');
+    s.id = 'iu-card-safe-css';
+    s.textContent = `
+      .listings-grid-pillar > .listing-card-pillar {
+        display: block;
+      }
+      .listings-grid-pillar > .listing-card-pillar > .listing-image-pillar,
+      .listings-grid-pillar > .listing-card-pillar > .listing-content-pillar {
+        display: block;
+        width: 100%;
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
   function formatPrice(price, currency) {
     if (!price) return 'Bilgi İçin Arayın';
     const symbols = { TL: '₺', USD: '$', EUR: '€' };
@@ -181,49 +199,121 @@
     return null;
   }
 
+  // DOM API ile bulletproof card oluştur (innerHTML string sorunlarını önlemek için)
   function renderPillarCard(p) {
     const img = getMainImage(p);
     const wa = 'https://wa.me/905075188482?text=' + encodeURIComponent('Merhaba, ' + (p.baslik_tr || 'İlan') + ' hakkında bilgi almak istiyorum');
     const fiyat = formatPrice(p.fiyat, p.para_birimi);
 
-    // 4 feature slot (grid 2x2)
-    const features = [];
-    if (p.m2) features.push('<span><i class="fa-solid fa-mountain"></i> ' + esc(p.m2) + ' m²</span>');
-    if (p.oda_sayisi) features.push('<span><i class="fa-solid fa-bed"></i> ' + esc(p.oda_sayisi) + '</span>');
-    if (p.emsal) features.push('<span><i class="fa-solid fa-compass"></i> ' + esc(p.emsal) + ' Emsal</span>');
-    if (p.ada_parsel) features.push('<span><i class="fa-solid fa-map"></i> ' + esc(p.ada_parsel) + '</span>');
-    if (features.length < 4 && p.imar_durumu) features.push('<span><i class="fa-solid fa-file-contract"></i> ' + esc(p.imar_durumu) + '</span>');
-    if (features.length < 4 && p.bina_yasi != null) features.push('<span><i class="fa-solid fa-clock"></i> ' + esc(p.bina_yasi) + ' yaş</span>');
-    if (features.length < 2) features.push('<span><i class="fa-solid fa-location-dot"></i> ' + esc(p.ilce || 'Yalova') + '</span>');
-
     const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 30 * 86400000;
-    let tag = '';
-    if (p.one_cikan) tag = '<span class="listing-tag-pillar vip">\u{1F48E} VIP FIRSAT</span>';
-    else if (isNew) tag = '<span class="listing-tag-pillar" style="background:#F49B1C;color:#0A2A5E;">\u{1F195} YENİ İLAN</span>';
-
-    const desc = (p.aciklama_tr || '').substring(0, 130).trim();
     const typeUpper = (p.tip || 'satilik').toUpperCase();
-    const bgImg = 'background-image: url(\'' + img.replace(/'/g, "\\'") + '\');';
 
-    return '<div class="listing-card-pillar">' +
-      '<div class="listing-image-pillar" style="' + bgImg + '">' +
-        tag +
-        '<span class="listing-type-badge-pillar">' + esc(typeUpper) + '</span>' +
-      '</div>' +
-      '<div class="listing-content-pillar">' +
-        '<div class="listing-location-pillar">' +
-          '<i class="fa-solid fa-location-dot"></i> ' + esc((p.ilce || 'YALOVA').toUpperCase()) + (p.mahalle ? ', ' + esc(p.mahalle.toUpperCase()) : '') +
-        '</div>' +
-        '<h3 class="listing-title-pillar">' + esc(p.baslik_tr || 'İlan') + '</h3>' +
-        '<div class="listing-features-pillar">' + features.join('') + '</div>' +
-        '<div class="listing-price-pillar">' + fiyat + '</div>' +
-        (desc ? '<p class="listing-desc-pillar">' + esc(desc) + ((p.aciklama_tr || '').length > 130 ? '...' : '') + '</p>' : '') +
-        '<div class="listing-cta-pillar">' +
-          '<a href="tel:+905075188482" class="cta-pillar-call"><i class="fa-solid fa-phone"></i> Ara</a>' +
-          '<a href="' + wa + '" target="_blank" class="cta-pillar-wa"><i class="fa-brands fa-whatsapp"></i> Sor</a>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
+    // KART root
+    const card = document.createElement('div');
+    card.className = 'listing-card-pillar';
+    card.style.display = 'block'; // Grid sub-item override
+
+    // IMAGE
+    const imgDiv = document.createElement('div');
+    imgDiv.className = 'listing-image-pillar';
+    imgDiv.style.backgroundImage = 'url("' + img + '")';
+
+    if (p.one_cikan) {
+      const t = document.createElement('span');
+      t.className = 'listing-tag-pillar vip';
+      t.textContent = '💎 VIP FIRSAT';
+      imgDiv.appendChild(t);
+    } else if (isNew) {
+      const t = document.createElement('span');
+      t.className = 'listing-tag-pillar';
+      t.style.background = '#F49B1C';
+      t.style.color = '#0A2A5E';
+      t.textContent = '🆕 YENİ İLAN';
+      imgDiv.appendChild(t);
+    }
+
+    const typeBadge = document.createElement('span');
+    typeBadge.className = 'listing-type-badge-pillar';
+    typeBadge.textContent = typeUpper;
+    imgDiv.appendChild(typeBadge);
+
+    card.appendChild(imgDiv);
+
+    // CONTENT
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'listing-content-pillar';
+
+    // Location
+    const loc = document.createElement('div');
+    loc.className = 'listing-location-pillar';
+    const locI = document.createElement('i');
+    locI.className = 'fa-solid fa-location-dot';
+    loc.appendChild(locI);
+    loc.appendChild(document.createTextNode(' ' + (p.ilce || 'YALOVA').toUpperCase() + (p.mahalle ? ', ' + p.mahalle.toUpperCase() : '')));
+    contentDiv.appendChild(loc);
+
+    // Title
+    const title = document.createElement('h3');
+    title.className = 'listing-title-pillar';
+    title.textContent = p.baslik_tr || 'İlan';
+    contentDiv.appendChild(title);
+
+    // Features
+    const feats = document.createElement('div');
+    feats.className = 'listing-features-pillar';
+    const featList = [];
+    if (p.m2) featList.push({ icon: 'fa-mountain', text: p.m2 + ' m²' });
+    if (p.oda_sayisi) featList.push({ icon: 'fa-bed', text: p.oda_sayisi });
+    if (p.emsal) featList.push({ icon: 'fa-compass', text: p.emsal + ' Emsal' });
+    if (p.ada_parsel) featList.push({ icon: 'fa-map', text: p.ada_parsel });
+    if (featList.length < 4 && p.imar_durumu) featList.push({ icon: 'fa-file-contract', text: p.imar_durumu });
+    if (featList.length < 4 && p.bina_yasi != null) featList.push({ icon: 'fa-clock', text: p.bina_yasi + ' yaş' });
+    if (featList.length < 2) featList.push({ icon: 'fa-location-dot', text: p.ilce || 'Yalova' });
+
+    featList.forEach(f => {
+      const s = document.createElement('span');
+      const i = document.createElement('i');
+      i.className = 'fa-solid ' + f.icon;
+      s.appendChild(i);
+      s.appendChild(document.createTextNode(' ' + f.text));
+      feats.appendChild(s);
+    });
+    contentDiv.appendChild(feats);
+
+    // Price
+    const price = document.createElement('div');
+    price.className = 'listing-price-pillar';
+    price.textContent = fiyat;
+    contentDiv.appendChild(price);
+
+    // Description
+    const desc = (p.aciklama_tr || '').substring(0, 130).trim();
+    if (desc) {
+      const dEl = document.createElement('p');
+      dEl.className = 'listing-desc-pillar';
+      dEl.textContent = desc + ((p.aciklama_tr || '').length > 130 ? '...' : '');
+      contentDiv.appendChild(dEl);
+    }
+
+    // CTA
+    const cta = document.createElement('div');
+    cta.className = 'listing-cta-pillar';
+    const callBtn = document.createElement('a');
+    callBtn.href = 'tel:+905075188482';
+    callBtn.className = 'cta-pillar-call';
+    callBtn.innerHTML = '<i class="fa-solid fa-phone"></i> Ara';
+    const waBtn = document.createElement('a');
+    waBtn.href = wa;
+    waBtn.target = '_blank';
+    waBtn.className = 'cta-pillar-wa';
+    waBtn.innerHTML = '<i class="fa-brands fa-whatsapp"></i> Sor';
+    cta.appendChild(callBtn);
+    cta.appendChild(waBtn);
+    contentDiv.appendChild(cta);
+
+    card.appendChild(contentDiv);
+
+    return card;
   }
 
   async function loadCategoryPageProperties() {
@@ -267,7 +357,11 @@
         return;
       }
 
-      container.innerHTML = properties.map(renderPillarCard).join('');
+      // DOM API ile kartları ekle (wrapper sıyrılma sorunlarını önler)
+      container.innerHTML = '';
+      properties.forEach(p => {
+        container.appendChild(renderPillarCard(p));
+      });
 
       document.querySelectorAll('[data-property-count]').forEach(el => {
         el.textContent = properties.length;
@@ -366,7 +460,8 @@
         const res = await fetchProperties({ limit: 6 });
         properties = res.data || [];
       }
-      container.innerHTML = properties.map(renderPillarCard).join('');
+      container.innerHTML = '';
+      properties.forEach(p => container.appendChild(renderPillarCard(p)));
     } catch (err) {
       console.error('[Frontend] Öne çıkan hatası:', err);
     }
@@ -423,6 +518,7 @@
   // ==================== INIT ====================
 
   async function start() {
+    injectCardSafeCSS();
     await updateCategoryCounts();
     await loadFeaturedProperties();
     await loadCategoryPageProperties();

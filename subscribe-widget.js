@@ -945,16 +945,16 @@
   }
 
   // ==================== OTOMATIK AUTH INJECTION ====================
-  // Site içindeki .top-right (top-bar sağ kısmı) içine, .lang-switcher'dan ÖNCE ekle
+  // Home page ile tutarlı: .top-right içine, .top-social'dan sonra, .lang-switcher'dan önce
   function autoInjectAuthContainer() {
     if (window.location.pathname.toLowerCase().includes('/admin')) return;
     if (document.querySelector('[data-iu-auth]')) return;
 
     const authDiv = document.createElement('div');
     authDiv.setAttribute('data-iu-auth', '');
-    authDiv.className = 'iu-auth-inline';
+    authDiv.className = 'topbar-auth'; // Home page ile aynı class
 
-    // 1. En iyi durum: .top-right (mevcut top bar yapısı)
+    // .top-right içine yerleştir (tüm sayfalarda var)
     const topRight = document.querySelector('.top-bar-inner .top-right, .top-right');
     if (topRight) {
       // .lang-switcher'dan önce ekle
@@ -968,116 +968,139 @@
       return;
     }
 
-    // 2. Fallback: floating sağ üst
-    authDiv.style.cssText = `
-      position: fixed;
-      top: 14px;
-      right: 20px;
-      z-index: 99998;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(10, 42, 94, 0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 8px 14px;
-      border-radius: 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 13px;
-      border: 1px solid rgba(244, 155, 28, 0.3);
-    `;
+    // Fallback (top-right yoksa): sağ üste floating
+    authDiv.style.cssText = 'position:fixed;top:14px;right:20px;z-index:99998;background:rgba(10,42,94,0.95);padding:8px 14px;border-radius:24px;box-shadow:0 4px 20px rgba(0,0,0,0.25);';
     document.body.appendChild(authDiv);
-    console.log('[IUAuth] Auth widget floating olarak eklendi (fallback)');
+    console.log('[IUAuth] Auth widget floating fallback');
   }
 
-  // Auth widget için tutarlı stil ekle (bir kez)
+  // Auth widget için tutarlı stil ekle - HOME PAGE İLE AYNI (index.html'den kopyalandı)
   function injectAuthStyles() {
     if (document.getElementById('iu-auth-styles')) return;
     const style = document.createElement('style');
     style.id = 'iu-auth-styles';
     style.textContent = `
-      .iu-auth-inline {
+      /* AUTH BUTONLARI - Home page ile aynı tasarım */
+      .topbar-auth {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        margin-right: 12px;
+        margin-right: 16px;
+        padding-right: 16px;
+        border-right: 1px solid rgba(255,255,255,0.15);
       }
-      .iu-auth-inline .iu-authbar-btn,
-      #iu-floating-auth .iu-authbar-btn {
-        border-radius: 20px;
-        padding: 6px 14px;
-        font-size: 12px;
-        font-weight: 700;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: inline-flex;
+      .topbar-auth .iu-authbar {
+        gap: 4px !important;
+        flex-direction: row !important;
+        display: inline-flex !important;
         align-items: center;
-        gap: 6px;
-        white-space: nowrap;
+      }
+      .topbar-auth .iu-authbar-btn {
+        padding: 5px 12px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.3px !important;
+        border-radius: 4px !important;
+        border-width: 1px !important;
+        border-style: solid !important;
+        line-height: 1.4 !important;
+        display: inline-flex !important;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
         font-family: inherit;
       }
-      .iu-auth-inline .iu-authbar-login,
-      #iu-floating-auth .iu-authbar-login {
-        background: transparent;
-        color: white;
-        border: 1px solid rgba(255,255,255,0.5);
+      .topbar-auth .iu-authbar-signup {
+        background: #F49B1C !important;
+        color: #0A2A5E !important;
+        border-color: #F49B1C !important;
       }
-      .iu-auth-inline .iu-authbar-login:hover,
-      #iu-floating-auth .iu-authbar-login:hover {
-        background: rgba(255,255,255,0.15);
+      .topbar-auth .iu-authbar-signup:hover {
+        background: #FFB543 !important;
       }
-      .iu-auth-inline .iu-authbar-signup,
-      #iu-floating-auth .iu-authbar-signup {
-        background: #F49B1C;
-        color: #0A2A5E;
+      .topbar-auth .iu-authbar-login {
+        background: transparent !important;
+        color: #FFFFFF !important;
+        border-color: rgba(255,255,255,0.4) !important;
       }
-      .iu-auth-inline .iu-authbar-signup:hover,
-      #iu-floating-auth .iu-authbar-signup:hover {
-        background: #ffb340;
+      .topbar-auth .iu-authbar-login:hover {
+        background: rgba(255,255,255,0.1) !important;
       }
-      .iu-auth-inline .iu-authbar-user,
-      #iu-floating-auth .iu-authbar-user {
-        display: flex;
+      .topbar-auth .iu-authbar-user {
+        padding: 3px 10px 3px 3px !important;
+        background: rgba(255,255,255,0.1) !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        border-radius: 20px !important;
+        display: inline-flex !important;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         cursor: pointer;
-        padding: 4px 10px 4px 4px;
-        border-radius: 20px;
-        transition: background 0.2s;
       }
-      .iu-auth-inline .iu-authbar-user:hover,
-      #iu-floating-auth .iu-authbar-user:hover {
-        background: rgba(255,255,255,0.15);
-      }
-      .iu-auth-inline .iu-authbar-avatar,
-      #iu-floating-auth .iu-authbar-avatar {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
+      .topbar-auth .iu-authbar-avatar {
+        width: 22px !important; height: 22px !important;
+        font-size: 11px !important;
+        border-radius: 50% !important;
         background: linear-gradient(135deg, #F49B1C, #d4831a);
         color: #0A2A5E;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 13px;
       }
-      .iu-auth-inline .iu-authbar-name,
-      #iu-floating-auth .iu-authbar-name {
-        color: white;
+      .topbar-auth .iu-authbar-name {
+        color: #FFFFFF !important;
+        font-size: 11px !important;
         font-weight: 600;
-        font-size: 13px;
+      }
+      .topbar-auth .iu-user-menu {
+        background: #ffffff !important;
+        border: 1px solid #e5e7eb !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+        top: calc(100% + 12px) !important;
+        min-width: 240px !important;
+      }
+      .topbar-auth .iu-user-menu-header {
+        background: #f9fafb !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        padding: 14px 16px !important;
+      }
+      .topbar-auth .iu-user-menu-header > div {
+        color: #0a1929 !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+      }
+      .topbar-auth .iu-user-menu-email {
+        color: #6b7280 !important;
+        font-size: 12px !important;
+        margin-top: 2px !important;
+      }
+      .topbar-auth .iu-user-menu a {
+        color: #0a1929 !important;
+        padding: 10px 16px !important;
+        font-size: 13px !important;
+        display: flex !important;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .topbar-auth .iu-user-menu a:hover {
+        background: #f3f4f6 !important;
+      }
+      .topbar-auth .iu-user-menu-logout {
+        color: #dc2626 !important;
+      }
+      .topbar-auth .iu-user-menu-divider {
+        border-top: 1px solid #e5e7eb;
+        margin: 4px 0;
       }
       @media (max-width: 640px) {
-        .iu-auth-inline { margin-right: 6px; }
-        .iu-auth-inline .iu-authbar-name,
-        #iu-floating-auth .iu-authbar-name { display: none; }
-        .iu-auth-inline .iu-authbar-btn,
-        #iu-floating-auth .iu-authbar-btn {
-          padding: 5px 10px;
-          font-size: 11px;
+        .topbar-auth {
+          margin-right: 8px !important;
+          padding-right: 8px !important;
+        }
+        .topbar-auth .iu-authbar-name { display: none !important; }
+        .topbar-auth .iu-authbar-btn {
+          padding: 4px 8px !important;
+          font-size: 10px !important;
         }
       }
     `;
