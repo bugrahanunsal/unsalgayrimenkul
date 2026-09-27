@@ -128,6 +128,66 @@
       {
         q: 'Yalova\'da satılık dükkan fiyatları ne kadar?',
         a: 'Yalova\'da satılık dükkan fiyatları konuma ve alana göre değişir: Merkez cadde üzeri 50-100 m² dükkanlar 5.000.000 ₺ - 15.000.000 ₺, ara sokak dükkanlar 2.000.000 ₺ - 5.000.000 ₺, yeni yapı iş merkezlerindeki mağazalar 3.000.000 ₺ - 10.000.000 ₺ bandındadır. Yatırım için m² başına 40.000-150.000 ₺ arasında dükkan fiyatları görülmektedir. Yıllık kira getirisi ortalama %5-7 seviyesindedir.'
+      },
+      {
+        q: 'Yalova\'da ofis kiralama fiyatları nedir?',
+        a: 'Yalova\'da ofis kiralama fiyatları konum ve büyüklüğe göre değişir. Merkez iş hanlarında 40-100 m² ofisler aylık 8.000-20.000 ₺, yeni yapı iş merkezlerinde 15.000-35.000 ₺, prestijli plazalarda 25.000-60.000 ₺ bandında bulunmaktadır. Home-office alternatifi olarak Yalova\'da co-working alanları da mevcuttur. Kiralama öncesi ofisin konumu, ulaşım imkanları, otopark ve teknik altyapı kontrol edilmelidir.'
+      }
+    ],
+
+    // YATIRIM & FİNANSMAN
+    yatirim: [
+      {
+        q: 'Yalova\'da gayrimenkul kredisi almak mümkün mü?',
+        a: 'Evet, Yalova\'daki gayrimenkuller için tüm bankalardan konut kredisi kullanabilirsiniz. Genel kurallar: 1) Ekspertiz değerinin %80\'i kadar kredi verilir, 2) Vade genellikle 10-20 yıl arasındadır, 3) Faiz oranları aylık %2-3.5 civarındadır (piyasa koşullarına göre değişir), 4) Kredi başvurusu için ekspertiz raporu, tapu, iskan belgesi ve gelir belgesi gereklidir, 5) Yabancı uyruklular için özel koşullar geçerlidir. Bankaların Yalova\'daki değerlemeleri farklı olabilir; birkaç bankadan teklif almak avantajlıdır.'
+      },
+      {
+        q: 'Yalova\'da hangi bölgelerde fiyatlar en hızlı artıyor?',
+        a: 'Son 3 yılda Yalova\'da en yüksek fiyat artışı gösteren bölgeler: Çınarcık (%150-180), Termal (%140-170), Altınova (%120-160), Yalova Merkez (%110-140), Armutlu (%100-130) civarındadır. Deniz manzaralı bölgeler ve yeni yapı projelerinin bulunduğu alanlar özellikle prim yapıyor. Yalova Üniversitesi çevresi kira geliri açısından, otoyola yakın bölgeler ise arsa yatırımı açısından ön plandadır. TURYAP olarak size bölge analiz raporu ücretsiz sunuyoruz.'
+      },
+      {
+        q: 'Yalova\'da yatırım için ne kadar bütçe gerekiyor?',
+        a: 'Yalova\'da yatırım için minimum bütçeler: 1) Arsa yatırımı 500.000 ₺\'den başlar, 2) Küçük 1+1 daire için 1.500.000-2.500.000 ₺ gerekir, 3) Yatırımlık 2+1 daire 2.500.000-4.500.000 ₺ bandındadır, 4) Airbnb için deniz manzaralı yazlık 3.500.000-6.000.000 ₺, 5) Kısa vadeli değer kazanacak arsa 800.000-2.000.000 ₺, 6) Ticari mülk (dükkan) 2.000.000-8.000.000 ₺ arasındadır. Bütçenize ve yatırım hedeflerinize göre size özel plan hazırlıyoruz.'
+      }
+    ],
+
+    // YABANCI ALICILAR
+    yabanci: [
+      {
+        q: 'Yabancılar Yalova\'da gayrimenkul alabilir mi?',
+        a: 'Evet, yabancı uyruklu kişiler Yalova\'da gayrimenkul edinebilir. Türkiye\'de yabancıların en çok tercih ettiği şehirlerden biri olan Yalova, konumu ve fiyat avantajı ile öne çıkmaktadır. Yabancı alıcılar için gereken belgeler: 1) Pasaport, 2) Vergi numarası (T.C. vergi dairesinden alınır), 3) Tapu döner sermaye harcı ödemesi, 4) Askeri bölge sorgulama sertifikası, 5) Deprem sigortası (DASK). Ayrıca 400.000 USD üzeri gayrimenkul yatırımı ile Türk vatandaşlığı başvurusu yapılabilmektedir.'
+      },
+      {
+        q: 'Yalova\'da yabancı için en uygun bölgeler hangileridir?',
+        a: 'Yabancı yatırımcılar için Yalova\'da öne çıkan bölgeler: 1) Çınarcık deniz manzaralı daireler ve villalar için popülerdir, 2) Termal kaplıca turizmi arayan Ortadoğulu alıcılar tarafından tercih edilir, 3) Merkez daimi yaşam için hastane, üniversite ve alışveriş imkanlarına yakınlığı ile uygundur, 4) Altınova otoyola yakınlığı ve ticari fırsatlar için avantajlıdır, 5) Armutlu sakin, sahil kesimli yaşam arayanlar için idealdir. 5 dilde (İngilizce, Almanca, Fransızca, Rusça, Arapça) danışmanlık hizmeti sunuyoruz.'
+      }
+    ],
+
+    // BÖLGE REHBERİ
+    bolge: [
+      {
+        q: 'Yalova Çınarcık\'ta yaşamak nasıl?',
+        a: 'Çınarcık, deniz kıyısında sakin ve doğal bir yaşam sunar. Marmara Denizi\'ne cephe, temiz hava, İstanbul\'a 1 saat feribotla ulaşım avantajları vardır. Çınarcık\'ta okul, hastane, market ve restoran gibi temel ihtiyaçlar karşılanmaktadır. Yaz aylarında turistik hareketlilik yaşanır, kışın ise oldukça sessizdir. Ortalama nüfusu 20.000 civarındadır ve son yıllarda hızla gelişen bir bölgedir. Ev fiyatları merkeze göre daha uygundur.'
+      },
+      {
+        q: 'Termal ilçesinin özellikleri nelerdir?',
+        a: 'Termal, adından da anlaşılacağı gibi kaplıca ve termal su kaynakları ile ünlü bir ilçedir. Yılın 12 ayı ziyaretçi ağırlar. Yeşil doğa, ormanlık alanlar ve tarihi Atatürk Köşkü ile öne çıkar. Yalova merkeze 12 km uzaklıktadır. Termal\'de yaşam sakin, huzurlu ve doğa iç içedir. Bölgede lüks villa siteleri, termal otel ve residence projeleri bulunmaktadır. Emekliler ve sağlık turizmi arayanlar için ideal bir bölgedir.'
+      },
+      {
+        q: 'Altınova sanayi bölgesi olarak nasıl?',
+        a: 'Altınova, Yalova\'nın gelişen sanayi ve ticaret bölgesidir. İstanbul-İzmir Otoyolu\'na yakınlığı sayesinde lojistik açısından avantajlıdır. Yalova Otoyol Gişesi buradadır. Bölgede fabrika, depo ve ticari işletmeler bulunmaktadır. Konut fiyatları merkeze göre daha uygundur ve yatırımcılar için değer artışı potansiyeli yüksektir. Altınova ayrıca 15 dakika uzaklıkta Adalar\'a ulaşım sağlayan feribot terminaline de sahiptir.'
+      }
+    ],
+
+    // HUKUK & VERGİ
+    hukuk: [
+      {
+        q: 'Yalova\'da gayrimenkul alım-satım vergileri nelerdir?',
+        a: 'Yalova\'da (ve Türkiye genelinde) gayrimenkul alım-satımında ödenecek vergi ve harçlar: 1) Tapu Harcı: alım-satım bedelinin %4\'ü (alıcı %2 + satıcı %2), 2) DASK zorunlu deprem sigortası (bina için ~500-2.000 ₺/yıl), 3) Damga vergisi (kiralamada), 4) Emlak vergisi (yıllık, belediyeye ödenir; bina/arsa için farklı oran), 5) Değer artış kazancı vergisi (5 yıldan az elde tutup satarsanız kazanç üzerinden %15-40), 6) Noter harcı. Toplam maliyet genellikle alım bedelinin %5-6\'sıdır.'
+      },
+      {
+        q: 'Gayrimenkul satın alırken hangi belgeleri kontrol etmeliyim?',
+        a: 'Satın almadan önce mutlaka kontrol edilmesi gereken belgeler: 1) Tapu senedi (güncel ve temiz olmalı, ipotek/haciz kaydı olmamalı), 2) İskan (Yapı Kullanım İzin Belgesi), 3) İmar durumu, 4) Kat mülkiyeti veya kat irtifakı belgesi, 5) DASK sigortası, 6) Emlak vergisi borç yok yazısı, 7) Aidat borç yok yazısı, 8) Elektrik-su-doğalgaz abonelik bilgileri, 9) Belediye emlak beyan değeri, 10) Ölçekli mimari proje ve statik hesap raporu. TURYAP olarak tüm bu belgeleri sizin adınıza inceliyor ve raporluyoruz.'
       }
     ]
   };
@@ -140,50 +200,92 @@
     return d.innerHTML;
   }
 
-  // Cevap metnini güzel formata çevir: 1) 2) 3) → numaralı liste, — → paragraf
+  // Helper: keyword ve fiyat highlight
+  function highlightKeywords(html) {
+    // Bölge/marka adları — koyu lacivert bold
+    html = html.replace(/\b(TURYAP|Yalova|Çınarcık|Termal|Altınova|Armutlu|Akköy|Merkez)\b/g,
+      '<strong style="color:#0A2A5E;font-weight:700;">$1</strong>');
+    // Büyük fiyatlar (örn: 5.000.000 ₺) — turuncu highlight
+    html = html.replace(/(\d{1,3}(?:\.\d{3})+)\s*₺/g,
+      '<strong style="color:#F49B1C;font-weight:800;white-space:nowrap;">$1 ₺</strong>');
+    // m² fiyatları
+    html = html.replace(/(\d{1,3}(?:[.,]\d+)?)\s*(₺\/m²|TL\/m²)/g,
+      '<strong style="color:#F49B1C;font-weight:800;white-space:nowrap;">$1 $2</strong>');
+    // Yüzdeler — yeşil
+    html = html.replace(/(%\d+(?:[-–]\d+)?)/g,
+      '<strong style="color:#059669;font-weight:800;">$1</strong>');
+    // Yıl aralıkları/mesafeler
+    html = html.replace(/\b(\d+\s*(?:yıl|yıllık|saat|dakika|m²|km))\b/g,
+      '<strong style="color:#0A2A5E;font-weight:600;">$1</strong>');
+    return html;
+  }
+
+  // Numaralı liste parse: "1) A, 2) B, 3) C" — parantez içindeki virgülleri korur
+  function parseNumberedList(text) {
+    // Split at ", N)" where N is digits, but keep N) in the next chunk
+    const parts = text.split(/,\s*(?=\d+\))/);
+    const items = [];
+    let intro = '';
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i].trim();
+      const m = part.match(/^(\d+)\)\s*(.+)$/s);
+      if (m) {
+        items.push({ n: m[1], text: m[2].trim().replace(/[.,;\s]+$/, '') });
+      } else if (i === 0) {
+        intro = part;
+      }
+    }
+    return { intro, items };
+  }
+
+  // Cevap metnini güzel formata çevir
   function formatAnswer(text) {
     if (!text) return '';
     const escaped = esc(text);
 
-    // Numaralı liste tespiti: "1) ...., 2) ...., 3) ...."
-    const numberedRegex = /(\d+)\)\s+([^,]+?)(?=,\s*\d+\)|$)/g;
-    const numbers = [...escaped.matchAll(numberedRegex)];
+    // Numaralı liste mi? En az 3 madde varsa
+    // Önce introyu ayır (ilk "N)"den önceki kısım)
+    const firstNumMatch = escaped.match(/(\d+)\)/);
+    if (firstNumMatch) {
+      const introEnd = firstNumMatch.index;
+      const intro = escaped.substring(0, introEnd).trim().replace(/[:.]$/, '');
+      const listPart = escaped.substring(introEnd);
+      const parsed = parseNumberedList(listPart);
+      const items = parsed.items;
 
-    if (numbers.length >= 3) {
-      // Numaralı listeye dönüştür
-      const intro = escaped.substring(0, numbers[0].index).replace(/[:.]?\s*$/, '');
-      const outroStart = numbers[numbers.length - 1].index + numbers[numbers.length - 1][0].length;
-      const outro = escaped.substring(outroStart).replace(/^[,.\s]+/, '');
-
-      let html = '';
-      if (intro.trim()) html += '<p style="margin-bottom:16px;">' + intro + ':</p>';
-      html += '<ol style="list-style:none;counter-reset:iu-faq-counter;padding-left:0;margin:0 0 16px 0;">';
-      numbers.forEach(m => {
-        html += '<li style="counter-increment:iu-faq-counter;padding:10px 12px 10px 44px;position:relative;margin-bottom:6px;background:rgba(244,155,28,0.05);border-left:3px solid #F49B1C;border-radius:6px;">';
-        html += '<span style="position:absolute;left:12px;top:10px;width:24px;height:24px;background:#F49B1C;color:#0A2A5E;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;">' + m[1] + '</span>';
-        html += m[2].trim();
-        html += '</li>';
-      });
-      html += '</ol>';
-      if (outro.trim()) html += '<p style="margin-top:16px;color:#4B5563;">' + outro + '</p>';
-      return html;
+      if (items.length >= 3) {
+        let html = '';
+        if (intro) {
+          html += '<p style="margin:0 0 18px 0;line-height:1.7;color:#374151;">' +
+            highlightKeywords(intro) + ':</p>';
+        }
+        html += '<ol style="list-style:none;counter-reset:iu-faq-cnt;padding:0;margin:0 0 4px 0;display:grid;gap:10px;">';
+        items.forEach(it => {
+          html += '<li style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;background:linear-gradient(135deg,rgba(244,155,28,0.06) 0%,rgba(244,155,28,0.02) 100%);border-left:4px solid #F49B1C;border-radius:10px;transition:transform 0.2s;">';
+          html += '<span style="flex-shrink:0;width:28px;height:28px;background:linear-gradient(135deg,#F49B1C,#d4831a);color:#FFF;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;box-shadow:0 2px 6px rgba(244,155,28,0.35);">' + esc(it.n) + '</span>';
+          html += '<span style="flex:1;color:#1f2937;line-height:1.6;padding-top:3px;">' + highlightKeywords(it.text) + '</span>';
+          html += '</li>';
+        });
+        html += '</ol>';
+        return html;
+      }
     }
 
-    // Paragraf ayırıcı: em-dash (—) veya "Ayrıca," gibi ifadeler
-    let html = escaped;
-
-    // Kalın: **text** veya keywords
-    html = html.replace(/(TURYAP|Yalova|Çınarcık|Termal|Altınova|Armutlu)/g, '<strong style="color:#0A2A5E;font-weight:700;">$1</strong>');
-
-    // Fiyatları highlight et
-    html = html.replace(/(\d{1,3}(?:\.\d{3})+)\s*₺/g, '<strong style="color:#F49B1C;font-weight:700;white-space:nowrap;">$1 ₺</strong>');
-    html = html.replace(/(\d+(?:\.\d+)?)\s*(?:₺\/m²|TL\/m²)/g, '<strong style="color:#F49B1C;font-weight:700;white-space:nowrap;">$1 ₺/m²</strong>');
-
-    // Yüzdeler
-    html = html.replace(/(%\d+(?:-\d+)?)/g, '<strong style="color:#10b981;font-weight:700;">$1</strong>');
-
-    // Cümleler arası boşluk
-    return '<p style="margin:0;">' + html + '</p>';
+    // Düz paragraf — highlight uygula
+    // Cümlelere göre böl (uzun paragrafları 2-3 cümlelik gruplara ayır)
+    const sentences = escaped.split(/(?<=[.!?])\s+(?=[A-ZÇĞİÖŞÜ])/);
+    if (sentences.length >= 4) {
+      // 2'şer cümlelik gruplara böl
+      let html = '';
+      for (let i = 0; i < sentences.length; i += 2) {
+        const group = sentences.slice(i, i + 2).join(' ');
+        html += '<p style="margin:0 0 12px 0;line-height:1.75;color:#374151;">' +
+          highlightKeywords(group) + '</p>';
+      }
+      return html;
+    }
+    return '<p style="margin:0;line-height:1.75;color:#374151;">' + highlightKeywords(escaped) + '</p>';
   }
 
   function renderFAQs(container, faqs, options = {}) {
