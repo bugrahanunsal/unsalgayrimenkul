@@ -143,8 +143,8 @@
         line-height: 1;
       }
       .iu-authbar-signup {
-        background: #d4a54e;
-        color: #0a1929;
+        background: #3b82f6;
+        color: #ffffff;
       }
       .iu-authbar-signup:hover {
         background: #b8912e;
@@ -153,12 +153,12 @@
       }
       .iu-authbar-login {
         background: transparent;
-        color: #d4a54e;
-        border-color: #d4a54e;
+        color: #3b82f6;
+        border-color: #3b82f6;
       }
       .iu-authbar-login:hover {
-        background: #d4a54e;
-        color: #0a1929;
+        background: #3b82f6;
+        color: #ffffff;
       }
       .iu-authbar-user {
         display: flex; align-items: center; gap: 8px;
@@ -173,15 +173,15 @@
       .iu-authbar-avatar {
         width: 28px; height: 28px;
         border-radius: 50%;
-        background: #d4a54e;
-        color: #0a1929;
+        background: #3b82f6;
+        color: #ffffff;
         display: flex; align-items: center; justify-content: center;
         font-weight: 700;
         font-size: 13px;
       }
       .iu-authbar-name {
         font-size: 13px;
-        color: #0a1929;
+        color: #ffffff;
         font-weight: 600;
       }
 
@@ -205,10 +205,10 @@
         padding: 16px !important;
         background: #f9fafb !important;
         border-bottom: 1px solid #e5e7eb !important;
-        color: #0a1929 !important;
+        color: #ffffff !important;
       }
       .iu-user-menu-header > div:first-child {
-        color: #0a1929 !important;
+        color: #ffffff !important;
         font-weight: 700 !important;
       }
       .iu-user-menu-email {
@@ -221,7 +221,7 @@
         align-items: center !important;
         gap: 10px !important;
         padding: 12px 16px !important;
-        color: #0a1929 !important;
+        color: #ffffff !important;
         background: #ffffff !important;
         text-decoration: none !important;
         font-size: 14px !important;
@@ -231,7 +231,7 @@
       }
       .iu-user-menu a:hover {
         background: #f3f4f6 !important;
-        color: #0a1929 !important;
+        color: #ffffff !important;
       }
       .iu-user-menu a svg {
         color: #6b7280 !important;
@@ -296,7 +296,7 @@
         font-size: 18px; font-weight: 800; letter-spacing: 1px;
         margin-bottom: 4px;
       }
-      .iu-modal-brand .accent { color: #d4a54e; }
+      .iu-modal-brand .accent { color: #3b82f6; }
       .iu-modal-subtitle {
         font-size: 11px; letter-spacing: 2px; opacity: 0.7;
         text-transform: uppercase;
@@ -344,7 +344,7 @@
       }
       .iu-tab.active {
         background: white;
-        color: #0a1929;
+        color: #ffffff;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       }
       .iu-tab-content { display: none; animation: iuFadeIn 0.2s; }
@@ -375,15 +375,15 @@
         border: 1.5px solid #e5e7eb;
         border-radius: 8px;
         font-size: 14px;
-        color: #0a1929;
+        color: #ffffff;
         transition: all 0.15s;
         background: white;
         font-family: inherit;
       }
       .iu-input:focus, .iu-select:focus {
         outline: none;
-        border-color: #d4a54e;
-        box-shadow: 0 0 0 3px rgba(212, 165, 78, 0.1);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       }
       .iu-checkboxes {
         display: grid;
@@ -399,8 +399,8 @@
         font-size: 13px;
         transition: all 0.15s;
       }
-      .iu-checkbox-label:hover { border-color: #d4a54e; }
-      .iu-checkbox-label input { margin: 0; accent-color: #d4a54e; }
+      .iu-checkbox-label:hover { border-color: #3b82f6; }
+      .iu-checkbox-label input { margin: 0; accent-color: #3b82f6; }
 
       /* Buttons */
       .iu-btn {
@@ -417,7 +417,7 @@
         margin-top: 8px;
         font-family: inherit;
       }
-      .iu-btn-primary { background: #d4a54e; color: #0a1929; }
+      .iu-btn-primary { background: #3b82f6; color: #ffffff; }
       .iu-btn-primary:hover:not(:disabled) {
         background: #b8912e;
         transform: translateY(-1px);
@@ -430,7 +430,7 @@
         border: 1.5px solid #e5e7eb;
         color: #374151;
       }
-      .iu-btn-outline:hover:not(:disabled) { border-color: #d4a54e; color: #d4a54e; }
+      .iu-btn-outline:hover:not(:disabled) { border-color: #3b82f6; color: #3b82f6; }
       .iu-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
       /* Message boxes */
@@ -475,7 +475,7 @@
         background: radial-gradient(circle, rgba(212,165,78,0.2), transparent 70%);
         pointer-events: none;
       }
-      .iu-widget h3 { font-size: 26px; margin: 0 0 8px 0; color: #d4a54e; position: relative; }
+      .iu-widget h3 { font-size: 26px; margin: 0 0 8px 0; color: #3b82f6; position: relative; }
       .iu-widget p { font-size: 15px; opacity: 0.9; margin: 0 0 24px 0; position: relative; }
       .iu-widget-form {
         display: flex; gap: 8px; max-width: 480px; margin: 0 auto;
@@ -490,8 +490,8 @@
       }
       .iu-widget-form button {
         padding: 14px 28px;
-        background: #d4a54e;
-        color: #0a1929;
+        background: #3b82f6;
+        color: #ffffff;
         border: none;
         border-radius: 8px;
         font-weight: 700;
@@ -510,13 +510,13 @@
         margin-top: 12px;
         line-height: 1.5;
       }
-      .iu-kvkk a { color: #d4a54e; text-decoration: none; }
+      .iu-kvkk a { color: #3b82f6; text-decoration: none; }
 
       .iu-spinner {
         display: inline-block;
         width: 16px; height: 16px;
         border: 2px solid rgba(0,0,0,0.15);
-        border-top-color: #0a1929;
+        border-top-color: #ffffff;
         border-radius: 50%;
         animation: iuSpin 0.8s linear infinite;
         margin-right: 8px;
@@ -530,7 +530,7 @@
         margin-top: -8px;
         margin-bottom: 12px;
         font-size: 12px;
-        color: #d4a54e;
+        color: #3b82f6;
         text-decoration: none;
         font-weight: 500;
       }
@@ -643,7 +643,7 @@
               </button>
 
               <div style="text-align: center; margin-top: 16px; font-size: 13px; color: #6b7280;">
-                Hesabınız yok mu? <a href="#" onclick="IUAuth.switchTab('signup'); return false;" style="color: #d4a54e; font-weight: 600; text-decoration: none;">Üye Ol</a>
+                Hesabınız yok mu? <a href="#" onclick="IUAuth.switchTab('signup'); return false;" style="color: #3b82f6; font-weight: 600; text-decoration: none;">Üye Ol</a>
               </div>
             </form>
           </div>
@@ -829,18 +829,25 @@
       }
 
       // Admin mi kontrol et
-      const { data: adminData } = await sb.from('admin_users').select('role').eq('id', data.user.id).single();
+      const { data: adminData } = await sb.from('admin_users').select('role').eq('id', data.user.id).maybeSingle();
+
+      // URL'den redirect parametresini al
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectTo = urlParams.get('redirect');
 
       if (adminData) {
         showMsg('iu-login-msg', '✅ Admin girişi başarılı! Admin panele yönlendiriliyorsunuz...', 'success');
-        setTimeout(() => window.location.href = '/admin/index.html', 800);
+        setTimeout(() => {
+          window.location.href = redirectTo || '/admin/index.html';
+        }, 800);
       } else {
         showMsg('iu-login-msg', '✅ Hoş geldiniz! Yönlendiriliyorsunuz...', 'success');
         setTimeout(() => {
           IUAuth.close();
           checkUserStatus();
-          // Hesap sayfasına yönlendir
-          if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+          if (redirectTo) {
+            window.location.href = redirectTo;
+          } else if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
             window.location.href = CONFIG.ACCOUNT_URL;
           } else {
             window.location.reload();
@@ -1001,7 +1008,7 @@
             <input type="email" placeholder="email@adres.com" required maxlength="254">
             <button type="submit">Kayıt Ol</button>
           </form>
-          <small>Detaylı tercih ve hesap için <a href="#" onclick="IUAuth.open('signup'); return false;" style="color: #d4a54e;">buraya tıklayın</a></small>
+          <small>Detaylı tercih ve hesap için <a href="#" onclick="IUAuth.open('signup'); return false;" style="color: #3b82f6;">buraya tıklayın</a></small>
         </div>
       `;
     });
@@ -1138,6 +1145,14 @@
         IUAuth.user = session?.user || null;
         renderAuthBar();
       });
+    }
+
+    // URL parametresi ile modal otomatik açma (?login=1 veya ?signup=1)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('login') === '1') {
+      setTimeout(() => IUAuth.open('login'), 100);
+    } else if (urlParams.get('signup') === '1') {
+      setTimeout(() => IUAuth.open('signup'), 100);
     }
 
     // Dropdown dışına tıklayınca kapat
