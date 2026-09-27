@@ -253,10 +253,88 @@
 
   // ==================== KATEGORİ SAYFASI: İLAN LİSTESİ ====================
 
-  async function loadCategoryPageProperties() {
-    const container = document.getElementById('categoryPropertiesList');
-    if (!container) return; // Kategori sayfasında değiliz
+  // Kategori sayfası container'ı otomatik bul (birden fazla olası yer)
+  function findCategoryContainer() {
+    // 1. Öncelik: özel ID
+    let c = document.getElementById('categoryPropertiesList');
+    if (c) return { el: c, mode: 'replace' };
 
+    // 2. Mevcut sitedeki class'lar (hardcoded ilanlar için)
+    c = document.querySelector('.listings-grid-pillar');
+    if (c) return { el: c, mode: 'replace' };
+
+    c = document.querySelector('.listings-grid');
+    if (c) return { el: c, mode: 'replace' };
+
+    c = document.querySelector('.property-grid');
+    if (c) return { el: c, mode: 'replace' };
+
+    c = document.querySelector('.properties-list');
+    if (c) return { el: c, mode: 'replace' };
+
+    return null;
+  }
+
+  // Mevcut siteye uyumlu ilan kartı (listings-grid-pillar için)
+  function renderPillarCard(p) {
+    const img = p.property_images?.find(i => i.is_main)?.url ||
+                p.property_images?.[0]?.url ||
+                CONFIG.PLACEHOLDER_IMAGES[p.kategori] ||
+                CONFIG.PLACEHOLDER_IMAGES.default;
+
+    const phone = '+905075188482';
+    const wa = 'https://wa.me/905075188482?text=' + encodeURIComponent((p.baslik_tr || 'İlan') + ' hakkında bilgi almak istiyorum');
+
+    // Fiyat formatı
+    const fiyat = p.fiyat ? formatPrice(p.fiyat) : 'Bilgi İçin Arayın';
+
+    // Alan / oda / kategori bilgileri
+    const features = [];
+    if (p.alan) features.push('<span>📐 ' + esc(p.alan) + ' m²</span>');
+    if (p.oda_sayisi) features.push('<span>🛏 ' + esc(p.oda_sayisi) + '</span>');
+    if (p.bina_yasi != null) features.push('<span>🏗 ' + esc(p.bina_yasi) + ' yaş</span>');
+    if (p.emsal) features.push('<span>🧭 ' + esc(p.emsal) + ' Emsal</span>');
+    if (features.length === 0) features.push('<span>📍 ' + esc(p.ilce || 'Yalova') + '</span>');
+
+    // Etiket (öne çıkan / yeni / normal)
+    const tag = p.one_cikan
+      ? '<span class="listing-tag-pillar vip">💎 VIP FIRSAT</span>'
+      : (p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7 * 86400000)
+        ? '<span class="listing-tag-pillar" style="background:#F49B1C;color:white;">🆕 YENİ İLAN</span>'
+        : '';
+
+    const typeUpper = (p.tip || '').toUpperCase();
+
+    return `
+      <a href="ilan.html?id=${esc(p.id)}" class="listing-card-pillar" style="text-decoration:none;color:inherit;display:block;">
+        <div class="listing-image-pillar" style="background-image: url('${esc(img)}'); background-size: cover; background-position: center;">
+          ${tag}
+          <span class="listing-type-badge-pillar">${esc(typeUpper)}</span>
+        </div>
+        <div class="listing-content-pillar">
+          <div class="listing-location-pillar">
+            📍 ${esc((p.ilce || 'YALOVA').toUpperCase())}${p.mahalle ? ', ' + esc(p.mahalle.toUpperCase()) : ''}
+          </div>
+          <h3 class="listing-title-pillar">${esc(p.baslik_tr || 'İlan')}</h3>
+          <div class="listing-features-pillar">
+            ${features.join('')}
+          </div>
+          <div class="listing-price-pillar">${fiyat}</div>
+          <p class="listing-desc-pillar">${esc((p.aciklama_tr || p.ozet_tr || '').substring(0, 120))}${(p.aciklama_tr || '').length > 120 ? '...' : ''}</p>
+          <div class="listing-cta-pillar">
+            <a href="tel:${phone}" class="cta-pillar-call" onclick="event.stopPropagation();">📞 Ara</a>
+            <a href="${wa}" target="_blank" class="cta-pillar-wa" onclick="event.stopPropagation();">💬 Sor</a>
+          </div>
+        </div>
+      </a>
+    `;
+  }
+
+  async function loadCategoryPageProperties() {
+    const found = findCategoryContainer();
+    if (!found) return; // Kategori sayfası değil
+
+    const { el: container } = found;
     const sb = init();
     if (!sb) return;
 
@@ -266,32 +344,69 @@
       .select('*, property_images(url, is_main)')
       .eq('durum', 'aktif');
 
-    // URL'ye göre filtrele
+    // URL'ye göre tip filtresi
     if (pathname.includes('satilik')) query = query.eq('tip', 'satilik');
-    if (pathname.includes('kiralik')) query = query.eq('tip', 'kiralik');
+    else if (pathname.includes('kiralik')) query = query.eq('tip', 'kiralik');
 
-    if (pathname.includes('daire')) query = query.eq('kategori', 'daire');
-    else if (pathname.includes('arsa')) query = query.eq('kategori', 'arsa');
+    // URL'ye göre kategori filtresi
+    if (pathname.includes('arsa') || pathname.includes('tarla')) query = query.in('kategori', ['arsa', 'tarla']);
+    else if (pathname.includes('daire')) query = query.eq('kategori', 'daire');
     else if (pathname.includes('villa')) query = query.eq('kategori', 'villa');
-    else if (pathname.includes('ev')) query = query.in('kategori', ['villa', 'mustakil_ev']);
+    else if (pathname.includes('mustakil') || pathname.includes('ev')) query = query.in('kategori', ['villa', 'mustakil_ev']);
+    else if (pathname.includes('isyeri') || pathname.includes('dukkan')) query = query.eq('kategori', 'isyeri');
+    else if (pathname.includes('yazlik')) query = query.eq('kategori', 'yazlik');
+    else if (pathname.includes('bina')) query = query.eq('kategori', 'bina');
+    else if (pathname.includes('luks')) query = query.eq('one_cikan', true);
 
-    if (pathname.includes('merkez')) query = query.eq('ilce', 'Merkez');
+    // İlçe filtresi
+    if (pathname.includes('cinarcik')) query = query.eq('ilce', 'Çınarcık');
+    else if (pathname.includes('termal')) query = query.eq('ilce', 'Termal');
+    else if (pathname.includes('altinova')) query = query.eq('ilce', 'Altınova');
+    else if (pathname.includes('armutlu')) query = query.eq('ilce', 'Armutlu');
+    else if (pathname.includes('ciftlikkoy')) query = query.eq('ilce', 'Çiftlikköy');
+    else if (pathname.includes('akkoy')) query = query.eq('ilce', 'Akköy');
+    else if (pathname.includes('merkez')) query = query.eq('ilce', 'Merkez');
 
-    query = query.order('created_at', { ascending: false });
+    query = query.order('one_cikan', { ascending: false }).order('created_at', { ascending: false });
 
     try {
       const { data: properties, error } = await query;
       if (error) throw error;
 
-      renderPropertyGrid(container, properties || []);
+      console.log('[Frontend] Kategori sayfası: ' + (properties?.length || 0) + ' ilan bulundu');
+
+      // Container'ın class'ına göre render seç
+      const isPillar = container.classList.contains('listings-grid-pillar');
+
+      if (!properties || properties.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
+            <div style="font-size:48px;margin-bottom:16px;">🏡</div>
+            <h3 style="color:#0A2A5E;margin-bottom:8px;">Bu kategoride henüz ilan yok</h3>
+            <p style="color:#6B7280;">Yakında yeni ilanlar eklenecek. Bültenimize kayıt olun, ilk siz haberdar olun.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (isPillar) {
+        container.innerHTML = properties.map(renderPillarCard).join('');
+      } else {
+        renderPropertyGrid(container, properties);
+      }
 
       // Sayfa başlığında sayı güncelle
       const titleEl = document.getElementById('categoryCount');
-      if (titleEl) titleEl.textContent = (properties?.length || 0);
+      if (titleEl) titleEl.textContent = properties.length;
+
+      // Sayı gösteren tüm elementleri güncelle
+      document.querySelectorAll('[data-property-count]').forEach(el => {
+        el.textContent = properties.length;
+      });
 
     } catch (err) {
       console.error('[Frontend] Kategori sayfası hatası:', err);
-      container.innerHTML = '<div style="text-align:center;padding:40px;color:#EF4444;">Yükleme hatası: ' + esc(err.message) + '</div>';
+      container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#EF4444;">Yükleme hatası: ' + esc(err.message) + '</div>';
     }
   }
 
