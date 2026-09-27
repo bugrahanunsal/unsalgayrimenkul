@@ -959,27 +959,41 @@
       const iconHeart = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
       const iconSearch = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
       const iconLogout = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+      const iconAdmin = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>';
 
       if (IUAuth.user) {
         // Giriş yapmış kullanıcı
         const initial = (IUAuth.user.user_metadata?.full_name || IUAuth.user.email || 'U').charAt(0).toUpperCase();
         const name = IUAuth.user.user_metadata?.full_name || IUAuth.user.email.split('@')[0];
+        const isAdmin = IUAuth.isAdmin === true;
+
+        // Admin için farklı menü - admin panele git en üstte olsun
+        const adminMenuItem = isAdmin ? `
+          <a href="/admin/index.html" style="background: linear-gradient(90deg, #dbeafe, transparent); color: #1e40af; font-weight: 600;">
+            ${iconAdmin} Admin Panele Git
+          </a>
+          <div class="iu-user-menu-divider"></div>
+        ` : '';
+
+        // Admin kullanıcı için Hesabım linki admin paneline gitsin (customer sayfası değil)
+        const accountLink = isAdmin ? '/admin/index.html' : CONFIG.ACCOUNT_URL;
 
         container.innerHTML = `
           <div class="iu-authbar" style="position: relative;">
             <div class="iu-authbar-user" onclick="IUAuth.toggleUserMenu(event)">
-              <div class="iu-authbar-avatar">${Security.escapeHtml(initial)}</div>
-              <div class="iu-authbar-name">${Security.escapeHtml(name)}</div>
+              <div class="iu-authbar-avatar" style="${isAdmin ? 'background: linear-gradient(135deg, #3b82f6, #1e40af);' : ''}">${Security.escapeHtml(initial)}</div>
+              <div class="iu-authbar-name">${Security.escapeHtml(name)}${isAdmin ? ' <span style="font-size:10px; color:#3b82f6; margin-left:4px;">●</span>' : ''}</div>
             </div>
             <div class="iu-user-menu">
               <div class="iu-user-menu-header">
-                <div style="font-weight: 600;">${Security.escapeHtml(name)}</div>
+                <div style="font-weight: 600;">${Security.escapeHtml(name)}${isAdmin ? ' <span style="background:#3b82f6;color:white;font-size:10px;padding:2px 6px;border-radius:8px;margin-left:6px;">ADMIN</span>' : ''}</div>
                 <div class="iu-user-menu-email">${Security.escapeHtml(IUAuth.user.email)}</div>
               </div>
-              <a href="${CONFIG.ACCOUNT_URL}">${iconAccount} Hesabım</a>
+              ${adminMenuItem}
+              ${!isAdmin ? `<a href="${accountLink}">${iconAccount} Hesabım</a>
               <a href="/favorilerim">${iconHeart} Favorilerim</a>
-              <a href="/aramalarim">${iconSearch} Kayıtlı Aramalar</a>
-              <div class="iu-user-menu-divider"></div>
+              <a href="/aramalarim">${iconSearch} Kayıtlı Aramalar</a>` : ''}
+              ${!isAdmin ? '<div class="iu-user-menu-divider"></div>' : ''}
               <a href="#" onclick="IUAuth.logout(event)" class="iu-user-menu-logout">${iconLogout} Çıkış Yap</a>
             </div>
           </div>
@@ -1127,6 +1141,19 @@
     }
   };
 
+  // Admin kontrolü - kullanıcının admin olup olmadığını cek
+  async function checkAdminStatus(user) {
+    if (!user) return false;
+    try {
+      const sb = initSupabase();
+      const { data } = await sb.from('admin_users').select('role, is_active').eq('id', user.id).maybeSingle();
+      return !!(data && data.is_active !== false);
+    } catch (err) {
+      console.warn('[Admin check]', err);
+      return false;
+    }
+  }
+
   // ==================== INIT ====================
   async function init() {
     injectStyles();
@@ -1138,20 +1165,33 @@
     if (sb) {
       const { data: { user } } = await sb.auth.getUser();
       IUAuth.user = user;
+      IUAuth.isAdmin = await checkAdminStatus(user);
       renderAuthBar();
 
       // Session değişimini dinle
-      sb.auth.onAuthStateChange((event, session) => {
+      sb.auth.onAuthStateChange(async (event, session) => {
         IUAuth.user = session?.user || null;
+        IUAuth.isAdmin = await checkAdminStatus(IUAuth.user);
         renderAuthBar();
       });
     }
 
-    // URL parametresi ile modal otomatik açma (?login=1 veya ?signup=1)
+    // URL parametresi kontrol - eğer zaten login olmuş ve redirect param varsa direkt yönlendir
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('login') === '1') {
+    const redirectParam = urlParams.get('redirect');
+
+    if (IUAuth.user && redirectParam) {
+      // Zaten login olmuş ve redirect var - direkt admin panele git
+      if (IUAuth.isAdmin) {
+        window.location.href = redirectParam;
+        return;
+      }
+    }
+
+    // Modal otomatik açma (?login=1 veya ?signup=1)
+    if (urlParams.get('login') === '1' && !IUAuth.user) {
       setTimeout(() => IUAuth.open('login'), 100);
-    } else if (urlParams.get('signup') === '1') {
+    } else if (urlParams.get('signup') === '1' && !IUAuth.user) {
       setTimeout(() => IUAuth.open('signup'), 100);
     }
 
