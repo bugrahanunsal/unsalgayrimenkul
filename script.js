@@ -38,18 +38,22 @@
     });
   }
 
+  // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
+  // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
+  const SITE_VERSION = '20260927-v2';
+
   async function loadAllScripts() {
     try {
       // 1. Önce Supabase SDK
       await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
 
       // 2. Auth widget (Giriş/Hesabım butonları + modal)
-      await loadScript('/subscribe-widget.js');
+      await loadScript('/subscribe-widget.js?v=' + SITE_VERSION);
 
       // 3. Frontend database entegrasyonu (ilan listesi, FAQ, kategori sayaçları)
-      await loadScript('/frontend-supabase.js');
+      await loadScript('/frontend-supabase.js?v=' + SITE_VERSION);
 
-      console.log('[SiteLoader] Tüm scriptler yüklendi ✓');
+      console.log('[SiteLoader] Tüm scriptler yüklendi ✓ (v=' + SITE_VERSION + ')');
     } catch (err) {
       console.error('[SiteLoader] Yükleme hatası:', err);
     }
