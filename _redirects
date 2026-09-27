@@ -1,0 +1,29 @@
+# Cloudflare Pages URL rewrite rules
+# Kaynak: https://developers.cloudflare.com/pages/configuration/redirects/
+# Sözdizim: FROM  TO  STATUS
+# 200 = rewrite (URL değişmez, içerik değişir); 301 = kalıcı yönlendirme
+
+# Temiz URL'ler (uzantısız → .html karşılığı)
+/sss                        /sss.html                     200
+/sss/                       /sss.html                     200
+/hakkimizda                 /hakkimizda.html              200
+/iletisim                   /iletisim.html                200
+/hesabim                    /hesabim.html                 200
+/blog                       /blog.html                    200
+/verify                     /verify.html                  200
+/unsubscribe                /unsubscribe.html             200
+
+# Kategori sayfaları (temiz URL'ler)
+/yalova-satilik-daire       /yalova-satilik-daire.html    200
+/yalova-satilik-arsa        /yalova-satilik-arsa.html     200
+/yalova-satilik-ev          /yalova-satilik-ev.html       200
+/yalova-kiralik-daire       /yalova-kiralik-daire.html    200
+/yalova-kiralik-villa       /yalova-kiralik-villa.html    200
+/yalova-kiralik-ev          /yalova-kiralik-ev.html       200
+/yalova-esyali-kiralik-daire /yalova-esyali-kiralik-daire.html 200
+/yalova-merkez-kiralik-daire /yalova-merkez-kiralik-daire.html 200
+
+# Eski/genel kategori URL'leri → gerçek sayfaya
+/yalova-satilik             /yalova-satilik-daire.html    200
+/yalova-kiralik             /yalova-kiralik-daire.html    200
+/luks                       /yalova-kiralik-villa.html    200
