@@ -105,10 +105,22 @@
     if (!sb) return;
 
     try {
-      const { data: properties, error } = await sb
+      // Önce property_images ile join dene
+      let { data: properties, error } = await sb
         .from('properties')
         .select('id, kategori, tip, ilce, ozellikler, property_images(url, is_main)')
         .eq('durum', 'aktif');
+
+      // Join başarısız olursa (400 hatası), sadece properties çek
+      if (error) {
+        console.warn('[Frontend] property_images join failed, retrying without join');
+        const fallback = await sb
+          .from('properties')
+          .select('id, kategori, tip, ilce, ozellikler')
+          .eq('durum', 'aktif');
+        properties = fallback.data;
+        error = fallback.error;
+      }
 
       if (error) throw error;
       if (!properties) return;
@@ -189,7 +201,7 @@
     if (!sb) return;
 
     try {
-      const { data: properties, error } = await sb
+      let { data: properties, error } = await sb
         .from('properties')
         .select('*, property_images(url, is_main)')
         .eq('durum', 'aktif')
@@ -197,16 +209,34 @@
         .order('created_at', { ascending: false })
         .limit(6);
 
+      // Join başarısız - fallback
+      if (error) {
+        const fallback = await sb
+          .from('properties')
+          .select('*')
+          .eq('durum', 'aktif')
+          .eq('one_cikan', true)
+          .order('created_at', { ascending: false })
+          .limit(6);
+        properties = fallback.data;
+        error = fallback.error;
+      }
+
       if (error) throw error;
 
       if (!properties?.length) {
         // Öne çıkan yoksa en son eklenenlerı göster
-        const { data: latest } = await sb
+        let { data: latest, error: latestErr } = await sb
           .from('properties')
           .select('*, property_images(url, is_main)')
           .eq('durum', 'aktif')
           .order('created_at', { ascending: false })
           .limit(6);
+
+        if (latestErr) {
+          const fb = await sb.from('properties').select('*').eq('durum', 'aktif').order('created_at', { ascending: false }).limit(6);
+          latest = fb.data;
+        }
 
         renderPropertyGrid(container, latest || []);
       } else {
@@ -370,7 +400,24 @@
     query = query.order('one_cikan', { ascending: false }).order('created_at', { ascending: false });
 
     try {
-      const { data: properties, error } = await query;
+      let { data: properties, error } = await query;
+
+      // Join başarısız - property_images olmadan tekrar dene
+      if (error) {
+        console.warn('[Frontend] Kategori: join failed, retrying without images');
+        let q2 = sb.from('properties').select('*').eq('durum', 'aktif');
+        if (pathname.includes('satilik')) q2 = q2.eq('tip', 'satilik');
+        else if (pathname.includes('kiralik')) q2 = q2.eq('tip', 'kiralik');
+        if (pathname.includes('arsa') || pathname.includes('tarla')) q2 = q2.in('kategori', ['arsa', 'tarla']);
+        else if (pathname.includes('daire')) q2 = q2.eq('kategori', 'daire');
+        else if (pathname.includes('villa')) q2 = q2.eq('kategori', 'villa');
+        else if (pathname.includes('mustakil') || pathname.includes('ev')) q2 = q2.in('kategori', ['villa', 'mustakil_ev']);
+        q2 = q2.order('created_at', { ascending: false });
+        const fb = await q2;
+        properties = fb.data;
+        error = fb.error;
+      }
+
       if (error) throw error;
 
       console.log('[Frontend] Kategori sayfası: ' + (properties?.length || 0) + ' ilan bulundu');
