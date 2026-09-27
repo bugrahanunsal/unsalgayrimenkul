@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Adminler - Admin Panel</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .admin-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 12px;
+      transition: var(--transition);
+    }
+    .admin-card:hover {
+      box-shadow: var(--shadow);
+    }
+    .admin-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .admin-info { flex: 1; min-width: 0; }
+    .admin-name {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text-primary);
+    }
+    .admin-email {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .admin-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .role-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .role-super_admin { background: #fef3c7; color: #92400e; }
+    .role-admin { background: #dbeafe; color: #1e40af; }
+    .role-editor { background: #e0e7ff; color: #3730a3; }
+    .role-viewer { background: #f3f4f6; color: #374151; }
+    .status-active { color: var(--success); }
+    .status-inactive { color: var(--danger); }
+    .admin-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    @media (max-width: 640px) {
+      .admin-card { flex-direction: column; align-items: start; }
+      .admin-actions { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">👤 Admin Yönetimi</h1>
+        <div class="topbar-actions">
+          <button onclick="openAddAdmin()" class="btn btn-primary btn-sm">➕ Yeni Admin</button>
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="alert alert-info" style="margin-bottom: 20px;">
+          <strong>ℹ️ Admin Yönetimi:</strong> Yeni admin eklemek için önce kullanıcının Supabase Auth'a kaydolması gerekir. Sonra buradan rol atayabilirsiniz.
+        </div>
+
+        <div id="adminsList"><div class="loading">Yükleniyor...</div></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Rol Değiştir Modal -->
+  <div id="roleModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: white; border-radius: var(--radius-lg); max-width: 500px; width: 100%;">
+      <div style="padding: 20px; border-bottom: 1px solid var(--border);">
+        <div style="font-size: 18px; font-weight: 700;">Rol Değiştir</div>
+      </div>
+      <form id="roleForm" style="padding: 20px;">
+        <input type="hidden" id="editAdminId">
+        <div class="form-group">
+          <label class="form-label">Ad Soyad</label>
+          <input type="text" id="editFullName" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rol</label>
+          <select id="editRole" class="form-select" required>
+            <option value="viewer">Viewer (Sadece Görüntüleme)</option>
+            <option value="editor">Editor (İçerik Düzenleme)</option>
+            <option value="admin">Admin (Genel Yönetici)</option>
+            <option value="super_admin">Super Admin (Tam Yetki)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label style="display: flex; gap: 8px; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="editIsActive">
+            <span>Aktif</span>
+          </label>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" onclick="closeRoleModal()" class="btn btn-outline">İptal</button>
+          <button type="submit" class="btn btn-primary">💾 Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Yeni Admin Modal -->
+  <div id="addAdminModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: white; border-radius: var(--radius-lg); max-width: 500px; width: 100%;">
+      <div style="padding: 20px; border-bottom: 1px solid var(--border);">
+        <div style="font-size: 18px; font-weight: 700;">Yeni Admin Ekle</div>
+      </div>
+      <form id="addForm" style="padding: 20px;">
+        <div class="alert alert-warning" style="margin-bottom: 16px;">
+          <strong>⚠️ Önemli:</strong> Kullanıcı zaten Supabase Auth'ta kayıtlı olmalı. Sadece rol atanacak.
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input type="email" id="addEmail" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ad Soyad *</label>
+          <input type="text" id="addFullName" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rol *</label>
+          <select id="addRole" class="form-select" required>
+            <option value="viewer">Viewer</option>
+            <option value="editor">Editor</option>
+            <option value="admin" selected>Admin</option>
+            <option value="super_admin">Super Admin</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" onclick="closeAddAdmin()" class="btn btn-outline">İptal</button>
+          <button type="submit" class="btn btn-primary">➕ Ekle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    let admins = [];
+    let currentUserId = null;
+
+    (async () => {
+      const authed = await App.init('admins');
+      if (!authed) return;
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      currentUserId = user?.id;
+      await loadAdmins();
+    })();
+
+    async function loadAdmins() {
+      const container = document.getElementById('adminsList');
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('admin_users')
+          .select('*')
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+        admins = data || [];
+        renderAdmins();
+      } catch (error) {
+        container.innerHTML = '<div class="alert alert-error">Hata: ' + Security.escapeHtml(error.message) + '</div>';
+      }
+    }
+
+    function renderAdmins() {
+      const container = document.getElementById('adminsList');
+
+      if (admins.length === 0) {
+        container.innerHTML = `
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-icon">👤</div>
+              <div>Henüz admin yok</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const roleLabels = {
+        super_admin: 'Super Admin',
+        admin: 'Admin',
+        editor: 'Editor',
+        viewer: 'Viewer'
+      };
+
+      container.innerHTML = admins.map(a => {
+        const isCurrentUser = a.id === currentUserId;
+        const initial = (a.full_name || a.email || 'A').charAt(0).toUpperCase();
+
+        return `
+          <div class="admin-card">
+            <div class="admin-avatar">${Security.escapeHtml(initial)}</div>
+            <div class="admin-info">
+              <div class="admin-name">
+                ${Security.escapeHtml(a.full_name || 'İsimsiz')}
+                ${isCurrentUser ? '<span style="color: var(--accent); font-size: 12px; margin-left: 8px;">(Siz)</span>' : ''}
+              </div>
+              <div class="admin-email">${Security.escapeHtml(a.email)}</div>
+              <div class="admin-meta">
+                <span class="role-badge role-${a.role}">${roleLabels[a.role] || a.role}</span>
+                <span class="${a.is_active ? 'status-active' : 'status-inactive'}">
+                  ${a.is_active ? '● Aktif' : '● Pasif'}
+                </span>
+                ${a.last_login ? `<span>Son giriş: ${App.timeAgo(a.last_login)}</span>` : '<span>Henüz giriş yapmamış</span>'}
+                ${a.login_count ? `<span>${a.login_count} giriş</span>` : ''}
+              </div>
+            </div>
+            <div class="admin-actions">
+              <button onclick="editAdmin('${a.id}')" class="btn btn-outline btn-sm" ${isCurrentUser ? 'disabled title="Kendi rolünüzü değiştiremezsiniz"' : ''}>✏️ Düzenle</button>
+              ${!isCurrentUser ? `<button onclick="deleteAdmin('${a.id}', '${Security.escapeHtml(a.email)}')" class="btn btn-danger btn-sm">🗑️</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function editAdmin(id) {
+      const a = admins.find(x => x.id === id);
+      if (!a) return;
+
+      document.getElementById('editAdminId').value = a.id;
+      document.getElementById('editFullName').value = a.full_name || '';
+      document.getElementById('editRole').value = a.role;
+      document.getElementById('editIsActive').checked = a.is_active;
+      document.getElementById('roleModal').style.display = 'flex';
+    }
+    window.editAdmin = editAdmin;
+
+    function closeRoleModal() {
+      document.getElementById('roleModal').style.display = 'none';
+    }
+    window.closeRoleModal = closeRoleModal;
+
+    document.getElementById('roleForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const id = document.getElementById('editAdminId').value;
+      const fullName = Security.sanitizeInput(document.getElementById('editFullName').value, { maxLength: 100 });
+      const role = document.getElementById('editRole').value;
+      const isActive = document.getElementById('editIsActive').checked;
+
+      try {
+        const { error } = await supabaseClient
+          .from('admin_users')
+          .update({ full_name: fullName, role, is_active: isActive })
+          .eq('id', id);
+
+        if (error) throw error;
+
+        await Security.logSecurityEvent('admin_role_changed', {
+          target_admin_id: id,
+          new_role: role,
+          is_active: isActive
+        }, 'warning');
+
+        App.toast('Admin güncellendi', 'success');
+        closeRoleModal();
+        await loadAdmins();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    });
+
+    async function deleteAdmin(id, email) {
+      const confirmed = await App.confirm(`"${email}" adminini silmek istediğinize emin misiniz?\n\nBu kullanıcı admin panele giremeyecek ama Supabase Auth hesabı silinmeyecek.`);
+      if (!confirmed) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('admin_users')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+
+        await Security.logSecurityEvent('admin_removed', {
+          target_email: email
+        }, 'critical');
+
+        App.toast('Admin silindi', 'success');
+        await loadAdmins();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    }
+    window.deleteAdmin = deleteAdmin;
+
+    function openAddAdmin() {
+      document.getElementById('addForm').reset();
+      document.getElementById('addAdminModal').style.display = 'flex';
+    }
+    window.openAddAdmin = openAddAdmin;
+
+    function closeAddAdmin() {
+      document.getElementById('addAdminModal').style.display = 'none';
+    }
+    window.closeAddAdmin = closeAddAdmin;
+
+    document.getElementById('addForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = Security.sanitizeInput(document.getElementById('addEmail').value, { email: true });
+      const fullName = Security.sanitizeInput(document.getElementById('addFullName').value, { maxLength: 100 });
+      const role = document.getElementById('addRole').value;
+
+      if (!Security.isValidEmail(email)) {
+        App.toast('Geçersiz email formatı', 'error');
+        return;
+      }
+
+      try {
+        // Önce auth.users'ta bu email var mı kontrol et
+        // Not: RLS nedeniyle client-side auth.users'a erişemeyiz, admin panelinde SQL fonksiyon gerekir
+        // Şimdilik direkt admin_users'a insert edelim, kullanıcı zaten auth'ta olmalı
+
+        const { data: existing } = await supabaseClient
+          .from('admin_users')
+          .select('id')
+          .eq('email', email)
+          .maybeSingle();
+
+        if (existing) {
+          App.toast('Bu email zaten admin listesinde', 'error');
+          return;
+        }
+
+        // Auth'taki kullanıcının ID'sini almak için bir RPC fonksiyonu gerekir
+        // Şimdilik uyarı gösterelim
+        App.toast('Kullanıcı önce Supabase Auth\'a kayıt olmalı. Kayıt olduktan sonra SQL ile ekleyin:', 'warning');
+
+        setTimeout(() => {
+          alert(`Kullanıcı önce ana siteden kayıt olsun (${email}).\n\nSonra Supabase SQL Editor'da:\n\nINSERT INTO admin_users (id, email, role, full_name)\nSELECT id, '${email}', '${role}', '${fullName}'\nFROM auth.users WHERE email = '${email}';`);
+        }, 500);
+
+        closeAddAdmin();
+      } catch (error) {
+        App.toast(error.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>

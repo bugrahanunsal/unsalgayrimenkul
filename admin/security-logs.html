@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Güvenlik Logları - Admin Panel</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--info);
+    }
+    .stat-card.critical { border-color: var(--danger); }
+    .stat-card.warning { border-color: var(--warning); }
+    .stat-card.success { border-color: var(--success); }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 4px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .severity-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .severity-info { background: #dbeafe; color: #1e40af; }
+    .severity-warning { background: #fef3c7; color: #92400e; }
+    .severity-critical { background: #fee2e2; color: #991b1b; }
+    .log-details {
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .filter-bar {
+      background: white;
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+    @media (max-width: 768px) {
+      .filter-bar { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">🛡️ Güvenlik Logları</h1>
+        <div class="topbar-actions">
+          <button onclick="exportLogs()" class="btn btn-outline btn-sm">📥 CSV İndir</button>
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="stat-grid" id="statGrid">
+          <div class="stat-card"><div class="stat-label">Toplam Olay</div><div class="stat-value" id="statTotal">-</div></div>
+          <div class="stat-card critical"><div class="stat-label">Kritik</div><div class="stat-value" id="statCritical">-</div></div>
+          <div class="stat-card warning"><div class="stat-label">Uyarı</div><div class="stat-value" id="statWarning">-</div></div>
+          <div class="stat-card success"><div class="stat-label">Bilgi</div><div class="stat-value" id="statInfo">-</div></div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label">Olay Tipi</label>
+            <select id="filterType" class="form-select" onchange="loadLogs()">
+              <option value="">Tümü</option>
+              <option value="login_success">Başarılı Giriş</option>
+              <option value="login_failed">Başarısız Giriş</option>
+              <option value="login_suspicious">Şüpheli Giriş</option>
+              <option value="logout">Çıkış</option>
+              <option value="unauthorized_login_attempt">Yetkisiz Erişim</option>
+              <option value="suspicious_input">Şüpheli Input</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label">Önem Derecesi</label>
+            <select id="filterSeverity" class="form-select" onchange="loadLogs()">
+              <option value="">Tümü</option>
+              <option value="critical">Kritik</option>
+              <option value="warning">Uyarı</option>
+              <option value="info">Bilgi</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label">Son</label>
+            <select id="filterDays" class="form-select" onchange="loadLogs()">
+              <option value="1">24 saat</option>
+              <option value="7" selected>7 gün</option>
+              <option value="30">30 gün</option>
+              <option value="90">90 gün</option>
+              <option value="">Tümü</option>
+            </select>
+          </div>
+          <button onclick="loadLogs()" class="btn btn-primary">🔄 Yenile</button>
+        </div>
+
+        <div id="logsList"><div class="loading">Yükleniyor...</div></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    let logs = [];
+
+    (async () => {
+      const authed = await App.init('security');
+      if (!authed) return;
+      await loadStats();
+      await loadLogs();
+    })();
+
+    async function loadStats() {
+      try {
+        const days = parseInt(document.getElementById('filterDays').value) || 365;
+        const since = new Date();
+        since.setDate(since.getDate() - days);
+
+        const { data, error } = await supabaseClient
+          .from('security_logs')
+          .select('severity')
+          .gte('created_at', since.toISOString());
+
+        if (error) throw error;
+
+        const total = data?.length || 0;
+        const critical = data?.filter(x => x.severity === 'critical').length || 0;
+        const warning = data?.filter(x => x.severity === 'warning').length || 0;
+        const info = data?.filter(x => x.severity === 'info').length || 0;
+
+        document.getElementById('statTotal').textContent = total.toLocaleString('tr-TR');
+        document.getElementById('statCritical').textContent = critical.toLocaleString('tr-TR');
+        document.getElementById('statWarning').textContent = warning.toLocaleString('tr-TR');
+        document.getElementById('statInfo').textContent = info.toLocaleString('tr-TR');
+      } catch (error) {
+        console.error('Stats error:', error);
+      }
+    }
+
+    async function loadLogs() {
+      const container = document.getElementById('logsList');
+      container.innerHTML = '<div class="loading">Yükleniyor...</div>';
+
+      try {
+        let query = supabaseClient
+          .from('security_logs')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(200);
+
+        const type = document.getElementById('filterType').value;
+        const severity = document.getElementById('filterSeverity').value;
+        const days = parseInt(document.getElementById('filterDays').value);
+
+        if (type) query = query.eq('event_type', type);
+        if (severity) query = query.eq('severity', severity);
+        if (days) {
+          const since = new Date();
+          since.setDate(since.getDate() - days);
+          query = query.gte('created_at', since.toISOString());
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        logs = data || [];
+        await loadStats();
+        renderLogs();
+      } catch (error) {
+        container.innerHTML = '<div class="alert alert-error">Hata: ' + Security.escapeHtml(error.message) + '</div>';
+      }
+    }
+    window.loadLogs = loadLogs;
+
+    function renderLogs() {
+      const container = document.getElementById('logsList');
+
+      if (logs.length === 0) {
+        container.innerHTML = `
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-icon">🛡️</div>
+              <div>Bu kriterlere uygun güvenlik olayı bulunamadı</div>
+              <div style="color: var(--text-muted); margin-top: 8px; font-size: 13px;">Sistem güvenli görünüyor</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const eventLabels = {
+        login_success: '✅ Başarılı Giriş',
+        login_failed: '❌ Başarısız Giriş',
+        login_suspicious: '⚠️ Şüpheli Giriş',
+        logout: '🚪 Çıkış',
+        unauthorized_login_attempt: '🚫 Yetkisiz Erişim',
+        suspicious_input: '⚠️ Şüpheli Input'
+      };
+
+      container.innerHTML = `
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Tarih</th>
+                <th>Olay</th>
+                <th>Önem</th>
+                <th>IP Adresi</th>
+                <th>Kullanıcı</th>
+                <th>Detay</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${logs.map(log => `
+                <tr>
+                  <td style="white-space: nowrap;">${App.formatDate(log.created_at, true)}</td>
+                  <td>${Security.escapeHtml(eventLabels[log.event_type] || log.event_type)}</td>
+                  <td><span class="severity-badge severity-${log.severity || 'info'}">${log.severity || 'info'}</span></td>
+                  <td style="font-family: monospace; font-size: 12px;">${Security.escapeHtml(log.ip_address || '-')}</td>
+                  <td style="font-size: 12px;">${Security.escapeHtml(log.metadata?.email || log.user_id?.substring(0,8) || '-')}</td>
+                  <td class="log-details" title="${Security.escapeHtml(JSON.stringify(log.metadata || {}))}">${Security.escapeHtml(JSON.stringify(log.metadata || {}).substring(0, 80))}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div style="text-align: center; color: var(--text-muted); margin-top: 16px; font-size: 12px;">
+          Son ${logs.length} kayıt gösteriliyor
+        </div>
+      `;
+    }
+
+    function exportLogs() {
+      if (logs.length === 0) {
+        App.toast('Dışa aktarılacak veri yok', 'warning');
+        return;
+      }
+
+      const headers = ['Tarih', 'Olay', 'Önem', 'IP', 'Kullanıcı', 'User-Agent', 'Sayfa', 'Detay'];
+      const rows = logs.map(log => [
+        log.created_at,
+        log.event_type,
+        log.severity,
+        log.ip_address || '',
+        log.metadata?.email || log.user_id || '',
+        log.user_agent || '',
+        log.request_path || '',
+        JSON.stringify(log.metadata || {}).replace(/"/g, '""')
+      ]);
+
+      const csv = [
+        headers.join(','),
+        ...rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      ].join('\n');
+
+      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `guvenlik-loglari-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      App.toast('CSV indirildi', 'success');
+    }
+    window.exportLogs = exportLogs;
+  </script>
+</body>
+</html>

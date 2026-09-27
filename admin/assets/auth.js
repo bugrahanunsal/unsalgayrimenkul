@@ -89,7 +89,7 @@ const Auth = {
   },
 
   /**
-   * 🔓 Logout
+   * 🔓 Logout - Ana siteye yönlendir
    */
   async logout() {
     try {
@@ -106,11 +106,11 @@ const Auth = {
 
       await supabaseClient.auth.signOut();
 
-      // Redirect to login
-      window.location.href = '/admin/login.html';
+      // Ana siteye dön (login yapmak isterse oradan modal ile yapar)
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
-      window.location.href = '/admin/login.html';
+      window.location.href = '/';
     }
   },
 
@@ -141,20 +141,23 @@ const Auth = {
 
   /**
    * 🔒 Require Auth (Page Protection)
+   * Session yoksa ana siteye yönlendirir (login modal orada)
    */
   async requireAuth(minRole = 'admin') {
     const validation = await Security.validateSession();
 
     if (!validation.valid) {
       console.warn('Auth failed:', validation.reason);
-      window.location.href = '/admin/login.html?reason=' + encodeURIComponent(validation.reason);
+      // Ana siteye yönlendir, orada login modal açılsın
+      window.location.href = '/?login=1&redirect=' + encodeURIComponent(window.location.pathname);
       return false;
     }
 
     const roleCheck = await Security.checkRole(minRole);
     if (!roleCheck.hasRole) {
-      alert('Bu sayfaya erişim yetkiniz yok');
-      window.location.href = '/admin/index.html';
+      // Admin değil - ana siteye yönlendir
+      alert('Bu sayfaya erişim yetkiniz yok. Ana sayfaya yönlendiriliyorsunuz.');
+      window.location.href = '/';
       return false;
     }
 

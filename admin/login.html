@@ -4,167 +4,60 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Admin Girişi - İsmail Ünsal Emlak</title>
-
-  <!-- Security Headers -->
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="DENY">
-  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-
-  <link rel="stylesheet" href="/admin/assets/admin.css">
-
-  <!-- Supabase JS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body class="login-page">
-
-  <div class="login-container">
-    <div class="login-header">
-      <div class="login-logo">TURYAP</div>
-      <div class="login-subtitle">Yönetim Paneli</div>
-    </div>
-
-    <form id="loginForm" class="login-form" autocomplete="on">
-      <div id="alertBox"></div>
-
-      <div class="form-group">
-        <label class="form-label" for="email">
-          E-posta Adresi <span class="required">*</span>
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          class="form-input"
-          placeholder="ornek@gmail.com"
-          required
-          autocomplete="email"
-          maxlength="100"
-        >
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="password">
-          Şifre <span class="required">*</span>
-        </label>
-        <div class="password-wrapper">
-          <input
-            type="password"
-            id="password"
-            name="password"
-            class="form-input"
-            placeholder="••••••••"
-            required
-            autocomplete="current-password"
-            minlength="8"
-            maxlength="128"
-          >
-          <button type="button" class="password-toggle" id="togglePassword" aria-label="Şifreyi göster/gizle">
-            👁️
-          </button>
-        </div>
-      </div>
-
-      <button type="submit" class="btn btn-primary" id="loginBtn">
-        <span id="btnText">Giriş Yap</span>
-        <span id="btnLoader" class="spinner" style="display: none;"></span>
-      </button>
-    </form>
-
-    <div class="login-footer">
-      <div class="security-badge">
-        🛡️ SSL Şifreli & KVKK Uyumlu
-      </div>
-      <div>İsmail Ünsal Emlak © 2026 | Yalova</div>
-    </div>
-  </div>
-
-  <!-- Scripts -->
-  <script src="/admin/assets/supabase-config.js"></script>
-  <script src="/admin/assets/security.js"></script>
-  <script src="/admin/assets/auth.js"></script>
-
+  <title>Giriş - İsmail Ünsal Gayrimenkul</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta http-equiv="refresh" content="0; url=/?login=1">
   <script>
-    // Password toggle
-    document.getElementById('togglePassword').addEventListener('click', () => {
-      const input = document.getElementById('password');
-      input.type = input.type === 'password' ? 'text' : 'password';
-    });
+    // Anında ana siteye yönlendir - login modal orada açılsın
+    const params = new URLSearchParams(window.location.search);
+    const reason = params.get('reason') || '';
+    const redirect = params.get('redirect') || '/admin/index.html';
 
-    // URL'den reason parametresini al (session expired vb.)
-    const urlParams = new URLSearchParams(window.location.search);
-    const reason = urlParams.get('reason');
-    if (reason) {
-      showAlert('warning', decodeURIComponent(reason));
-    }
-
-    // Zaten giriş yapmışsa dashboard'a yönlendir
-    (async () => {
-      const validation = await Security.validateSession();
-      if (validation.valid) {
-        window.location.href = '/admin/index.html';
-      }
-    })();
-
-    // Alert göster
-    function showAlert(type, message) {
-      const box = document.getElementById('alertBox');
-      const icons = { error: '❌', success: '✅', warning: '⚠️', info: 'ℹ️' };
-      box.innerHTML = `
-        <div class="alert alert-${type}">
-          <span>${icons[type] || ''}</span>
-          <span>${Security.escapeHtml(message)}</span>
-        </div>
-      `;
-      setTimeout(() => { box.innerHTML = ''; }, 5000);
-    }
-
-    // Login form submit
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const btn = document.getElementById('loginBtn');
-      const btnText = document.getElementById('btnText');
-      const btnLoader = document.getElementById('btnLoader');
-
-      // UI Loading
-      btn.disabled = true;
-      btnText.textContent = 'Giriş yapılıyor...';
-      btnLoader.style.display = 'inline-block';
-
-      try {
-        const result = await Auth.login(email, password);
-
-        if (result.success) {
-          btnText.textContent = 'Giriş başarılı, yönlendiriliyor...';
-          showAlert('success', `Hoş geldiniz! ${result.user.email}`);
-
-          setTimeout(() => {
-            window.location.href = '/admin/index.html';
-          }, 1000);
-        } else {
-          showAlert('error', result.error);
-          btn.disabled = false;
-          btnText.textContent = 'Giriş Yap';
-          btnLoader.style.display = 'none';
-        }
-      } catch (error) {
-        console.error('Login error:', error);
-        showAlert('error', 'Bir hata oluştu, tekrar deneyin');
-        btn.disabled = false;
-        btnText.textContent = 'Giriş Yap';
-        btnLoader.style.display = 'none';
-      }
-    });
-
-    // Enter tuşu ile submit
-    document.getElementById('password').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        document.getElementById('loginForm').requestSubmit();
-      }
-    });
+    // Ana siteye ?login=1 parametresi ile git, modal orada açılacak
+    const target = '/?login=1&redirect=' + encodeURIComponent(redirect);
+    window.location.replace(target);
   </script>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: white;
+    }
+    .loading-container {
+      text-align: center;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,255,255,0.2);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    p {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    a {
+      color: #60a5fa;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Ana sayfaya yönlendiriliyorsunuz...</p>
+    <p style="margin-top: 8px; font-size: 12px;"><a href="/?login=1">Yönlendirmezse tıklayın</a></p>
+  </div>
 </body>
 </html>

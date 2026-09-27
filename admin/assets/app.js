@@ -35,21 +35,39 @@ const App = {
     const initial = (user?.profile?.full_name || user?.email || 'A').charAt(0).toUpperCase();
     const name = user?.profile?.full_name || user?.email || 'Admin';
 
+    // SVG Icons
+    const icons = {
+      dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>',
+      properties: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+      add: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
+      team: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+      blog: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
+      site: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>',
+      messages: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+      subscribers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+      campaigns: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
+      security: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+      audit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>',
+      admins: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+      settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+      logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'
+    };
+
     // Sidebar
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
       sidebar.innerHTML = `
         <div class="sidebar-header">
           <a href="/admin/index.html" style="text-decoration: none; color: inherit; display: block;">
-            <div class="sidebar-logo" style="font-size: 18px; letter-spacing: 1px;">İSMAİL <span style="color: #d4a54e;">ÜNSAL</span></div>
-            <div class="sidebar-subtitle" style="font-size: 10px; letter-spacing: 2px; margin-top: 2px;">GAYRİMENKUL YÖNETİM</div>
+            <div class="sidebar-logo">İSMAİL <span>ÜNSAL</span></div>
+            <div class="sidebar-subtitle">GAYRİMENKUL YÖNETİM</div>
           </a>
         </div>
         <nav class="sidebar-nav">
           <div class="nav-section">
             <div class="nav-section-title">Ana Menü</div>
             <a href="/admin/index.html" class="nav-item ${activePage === 'dashboard' ? 'active' : ''}">
-              <span class="nav-icon">📊</span>
+              <span class="nav-icon">${icons.dashboard}</span>
               <span>Dashboard</span>
             </a>
           </div>
@@ -57,23 +75,23 @@ const App = {
           <div class="nav-section">
             <div class="nav-section-title">İçerik Yönetimi</div>
             <a href="/admin/properties.html" class="nav-item ${activePage === 'properties' ? 'active' : ''}">
-              <span class="nav-icon">🏡</span>
+              <span class="nav-icon">${icons.properties}</span>
               <span>İlanlar</span>
             </a>
             <a href="/admin/property-new.html" class="nav-item ${activePage === 'property-new' ? 'active' : ''}">
-              <span class="nav-icon">➕</span>
+              <span class="nav-icon">${icons.add}</span>
               <span>Yeni İlan</span>
             </a>
             <a href="/admin/team.html" class="nav-item ${activePage === 'team' ? 'active' : ''}">
-              <span class="nav-icon">👥</span>
+              <span class="nav-icon">${icons.team}</span>
               <span>Ekip</span>
             </a>
             <a href="/admin/blog.html" class="nav-item ${activePage === 'blog' ? 'active' : ''}">
-              <span class="nav-icon">📝</span>
+              <span class="nav-icon">${icons.blog}</span>
               <span>Blog</span>
             </a>
             <a href="/admin/site-content.html" class="nav-item ${activePage === 'site-content' ? 'active' : ''}">
-              <span class="nav-icon">🎨</span>
+              <span class="nav-icon">${icons.site}</span>
               <span>Site İçeriği</span>
             </a>
           </div>
@@ -81,17 +99,17 @@ const App = {
           <div class="nav-section">
             <div class="nav-section-title">Müşteriler & Email</div>
             <a href="/admin/leads.html" class="nav-item ${activePage === 'leads' ? 'active' : ''}">
-              <span class="nav-icon">💬</span>
+              <span class="nav-icon">${icons.messages}</span>
               <span>Mesajlar</span>
               <span class="nav-badge" id="leadsBadge" style="display:none;">0</span>
             </a>
             <a href="/admin/subscribers.html" class="nav-item ${activePage === 'subscribers' ? 'active' : ''}">
-              <span class="nav-icon">📧</span>
+              <span class="nav-icon">${icons.subscribers}</span>
               <span>Aboneler</span>
               <span class="nav-badge" id="subscribersBadge" style="display:none;">0</span>
             </a>
             <a href="/admin/campaigns.html" class="nav-item ${activePage === 'campaigns' ? 'active' : ''}">
-              <span class="nav-icon">📨</span>
+              <span class="nav-icon">${icons.campaigns}</span>
               <span>Email Kampanyaları</span>
             </a>
           </div>
@@ -100,15 +118,15 @@ const App = {
           <div class="nav-section">
             <div class="nav-section-title">Sistem</div>
             <a href="/admin/security-logs.html" class="nav-item ${activePage === 'security' ? 'active' : ''}">
-              <span class="nav-icon">🛡️</span>
+              <span class="nav-icon">${icons.security}</span>
               <span>Güvenlik Logları</span>
             </a>
             <a href="/admin/audit-log.html" class="nav-item ${activePage === 'audit' ? 'active' : ''}">
-              <span class="nav-icon">📜</span>
+              <span class="nav-icon">${icons.audit}</span>
               <span>Değişiklik Geçmişi</span>
             </a>
             <a href="/admin/admins.html" class="nav-item ${activePage === 'admins' ? 'active' : ''}">
-              <span class="nav-icon">👤</span>
+              <span class="nav-icon">${icons.admins}</span>
               <span>Adminler</span>
             </a>
           </div>
@@ -117,11 +135,11 @@ const App = {
           <div class="nav-section">
             <div class="nav-section-title">Hesap</div>
             <a href="/admin/settings.html" class="nav-item ${activePage === 'settings' ? 'active' : ''}">
-              <span class="nav-icon">⚙️</span>
+              <span class="nav-icon">${icons.settings}</span>
               <span>Ayarlar</span>
             </a>
-            <a href="#" onclick="Auth.logout(); return false;" class="nav-item">
-              <span class="nav-icon">🚪</span>
+            <a href="#" onclick="Auth.logout(); return false;" class="nav-item nav-logout">
+              <span class="nav-icon">${icons.logout}</span>
               <span>Çıkış Yap</span>
             </a>
           </div>

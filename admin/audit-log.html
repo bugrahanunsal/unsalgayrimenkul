@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Değişiklik Geçmişi - Admin Panel</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .action-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .action-insert { background: #dcfce7; color: #166534; }
+    .action-update { background: #dbeafe; color: #1e40af; }
+    .action-delete { background: #fee2e2; color: #991b1b; }
+    .filter-bar {
+      background: white;
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+    @media (max-width: 768px) {
+      .filter-bar { grid-template-columns: 1fr; }
+    }
+    .change-preview {
+      max-width: 350px;
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .timeline-item {
+      background: white;
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
+      border-left: 4px solid var(--info);
+      box-shadow: var(--shadow-sm);
+    }
+    .timeline-item.action-insert { border-color: var(--success); }
+    .timeline-item.action-update { border-color: var(--info); }
+    .timeline-item.action-delete { border-color: var(--danger); }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">📜 Değişiklik Geçmişi</h1>
+        <div class="topbar-actions">
+          <button onclick="loadHistory()" class="btn btn-outline btn-sm">🔄 Yenile</button>
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="filter-bar">
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label">Tablo</label>
+            <select id="filterTable" class="form-select" onchange="loadHistory()">
+              <option value="">Tüm Tablolar</option>
+              <option value="properties">İlanlar</option>
+              <option value="blog_posts">Blog Yazıları</option>
+              <option value="team_members">Ekip Üyeleri</option>
+              <option value="site_content">Site İçeriği</option>
+              <option value="admin_users">Adminler</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label">İşlem</label>
+            <select id="filterAction" class="form-select" onchange="loadHistory()">
+              <option value="">Tümü</option>
+              <option value="INSERT">Ekleme</option>
+              <option value="UPDATE">Güncelleme</option>
+              <option value="DELETE">Silme</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label">Son</label>
+            <select id="filterDays" class="form-select" onchange="loadHistory()">
+              <option value="1">24 saat</option>
+              <option value="7" selected>7 gün</option>
+              <option value="30">30 gün</option>
+              <option value="90">90 gün</option>
+              <option value="">Tümü</option>
+            </select>
+          </div>
+          <button onclick="loadHistory()" class="btn btn-primary">Filtrele</button>
+        </div>
+
+        <div id="historyList"><div class="loading">Yükleniyor...</div></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Detay Modal -->
+  <div id="detailModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: white; border-radius: var(--radius-lg); max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto;">
+      <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 18px; font-weight: 700;">Değişiklik Detayı</div>
+        <button onclick="closeDetail()" style="background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+      </div>
+      <div id="detailContent" style="padding: 20px;"></div>
+    </div>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js"></script>
+  <script src="/admin/assets/security.js"></script>
+  <script src="/admin/assets/auth.js"></script>
+  <script src="/admin/assets/app.js"></script>
+
+  <script>
+    let history = [];
+
+    (async () => {
+      const authed = await App.init('audit');
+      if (!authed) return;
+      await loadHistory();
+    })();
+
+    async function loadHistory() {
+      const container = document.getElementById('historyList');
+      container.innerHTML = '<div class="loading">Yükleniyor...</div>';
+
+      try {
+        let query = supabaseClient
+          .from('audit_log')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(200);
+
+        const table = document.getElementById('filterTable').value;
+        const action = document.getElementById('filterAction').value;
+        const days = parseInt(document.getElementById('filterDays').value);
+
+        if (table) query = query.eq('table_name', table);
+        if (action) query = query.eq('action', action);
+        if (days) {
+          const since = new Date();
+          since.setDate(since.getDate() - days);
+          query = query.gte('created_at', since.toISOString());
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          if (error.message.includes('does not exist') || error.code === '42P01') {
+            container.innerHTML = `
+              <div class="card">
+                <div class="empty-state">
+                  <div class="empty-icon">📜</div>
+                  <div>Audit log tablosu henüz oluşturulmamış</div>
+                  <div style="color: var(--text-muted); margin-top: 8px; font-size: 13px;">
+                    Değişiklikleri takip etmek için SQL migration çalıştırılmalı.<br>
+                    <code style="background: var(--bg); padding: 2px 6px; border-radius: 4px; font-size: 12px;">05_audit_log.sql</code>
+                  </div>
+                </div>
+              </div>
+            `;
+            return;
+          }
+          throw error;
+        }
+
+        history = data || [];
+        renderHistory();
+      } catch (error) {
+        container.innerHTML = '<div class="alert alert-error">Hata: ' + Security.escapeHtml(error.message) + '</div>';
+      }
+    }
+    window.loadHistory = loadHistory;
+
+    function renderHistory() {
+      const container = document.getElementById('historyList');
+
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-icon">📜</div>
+              <div>Bu kriterlere uygun değişiklik bulunamadı</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const tableLabels = {
+        properties: '🏡 İlanlar',
+        blog_posts: '📝 Blog',
+        team_members: '👥 Ekip',
+        site_content: '🎨 Site İçeriği',
+        admin_users: '👤 Adminler'
+      };
+
+      const actionLabels = {
+        INSERT: 'Ekleme',
+        UPDATE: 'Güncelleme',
+        DELETE: 'Silme'
+      };
+
+      container.innerHTML = history.map((item, idx) => `
+        <div class="timeline-item action-${item.action?.toLowerCase()}" onclick="showDetail(${idx})" style="cursor: pointer;">
+          <div style="display: flex; justify-content: space-between; align-items: start; gap: 12px;">
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px; flex-wrap: wrap;">
+                <span class="action-badge action-${item.action?.toLowerCase()}">${actionLabels[item.action] || item.action}</span>
+                <span style="font-weight: 600;">${tableLabels[item.table_name] || item.table_name}</span>
+              </div>
+              <div style="font-size: 12px; color: var(--text-muted);">
+                Kayıt ID: <code>${Security.escapeHtml(item.record_id?.substring(0, 8) || '-')}</code>
+                • ${Security.escapeHtml(item.admin_email || 'Sistem')}
+              </div>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">
+              ${App.formatDate(item.created_at, true)}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function showDetail(idx) {
+      const item = history[idx];
+      if (!item) return;
+
+      const oldData = item.old_data ? JSON.stringify(item.old_data, null, 2) : '';
+      const newData = item.new_data ? JSON.stringify(item.new_data, null, 2) : '';
+
+      let html = `
+        <div style="display: grid; gap: 16px;">
+          <div>
+            <strong>Tablo:</strong> ${Security.escapeHtml(item.table_name)}
+          </div>
+          <div>
+            <strong>İşlem:</strong> <span class="action-badge action-${item.action?.toLowerCase()}">${item.action}</span>
+          </div>
+          <div>
+            <strong>Yapan:</strong> ${Security.escapeHtml(item.admin_email || 'Sistem')}
+          </div>
+          <div>
+            <strong>Tarih:</strong> ${App.formatDate(item.created_at, true)}
+          </div>
+      `;
+
+      if (oldData) {
+        html += `
+          <div>
+            <strong>Eski Değer:</strong>
+            <pre style="background: #fef2f2; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px; margin-top: 8px;">${Security.escapeHtml(oldData)}</pre>
+          </div>
+        `;
+      }
+
+      if (newData) {
+        html += `
+          <div>
+            <strong>Yeni Değer:</strong>
+            <pre style="background: #f0fdf4; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px; margin-top: 8px;">${Security.escapeHtml(newData)}</pre>
+          </div>
+        `;
+      }
+
+      html += '</div>';
+
+      document.getElementById('detailContent').innerHTML = html;
+      document.getElementById('detailModal').style.display = 'flex';
+    }
+    window.showDetail = showDetail;
+
+    function closeDetail() {
+      document.getElementById('detailModal').style.display = 'none';
+    }
+    window.closeDetail = closeDetail;
+  </script>
+</body>
+</html>
