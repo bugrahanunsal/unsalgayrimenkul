@@ -45,19 +45,41 @@
     return div.innerHTML;
   }
 
-  // Kart CSS güvence: grid'in kart alt-öğeleri kartlaştırmasını önle
+  // Kart CSS güvence: !important ile force block layout
   function injectCardSafeCSS() {
     if (document.getElementById('iu-card-safe-css')) return;
     const s = document.createElement('style');
     s.id = 'iu-card-safe-css';
     s.textContent = `
-      .listings-grid-pillar > .listing-card-pillar {
-        display: block;
+      .listings-grid-pillar {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+        gap: 28px !important;
       }
-      .listings-grid-pillar > .listing-card-pillar > .listing-image-pillar,
+      .listings-grid-pillar > .listing-card-pillar {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        background: #FFFFFF !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+        box-shadow: 0 8px 24px rgba(10,42,94,0.08) !important;
+        border: 1px solid #E5E7EB !important;
+      }
+      .listings-grid-pillar > .listing-card-pillar > .listing-image-pillar {
+        display: block !important;
+        width: 100% !important;
+        height: 240px !important;
+        position: relative !important;
+        background-size: cover !important;
+        background-position: center !important;
+        flex-shrink: 0 !important;
+      }
       .listings-grid-pillar > .listing-card-pillar > .listing-content-pillar {
-        display: block;
-        width: 100%;
+        display: block !important;
+        width: 100% !important;
+        padding: 22px !important;
+        flex: 1 !important;
       }
     `;
     document.head.appendChild(s);
@@ -208,15 +230,15 @@
     const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 30 * 86400000;
     const typeUpper = (p.tip || 'satilik').toUpperCase();
 
-    // KART root
+    // KART root - INLINE styles for max override protection
     const card = document.createElement('div');
     card.className = 'listing-card-pillar';
-    card.style.display = 'block'; // Grid sub-item override
+    card.style.cssText = 'display:flex !important; flex-direction:column !important; width:100%; background:#FFFFFF; border-radius:14px; overflow:hidden; box-shadow:0 8px 24px rgba(10,42,94,0.08); border:1px solid #E5E7EB;';
 
-    // IMAGE
+    // IMAGE - INLINE styles
     const imgDiv = document.createElement('div');
     imgDiv.className = 'listing-image-pillar';
-    imgDiv.style.backgroundImage = 'url("' + img + '")';
+    imgDiv.style.cssText = 'display:block; width:100%; height:240px; position:relative; background-image:url("' + img + '"); background-size:cover; background-position:center; flex-shrink:0;';
 
     if (p.one_cikan) {
       const t = document.createElement('span');
@@ -239,9 +261,10 @@
 
     card.appendChild(imgDiv);
 
-    // CONTENT
+    // CONTENT - INLINE styles for width guarantee
     const contentDiv = document.createElement('div');
     contentDiv.className = 'listing-content-pillar';
+    contentDiv.style.cssText = 'display:block; width:100%; padding:22px; flex:1;';
 
     // Location
     const loc = document.createElement('div');
