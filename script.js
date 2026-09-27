@@ -40,7 +40,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20260927-v3';
+  const SITE_VERSION = '20260927-v4';
 
   async function loadAllScripts() {
     try {
@@ -50,8 +50,11 @@
       // 2. Auth widget (Giriş/Hesabım butonları + modal)
       await loadScript('/subscribe-widget.js?v=' + SITE_VERSION);
 
-      // 3. Frontend database entegrasyonu (ilan listesi, FAQ, kategori sayaçları)
+      // 3. Frontend database entegrasyonu (ilan listesi, kategori sayaçları)
       await loadScript('/frontend-supabase.js?v=' + SITE_VERSION);
+
+      // 4. FAQ (SEO ve SSS sayfası için)
+      await loadScript('/faq-yalova-emlak.js?v=' + SITE_VERSION);
 
       console.log('[SiteLoader] Tüm scriptler yüklendi ✓ (v=' + SITE_VERSION + ')');
     } catch (err) {

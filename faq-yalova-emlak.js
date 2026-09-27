@@ -200,33 +200,41 @@
     return d.innerHTML;
   }
 
-  // Helper: keyword ve fiyat highlight
+  // Helper: keyword, fiyat, bölge ve yüzde highlight — çok renkli, çok belirgin
   function highlightKeywords(html) {
-    // Bölge/marka adları — koyu lacivert bold
-    html = html.replace(/\b(TURYAP|Yalova|Çınarcık|Termal|Altınova|Armutlu|Akköy|Merkez)\b/g,
-      '<strong style="color:#0A2A5E;font-weight:700;">$1</strong>');
-    // Büyük fiyatlar (örn: 5.000.000 ₺) — turuncu highlight
+    // 1) Büyük fiyat aralıkları (5.000.000 ₺ - 15.000.000 ₺) → altın pill
+    html = html.replace(/(\d{1,3}(?:\.\d{3})+)\s*₺\s*-\s*(\d{1,3}(?:\.\d{3})+)\s*₺/g,
+      '<span class="iu-price-range">💰 $1 ₺ – $2 ₺</span>');
+    // 2) Tek büyük fiyat (5.000.000 ₺) → altın pill
     html = html.replace(/(\d{1,3}(?:\.\d{3})+)\s*₺/g,
-      '<strong style="color:#F49B1C;font-weight:800;white-space:nowrap;">$1 ₺</strong>');
-    // m² fiyatları
-    html = html.replace(/(\d{1,3}(?:[.,]\d+)?)\s*(₺\/m²|TL\/m²)/g,
-      '<strong style="color:#F49B1C;font-weight:800;white-space:nowrap;">$1 $2</strong>');
-    // Yüzdeler — yeşil
+      '<span class="iu-price">$1 ₺</span>');
+    // 3) m² fiyatları (5.000-10.000 ₺/m²) → altın pill
+    html = html.replace(/(\d[\d.,–\-\s]*)\s*(?:₺|TL)\s*\/\s*m²/g,
+      '<span class="iu-price-m2">$1 ₺/m²</span>');
+    // 4) m² alan miktarı (5.000 m²)
+    html = html.replace(/\b(\d{1,3}(?:\.\d{3})*|\d+)\s*m²/g,
+      '<span class="iu-area">$1 m²</span>');
+    // 5) Yüzde aralıkları (%150-180) → yeşil pill
     html = html.replace(/(%\d+(?:[-–]\d+)?)/g,
-      '<strong style="color:#059669;font-weight:800;">$1</strong>');
-    // Yıl aralıkları/mesafeler
-    html = html.replace(/\b(\d+\s*(?:yıl|yıllık|saat|dakika|m²|km))\b/g,
-      '<strong style="color:#0A2A5E;font-weight:600;">$1</strong>');
+      '<span class="iu-percent">📈 $1</span>');
+    // 6) Bölge isimleri → mavi pill (daha belirgin)
+    html = html.replace(/\b(TURYAP)\b/g,
+      '<span class="iu-brand">$1</span>');
+    html = html.replace(/\b(Yalova|Çınarcık|Termal|Altınova|Armutlu|Akköy|Merkez)\b/g,
+      '<span class="iu-region">📍 $1</span>');
+    // 7) Yıl bilgisi (2018 sonrası, 5 yıllık)
+    html = html.replace(/\b(\d{4})\s+(sonrası|öncesi)\b/g,
+      '<strong style="color:#7c3aed;font-weight:700;">$1 $2</strong>');
+    html = html.replace(/\b(\d+)\s*(yıllık|saat|dakika|km)\b/g,
+      '<strong style="color:#0A2A5E;font-weight:700;">$1 $2</strong>');
     return html;
   }
 
   // Numaralı liste parse: "1) A, 2) B, 3) C" — parantez içindeki virgülleri korur
   function parseNumberedList(text) {
-    // Split at ", N)" where N is digits, but keep N) in the next chunk
     const parts = text.split(/,\s*(?=\d+\))/);
     const items = [];
     let intro = '';
-
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i].trim();
       const m = part.match(/^(\d+)\)\s*(.+)$/s);
@@ -245,7 +253,6 @@
     const escaped = esc(text);
 
     // Numaralı liste mi? En az 3 madde varsa
-    // Önce introyu ayır (ilk "N)"den önceki kısım)
     const firstNumMatch = escaped.match(/(\d+)\)/);
     if (firstNumMatch) {
       const introEnd = firstNumMatch.index;
@@ -255,37 +262,38 @@
       const items = parsed.items;
 
       if (items.length >= 3) {
-        let html = '';
+        let html = '<div class="iu-answer">';
         if (intro) {
-          html += '<p style="margin:0 0 18px 0;line-height:1.7;color:#374151;">' +
-            highlightKeywords(intro) + ':</p>';
+          html += '<div class="iu-intro-box"><i class="fa-solid fa-lightbulb"></i><p>' +
+            highlightKeywords(intro) + '</p></div>';
         }
-        html += '<ol style="list-style:none;counter-reset:iu-faq-cnt;padding:0;margin:0 0 4px 0;display:grid;gap:10px;">';
+        html += '<ol class="iu-num-list">';
         items.forEach(it => {
-          html += '<li style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;background:linear-gradient(135deg,rgba(244,155,28,0.06) 0%,rgba(244,155,28,0.02) 100%);border-left:4px solid #F49B1C;border-radius:10px;transition:transform 0.2s;">';
-          html += '<span style="flex-shrink:0;width:28px;height:28px;background:linear-gradient(135deg,#F49B1C,#d4831a);color:#FFF;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;box-shadow:0 2px 6px rgba(244,155,28,0.35);">' + esc(it.n) + '</span>';
-          html += '<span style="flex:1;color:#1f2937;line-height:1.6;padding-top:3px;">' + highlightKeywords(it.text) + '</span>';
+          html += '<li class="iu-num-item">';
+          html += '<span class="iu-num-badge">' + esc(it.n) + '</span>';
+          html += '<div class="iu-num-text">' + highlightKeywords(it.text) + '</div>';
           html += '</li>';
         });
         html += '</ol>';
+        html += '</div>';
         return html;
       }
     }
 
     // Düz paragraf — highlight uygula
-    // Cümlelere göre böl (uzun paragrafları 2-3 cümlelik gruplara ayır)
+    // Cümlelere göre böl (2'şer cümlelik grup)
     const sentences = escaped.split(/(?<=[.!?])\s+(?=[A-ZÇĞİÖŞÜ])/);
+    let html = '<div class="iu-answer">';
     if (sentences.length >= 4) {
-      // 2'şer cümlelik gruplara böl
-      let html = '';
       for (let i = 0; i < sentences.length; i += 2) {
         const group = sentences.slice(i, i + 2).join(' ');
-        html += '<p style="margin:0 0 12px 0;line-height:1.75;color:#374151;">' +
-          highlightKeywords(group) + '</p>';
+        html += '<p class="iu-para">' + highlightKeywords(group) + '</p>';
       }
-      return html;
+    } else {
+      html += '<p class="iu-para">' + highlightKeywords(escaped) + '</p>';
     }
-    return '<p style="margin:0;line-height:1.75;color:#374151;">' + highlightKeywords(escaped) + '</p>';
+    html += '</div>';
+    return html;
   }
 
   function renderFAQs(container, faqs, options = {}) {
@@ -374,16 +382,173 @@
           box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
         }
         .iu-faq-a {
-          padding: 4px 26px 26px;
+          padding: 8px 26px 26px;
           color: #374151;
           line-height: 1.75;
           font-size: 15px;
           border-top: 1px solid rgba(244, 155, 28, 0.15);
           margin-top: -4px;
-          padding-top: 20px;
-          background: linear-gradient(180deg, rgba(244, 155, 28, 0.02), transparent);
+          padding-top: 22px;
+          background: linear-gradient(180deg, rgba(244, 155, 28, 0.03), rgba(10, 42, 94, 0.01));
         }
-        .iu-faq-a p { margin: 0 0 12px 0; }
+        /* ==== ANSWER RICH FORMATTING ==== */
+        .iu-answer {
+          font-size: 15px;
+          color: #1f2937;
+          line-height: 1.75;
+        }
+        .iu-answer .iu-para {
+          margin: 0 0 14px 0;
+          padding: 0;
+        }
+        .iu-answer .iu-para:last-child { margin-bottom: 0; }
+
+        /* Intro/tip kutucuğu */
+        .iu-intro-box {
+          display: flex; gap: 14px; align-items: flex-start;
+          padding: 16px 18px;
+          background: linear-gradient(135deg, rgba(10, 42, 94, 0.05) 0%, rgba(244, 155, 28, 0.05) 100%);
+          border-left: 4px solid #0A2A5E;
+          border-radius: 10px;
+          margin-bottom: 18px;
+        }
+        .iu-intro-box i {
+          color: #F49B1C;
+          font-size: 20px;
+          margin-top: 2px;
+          flex-shrink: 0;
+        }
+        .iu-intro-box p {
+          margin: 0;
+          color: #1f2937;
+          font-weight: 500;
+          line-height: 1.6;
+        }
+
+        /* Numaralı liste */
+        .iu-num-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: grid;
+          gap: 12px;
+          counter-reset: iu-cnt;
+        }
+        .iu-num-item {
+          display: flex;
+          gap: 16px;
+          align-items: flex-start;
+          padding: 16px 18px;
+          background: #FFFFFF;
+          border: 1px solid #E5E7EB;
+          border-left: 4px solid #F49B1C;
+          border-radius: 12px;
+          transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+        .iu-num-item:hover {
+          transform: translateX(4px);
+          box-shadow: 0 6px 18px rgba(10, 42, 94, 0.08);
+          border-left-color: #d4831a;
+        }
+        .iu-num-badge {
+          flex-shrink: 0;
+          width: 34px; height: 34px;
+          background: linear-gradient(135deg, #F49B1C 0%, #d4831a 100%);
+          color: #FFFFFF;
+          border-radius: 50%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 800;
+          font-size: 14px;
+          box-shadow: 0 3px 10px rgba(244, 155, 28, 0.4);
+        }
+        .iu-num-text {
+          flex: 1;
+          color: #1f2937;
+          line-height: 1.65;
+          padding-top: 5px;
+        }
+
+        /* Highlight pill'leri */
+        .iu-price {
+          display: inline-block;
+          padding: 2px 10px;
+          background: linear-gradient(135deg, #FFF4E0 0%, #FFE9C4 100%);
+          color: #B7791F;
+          border-radius: 6px;
+          font-weight: 800;
+          font-size: 0.94em;
+          white-space: nowrap;
+          border: 1px solid rgba(244, 155, 28, 0.3);
+        }
+        .iu-price-range {
+          display: inline-block;
+          padding: 3px 12px;
+          background: linear-gradient(135deg, #F49B1C 0%, #d4831a 100%);
+          color: #FFFFFF;
+          border-radius: 8px;
+          font-weight: 800;
+          font-size: 0.92em;
+          white-space: nowrap;
+          box-shadow: 0 2px 6px rgba(244, 155, 28, 0.35);
+          margin: 0 2px;
+        }
+        .iu-price-m2 {
+          display: inline-block;
+          padding: 2px 10px;
+          background: #FEF3E2;
+          color: #B7791F;
+          border-radius: 6px;
+          font-weight: 700;
+          font-size: 0.92em;
+          white-space: nowrap;
+          border: 1px dashed #F49B1C;
+        }
+        .iu-area {
+          display: inline-block;
+          padding: 1px 8px;
+          background: rgba(10, 42, 94, 0.06);
+          color: #0A2A5E;
+          border-radius: 4px;
+          font-weight: 700;
+          font-size: 0.92em;
+          white-space: nowrap;
+        }
+        .iu-percent {
+          display: inline-block;
+          padding: 2px 10px;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: #FFFFFF;
+          border-radius: 6px;
+          font-weight: 800;
+          font-size: 0.9em;
+          white-space: nowrap;
+          box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+          margin: 0 1px;
+        }
+        .iu-brand {
+          display: inline-block;
+          padding: 1px 10px;
+          background: linear-gradient(135deg, #0A2A5E 0%, #1a4a8a 100%);
+          color: #FFFFFF;
+          border-radius: 5px;
+          font-weight: 800;
+          font-size: 0.88em;
+          letter-spacing: 0.5px;
+        }
+        .iu-region {
+          display: inline-block;
+          padding: 1px 10px;
+          background: rgba(10, 42, 94, 0.08);
+          color: #0A2A5E;
+          border-radius: 5px;
+          font-weight: 700;
+          font-size: 0.95em;
+          white-space: nowrap;
+        }
+        /* Legacy paragraf desteği */
+        .iu-faq-a p { margin: 0 0 14px 0; }
         .iu-faq-a p:last-child { margin-bottom: 0; }
         @media (max-width: 768px) {
           .iu-faq-section {
@@ -403,6 +568,13 @@
             width: 28px !important;
             height: 28px !important;
             font-size: 18px !important;
+          }
+          .iu-answer { font-size: 14px !important; }
+          .iu-num-item { padding: 12px 14px !important; gap: 12px !important; }
+          .iu-num-badge { width: 28px !important; height: 28px !important; font-size: 12px !important; }
+          .iu-intro-box { padding: 12px 14px !important; gap: 10px !important; }
+          .iu-price-range, .iu-price, .iu-price-m2, .iu-percent, .iu-brand, .iu-region, .iu-area {
+            font-size: 0.88em !important;
           }
         }
       </style>
