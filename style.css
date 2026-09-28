@@ -315,36 +315,83 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
 .footer-inner { grid-template-columns: 2fr 1fr 1.4fr 1fr; }
 /* Mobile: footer logo BÜYÜT ve grid'i tek kolona indir; header'lar SOLA dayalı + büyük font */
 @media (max-width: 768px) {
-  .footer-inner {
+  .footer .footer-inner,
+  footer .footer-inner {
     grid-template-columns: 1fr !important;
     gap: 28px !important;
     text-align: left !important;
     padding: 0 8px !important;
   }
-  /* Logo TEK ORTALANAN element, kolonlar sola dayalı */
-  .footer-brand {
-    text-align: center;
+  /* LOGO — flex ile TAM ORTA + BÜYÜK */
+  .footer .footer-brand,
+  footer .footer-brand {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
   }
-  .footer-brand .logo-svg,
-  .footer-brand a .logo-svg {
-    height: 88px !important;
-    max-width: 340px !important;
-    width: auto !important;
+  .footer .footer-brand > a,
+  footer .footer-brand > a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
     margin: 0 auto 16px !important;
   }
-  .footer-social { justify-content: center; }
-  /* Kolon header'ları SOLA dayalı + FONT BÜYÜT */
-  .footer-col h4 {
+  .footer .footer-brand .logo-svg,
+  footer .footer-brand .logo-svg,
+  .footer .footer-brand a .logo-svg,
+  footer .footer-brand a .logo-svg {
+    display: block !important;
+    height: 110px !important;
+    max-width: 90% !important;
+    width: auto !important;
+    margin: 0 auto !important;
+  }
+  .footer .footer-brand .footer-about,
+  footer .footer-brand .footer-about {
+    text-align: center !important;
+    max-width: 400px;
+    margin: 0 auto 16px !important;
+  }
+  .footer .footer-social,
+  footer .footer-social {
+    justify-content: center !important;
+  }
+  /* KOLON HEADER'LARI — SOLA DAYALI (max specificity ile) */
+  .footer .footer-col,
+  footer .footer-col {
+    text-align: left !important;
+  }
+  .footer .footer-col h4,
+  footer .footer-col h4,
+  .footer .footer-inner .footer-col h4 {
     text-align: left !important;
     font-size: 22px !important;
     margin-bottom: 14px !important;
     padding-bottom: 10px !important;
     border-bottom: 2px solid rgba(244,155,28,0.25) !important;
+    display: block !important;
+    width: 100% !important;
   }
-  .footer-col ul { padding: 0; text-align: left !important; }
-  .footer-col li { text-align: left !important; padding: 4px 0 !important; }
-  .footer-col li a, .footer-col li span {
+  .footer .footer-col ul,
+  footer .footer-col ul {
+    padding: 0 !important;
+    text-align: left !important;
+    list-style: none !important;
+  }
+  .footer .footer-col li,
+  footer .footer-col li {
+    text-align: left !important;
+    padding: 4px 0 !important;
+  }
+  .footer .footer-col li a,
+  .footer .footer-col li span,
+  footer .footer-col li a,
+  footer .footer-col li span {
     font-size: 15px !important;
+    text-align: left !important;
   }
 }
 .footer-about { color: rgba(255,255,255,0.7); font-size: 14px; margin-bottom: 20px; }
