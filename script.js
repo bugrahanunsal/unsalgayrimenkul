@@ -159,7 +159,9 @@
       <a href="hakkimizda.html"${cls('hakkimizda')} data-i18n="nav.hakkimizda">HAKKIMIZDA</a>
       <a href="/sss"${cls('sss')}>SSS</a>
       <a href="iletisim.html"${cls('iletisim')} data-i18n="nav.iletisim">İLETİŞİM</a>
-      <div data-iu-auth class="nav-auth-mobile"></div>
+      <!-- .nav-auth-mobile kaldırıldı: header'da çift auth pill oluyordu.
+           Top-bar'daki .topbar-auth zaten yeterli, mobil hamburger menüsünde
+           auth widget gerekmez. -->
     </nav>
     <div class="header-cta">
       <a href="tel:+905075188482" class="btn-call"><i class="fa-solid fa-phone"></i> <span data-i18n="nav.cta">HEMEN ARA</span></a>
