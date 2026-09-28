@@ -1348,11 +1348,19 @@
           </div>
         `;
       } else {
-        // Giriş yapmamış
+        // Giriş yapmamış — inline styles ile mobile'da FULL WIDTH garantili
+        // (nav-auth-mobile içindeyse; topbar-auth'ta zaten kompakt)
+        const isMobileNav = container.classList.contains('nav-auth-mobile');
+        const barStyle = isMobileNav
+          ? 'display:flex !important; flex-direction:row !important; width:100% !important; gap:8px !important; box-sizing:border-box;'
+          : '';
+        const btnStyle = isMobileNav
+          ? 'flex:1 1 0 !important; width:100% !important; min-width:0 !important; max-width:none !important; padding:10px 8px !important; font-size:13px !important; justify-content:center !important; align-items:center !important; display:flex !important; box-sizing:border-box !important;'
+          : '';
         container.innerHTML = `
-          <div class="iu-authbar">
-            <button class="iu-authbar-btn iu-authbar-login" onclick="IUAuth.open('login')">${iconUser} Giriş</button>
-            <button class="iu-authbar-btn iu-authbar-signup" onclick="IUAuth.open('signup')">${iconUserPlus} Üye Ol</button>
+          <div class="iu-authbar" style="${barStyle}">
+            <button class="iu-authbar-btn iu-authbar-login" style="${btnStyle}" onclick="IUAuth.open('login')">${iconUser} Giriş</button>
+            <button class="iu-authbar-btn iu-authbar-signup" style="${btnStyle}" onclick="IUAuth.open('signup')">${iconUserPlus} Üye Ol</button>
           </div>
         `;
       }

@@ -40,7 +40,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20260928-hide-old-menu';
+  const SITE_VERSION = '20260928-inline-btn';
 
   async function loadAllScripts() {
     try {
