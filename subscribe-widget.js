@@ -554,9 +554,52 @@
       .iu-forgot-link:hover { text-decoration: underline; }
 
       @media (max-width: 640px) {
-        .iu-modal-content { max-width: 100%; }
+        /* Modal: tam ekran + iOS Safari dinamik viewport */
+        .iu-modal {
+          padding: 0 !important;
+          align-items: stretch !important;
+        }
+        .iu-modal-content {
+          max-width: 100% !important;
+          width: 100% !important;
+          max-height: 100dvh !important;
+          height: 100dvh !important;
+          border-radius: 0 !important;
+        }
+        /* Header: kompakt, X butonu net görünür */
+        .iu-modal-header {
+          padding: 18px 20px 16px !important;
+        }
+        .iu-modal-brand { font-size: 16px !important; }
+        .iu-modal-subtitle { font-size: 10px !important; }
+        /* Body: yeterli padding + safe area alt */
+        .iu-modal-body {
+          padding: 18px 20px calc(24px + env(safe-area-inset-bottom)) !important;
+        }
+        /* Form: satır aralıkları sıkılaştırıldı */
+        .iu-tabs {
+          margin-bottom: 14px !important;
+          padding: 3px !important;
+        }
+        .iu-tab {
+          padding: 9px 8px !important;
+          font-size: 11px !important;
+        }
+        .iu-intro { font-size: 13px !important; margin-bottom: 14px !important; }
+        .iu-form-group { margin-bottom: 10px !important; }
+        .iu-label { font-size: 11px !important; margin-bottom: 4px !important; }
+        .iu-input, .iu-select {
+          padding: 10px 12px !important;
+          font-size: 14px !important;
+        }
+        .iu-btn {
+          padding: 12px 18px !important;
+          font-size: 14px !important;
+          margin-top: 6px !important;
+        }
+        .iu-kvkk { font-size: 10px !important; margin-top: 10px !important; }
+        .iu-checkboxes { grid-template-columns: 1fr; gap: 5px !important; }
         .iu-widget-form { flex-direction: column; }
-        .iu-checkboxes { grid-template-columns: 1fr; }
         .iu-authbar { flex-direction: column; gap: 4px; }
         .iu-authbar-btn { width: 100%; }
       }
