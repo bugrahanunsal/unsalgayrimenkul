@@ -87,6 +87,10 @@
   const isHomepage = path === '/' || path.endsWith('/index.html') || path === '/index';
   if (isHomepage) return;
 
+  // Mevcut dil URL prefix'i (/en, /ar vs.) — sayfa gecişlerinde koru
+  const langMatch = path.match(/^\/(en|fr|de|ru|ar)(\/|$)/);
+  const langPrefix = langMatch ? '/' + langMatch[1] : '';
+
   // Aktif sayfayı belirle - sıra önemli (özelden genele)
   function getActiveNav() {
     if (path.includes('yalova-satilik-arsa')) return 'arsa';
@@ -102,6 +106,9 @@
 
   const active = getActiveNav();
   const cls = (name) => active === name ? ' class="active"' : '';
+
+  // Sayfaya dil prefix'i ekle (satilik-daire.html → /en/satilik-daire.html)
+  const lp = (page) => langPrefix + '/' + page.replace(/^\//, '');
 
   // Homepage'deki EXACT top-bar + header HTML
   const headerHTML = `
@@ -141,7 +148,7 @@
 
 <header class="header">
   <div class="header-inner">
-    <a href="index.html" class="logo">
+    <a href="${langPrefix || '/'}" class="logo">
       <svg class="logo-svg" viewBox="0 0 340 80" xmlns="http://www.w3.org/2000/svg">
         <rect x="0" y="10" width="80" height="60" rx="4" fill="#0A2A5E"/>
         <text x="40" y="46" font-family="League Spartan, Montserrat, sans-serif" font-size="18" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">TURYAP</text>
@@ -151,14 +158,14 @@
       </svg>
     </a>
     <nav class="nav" id="mainNav">
-      <a href="yalova-satilik-daire.html"${cls('satilik')} data-i18n="nav.satilik">SATILIK</a>
-      <a href="yalova-kiralik-daire.html"${cls('kiralik')} data-i18n="nav.kiralik">KİRALIK</a>
-      <a href="yalova-satilik-arsa.html"${cls('arsa')} data-i18n="nav.arsa">ARSA</a>
-      <a href="yalova-kiralik-villa.html"${cls('luks')}><span data-i18n="nav.luks">LÜKS</span><span class="nav-badge" data-i18n="nav.luks.badge">YENİ</span></a>
-      <a href="blog.html"${cls('blog')} data-i18n="nav.blog">BLOG</a>
-      <a href="hakkimizda.html"${cls('hakkimizda')} data-i18n="nav.hakkimizda">HAKKIMIZDA</a>
-      <a href="/sss"${cls('sss')}>SSS</a>
-      <a href="iletisim.html"${cls('iletisim')} data-i18n="nav.iletisim">İLETİŞİM</a>
+      <a href="${lp('yalova-satilik-daire')}"${cls('satilik')} data-i18n="nav.satilik">SATILIK</a>
+      <a href="${lp('yalova-kiralik-daire')}"${cls('kiralik')} data-i18n="nav.kiralik">KİRALIK</a>
+      <a href="${lp('yalova-satilik-arsa')}"${cls('arsa')} data-i18n="nav.arsa">ARSA</a>
+      <a href="${lp('yalova-kiralik-villa')}"${cls('luks')}><span data-i18n="nav.luks">LÜKS</span><span class="nav-badge" data-i18n="nav.luks.badge">YENİ</span></a>
+      <a href="${lp('blog')}"${cls('blog')} data-i18n="nav.blog">BLOG</a>
+      <a href="${lp('hakkimizda')}"${cls('hakkimizda')} data-i18n="nav.hakkimizda">HAKKIMIZDA</a>
+      <a href="${lp('sss')}"${cls('sss')}>SSS</a>
+      <a href="${lp('iletisim')}"${cls('iletisim')} data-i18n="nav.iletisim">İLETİŞİM</a>
       <!-- .nav-auth-mobile kaldırıldı: header'da çift auth pill oluyordu.
            Top-bar'daki .topbar-auth zaten yeterli, mobil hamburger menüsünde
            auth widget gerekmez. -->
@@ -278,6 +285,93 @@ document.addEventListener('DOMContentLoaded', () => {
     nav.appendChild(sssLink);
   }
 });
+
+// ==================== INTERNAL LINK LANGUAGE PRESERVER ====================
+// Kullanıcı /en/, /ar/ gibi bir dil URL'sindeyken, sayfa içindeki tüm
+// internal linkler (nav, footer, kart, buton) o dil prefix'i ile yönlendirsin.
+// Böylece dil seçimi bir sonraki sayfada da korunuyor — asla Türkçe'ye
+// düşmüyor. Sadece kullanıcı bayrak seçerek değiştirebilir.
+(function() {
+  const path = window.location.pathname;
+  const m = path.match(/^\/(en|fr|de|ru|ar)(\/|$)/);
+  if (!m) return; // Türkçe (kök URL) — rewrite gereksiz
+  const lang = m[1];
+  const prefix = '/' + lang;
+
+  function shouldSkip(href) {
+    if (!href) return true;
+    if (href.startsWith('#')) return true;
+    if (href.startsWith('tel:')) return true;
+    if (href.startsWith('mailto:')) return true;
+    if (href.startsWith('javascript:')) return true;
+    if (href.startsWith('http://') || href.startsWith('https://')) return true;
+    if (href.startsWith('//')) return true;
+    if (href.startsWith('data:')) return true;
+    // Zaten dil prefix'i varsa dokunma
+    if (href.match(/^\/(en|fr|de|ru|ar)(\/|$|\?)/)) return true;
+    // Admin panele dokunma (backend, dil bağımsız)
+    if (href.startsWith('/admin')) return true;
+    return false;
+  }
+
+  function rewrite(href) {
+    if (shouldSkip(href)) return href;
+    // "/foo" veya "foo.html" veya "/foo.html" — hepsini /xx/foo formatına çevir
+    let clean = href.startsWith('/') ? href : ('/' + href);
+    return prefix + clean;
+  }
+
+  function rewriteAllLinks(root) {
+    (root || document).querySelectorAll('a[href]').forEach(a => {
+      // Dil switcher linklerine dokunma (kendi mantığı var)
+      if (a.closest('.lang-option, .lang-dropdown, .lang-switcher')) return;
+      const original = a.getAttribute('href');
+      const rewritten = rewrite(original);
+      if (rewritten !== original) {
+        a.setAttribute('href', rewritten);
+        a.setAttribute('data-iu-orig-href', original);
+      }
+    });
+  }
+
+  // İlk çalıştırma
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => rewriteAllLinks());
+  } else {
+    rewriteAllLinks();
+  }
+
+  // Header injection sonrası tekrar (nav linkleri güncellensin)
+  document.addEventListener('iu:header-injected', () => rewriteAllLinks());
+
+  // Dinamik eklenen içerikler için: 500ms ve 2000ms sonra tekrar
+  setTimeout(rewriteAllLinks, 500);
+  setTimeout(rewriteAllLinks, 2000);
+
+  // MutationObserver — sonradan eklenen linkleri (Supabase kartları, FAQ vs) de yakala
+  if (typeof MutationObserver !== 'undefined') {
+    const linkObserver = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        for (const node of m.addedNodes) {
+          if (node.nodeType === 1) {
+            if (node.tagName === 'A' && node.hasAttribute('href')) {
+              const original = node.getAttribute('href');
+              const rewritten = rewrite(original);
+              if (rewritten !== original) node.setAttribute('href', rewritten);
+            } else if (node.querySelectorAll) {
+              rewriteAllLinks(node);
+            }
+          }
+        }
+      }
+    });
+    const start = () => linkObserver.observe(document.body, { childList: true, subtree: true });
+    if (document.body) start();
+    else document.addEventListener('DOMContentLoaded', start);
+  }
+
+  console.log('[LangPreserve] Aktif dil:', lang, '— tüm internal linkler', prefix, 'ile prefix\'lendi');
+})();
 
 // ==================== LANGUAGE SWITCHER ====================
 // Dil bayrağına tıklayınca URL'yi değiştir (/en/, /ar/, vs.)
