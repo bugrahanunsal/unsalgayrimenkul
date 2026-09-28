@@ -192,6 +192,14 @@
 
   // ==================== SORGU FONKSİYONLARI ====================
 
+  // Timeout yardımcı: promise 10 saniyeden uzun sürerse iptal
+  function withTimeout(promise, ms = 10000, label = 'sorgu') {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error(label + ' timeout (' + ms + 'ms)')), ms))
+    ]);
+  }
+
   // Property fetch - property_images ile join, sıralanmış
   async function fetchProperties(filters = {}) {
     const sb = init();
@@ -210,7 +218,27 @@
     q = q.order('one_cikan', { ascending: false }).order('created_at', { ascending: false });
     if (filters.limit) q = q.limit(filters.limit);
 
-    return await q;
+    try {
+      // 10 saniyelik timeout — sonsuz yükleme olmasın
+      const result = await withTimeout(q, 10000, 'properties fetch');
+      // Property_images join başarısız olursa (RLS/kolon eksik), retry — sadece properties
+      if (result.error && String(result.error.message || result.error).toLowerCase().includes('property_images')) {
+        console.warn('[Frontend] property_images join başarısız, sadece properties çekiliyor');
+        let q2 = sb.from('properties').select('*').eq('durum', 'aktif');
+        if (filters.tip) q2 = q2.eq('tip', filters.tip);
+        if (filters.kategori) q2 = q2.eq('kategori', filters.kategori);
+        if (filters.kategoriIn) q2 = q2.in('kategori', filters.kategoriIn);
+        if (filters.ilce) q2 = q2.eq('ilce', filters.ilce);
+        if (filters.one_cikan === true) q2 = q2.eq('one_cikan', true);
+        q2 = q2.order('one_cikan', { ascending: false }).order('created_at', { ascending: false });
+        if (filters.limit) q2 = q2.limit(filters.limit);
+        return await withTimeout(q2, 10000, 'properties fallback');
+      }
+      return result;
+    } catch (err) {
+      console.error('[Frontend] fetchProperties hata:', err);
+      return { data: null, error: err };
+    }
   }
 
   // ==================== ANA SAYFA: KATEGORİ SAYAÇLARI ====================
@@ -671,11 +699,23 @@
 
   async function start() {
     injectCardSafeCSS();
-    await updateCategoryCounts();
-    await loadFeaturedProperties();
-    await loadCategoryPageProperties();
-    await loadPropertyDetail();
+    // Kategori sayfasını ÖNCE ve BAĞIMSIZ yükle (kullanıcı beklemesin)
+    loadCategoryPageProperties().catch(err => {
+      console.error('[Frontend] Kategori sayfası hata:', err);
+      const c = document.getElementById('iu-dynamic-listings');
+      if (c) c.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#EF4444;">Yükleme hatası. Lütfen sayfayı yenileyin.</div>';
+    });
+    // FAQ'ı da ERKEN inject et (kullanıcı yükleme beklemesin)
     autoInjectFAQ();
+    // Sonrakiler paralel — herhangi biri hata verse diğerlerini engellemesin
+    Promise.allSettled([
+      updateCategoryCounts(),
+      loadFeaturedProperties(),
+      loadPropertyDetail()
+    ]).then(() => {
+      // Hepsi bitince FAQ'ı tekrar dene (belki container o an eklendi)
+      autoInjectFAQ();
+    });
   }
 
   if (document.readyState === 'loading') {
