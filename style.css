@@ -322,7 +322,7 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
     text-align: left !important;
     padding: 0 8px !important;
   }
-  /* LOGO — flex ile TAM ORTA + DAHA BÜYÜK */
+  /* LOGO — flex ile TAM ORTA + DAHA BÜYÜK (yeni vertical stack) */
   .footer .footer-brand,
   footer .footer-brand {
     display: flex !important;
@@ -332,6 +332,7 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
     text-align: center !important;
     width: 100% !important;
     padding: 20px 0 !important;
+    margin: 0 auto !important;
   }
   .footer .footer-brand > a,
   footer .footer-brand > a {
@@ -340,7 +341,7 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
     justify-content: center !important;
     width: 100% !important;
     max-width: 100% !important;
-    margin: 0 auto 20px !important;
+    margin: 0 auto 24px !important;
     padding: 0 !important;
     text-align: center !important;
   }
@@ -349,11 +350,14 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
   .footer .footer-brand a .logo-svg,
   footer .footer-brand a .logo-svg {
     display: block !important;
-    /* Yeni SVG viewBox 200x160 (1.25 aspect) — kare-ish, mobilde büyük */
-    height: 260px !important;
-    max-width: 90% !important;
-    width: auto !important;
+    /* SVG viewBox 200x160 (1.25:1 aspect) — mobilde tam ekran genişliği */
+    height: auto !important;
+    width: 320px !important;         /* Sabit büyük genişlik */
+    max-width: 88vw !important;       /* Viewport %88 — ekran kenarlarına dayanır */
+    min-width: 260px !important;      /* Küçük ekranda bile min 260px */
     margin: 0 auto !important;
+    align-self: center !important;
+    /* SVG içinde text-anchor="middle" zaten var, dış centering CSS ile */
   }
   .footer .footer-brand .footer-about,
   footer .footer-brand .footer-about {
