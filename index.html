@@ -656,15 +656,33 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           border-radius: 12px !important;
           gap: 12px !important;
         }
-        /* Mavi avatar tamamen kaldırıldı — sadece username kalıyor */
-        .nav-auth-mobile .iu-authbar-avatar {
+        /* Mavi avatar tam kaldırıldı — nuclear option (birden fazla teknik) */
+        .nav-auth-mobile .iu-authbar-avatar,
+        .nav-auth-mobile .iu-authbar-user .iu-authbar-avatar,
+        .nav-auth-mobile div.iu-authbar-avatar,
+        .nav-auth-mobile [class*="avatar"] {
           display: none !important;
           width: 0 !important;
           height: 0 !important;
+          max-width: 0 !important;
+          max-height: 0 !important;
+          min-width: 0 !important;
+          min-height: 0 !important;
           overflow: hidden !important;
           visibility: hidden !important;
+          opacity: 0 !important;
           margin: 0 !important;
           padding: 0 !important;
+          border: 0 !important;
+          background: transparent !important;
+          font-size: 0 !important;
+          color: transparent !important;
+          position: absolute !important;
+          left: -99999px !important;
+          top: -99999px !important;
+          pointer-events: none !important;
+          flex: 0 0 0 !important;
+          flex-basis: 0 !important;
         }
         .nav-auth-mobile .iu-authbar-name {
           color: #0A2A5E !important;
@@ -712,40 +730,63 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           box-sizing: border-box !important;
           position: relative !important;
         }
+        /* Admin Panel + Çıkış Yap — güçlü, belirgin buton tasarımı */
         .nav-auth-mobile .iu-mobile-btn {
           display: flex !important;
           align-items: center !important;
           justify-content: center !important;
-          padding: 12px 10px !important;
+          padding: 14px 12px !important;
           width: 100% !important;
           min-width: 0 !important;
           max-width: none !important;
           box-sizing: border-box !important;
-          background: #ffffff !important;
-          border: 1px solid #e5e7eb !important;
-          border-radius: 14px !important;
-          color: #0A2A5E !important;
+          border: none !important;
+          border-radius: 12px !important;
           font-size: 13px !important;
-          font-weight: 700 !important;
+          font-weight: 800 !important;
           text-decoration: none !important;
           text-align: center !important;
           line-height: 1.2 !important;
           white-space: nowrap !important;
           overflow: hidden !important;
           text-overflow: ellipsis !important;
+          letter-spacing: 0.5px !important;
+          text-transform: uppercase !important;
+          transition: all 0.2s ease !important;
+          box-shadow: 0 4px 12px rgba(10,42,94,0.12) !important;
         }
+        /* Admin Panel: LACİVERT-MAVİ GRADIENT — güçlü ana buton */
         .nav-auth-mobile .iu-mobile-btn-admin {
-          background: #dbeafe !important;
-          border-color: #93c5fd !important;
-          color: #1e40af !important;
+          background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+          color: #ffffff !important;
+          box-shadow: 0 4px 14px rgba(30,64,175,0.35) !important;
         }
+        .nav-auth-mobile .iu-mobile-btn-admin:hover,
+        .nav-auth-mobile .iu-mobile-btn-admin:active {
+          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%) !important;
+          box-shadow: 0 6px 18px rgba(30,64,175,0.5) !important;
+          transform: translateY(-1px) !important;
+        }
+        /* Çıkış Yap: KIRMIZI DOLU — dikkat çekici ikinci buton */
         .nav-auth-mobile .iu-mobile-btn-logout {
-          background: #fef2f2 !important;
-          border-color: #fecaca !important;
-          color: #dc2626 !important;
+          background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+          color: #ffffff !important;
+          box-shadow: 0 4px 14px rgba(220,38,38,0.35) !important;
+        }
+        .nav-auth-mobile .iu-mobile-btn-logout:hover,
+        .nav-auth-mobile .iu-mobile-btn-logout:active {
+          background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%) !important;
+          box-shadow: 0 6px 18px rgba(220,38,38,0.5) !important;
+          transform: translateY(-1px) !important;
         }
         .nav-auth-mobile .iu-mobile-btn:active {
           transform: scale(0.97) !important;
+        }
+        /* Account (non-admin) yeşilimsi ton */
+        .nav-auth-mobile .iu-mobile-btn-account {
+          background: linear-gradient(135deg, #0A2A5E 0%, #1B4380 100%) !important;
+          color: #ffffff !important;
+          box-shadow: 0 4px 14px rgba(10,42,94,0.35) !important;
         }
         .nav-auth-mobile .iu-user-menu a svg {
           color: #6b7280 !important;
@@ -1197,7 +1238,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 <a href="https://wa.me/905075188482" class="wa-float"><i class="fa-brands fa-whatsapp"></i></a>
 
-<script src="/script.js?v=20260928-fl-big"></script>
+<script src="/script.js?v=20260928-btns-bold"></script>
 
 <script>
 // SMART FILTER & SEARCH SYSTEM - Facebook-grade live filtering
