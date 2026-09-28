@@ -349,8 +349,8 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
   .footer .footer-brand a .logo-svg,
   footer .footer-brand a .logo-svg {
     display: block !important;
-    height: 180px !important;    /* 140 → 180 (daha büyük) */
-    max-width: 92% !important;
+    height: 220px !important;    /* 180 → 220 (daha büyük) */
+    max-width: 96% !important;
     width: auto !important;
     margin: 0 auto !important;
     object-fit: contain !important;
