@@ -561,11 +561,16 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           touch-action: pan-y !important;
         }
 
-        /* Auth butonlarını EN ÜSTE koy - hemen görünsün (mobil'de göster) */
+        /* Auth butonlarını EN ÜSTE koy - hemen görünsün (mobil'de göster)
+           Desktop'ta 'display:none; width:0; height:0' idi — mobilde
+           HEPSİNİ reset et ki grid/flex çalışabilsin */
         .nav-auth-mobile,
         .nav-auth-mobile * {
           visibility: visible !important;
           overflow: visible !important;
+          width: auto !important;
+          height: auto !important;
+          display: revert !important;
         }
         .nav-auth-mobile {
           display: block !important;
@@ -1198,7 +1203,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 <a href="https://wa.me/905075188482" class="wa-float"><i class="fa-brands fa-whatsapp"></i></a>
 
-<script src="/script.js?v=20260928-footer-fix"></script>
+<script src="/script.js?v=20260928-btn-width-fix"></script>
 
 <script>
 // SMART FILTER & SEARCH SYSTEM - Facebook-grade live filtering

@@ -40,7 +40,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20260928-footer-fix';
+  const SITE_VERSION = '20260928-btn-width-fix';
 
   async function loadAllScripts() {
     try {
