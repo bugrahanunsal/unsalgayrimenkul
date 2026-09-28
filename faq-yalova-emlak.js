@@ -296,7 +296,7 @@
       <section class="iu-faq-section" style="max-width:900px;margin:80px auto;padding:0 24px;">
         <div style="text-align:center;margin-bottom:48px;">
           <span style="display:inline-block;background:linear-gradient(135deg, #F49B1C, #d4831a);color:#0A2A5E;padding:8px 22px;border-radius:24px;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;box-shadow:0 4px 12px rgba(244,155,28,0.3);">
-            📋 SSS · FAQ
+            📋 FAQ
           </span>
           <h2 style="font-size:36px;color:#0A2A5E;margin:16px 0 12px;font-weight:800;line-height:1.2;font-family:'League Spartan','Montserrat',sans-serif;">${esc(title)}</h2>
           <p style="color:#6B7280;font-size:16px;max-width:600px;margin:0 auto;">${esc(subtitle)}</p>
