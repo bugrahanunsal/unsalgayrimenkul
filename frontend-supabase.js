@@ -192,24 +192,6 @@
 
   // ==================== SORGU FONKSİYONLARI ====================
 
-  // Basit timeout: query 8 saniyeden uzun sürerse iptal et
-  async function fetchWithTimeout(queryBuilder, ms = 8000) {
-    let timeoutId;
-    try {
-      const timeoutPromise = new Promise((_, reject) => {
-        timeoutId = setTimeout(() => reject(new Error('Timeout ' + ms + 'ms')), ms);
-      });
-      // Supabase builder'ın .then() metodunu tetiklemek için Promise.resolve
-      const queryPromise = Promise.resolve().then(() => queryBuilder);
-      const result = await Promise.race([queryPromise, timeoutPromise]);
-      clearTimeout(timeoutId);
-      return result;
-    } catch (err) {
-      clearTimeout(timeoutId);
-      throw err;
-    }
-  }
-
   // Property fetch — mümkünse image join ile, fallback: sadece properties
   async function fetchProperties(filters = {}) {
     const sb = init();
@@ -230,28 +212,35 @@
       if (filters.kategoriIn) q = q.in('kategori', filters.kategoriIn);
       if (filters.ilce) q = q.eq('ilce', filters.ilce);
       if (filters.one_cikan === true) q = q.eq('one_cikan', true);
-      q = q.order('one_cikan', { ascending: false }).order('created_at', { ascending: false });
+      q = q.order('created_at', { ascending: false });
       if (filters.limit) q = q.limit(filters.limit);
       return q;
     }
 
     // 1. deneme: image join ile
+    console.log('[Frontend] fetchProperties başladı', JSON.stringify(filters));
     try {
-      console.log('[Frontend] fetchProperties başladı', filters);
-      const result = await fetchWithTimeout(buildQuery(true), 8000);
-      console.log('[Frontend] fetchProperties tamamlandı:', result?.data?.length || 0, 'kayıt');
-      if (result && !result.error) return result;
-      throw new Error(result?.error?.message || 'Bilinmeyen hata');
+      const result = await buildQuery(true);
+      console.log('[Frontend] Join query sonucu:', {
+        count: result?.data?.length,
+        error: result?.error?.message || result?.error
+      });
+      if (result && !result.error && result.data) return result;
+      // Error varsa fallback dene
+      throw new Error(result?.error?.message || result?.error || 'Boş sonuç');
     } catch (err1) {
-      console.warn('[Frontend] Image join başarısız, fallback:', err1.message);
+      console.warn('[Frontend] Join başarısız, fallback (join yok):', err1.message);
       // 2. deneme: image join olmadan
       try {
-        const result2 = await fetchWithTimeout(buildQuery(false), 8000);
-        console.log('[Frontend] fetchProperties fallback:', result2?.data?.length || 0, 'kayıt');
+        const result2 = await buildQuery(false);
+        console.log('[Frontend] Fallback sonucu:', {
+          count: result2?.data?.length,
+          error: result2?.error?.message || result2?.error
+        });
         return result2;
       } catch (err2) {
         console.error('[Frontend] fetchProperties tamamen başarısız:', err2);
-        return { data: null, error: err2.message };
+        return { data: null, error: err2.message || String(err2) };
       }
     }
   }
@@ -474,7 +463,11 @@
 
   async function loadCategoryPageProperties() {
     const found = findCategoryContainer();
-    if (!found) return;
+    if (!found) {
+      console.log('[Frontend] Kategori container bulunamadı, kategori sayfası değil');
+      return;
+    }
+    console.log('[Frontend] Kategori container bulundu:', found.id || found.className);
 
     // Yeni temiz container mı yoksa eski legacy container mı?
     let container;
@@ -491,6 +484,14 @@
         found.parentNode.insertBefore(container, found.nextSibling);
       }
     }
+
+    // Safety net: 15 saniye sonra yine boşsa hata göster
+    const safetyTimer = setTimeout(() => {
+      if (container.children.length === 0 || container.innerHTML.trim() === '') {
+        console.warn('[Frontend] 15sn sonra hala boş, hata mesajı gösteriliyor');
+        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#EF4444;"><div style="font-size:48px;margin-bottom:16px;">⚠️</div><h3 style="color:#0A2A5E;margin-bottom:12px;">Yükleme çok uzun sürüyor</h3><p style="color:#6B7280;">Lütfen sayfayı yenileyin (F5 veya Ctrl+R).</p></div>';
+      }
+    }, 15000);
 
     const pathname = window.location.pathname.toLowerCase();
     const filters = {};
@@ -514,6 +515,7 @@
 
     try {
       const { data: properties, error } = await fetchProperties(filters);
+      clearTimeout(safetyTimer);
       if (error) throw error;
 
       console.log('[Frontend] Kategori sayfası: ' + (properties?.length || 0) + ' ilan');
@@ -538,9 +540,11 @@
       document.querySelectorAll('[data-property-count]').forEach(el => {
         el.textContent = properties.length;
       });
+      console.log('[Frontend] ' + properties.length + ' kart render edildi ✓');
     } catch (err) {
+      clearTimeout(safetyTimer);
       console.error('[Frontend] Kategori sayfası hatası:', err);
-      container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#EF4444;">Yükleme hatası. Sayfayı yenileyin.</div>';
+      container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#EF4444;">Yükleme hatası: ' + (err.message || err) + '. Sayfayı yenileyin.</div>';
     }
   }
 
