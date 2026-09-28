@@ -578,6 +578,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           border-bottom: 2px solid rgba(244,155,28,0.2);
         }
         .nav.open { display: flex !important; flex-direction: column !important; }
+        /* Not logged in: Giriş / Üye Ol side-by-side */
         .nav-auth-mobile .iu-authbar {
           display: flex !important;
           flex-direction: row !important;
@@ -603,28 +604,103 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           color: #0A2A5E !important;
           border-color: #0A2A5E !important;
         }
+        /* LOGGED IN — clean panel, column stack (avatar stretch bug fix) */
+        .nav-auth-mobile.iu-signed-in .iu-authbar,
+        .nav-auth-mobile .iu-authbar:has(.iu-authbar-user) {
+          flex-direction: column !important;
+          gap: 8px !important;
+          align-items: stretch !important;
+        }
         .nav-auth-mobile .iu-authbar-user {
           width: 100% !important;
-          justify-content: center !important;
-          padding: 10px !important;
+          box-sizing: border-box !important;
+          justify-content: flex-start !important;
+          align-items: center !important;
+          padding: 12px 14px !important;
           background: #f0f4f9 !important;
+          border: 1px solid #e0e7ee !important;
+          border-radius: 12px !important;
+          gap: 12px !important;
         }
         .nav-auth-mobile .iu-authbar-avatar {
-          width: 30px !important; height: 30px !important;
-          font-size: 13px !important;
+          width: 40px !important;
+          height: 40px !important;
+          min-width: 40px !important;
+          max-width: 40px !important;
+          flex: 0 0 40px !important;
+          border-radius: 50% !important;
+          font-size: 16px !important;
+          font-weight: 700 !important;
         }
         .nav-auth-mobile .iu-authbar-name {
           color: #0A2A5E !important;
           font-size: 14px !important;
+          font-weight: 700 !important;
+          flex: 1 1 auto !important;
+          min-width: 0 !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+          white-space: nowrap !important;
+          text-align: left !important;
         }
+        /* User menu inline — as list of full-width items */
         .nav-auth-mobile .iu-user-menu {
           position: static !important;
           box-shadow: none !important;
           border: none !important;
           background: transparent !important;
-          margin-top: 8px !important;
+          margin: 0 !important;
+          padding: 0 !important;
           min-width: unset !important;
+          width: 100% !important;
           display: block !important;
+          animation: none !important;
+        }
+        /* Duplicate header in dropdown hidden (name+email already in the pill above) */
+        .nav-auth-mobile .iu-user-menu-header {
+          display: none !important;
+        }
+        .nav-auth-mobile .iu-user-menu a {
+          display: flex !important;
+          align-items: center !important;
+          gap: 10px !important;
+          padding: 12px 14px !important;
+          margin-bottom: 6px !important;
+          background: #ffffff !important;
+          border: 1px solid #e5e7eb !important;
+          border-radius: 10px !important;
+          color: #0A2A5E !important;
+          font-size: 14px !important;
+          font-weight: 600 !important;
+          text-decoration: none !important;
+        }
+        .nav-auth-mobile .iu-user-menu a svg {
+          color: #6b7280 !important;
+          flex-shrink: 0 !important;
+        }
+        .nav-auth-mobile .iu-user-menu a:hover,
+        .nav-auth-mobile .iu-user-menu a:active {
+          background: #F49B1C !important;
+          color: #0A2A5E !important;
+          border-color: #F49B1C !important;
+        }
+        .nav-auth-mobile .iu-user-menu-logout,
+        .nav-auth-mobile .iu-user-menu a.iu-user-menu-logout {
+          background: #fef2f2 !important;
+          color: #dc2626 !important;
+          border-color: #fecaca !important;
+        }
+        .nav-auth-mobile .iu-user-menu a.iu-user-menu-logout svg { color: #dc2626 !important; }
+        .nav-auth-mobile .iu-user-menu a.iu-user-menu-logout:hover,
+        .nav-auth-mobile .iu-user-menu a.iu-user-menu-logout:active {
+          background: #dc2626 !important;
+          color: #ffffff !important;
+          border-color: #dc2626 !important;
+        }
+        .nav-auth-mobile .iu-user-menu a.iu-user-menu-logout:hover svg,
+        .nav-auth-mobile .iu-user-menu a.iu-user-menu-logout:active svg { color: #ffffff !important; }
+        .nav-auth-mobile .iu-user-menu-divider {
+          display: none !important;
         }
         .nav-auth-mobile .iu-user-menu-header { display: none !important; }
         .nav-auth-mobile .iu-user-menu a {
@@ -1048,7 +1124,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 <a href="https://wa.me/905075188482" class="wa-float"><i class="fa-brands fa-whatsapp"></i></a>
 
-<script src="/script.js?v=20260928-btn-h"></script>
+<script src="/script.js?v=20260928-mobile-pnl"></script>
 
 <script>
 // SMART FILTER & SEARCH SYSTEM - Facebook-grade live filtering
