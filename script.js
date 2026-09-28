@@ -40,7 +40,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20260928-auth-fix';
+  const SITE_VERSION = '20260928-x-refine';
 
   async function loadAllScripts() {
     try {

@@ -302,33 +302,31 @@
         text-transform: uppercase;
       }
       .iu-modal-close {
-        position: absolute; top: 14px; right: 14px;
-        background: rgba(255,255,255,0.18);
-        border: 2px solid rgba(255,255,255,0.3);
-        width: 40px; height: 40px;
-        border-radius: 10px;
+        position: absolute; top: 16px; right: 16px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.15);
+        width: 34px; height: 34px;
+        border-radius: 50%;
         cursor: pointer;
-        color: white;
-        font-size: 24px;
-        font-weight: 700;
-        line-height: 1;
+        color: rgba(255,255,255,0.85);
+        padding: 0;
         display: flex; align-items: center; justify-content: center;
-        transition: all 0.15s;
+        transition: all 0.2s ease;
         z-index: 10;
       }
-      .iu-modal-close:hover, .iu-modal-close:active {
-        background: rgba(255,255,255,0.3);
-        border-color: rgba(255,255,255,0.5);
-        transform: scale(1.05);
+      .iu-modal-close svg { width: 14px; height: 14px; stroke-width: 2.2; }
+      .iu-modal-close:hover {
+        background: rgba(255,255,255,0.2);
+        border-color: rgba(255,255,255,0.3);
+        color: #ffffff;
       }
+      .iu-modal-close:active { transform: scale(0.94); }
       @media (max-width: 640px) {
         .iu-modal-close {
-          width: 44px; height: 44px;
-          font-size: 28px;
-          top: 12px; right: 12px;
-          background: rgba(255,255,255,0.25);
-          border: 2px solid rgba(255,255,255,0.4);
+          width: 38px; height: 38px;
+          top: 14px; right: 14px;
         }
+        .iu-modal-close svg { width: 16px; height: 16px; }
       }
 
       .iu-modal-body {
@@ -578,7 +576,7 @@
         <div class="iu-modal-header">
           <div class="iu-modal-brand">İSMAİL <span class="accent">ÜNSAL</span></div>
           <div class="iu-modal-subtitle">Gayrimenkul</div>
-          <button class="iu-modal-close" onclick="IUAuth.close()" aria-label="Kapat">×</button>
+          <button class="iu-modal-close" onclick="IUAuth.close()" aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
 
         <div class="iu-modal-body">
