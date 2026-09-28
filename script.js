@@ -270,50 +270,74 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ==================== LANGUAGE SWITCHER ====================
 // Dil bayrağına tıklayınca URL'yi değiştir (/en/, /ar/, vs.)
-document.addEventListener('DOMContentLoaded', () => {
-  function attachLangHandlers() {
-    document.querySelectorAll('.lang-option[data-lang]').forEach(opt => {
-      if (opt.dataset.iuBound) return;
-      opt.dataset.iuBound = '1';
-      opt.addEventListener('click', (e) => {
-        e.preventDefault();
-        const lang = opt.dataset.lang;
-        if (window.IULang && typeof window.IULang.switchTo === 'function') {
-          window.IULang.switchTo(lang);
-        } else {
-          // Fallback: doğrudan URL değiştir
-          const cleanPath = location.pathname.replace(/^\/(en|fr|de|ru|ar)(\/|$)/, '/');
-          const newPath = lang === 'tr' ? cleanPath : ('/' + lang + cleanPath);
-          location.href = newPath + location.search + location.hash;
-        }
-      });
-    });
+// Event delegation: dropdown ne zaman DOM'a eklense yakalar
+(function() {
+  const SUPPORTED = ['tr', 'en', 'fr', 'de', 'ru', 'ar'];
 
-    // Current language göstergesini güncelle
-    const currentEl = document.getElementById('currentLang');
-    const currentFlagEl = document.getElementById('currentFlag');
-    if (currentEl && window.IULang) {
-      const codeMap = { tr: 'TR', en: 'EN', fr: 'FR', de: 'DE', ru: 'RU', ar: 'AR' };
-      currentEl.textContent = codeMap[window.IULang.current] || 'TR';
-
-      // Aktif dilin bayrağını current alanına koy
-      const activeOpt = document.querySelector('.lang-option[data-lang="' + window.IULang.current + '"] .flag svg');
-      if (activeOpt && currentFlagEl) {
-        currentFlagEl.innerHTML = activeOpt.outerHTML;
-      }
-
-      // Active class'ı doğru dile ver
-      document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
-      const activeLink = document.querySelector('.lang-option[data-lang="' + window.IULang.current + '"]');
-      if (activeLink) activeLink.classList.add('active');
-    }
+  function switchLang(lang) {
+    if (!SUPPORTED.includes(lang)) return;
+    const path = location.pathname;
+    // Mevcut dil prefix'ini kaldır
+    let cleanPath = path.replace(/^\/(en|fr|de|ru|ar)(?=\/|$)/, '');
+    if (!cleanPath || cleanPath === '') cleanPath = '/';
+    // Yeni URL: TR ise prefix'siz, diğerleri /xx prefix ile
+    const newPath = lang === 'tr' ? cleanPath : ('/' + lang + (cleanPath === '/' ? '/' : cleanPath));
+    console.log('[LangSwitch] ' + lang + ' → ' + newPath);
+    window.location.href = newPath + location.search + location.hash;
   }
 
-  // İlk yükleme + header injection sonrası tekrar dene
-  attachLangHandlers();
-  setTimeout(attachLangHandlers, 500);
-  setTimeout(attachLangHandlers, 1500);
-});
+  // Global (translator.js ile paylaşımlı)
+  window.__IUSwitchLang = switchLang;
+
+  // Event delegation — capture phase ile Google Translate'in araya girmesini önle
+  document.addEventListener('click', function(e) {
+    // .lang-option ya da içindekiler
+    const opt = e.target.closest && e.target.closest('.lang-option[data-lang]');
+    if (!opt) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const lang = opt.getAttribute('data-lang');
+    switchLang(lang);
+  }, true); // capture: true
+
+  // Sayfa yüklendiğinde current language göstergesini + href'leri güncelle
+  function updateCurrentLangDisplay() {
+    const path = location.pathname;
+    const m = path.match(/^\/(en|fr|de|ru|ar)(\/|$)/);
+    const current = m ? m[1] : 'tr';
+
+    const currentEl = document.getElementById('currentLang');
+    const currentFlagEl = document.getElementById('currentFlag');
+    const codeMap = { tr: 'TR', en: 'EN', fr: 'FR', de: 'DE', ru: 'RU', ar: 'AR' };
+
+    if (currentEl) currentEl.textContent = codeMap[current] || 'TR';
+
+    const activeOpt = document.querySelector('.lang-option[data-lang="' + current + '"] .flag svg');
+    if (activeOpt && currentFlagEl) currentFlagEl.innerHTML = activeOpt.outerHTML;
+
+    document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+    const activeLink = document.querySelector('.lang-option[data-lang="' + current + '"]');
+    if (activeLink) activeLink.classList.add('active');
+
+    // Her lang-option'a gerçek href ver (JS başarısız olsa bile browser navigate etsin)
+    let cleanPath = path.replace(/^\/(en|fr|de|ru|ar)(?=\/|$)/, '');
+    if (!cleanPath || cleanPath === '') cleanPath = '/';
+    document.querySelectorAll('.lang-option[data-lang]').forEach(opt => {
+      const lang = opt.getAttribute('data-lang');
+      const newHref = lang === 'tr' ? cleanPath : ('/' + lang + (cleanPath === '/' ? '/' : cleanPath));
+      opt.setAttribute('href', newHref);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateCurrentLangDisplay);
+  } else {
+    updateCurrentLangDisplay();
+  }
+  // Header injection sonrası tekrar
+  setTimeout(updateCurrentLangDisplay, 500);
+  setTimeout(updateCurrentLangDisplay, 1500);
+})();
 
 document.addEventListener('DOMContentLoaded', () => {
   // Mobile menu close on link click + body scroll lock
