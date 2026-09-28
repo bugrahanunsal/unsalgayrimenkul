@@ -463,6 +463,19 @@ section { padding: 80px 24px; }
 /* ============================================ */
 /* AUTH BUTONLARI - Tüm sayfalarda tutarlı (home page ile aynı) */
 /* ============================================ */
+/* Mobile auth widget'ı sadece hamburger menü açıldığında görünsün — DESKTOP'ta ASLA */
+.nav-auth-mobile { display: none !important; }
+@media (max-width: 968px) {
+  .nav.open .nav-auth-mobile,
+  .nav-auth-mobile.iu-force-show {
+    display: block !important;
+    width: 100%;
+    order: -1;
+    margin-bottom: 12px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(244,155,28,0.2);
+  }
+}
 .topbar-auth {
   display: inline-flex;
   align-items: center;
