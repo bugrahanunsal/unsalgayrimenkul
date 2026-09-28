@@ -68,7 +68,10 @@ function waNumber(tel) {           // 0532... → 90532...
 function prettyPhone(tel) {
   const d = waNumber(tel);
   const m = d.match(/^90(\d{3})(\d{3})(\d{2})(\d{2})$/);
-  return m ? `+90 ${m[1]} ${m[2]} ${m[3]} ${m[4]}` : tel;
+  if (m) return `+90 ${m[1]} ${m[2]} ${m[3]} ${m[4]}`;
+  const us = d.match(/^1(\d{3})(\d{3})(\d{4})$/);           // ABD / Kanada
+  if (us) return `+1 ${us[1]} ${us[2]} ${us[3]}`;
+  return d.length >= 11 ? '+' + d : tel;
 }
 
 // ---------------- doğrulama ----------------
