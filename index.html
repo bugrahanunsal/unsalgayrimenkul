@@ -285,9 +285,10 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
     padding: 6px 14px !important;
     max-width: 90% !important;
   }
-  .hero-eyebrow { flex-direction: column !important; gap: 3px !important; border-radius: 14px !important; padding: 8px 16px !important; }
-  .hero-eyebrow-sep { display: none; }
-  .hero-eyebrow-brand { letter-spacing: 3px; font-size: 11px; }
+  /* Tek satır: yazı ekran genişliğine göre ölçeklenir, asla bölünmez */
+  .hero-eyebrow { flex-wrap: nowrap !important; white-space: nowrap !important; font-size: min(11px, 2.8vw) !important; letter-spacing: 0.06em !important; padding: 7px 12px !important; max-width: 96% !important; }
+  .hero-eyebrow-sep { margin: 0 0.7em; width: 4px; height: 4px; }
+  .hero-eyebrow-brand { letter-spacing: 0.12em; }
   .hero h1 {
     font-size: 32px !important;
     line-height: 1.15 !important;
