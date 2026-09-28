@@ -265,18 +265,42 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Mobile menu close on link click
+  // Mobile menu close on link click + body scroll lock
   const mainNav = document.getElementById('mainNav');
   const menuToggle = document.querySelector('.menu-toggle');
+
+  // Body scroll lock helper: .nav.open class değiştiğinde body'ye class ekle/çıkar
+  let scrollY = 0;
+  function syncBodyLock(nav) {
+    if (!nav) return;
+    const isOpen = nav.classList.contains('open');
+    if (isOpen) {
+      scrollY = window.scrollY;
+      document.body.classList.add('iu-nav-open');
+      document.body.style.top = '-' + scrollY + 'px';
+    } else if (document.body.classList.contains('iu-nav-open')) {
+      document.body.classList.remove('iu-nav-open');
+      document.body.style.top = '';
+      window.scrollTo(0, scrollY);
+    }
+  }
+
   if (mainNav) {
+    // Nav'da class değişimini izle (menu-toggle butonu toggle ediyor)
+    const observer = new MutationObserver(() => syncBodyLock(mainNav));
+    observer.observe(mainNav, { attributes: true, attributeFilter: ['class'] });
+
+    // Link'e tıklanınca menüyü kapat
     mainNav.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => mainNav.classList.remove('open'));
     });
+    // Dışına tıklanınca menüyü kapat
     document.addEventListener('click', (e) => {
       if (mainNav.classList.contains('open') && !mainNav.contains(e.target) && menuToggle && !menuToggle.contains(e.target)) {
         mainNav.classList.remove('open');
       }
     });
+    // Ekran büyüyünce menüyü kapat
     window.addEventListener('resize', () => {
       if (window.innerWidth > 968) mainNav.classList.remove('open');
     });
