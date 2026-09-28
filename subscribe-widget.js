@@ -1355,7 +1355,7 @@
           ? 'display:flex !important; flex-direction:row !important; width:100% !important; gap:8px !important; box-sizing:border-box;'
           : '';
         const btnStyle = isMobileNav
-          ? 'flex:1 1 0 !important; width:100% !important; min-width:0 !important; max-width:none !important; padding:10px 8px !important; font-size:13px !important; justify-content:center !important; align-items:center !important; display:flex !important; box-sizing:border-box !important;'
+          ? 'flex:1 1 0 !important; width:100% !important; min-width:0 !important; max-width:none !important; padding:11px 8px !important; font-size:13px !important; justify-content:center !important; align-items:center !important; display:flex !important; box-sizing:border-box !important; border-radius:14px !important;'
           : '';
         container.innerHTML = `
           <div class="iu-authbar" style="${barStyle}">

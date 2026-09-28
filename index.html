@@ -50,7 +50,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="style.css?v=20260928-header-align">
+<link rel="stylesheet" href="style.css?v=20260928-no-avatar">
 
 <style>
 .hero {
@@ -656,27 +656,15 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           border-radius: 12px !important;
           gap: 12px !important;
         }
+        /* Mavi avatar tamamen kaldırıldı — sadece username kalıyor */
         .nav-auth-mobile .iu-authbar-avatar {
-          width: 24px !important;
-          height: 24px !important;
-          min-width: 24px !important;
-          max-width: 24px !important;
-          min-height: 24px !important;
-          max-height: 24px !important;
-          flex: 0 0 24px !important;
-          flex-basis: 24px !important;
-          flex-grow: 0 !important;
-          flex-shrink: 0 !important;
-          aspect-ratio: 1 / 1 !important;
-          border-radius: 50% !important;
-          /* Y HARFİNİ TAMAMEN GİZLE — sadece boş mavi daire kalsın */
-          font-size: 0 !important;
-          color: transparent !important;
-          text-indent: -9999px !important;
+          display: none !important;
+          width: 0 !important;
+          height: 0 !important;
           overflow: hidden !important;
+          visibility: hidden !important;
+          margin: 0 !important;
           padding: 0 !important;
-          display: block !important;
-          box-sizing: border-box !important;
         }
         .nav-auth-mobile .iu-authbar-name {
           color: #0A2A5E !important;
@@ -735,7 +723,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           box-sizing: border-box !important;
           background: #ffffff !important;
           border: 1px solid #e5e7eb !important;
-          border-radius: 10px !important;
+          border-radius: 14px !important;
           color: #0A2A5E !important;
           font-size: 13px !important;
           font-weight: 700 !important;
@@ -1209,7 +1197,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 <a href="https://wa.me/905075188482" class="wa-float"><i class="fa-brands fa-whatsapp"></i></a>
 
-<script src="/script.js?v=20260928-header-align"></script>
+<script src="/script.js?v=20260928-no-avatar"></script>
 
 <script>
 // SMART FILTER & SEARCH SYSTEM - Facebook-grade live filtering

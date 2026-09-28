@@ -349,11 +349,10 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
   .footer .footer-brand a .logo-svg,
   footer .footer-brand a .logo-svg {
     display: block !important;
-    height: 140px !important;
-    max-width: 100% !important;
+    height: 180px !important;    /* 140 → 180 (daha büyük) */
+    max-width: 92% !important;
     width: auto !important;
     margin: 0 auto !important;
-    /* SVG viewBox padding sorunu: preserveAspectRatio ile ortala */
     object-fit: contain !important;
     object-position: center !important;
   }
