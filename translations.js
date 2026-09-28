@@ -18,6 +18,7 @@ const translations = {
     "nav.blog": "BLOG",
     "nav.hakkimizda": "HAKKIMIZDA",
     "nav.iletisim": "İLETİŞİM",
+    "nav.sss": "FAQ",
     "nav.cta": "HEMEN ARA",
 
     // HERO
@@ -168,6 +169,7 @@ const translations = {
     "nav.blog": "BLOG",
     "nav.hakkimizda": "ABOUT US",
     "nav.iletisim": "CONTACT",
+    "nav.sss": "FAQ",
     "nav.cta": "CALL NOW",
 
     "hero.eyebrow": "YALOVA'S TRUSTED REAL ESTATE BRAND",
@@ -307,6 +309,7 @@ const translations = {
     "nav.blog": "BLOG",
     "nav.hakkimizda": "À PROPOS",
     "nav.iletisim": "CONTACT",
+    "nav.sss": "FAQ",
     "nav.cta": "APPELEZ",
 
     "hero.eyebrow": "LA MARQUE IMMOBILIÈRE DE CONFIANCE DE YALOVA",
@@ -446,6 +449,7 @@ const translations = {
     "nav.blog": "BLOG",
     "nav.hakkimizda": "ÜBER UNS",
     "nav.iletisim": "KONTAKT",
+    "nav.sss": "FAQ",
     "nav.cta": "ANRUFEN",
 
     "hero.eyebrow": "YALOVAS VERTRAUENSWÜRDIGE IMMOBILIENMARKE",
@@ -585,6 +589,7 @@ const translations = {
     "nav.blog": "БЛОГ",
     "nav.hakkimizda": "О НАС",
     "nav.iletisim": "КОНТАКТЫ",
+    "nav.sss": "FAQ",
     "nav.cta": "ПОЗВОНИТЬ",
 
     "hero.eyebrow": "НАДЕЖНЫЙ БРЕНД НЕДВИЖИМОСТИ ЯЛОВЫ",
@@ -724,6 +729,7 @@ const translations = {
     "nav.blog": "المدونة",
     "nav.hakkimizda": "من نحن",
     "nav.iletisim": "اتصل بنا",
+    "nav.sss": "FAQ",
     "nav.cta": "اتصل الآن",
 
     "hero.eyebrow": "علامة يالوفا العقارية الموثوقة",

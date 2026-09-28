@@ -30,10 +30,13 @@
 /ar/                        /                             200
 /ar/*                       /:splat                       200
 
-# ---- Aliaslar (FAQ sayfası için ek URL'ler) ----
-/faq                        /sss                          301
-/faq.html                   /sss                          301
-/sikca-sorulan-sorular      /sss                          301
+# ---- FAQ sayfası: /faq artık kanonik URL (sss.html içeriği) ----
+/faq                        /sss.html                     200
+/faq/                       /sss.html                     200
+/faq.html                   /sss.html                     200
+/sss                        /faq                          301
+/sss.html                   /faq                          301
+/sikca-sorulan-sorular      /faq                          301
 
 # ---- Türkçe/İngilizce alias'lar ----
 /hakkimda                   /hakkimizda                   301

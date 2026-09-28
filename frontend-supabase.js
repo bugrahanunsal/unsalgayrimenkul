@@ -462,6 +462,14 @@
   }
 
   async function loadCategoryPageProperties() {
+    // Blog, hakkımızda, iletişim, hesabım vs. gibi sayfalarda kategori render etme
+    const pathname = window.location.pathname.toLowerCase();
+    const skipPaths = ['/blog', '/hakkimizda', '/hakkimda', '/iletisim', '/contact',
+                       '/hesabim', '/account', '/sss', '/faq', '/verify', '/unsubscribe', '/admin'];
+    if (skipPaths.some(p => pathname.includes(p))) {
+      console.log('[Frontend] Kategori olmayan sayfa (' + pathname + '), skip');
+      return;
+    }
     const found = findCategoryContainer();
     if (!found) {
       console.log('[Frontend] Kategori container bulunamadı, kategori sayfası değil');
@@ -493,7 +501,6 @@
       }
     }, 15000);
 
-    const pathname = window.location.pathname.toLowerCase();
     const filters = {};
 
     if (pathname.includes('satilik')) filters.tip = 'satilik';

@@ -164,7 +164,7 @@
       <a href="${lp('yalova-kiralik-villa')}"${cls('luks')}><span data-i18n="nav.luks">LÜKS</span><span class="nav-badge" data-i18n="nav.luks.badge">YENİ</span></a>
       <a href="${lp('blog')}"${cls('blog')} data-i18n="nav.blog">BLOG</a>
       <a href="${lp('hakkimizda')}"${cls('hakkimizda')} data-i18n="nav.hakkimizda">HAKKIMIZDA</a>
-      <a href="${lp('sss')}"${cls('sss')}>SSS</a>
+      <a href="${lp('faq')}"${cls('sss')} data-i18n="nav.sss">FAQ</a>
       <a href="${lp('iletisim')}"${cls('iletisim')} data-i18n="nav.iletisim">İLETİŞİM</a>
       <!-- .nav-auth-mobile kaldırıldı: header'da çift auth pill oluyordu.
            Top-bar'daki .topbar-auth zaten yeterli, mobil hamburger menüsünde
@@ -252,22 +252,29 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('[SiteLoader] Footer logo TURYAP versiyonuyla güncellendi');
 });
 
-// ==================== NAV MENÜYE SSS EKLE ====================
-// Her sayfada nav menüsüne SSS linkini otomatik ekle (İLETİŞİM'den önce)
+// ==================== NAV MENÜYE FAQ EKLE ====================
+// Her sayfada nav menüsüne FAQ linkini otomatik ekle (İLETİŞİM'den önce)
 document.addEventListener('DOMContentLoaded', () => {
   const nav = document.getElementById('mainNav');
   if (!nav) return;
 
-  // Zaten var mı kontrol
-  if (nav.querySelector('a[href*="/sss"], a[href="sss.html"]')) return;
+  // Zaten var mı kontrol (eski /sss link'i varsa güncelle)
+  const existing = nav.querySelector('a[href*="/sss"], a[href="sss.html"], a[href*="/faq"], a[href="faq.html"]');
+  if (existing) {
+    existing.setAttribute('href', '/faq');
+    existing.textContent = 'FAQ';
+    return;
+  }
 
-  const sssLink = document.createElement('a');
-  sssLink.href = '/sss';
-  sssLink.textContent = 'SSS';
+  const faqLink = document.createElement('a');
+  faqLink.href = '/faq';
+  faqLink.textContent = 'FAQ';
+  faqLink.setAttribute('data-i18n', 'nav.sss');
 
   // Aktif sayfa kontrolü
-  if (window.location.pathname.toLowerCase().includes('/sss')) {
-    sssLink.className = 'active';
+  const p = window.location.pathname.toLowerCase();
+  if (p.includes('/faq') || p.includes('/sss')) {
+    faqLink.className = 'active';
   }
 
   // İLETİŞİM'den önce ekle (varsa)
@@ -280,9 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (iletisimLink) {
-    nav.insertBefore(sssLink, iletisimLink);
+    nav.insertBefore(faqLink, iletisimLink);
   } else {
-    nav.appendChild(sssLink);
+    nav.appendChild(faqLink);
   }
 });
 
