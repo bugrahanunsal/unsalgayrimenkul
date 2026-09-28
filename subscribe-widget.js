@@ -1050,6 +1050,14 @@
         color: #FFFFFF !important;
         font-size: 11px !important;
         font-weight: 600;
+        max-width: 100px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+      }
+      .topbar-auth .iu-authbar-user {
+        max-width: 160px !important;
+        overflow: hidden !important;
       }
       .topbar-auth .iu-user-menu {
         background: #ffffff !important;

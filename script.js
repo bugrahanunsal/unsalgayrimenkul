@@ -191,6 +191,15 @@
       nodes.forEach(n => document.body.insertBefore(n, document.body.firstChild));
     }
     if (existingHeader) existingHeader.remove();
+
+    // TURYAP marka SVG'sinin ve dil kodlarının çevrilmesini engelle
+    document.querySelectorAll('.logo svg, .lang-code, .flag, .nav-badge, [data-iu-auth]').forEach(el => {
+      el.setAttribute('translate', 'no');
+      el.classList.add('notranslate');
+    });
+
+    // Header değişti — dinleyenlere bildir (translator.js Google Translate'i tekrar tetikler)
+    document.dispatchEvent(new CustomEvent('iu:header-injected'));
   }
 
   if (document.readyState === 'loading') {

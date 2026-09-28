@@ -110,7 +110,7 @@
     }
   }
 
-  // Widget'taki dili programmatik seç
+  // Widget'taki dili programmatik seç (globalde expose et — dışarıdan da çağrılabilir)
   function selectLanguage(lang) {
     let attempts = 0;
     const maxAttempts = 30; // 30 * 200ms = 6 saniye
@@ -133,6 +133,39 @@
     }
     tryClick();
   }
+
+  // Global: header sonradan enjekte edilirse çeviriyi tekrar tetikle
+  // Google Translate combo'yu önce boşalt sonra hedefe getir → tam re-scan
+  window.__IURetranslate = function() {
+    function force() {
+      const select = document.querySelector('.goog-te-combo, select.goog-te-combo');
+      if (!select) return false;
+      // Önce Türkçe'ye (kaynak) — mevcut çeviriyi sıfırla
+      select.value = '';
+      select.dispatchEvent(new Event('change'));
+      // Kısa gecikme, sonra tekrar hedef dile
+      setTimeout(() => {
+        const s2 = document.querySelector('.goog-te-combo, select.goog-te-combo');
+        if (s2) {
+          s2.value = currentLang;
+          s2.dispatchEvent(new Event('change'));
+        }
+      }, 250);
+      return true;
+    }
+    // Combo hazır olana kadar dene
+    let tries = 0;
+    (function attempt() {
+      if (force() || ++tries > 20) return;
+      setTimeout(attempt, 250);
+    })();
+  };
+
+  // Header injection eventini dinle — yeni içerik geldiğinde tekrar çevir
+  document.addEventListener('iu:header-injected', () => {
+    console.log('[Translator] Header enjekte edildi, tekrar çeviri tetikleniyor');
+    window.__IURetranslate();
+  });
 
   // Google Translate widget UI'sını gizle (banner, tooltip, vs.)
   function hideGoogleUI() {
