@@ -178,6 +178,7 @@
               </span>
             </td>
             <td>
+              ${p.durum === 'aktif' ? `<a href="${Security.escapeHtml(p.slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug) ? '/ilan/' + p.slug : '/ilan?id=' + encodeURIComponent(p.id))}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" title="İlan sayfasını sitede aç">👁️</a>` : ''}
               <a href="/admin/property-edit.html?id=${p.id}" class="btn btn-outline btn-sm">✏️</a>
               <button onclick="deleteProperty('${p.id}')" class="btn btn-danger btn-sm">🗑️</button>
             </td>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- İLAN DETAY ŞABLONU: /ilan/<slug> adresleri bu sayfaya yönlenir (_redirects).
+     İçerik ilan-detay.js ile Supabase'den doldurulur. Tüm yollar MUTLAK (/...) — sayfa /ilan/ altında açılıyor. -->
+<title>İlan Detayı — TURYAP İsmail Ünsal | Yalova Emlak</title>
+<meta name="description" content="Yalova satılık ve kiralık gayrimenkul ilanı — TURYAP İsmail Ünsal. Fotoğraflar, fiyat, özellikler ve danışman iletişim bilgileri.">
+<meta name="robots" content="index, follow">
+<meta name="author" content="İsmail Ünsal - TURYAP">
+<meta property="og:type" content="product">
+<meta property="og:site_name" content="TURYAP İsmail Ünsal">
+<meta property="og:title" content="Yalova Emlak İlanı — TURYAP İsmail Ünsal">
+<meta property="og:description" content="Yalova satılık ve kiralık gayrimenkul ilanı.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260928-brand-fav">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=house">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=house">
+<link rel="shortcut icon" href="/favicon.ico?v=house">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://gosmkthmamloafgtvhpj.supabase.co" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="/style.css?v=20260928-ilan">
+<style>
+/* ================= İLAN DETAY (ild-) ================= */
+.ild { max-width: 1280px; margin: 0 auto; padding: 18px 20px 40px; }
+.ild-loading { padding: 80px 20px; text-align: center; color: #6B7280; }
+.ild-skel { background: linear-gradient(90deg,#EEF1F5 0%,#F7F8FA 50%,#EEF1F5 100%); background-size: 200% 100%; animation: ildShimmer 1.2s infinite; border-radius: 14px; }
+@keyframes ildShimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.ild-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: #6B7280; margin: 4px 0 18px; }
+.ild-crumbs a { color: #0A2A5E; font-weight: 600; }
+.ild-crumbs a:hover { color: #F49B1C; }
+.ild-crumbs i { font-size: 9px; color: #9CA3AF; }
+.ild-crumbs span { color: #6B7280; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60vw; }
+
+.ild-layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 32px; align-items: start; }
+.ild-right { position: sticky; top: 104px; display: flex; flex-direction: column; gap: 18px; }
+
+/* Galeri */
+.ild-gal-main { position: relative; aspect-ratio: 16 / 10; background: #E5E7EB; border-radius: 16px; overflow: hidden; }
+.ild-gal-main > img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; display: block; }
+.ild-gal-count { position: absolute; bottom: 14px; left: 14px; background: rgba(10,42,94,0.85); color: #fff; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 50px; }
+.ild-gal-nav, .ild-gal-zoom { position: absolute; border: none; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.92); color: #0A2A5E; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.18); transition: transform .2s, background .2s; }
+.ild-gal-nav:hover, .ild-gal-zoom:hover { background: #F49B1C; transform: scale(1.05); }
+.ild-gal-nav { top: 50%; margin-top: -22px; }
+.ild-gal-nav.prev { left: 14px; } .ild-gal-nav.next { right: 14px; }
+.ild-gal-zoom { bottom: 12px; right: 12px; width: 40px; height: 40px; font-size: 14px; }
+.ild-gal-badges { position: absolute; top: 14px; left: 14px; display: flex; gap: 8px; }
+.ild-badge { padding: 6px 14px; border-radius: 50px; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
+.ild-badge.type { background: #fff; color: #0A2A5E; }
+.ild-badge.new { background: #F49B1C; color: #0A2A5E; }
+.ild-badge.vip { background: #0A2A5E; color: #F49B1C; }
+.ild-gal-thumbs { display: flex; gap: 8px; margin-top: 10px; overflow-x: auto; scrollbar-width: thin; padding-bottom: 4px; }
+.ild-thumb { flex: 0 0 96px; height: 68px; padding: 0; border: 2px solid transparent; border-radius: 10px; overflow: hidden; cursor: pointer; background: #E5E7EB; opacity: .75; transition: opacity .2s, border-color .2s; }
+.ild-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ild-thumb.active, .ild-thumb:hover { opacity: 1; border-color: #F49B1C; }
+
+/* Lightbox */
+.ild-lb { position: fixed; inset: 0; background: rgba(5,15,35,0.96); z-index: 100000; display: flex; align-items: center; justify-content: center; }
+.ild-lb img { max-width: 94vw; max-height: 86vh; object-fit: contain; border-radius: 8px; }
+.ild-lb-close, .ild-lb-nav { position: absolute; background: rgba(255,255,255,0.12); color: #fff; border: none; width: 48px; height: 48px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.ild-lb-close { top: 18px; right: 18px; }
+.ild-lb-nav.prev { left: 18px; top: 50%; margin-top: -24px; } .ild-lb-nav.next { right: 18px; top: 50%; margin-top: -24px; }
+.ild-lb-close:hover, .ild-lb-nav:hover { background: #F49B1C; color: #0A2A5E; }
+.ild-lb-count { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 14px; }
+
+/* Özet kartı */
+.ild-summary { background: #fff; border: 1px solid #E5E7EB; border-radius: 16px; padding: 24px; box-shadow: 0 12px 32px rgba(10,42,94,0.08); }
+.ild-sum-cat { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #F49B1C; margin-bottom: 6px; }
+.ild-title { font-family: 'League Spartan','Montserrat',sans-serif; font-size: 26px; line-height: 1.2; color: #0A2A5E; font-weight: 800; margin: 0 0 8px; overflow-wrap: anywhere; }
+.ild-loc { color: #4B5563; font-size: 14px; margin-bottom: 14px; }
+.ild-loc i { color: #F49B1C; }
+.ild-price { font-family: 'League Spartan','Montserrat',sans-serif; font-size: 34px; font-weight: 800; color: #0A2A5E; margin-bottom: 16px; letter-spacing: -0.5px; }
+.ild-quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+.ild-quick-item { background: #F5F7FA; border-radius: 12px; padding: 10px 6px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
+.ild-quick-item i { color: #F49B1C; font-size: 16px; margin-bottom: 2px; }
+.ild-quick-item strong { color: #0A2A5E; font-size: 14px; }
+.ild-quick-item span { color: #6B7280; font-size: 11px; }
+.ild-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ild-actions .ghost { grid-column: 1 / -1; }
+.ild-actions.inline { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.ild-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 16px; border-radius: 10px; font-weight: 700; font-size: 14px; text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: transform .15s, box-shadow .15s, background .15s; font-family: inherit; }
+.ild-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(10,42,94,0.18); }
+.ild-btn.call { background: #0A2A5E; color: #fff; }
+.ild-btn.wa { background: #25D366; color: #fff; }
+.ild-btn.ghost { background: #fff; color: #0A2A5E; border-color: #0A2A5E; }
+.ild-btn[disabled] { opacity: .6; cursor: wait; }
+.ild-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; color: #9CA3AF; font-size: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #F0F2F5; }
+.ild-share { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: #6B7280; font-size: 13px; }
+.ild-share a, .ild-copy { width: 34px; height: 34px; border-radius: 50%; background: #F3F4F6; color: #0A2A5E; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-size: 14px; }
+.ild-share a:hover, .ild-copy:hover { background: #F49B1C; }
+.ild-copy.ok { background: #25D366; color: #fff; }
+.ild-turyap { display: flex; gap: 8px; align-items: center; margin-top: 12px; font-size: 13px; font-weight: 600; color: #0A2A5E; }
+.ild-turyap:hover { color: #F49B1C; }
+
+/* Bölümler */
+.ild-sec { background: #fff; border: 1px solid #E5E7EB; border-radius: 16px; padding: 24px; margin-top: 20px; }
+.ild-sec h2 { font-family: 'League Spartan','Montserrat',sans-serif; font-size: 21px; color: #0A2A5E; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 2px solid #F49B1C; display: inline-block; }
+.ild-facts { display: grid; column-gap: 32px; margin: 0; }
+.ild-facts dt, .ild-facts dd { padding: 11px 0; border-bottom: 1px solid #F0F2F5; margin: 0; font-size: 14px; }
+.ild-facts { grid-template-columns: max-content 1fr max-content 1fr; }
+.ild-facts dt { color: #6B7280; padding-right: 16px; }
+.ild-facts dd { color: #0A2A5E; font-weight: 600; }
+.ild-feats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.ild-feats li { background: #FFF7EB; border: 1px solid #FDE3B8; color: #0A2A5E; border-radius: 10px; padding: 11px 14px; font-size: 14px; font-weight: 600; }
+.ild-feats i { color: #F49B1C; width: 18px; }
+.ild-desc { color: #374151; font-size: 15px; line-height: 1.8; white-space: pre-line; overflow-wrap: anywhere; }
+.ild-map-note { color: #6B7280; font-size: 13px; margin: 0 0 12px; }
+.ild-map-note i { color: #F49B1C; }
+.ild-map iframe { width: 100%; height: 320px; border: 0; border-radius: 12px; background: #E5E7EB; display: block; }
+
+/* Danışmanlar */
+.ild-agents { background: #0A2A5E; color: #fff; border-radius: 16px; padding: 22px; }
+.ild-agents h3 { font-family: 'League Spartan','Montserrat',sans-serif; font-size: 18px; margin: 0 0 14px; color: #fff; }
+.ild-agent { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.12); }
+.ild-agent img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #F49B1C; flex-shrink: 0; }
+.ild-agent-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.ild-agent-info strong { font-size: 15px; }
+.ild-agent-info span { font-size: 12px; color: rgba(255,255,255,0.65); }
+.ild-agent-info a { font-size: 13px; color: #F49B1C; font-weight: 600; }
+.ild-agent-btns { display: flex; gap: 6px; }
+.ild-agent-btns a { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.12); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
+.ild-agent-btns a.wa { background: #25D366; }
+.ild-agent-btns a:hover { transform: scale(1.06); }
+.ild-office { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 12px; margin-top: 4px; display: grid; gap: 6px; font-size: 13px; color: rgba(255,255,255,0.85); }
+.ild-office i { color: #F49B1C; width: 16px; }
+
+/* Form */
+.ild-form { background: #fff; border: 1px solid #E5E7EB; border-radius: 16px; padding: 22px; display: grid; gap: 10px; scroll-margin-top: 110px; }
+.ild-form h3 { font-family: 'League Spartan','Montserrat',sans-serif; font-size: 18px; color: #0A2A5E; margin: 0; }
+.ild-form-sub { color: #6B7280; font-size: 13px; margin: -4px 0 4px; }
+.ild-form label { display: grid; gap: 4px; font-size: 13px; font-weight: 600; color: #374151; }
+.ild-form label em { font-weight: 400; color: #9CA3AF; font-style: normal; }
+.ild-form input[type=text], .ild-form input[type=tel], .ild-form input[type=email], .ild-form textarea { font: inherit; font-size: 16px; font-weight: 400; color: #0A2A5E; padding: 11px 12px; border: 1.5px solid #D1D5DB; border-radius: 10px; background: #fff; width: 100%; box-sizing: border-box; }
+.ild-form input:focus, .ild-form textarea:focus { outline: none; border-color: #F49B1C; box-shadow: 0 0 0 3px rgba(244,155,28,0.18); }
+.ild-form textarea { resize: vertical; }
+.ild-form .ild-consent { display: flex; gap: 8px; align-items: flex-start; font-weight: 400; font-size: 12px; color: #6B7280; line-height: 1.5; }
+.ild-form .ild-consent input { margin-top: 2px; width: 16px; height: 16px; flex-shrink: 0; }
+.ild-form .ild-consent a { color: #0A2A5E; text-decoration: underline; }
+.ild-hp { position: absolute !important; left: -10000px !important; width: 1px; height: 1px; overflow: hidden; }
+.ild-form-msg { font-size: 13px; min-height: 1em; }
+.ild-form-msg.ok { color: #15803D; font-weight: 600; }
+.ild-form-msg.err { color: #B91C1C; }
+.ild-form-msg a { color: #15803D; font-weight: 700; }
+
+/* Benzer ilanlar */
+.ild-related { margin-top: 48px; }
+.ild-rel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 28px 0 18px; }
+.ild-rel-head h2 { font-family: 'League Spartan','Montserrat',sans-serif; font-size: 26px; color: #0A2A5E; margin: 0; }
+.ild-rel-head a { color: #F49B1C; font-weight: 700; font-size: 14px; }
+.ild-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 24px; }
+
+/* İletişim bandı */
+.ild-contact { background: linear-gradient(135deg, #0A2A5E 0%, #1B4380 100%); color: #fff; padding: 56px 20px; text-align: center; margin-top: 56px; }
+.ild-contact h2 { font-family: 'League Spartan','Montserrat',sans-serif; font-size: clamp(24px, 4vw, 34px); margin: 0 0 10px; }
+.ild-contact p { color: rgba(255,255,255,0.85); margin: 0 auto 24px; max-width: 620px; }
+.ild-contact .ild-actions.inline .ild-btn { min-width: 180px; }
+.ild-contact .ild-btn.call { background: #F49B1C; color: #0A2A5E; }
+.ild-contact-info { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; margin-top: 24px; font-size: 14px; color: rgba(255,255,255,0.85); }
+.ild-contact-info i { color: #F49B1C; margin-right: 6px; }
+.ild-contact-info a { color: #fff; }
+
+.ild-notfound { text-align: center; padding: 60px 20px 20px; max-width: 640px; margin: 0 auto; }
+.ild-nf-icon { font-size: 56px; color: #F49B1C; margin-bottom: 12px; }
+.ild-notfound h1 { font-family: 'League Spartan','Montserrat',sans-serif; color: #0A2A5E; font-size: 30px; margin: 0 0 12px; }
+.ild-notfound p { color: #6B7280; margin: 0 0 24px; }
+.ild-error { text-align: center; padding: 60px 20px; color: #B91C1C; }
+
+/* Mobil sabit alt bar */
+.ild-sticky { display: none; }
+.turyap-badge { display: inline-block; background: rgba(244,155,28,0.15); color: #F49B1C; padding: 8px 18px; border-radius: 6px; font-size: 11px; font-weight: 800; letter-spacing: 2px; border: 1px solid rgba(244,155,28,0.4); margin-bottom: 14px; }
+
+@media (max-width: 968px) {
+  .ild { padding: 12px 14px 24px; }
+  .ild-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .ild-right { position: static; margin-top: 20px; }
+  .ild-summary-mobile .ild-summary { margin-top: 14px; }
+  .ild-gal-main { aspect-ratio: 4 / 3; border-radius: 14px; }
+  .ild-gal-nav { width: 38px; height: 38px; margin-top: -19px; font-size: 14px; }
+  .ild-thumb { flex-basis: 76px; height: 56px; }
+  .ild-title { font-size: 22px; }
+  .ild-price { font-size: 28px; }
+  .ild-sec { padding: 18px; margin-top: 14px; }
+  .ild-facts { grid-template-columns: max-content 1fr; }
+  .ild-map iframe { height: 240px; }
+  .ild-rel-head h2 { font-size: 22px; }
+  .ild-grid { grid-template-columns: minmax(0, 1fr); }
+  .ild-crumbs span { max-width: 45vw; }
+  /* Sabit alt bar: fiyat + Ara + WhatsApp (WhatsApp yüzen butonu bu sayfada gereksiz) */
+  .ild-sticky { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; position: fixed; left: 0; right: 0; bottom: 0; z-index: 9000; background: #fff; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -6px 20px rgba(10,42,94,0.12); border-top: 1px solid #E5E7EB; }
+  .ild-sticky-price { font-family: 'League Spartan','Montserrat',sans-serif; font-weight: 800; color: #0A2A5E; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ild-sticky .ild-btn { padding: 11px 14px; font-size: 14px; }
+  body.ild-has-sticky .wa-float { display: none !important; }
+  body.ild-has-sticky .footer { padding-bottom: 110px; }
+}
+@media (max-width: 380px) {
+  .ild-sticky .ild-btn span, .ild-quick-item span { font-size: 10px; }
+  .ild-sticky-price { font-size: 15px; }
+}
+</style>
+<script src="/translator.js?v=20260928-batch" defer></script>
+<script src="/translations.js?v=20260928-svc" defer></script>
+</head>
+<body>
+<script src="/unified-header.js?v=20260928-single"></script>
+
+<main class="ild" id="ilanDetay" aria-live="polite">
+  <div class="ild-loading">
+    <div class="ild-skel" style="height:14px;width:220px;margin:0 0 18px"></div>
+    <div class="ild-skel" style="aspect-ratio:16/10;max-height:520px"></div>
+    <div class="ild-skel" style="height:28px;width:60%;margin:20px 0 10px"></div>
+    <div class="ild-skel" style="height:36px;width:35%"></div>
+  </div>
+  <noscript><p style="text-align:center;padding:40px">İlanı görüntülemek için JavaScript gereklidir. Bize <a href="tel:+905075188482">+90 507 518 84 82</a> numarasından ulaşabilirsiniz.</p></noscript>
+</main>
+
+<section class="ild-contact" aria-labelledby="ild-contact-h">
+  <h2 id="ild-contact-h">Bu ilanla ilgili sorunuz mu var?</h2>
+  <p>Yerinde görmek, fiyat ve ödeme seçeneklerini konuşmak için bizi arayın — Yalova'nın her bölgesini bilen TURYAP danışmanlarımız size yardımcı olsun.</p>
+  <div class="ild-actions inline">
+    <a class="ild-btn call" href="tel:+905075188482"><i class="fa-solid fa-phone" aria-hidden="true"></i> +90 507 518 84 82</a>
+    <a class="ild-btn wa" href="https://wa.me/905075188482" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> WhatsApp'tan Yaz</a>
+  </div>
+  <div class="ild-contact-info">
+    <span><i class="fa-solid fa-location-dot" aria-hidden="true"></i>Yalova, Türkiye</span>
+    <span><i class="fa-solid fa-clock" aria-hidden="true"></i>Pzt-Cmt: 09:00 - 19:00</span>
+    <span><i class="fa-solid fa-user-tie" aria-hidden="true"></i><a href="tel:+905325013275">Ramazan Aydemir: +90 532 501 32 75</a></span>
+  </div>
+</section>
+
+<footer class="footer">
+  <div style="text-align: center; padding: 20px 0 10px;">
+    <div class="turyap-badge"><i class="fa-solid fa-star" style="margin-right: 6px;"></i>RESMİ TURYAP YETKİLİ DANIŞMANI<i class="fa-solid fa-star" style="margin-left: 6px;"></i></div>
+  </div>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" aria-label="Ana Sayfa" style="display:inline-block;">
+        <svg class="logo-svg" viewBox="0 0 280 80" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:16px">
+          <g>
+            <rect x="0" y="10" width="80" height="60" rx="4" fill="#FFFFFF"/>
+            <text x="40" y="46" font-family="League Spartan, Montserrat, sans-serif" font-size="18" font-weight="800" fill="#0A2A5E" text-anchor="middle" letter-spacing="2">TURYAP</text>
+            <line x1="92" y1="20" x2="92" y2="60" stroke="#F49B1C" stroke-width="2"/>
+            <text x="185" y="42" font-family="League Spartan, Montserrat, sans-serif" font-size="20" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">İSMAİL ÜNSAL</text>
+            <text x="185" y="60" font-family="Poppins, DM Sans, sans-serif" font-size="9" font-weight="600" fill="#F49B1C" text-anchor="middle" letter-spacing="3">REAL ESTATE</text>
+          </g>
+        </svg>
+      </a>
+      <p class="footer-about">Yalova'da güvenilir gayrimenkul danışmanlığı.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Hızlı Erişim</h4>
+      <ul>
+        <li><a href="/yalova-satilik-daire">Satılık Daire</a></li>
+        <li><a href="/yalova-kiralik-daire">Kiralık Daire</a></li>
+        <li><a href="/yalova-satilik-arsa">Satılık Arsa</a></li>
+        <li><a href="/hakkimizda">Hakkımızda</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer.blogguide">Blog & Rehber</h4>
+      <ul>
+        <li><a href="/blog" data-i18n="nav.blog">Blog</a></li>
+        <li><a href="/faq" data-i18n="footer.faq">Sıkça Sorulan Sorular</a></li>
+        <li><a href="/yerel-uzmanlik">Yerel Uzmanlık</a></li>
+        <li><a href="/cok-dilli-hizmet">Çok Dilli Hizmet</a></li>
+        <li><a href="/724-destek">7/24 Destek</a></li>
+        <li><a href="/gizlilik-politikasi" data-i18n="footer.privacy">Gizlilik Politikası</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>İletişim</h4>
+      <ul>
+        <li><span><i class="fa-solid fa-location-dot"></i> Yalova, Türkiye</span></li>
+        <li><a href="tel:+905075188482"><i class="fa-solid fa-phone"></i> +90 507 518 84 82</a></li>
+        <li><a href="https://wa.me/905075188482"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 TURYAP İsmail Ünsal Real Estate. | <a href="/gizlilik-politikasi" style="color:#F49B1C; text-decoration:none;">Gizlilik Politikası</a></p>
+  </div>
+</footer>
+
+<a href="https://wa.me/905075188482" class="wa-float" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+<script src="/script.js?v=20260928-ilan"></script>
+<script src="/ilan-detay.js?v=20260928-ilan"></script>
+</body>
+</html>

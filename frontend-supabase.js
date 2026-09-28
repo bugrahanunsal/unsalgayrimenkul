@@ -70,7 +70,22 @@
         box-shadow: 0 8px 24px rgba(10,42,94,0.08) !important;
         border: 1px solid #E5E7EB !important;
         transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+        position: relative !important;
+        cursor: pointer !important;
       }
+      /* Kartın tamamı ilan sayfasına link (başlıktaki <a> tüm kartı kaplar) */
+      article.iu-card-v2 .iu-card-v2__link { color: inherit !important; text-decoration: none !important; }
+      article.iu-card-v2 .iu-card-v2__link::after {
+        content: '' !important; position: absolute !important; inset: 0 !important; z-index: 3 !important;
+      }
+      article.iu-card-v2 .iu-card-v2__link:focus-visible { outline: none !important; }
+      article.iu-card-v2:focus-within { border-color: #F49B1C !important; }
+      article.iu-card-v2 .iu-card-v2__more {
+        display: inline-flex !important; align-items: center !important; gap: 6px !important;
+        color: #F49B1C !important; font-weight: 700 !important; font-size: 13px !important;
+        margin: 0 0 14px 0 !important; letter-spacing: 0.3px !important;
+      }
+      article.iu-card-v2:hover .iu-card-v2__more { gap: 10px !important; }
       article.iu-card-v2:hover {
         transform: translateY(-6px) !important;
         box-shadow: 0 20px 40px rgba(10,42,94,0.15) !important;
@@ -152,6 +167,7 @@
       }
       article.iu-card-v2 .iu-card-v2__cta {
         display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important;
+        position: relative !important; z-index: 4 !important;  /* Ara/Sor, kart linkinin üstünde */
       }
       article.iu-card-v2 .iu-card-v2__cta a {
         display: flex !important; align-items: center !important; justify-content: center !important;
@@ -183,11 +199,39 @@
 
   function getMainImage(p) {
     // property_images join'den ana_foto=true olan, yoksa ilk, yoksa placeholder
-    if (p.property_images && p.property_images.length) {
-      const main = p.property_images.find(i => i.ana_foto === true) || p.property_images[0];
-      if (main && main.url) return main.url;
+    // Sadece https:// görseller (javascript:/data: vb. asla kullanılmaz)
+    const imgs = (p.property_images || []).filter(i => i && typeof i.url === 'string' && /^https:\/\//i.test(i.url));
+    if (imgs.length) {
+      const main = imgs.find(i => i.ana_foto === true) || imgs.slice().sort((a, b) => (a.sira || 0) - (b.sira || 0))[0];
+      return main.url;
     }
     return CONFIG.PLACEHOLDER_IMAGES[p.kategori] || CONFIG.PLACEHOLDER_IMAGES.default;
+  }
+
+  // Mevcut dil prefix'i (/en, /de ...) — linkler dili korusun
+  function langPrefix() {
+    const m = window.location.pathname.toLowerCase().match(/^\/(en|fr|de|ru|ar)(\/|$)/);
+    return m ? '/' + m[1] : '';
+  }
+
+  // İlanın kendi sayfası: /ilan/<slug>  (slug yoksa /ilan?id=<id>)
+  // Slug admin'de oluşturulur ([a-z0-9-]) ve düzenlemede değişmez → link kalıcı.
+  const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  function listingUrl(p, absolute) {
+    const path = (p.slug && SLUG_RE.test(p.slug) && p.slug.length <= 220)
+      ? langPrefix() + '/ilan/' + p.slug
+      : langPrefix() + '/ilan?id=' + encodeURIComponent(p.id);
+    return absolute ? window.location.origin + path : path;
+  }
+
+  function waLink(p) {
+    const msg = 'Merhaba, "' + (p.baslik_tr || 'İlan') + '" ilanı hakkında bilgi almak istiyorum.\n' + listingUrl(p, true);
+    return 'https://wa.me/905075188482?text=' + encodeURIComponent(msg);
+  }
+
+  // CSS url("...") içine güvenli yerleştirme
+  function cssUrl(u) {
+    return 'url("' + String(u).replace(/["\\\n\r]/g, c => encodeURIComponent(c)) + '")';
   }
 
   // ==================== SORGU FONKSİYONLARI ====================
@@ -350,7 +394,8 @@
   // BRAND NEW class names to avoid ANY conflict with page CSS
   function renderPillarCard(p) {
     const img = getMainImage(p);
-    const wa = 'https://wa.me/905075188482?text=' + encodeURIComponent('Merhaba, ' + (p.baslik_tr || 'İlan') + ' hakkında bilgi almak istiyorum');
+    const wa = waLink(p);
+    const url = listingUrl(p);
     const fiyat = formatPrice(p.fiyat, p.para_birimi);
     const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 30 * 86400000;
     const typeUpper = (p.tip || 'satilik').toUpperCase();
@@ -362,7 +407,7 @@
     // Image div
     const imgDiv = document.createElement('div');
     imgDiv.className = 'iu-card-v2__img';
-    imgDiv.style.setProperty('background-image', 'url("' + img + '")', 'important');
+    imgDiv.style.setProperty('background-image', cssUrl(img), 'important');
 
     if (p.one_cikan) {
       const t = document.createElement('span');
@@ -399,7 +444,11 @@
     // Title
     const title = document.createElement('h3');
     title.className = 'iu-card-v2__title';
-    title.textContent = p.baslik_tr || 'İlan';
+    const titleLink = document.createElement('a');
+    titleLink.className = 'iu-card-v2__link';
+    titleLink.href = url;
+    titleLink.textContent = p.baslik_tr || 'İlan';
+    title.appendChild(titleLink);
     contentDiv.appendChild(title);
 
     // Features
@@ -410,7 +459,8 @@
     if (p.oda_sayisi) featList.push({ icon: 'fa-bed', text: p.oda_sayisi });
     if (p.emsal) featList.push({ icon: 'fa-compass', text: p.emsal + ' Emsal' });
     if (p.ada_parsel) featList.push({ icon: 'fa-map', text: p.ada_parsel });
-    if (featList.length < 4 && p.imar_durumu) featList.push({ icon: 'fa-file-contract', text: p.imar_durumu });
+    const IMAR = { konut: 'Konut İmarlı', ticari: 'Ticari İmarlı', tarim: 'Tarım', sanayi: 'Sanayi', turistik: 'Turistik' };
+    if (featList.length < 4 && p.imar_durumu) featList.push({ icon: 'fa-file-contract', text: IMAR[p.imar_durumu] || p.imar_durumu });
     if (featList.length < 4 && p.bina_yasi != null) featList.push({ icon: 'fa-clock', text: p.bina_yasi + ' yaş' });
     if (featList.length < 2) featList.push({ icon: 'fa-location-dot', text: p.ilce || 'Yalova' });
 
@@ -439,6 +489,12 @@
       contentDiv.appendChild(dEl);
     }
 
+    // İlanı incele (görsel ipucu — tüm kart zaten tıklanabilir)
+    const more = document.createElement('div');
+    more.className = 'iu-card-v2__more';
+    more.innerHTML = 'İlanı İncele <i class="fa-solid fa-arrow-right"></i>';
+    contentDiv.appendChild(more);
+
     // CTA
     const cta = document.createElement('div');
     cta.className = 'iu-card-v2__cta';
@@ -465,7 +521,7 @@
     // Blog, hakkımızda, iletişim, hesabım vs. gibi sayfalarda kategori render etme
     const pathname = window.location.pathname.toLowerCase();
     const skipPaths = ['/blog', '/hakkimizda', '/hakkimda', '/iletisim', '/contact',
-                       '/hesabim', '/account', '/sss', '/faq', '/verify', '/unsubscribe', '/admin'];
+                       '/hesabim', '/account', '/sss', '/faq', '/verify', '/unsubscribe', '/admin', '/ilan'];
     if (skipPaths.some(p => pathname.includes(p))) {
       console.log('[Frontend] Kategori olmayan sayfa (' + pathname + '), skip');
       return;
@@ -555,81 +611,9 @@
     }
   }
 
-  // ==================== İLAN DETAY SAYFASI ====================
-
-  async function loadPropertyDetail() {
-    const container = document.getElementById('propertyDetail');
-    if (!container) return;
-
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    if (!id) return;
-
-    const sb = init();
-    if (!sb) return;
-
-    try {
-      const { data: p, error } = await sb
-        .from('properties')
-        .select('*, property_images(url, ana_foto, sira)')
-        .eq('id', id)
-        .eq('durum', 'aktif')
-        .maybeSingle();
-
-      if (error) throw error;
-      if (!p) {
-        container.innerHTML = '<p style="text-align:center;padding:40px;">İlan bulunamadı</p>';
-        return;
-      }
-
-      sb.from('properties').update({ goruntulenme: (p.goruntulenme || 0) + 1 }).eq('id', id).then(() => {});
-
-      const images = (p.property_images || []).sort((a, b) => (a.sira || 0) - (b.sira || 0));
-      const mainImg = getMainImage(p);
-
-      container.innerHTML = `
-        <div style="max-width:1200px;margin:0 auto;padding:40px 24px;">
-          <div style="display:grid;grid-template-columns:2fr 1fr;gap:32px;">
-            <div>
-              <img id="detailMainImg" src="${esc(mainImg)}" style="width:100%;height:500px;object-fit:cover;border-radius:16px;margin-bottom:16px;">
-              ${images.length > 1 ? `
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
-                  ${images.slice(0, 8).map(i => `<img src="${esc(i.url)}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;cursor:pointer;" onclick="document.getElementById('detailMainImg').src=this.src">`).join('')}
-                </div>` : ''}
-            </div>
-            <div>
-              <span style="display:inline-block;background:${p.tip === 'satilik' ? '#F49B1C' : '#0A2A5E'};color:white;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;">${esc((p.tip || '').toUpperCase())}</span>
-              <h1 style="font-size:28px;color:#0A2A5E;margin:12px 0;">${esc(p.baslik_tr)}</h1>
-              <div style="font-size:36px;font-weight:800;color:#F49B1C;margin:20px 0;">${formatPrice(p.fiyat, p.para_birimi)}</div>
-              <div style="background:#F9FAFB;border-radius:12px;padding:20px;margin:20px 0;">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px;">
-                  <div><strong>Konum:</strong> ${esc(p.ilce || '-')}${p.mahalle ? ', ' + esc(p.mahalle) : ''}</div>
-                  <div><strong>Alan:</strong> ${p.m2 || '-'} m²</div>
-                  <div><strong>Oda:</strong> ${esc(p.oda_sayisi || '-')}</div>
-                  <div><strong>Banyo:</strong> ${p.banyo_sayisi || '-'}</div>
-                  <div><strong>Kat:</strong> ${esc(p.kat || '-')}</div>
-                  <div><strong>Yaş:</strong> ${p.bina_yasi != null ? p.bina_yasi : '-'}</div>
-                  <div><strong>Isınma:</strong> ${esc(p.isinma || '-')}</div>
-                  <div><strong>İmar:</strong> ${esc(p.imar_durumu || '-')}</div>
-                </div>
-              </div>
-              <a href="tel:+905075188482" style="display:block;background:#0A2A5E;color:white;padding:16px;border-radius:12px;text-align:center;text-decoration:none;font-weight:700;margin-bottom:8px;"><i class="fa-solid fa-phone"></i> HEMEN ARA</a>
-              <a href="https://wa.me/905075188482" target="_blank" style="display:block;background:#25D366;color:white;padding:16px;border-radius:12px;text-align:center;text-decoration:none;font-weight:700;"><i class="fa-brands fa-whatsapp"></i> WHATSAPP</a>
-            </div>
-          </div>
-          <div style="margin-top:32px;background:white;padding:24px;border-radius:16px;">
-            <h2 style="color:#0A2A5E;margin-bottom:12px;">Açıklama</h2>
-            <p style="line-height:1.7;color:#374151;">${esc(p.aciklama_tr || 'Bu ilan için açıklama eklenmemiş.')}</p>
-          </div>
-        </div>
-      `;
-
-      document.title = p.baslik_tr + ' - İsmail Ünsal Gayrimenkul';
-    } catch (err) {
-      console.error('[Frontend] İlan detay hatası:', err);
-      container.innerHTML = '<p style="text-align:center;padding:40px;color:#EF4444;">Yükleme hatası</p>';
-    }
-  }
+  // İLAN DETAY SAYFASI: /ilan-detay.js (ilan.html) — buradaki eski sürüm kaldırıldı.
+  // Not: eski sürüm ziyaretçi tarayıcısından properties.goruntulenme'yi UPDATE
+  // etmeye çalışıyordu; anon kullanıcıya tabloda yazma yetkisi gerektirdiği için kaldırıldı.
 
   // ==================== ANA SAYFA ÖNE ÇIKAN ====================
 
@@ -655,7 +639,7 @@
   function autoInjectFAQ() {
     const pathname = window.location.pathname.toLowerCase();
     if (pathname.includes('/sss') || pathname.includes('/faq')) return;
-    if (pathname.includes('/ilan.html')) return;
+    if (pathname.includes('/ilan')) return;       // ilan detay sayfası
     if (pathname.includes('/hesabim') || pathname.includes('/account')) return;
     if (pathname.includes('/iletisim') || pathname.includes('/contact')) return;
     if (pathname.includes('/hakkimizda') || pathname.includes('/hakkimda')) return;
@@ -736,8 +720,7 @@
     // Sonrakiler paralel — herhangi biri hata verse diğerlerini engellemesin
     Promise.allSettled([
       updateCategoryCounts(),
-      loadFeaturedProperties(),
-      loadPropertyDetail()
+      loadFeaturedProperties()
     ]).then(() => {
       // Hepsi bitince FAQ'ı tekrar dene (belki container o an eklendi)
       autoInjectFAQ();
@@ -750,6 +733,13 @@
     start();
   }
 
-  window.IUFrontend = { updateCategoryCounts, loadFeaturedProperties, loadCategoryPageProperties, loadPropertyDetail };
+  window.IUFrontend = {
+    updateCategoryCounts, loadFeaturedProperties, loadCategoryPageProperties,
+    // ilan detay sayfası (ilan-detay.js) için ortak yardımcılar
+    client: init, esc, formatPrice, getMainImage, fetchProperties,
+    renderCard: renderPillarCard, listingUrl, waLink, cssUrl, langPrefix,
+    PLACEHOLDER_IMAGES: CONFIG.PLACEHOLDER_IMAGES
+  };
+  document.dispatchEvent(new CustomEvent('iu:frontend-ready'));
 
 })();

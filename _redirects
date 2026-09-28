@@ -9,6 +9,14 @@
 # ÇOK DİLLİ URL'LER (rewrite: URL değişmez, içerik TR'den gelir)
 # Google Translate JS ile otomatik çeviri yapılır (translator.js)
 # ============================================================
+# İLAN DETAY: /ilan/<slug> → ilan.html (URL değişmez). Dil bloğundan ÖNCE olmalı
+# (ilk eşleşen kural uygulanır).
+/ilan/*                     /ilan                         200
+/en/ilan/*                  /ilan                         200
+/fr/ilan/*                  /ilan                         200
+/de/ilan/*                  /ilan                         200
+/ru/ilan/*                  /ilan                         200
+/ar/ilan/*                  /ilan                         200
 # İngilizce
 /en                         /                             200
 /en/                        /                             200

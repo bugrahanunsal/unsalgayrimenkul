@@ -22,7 +22,7 @@
 
   function fmtPrice(v, cur) {
     if (!v) return 'Fiyat İçin Arayın';
-    const symbol = { TRY: '₺', USD: '$', EUR: '€', GBP: '£' }[cur] || '₺';
+    const symbol = { TL: '₺', TRY: '₺', USD: '$', EUR: '€', GBP: '£' }[cur] || '₺';
     return symbol + ' ' + Number(v).toLocaleString('tr-TR');
   }
 
@@ -41,19 +41,17 @@
       .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   }
 
+  // HTML'e basılan her ilan verisi kaçış yapılır (XSS önlemi)
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // İlanın kendi sayfası: /ilan/<slug> (frontend-supabase.js listingUrl ile aynı kural)
   function detailLink(p) {
-    // Category page + auto-open modal or scroll — simplest: link to category page for now
-    const map = {
-      arsa: 'yalova-satilik-arsa.html',
-      villa: 'yalova-kiralik-villa.html',
-      daire: p.tip === 'kiralik' ? 'yalova-kiralik-daire.html' : 'yalova-satilik-daire.html',
-      mustakil_ev: p.tip === 'kiralik' ? 'yalova-kiralik-ev.html' : 'yalova-satilik-ev.html'
-    };
-    const page = map[p.kategori] || 'yalova-satilik-daire.html';
-    // Preserve current language
     const langMatch = location.pathname.toLowerCase().match(/^\/(en|fr|de|ru|ar)(\/|$)/);
-    const prefix = langMatch ? '/' + langMatch[1] + '/' : '/';
-    return prefix + page + '#ilan-' + p.id;
+    const prefix = langMatch ? '/' + langMatch[1] : '';
+    if (p.slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug) && p.slug.length <= 220) return prefix + '/ilan/' + p.slug;
+    return prefix + '/ilan?id=' + encodeURIComponent(p.id);
   }
 
   function renderCard(p) {
@@ -62,15 +60,16 @@
     const title = p.baslik_tr || 'İlan';
     const loc = [p.ilce, p.mahalle].filter(Boolean).join(', ');
     const tipLabel = p.tip === 'kiralik' ? 'KİRALIK' : 'SATILIK';
+    const safeImg = /^https:\/\//i.test(img) ? img.replace(/["'()\\\s]/g, c => encodeURIComponent(c)) : PLACEHOLDER.default;
     return `
-      <a href="${detailLink(p)}" class="sb-listing-card">
-        <div class="sb-listing-img" style="background-image:url('${img}')">
+      <a href="${esc(detailLink(p))}" class="sb-listing-card">
+        <div class="sb-listing-img" style="background-image:url('${esc(safeImg)}')">
           <span class="sb-listing-tag">${tipLabel}</span>
         </div>
         <div class="sb-listing-body">
-          <div class="sb-listing-loc"><i class="fa-solid fa-location-dot"></i> ${loc || 'Yalova'}</div>
-          <h4 class="sb-listing-title">${title}</h4>
-          <div class="sb-listing-price">${price}</div>
+          <div class="sb-listing-loc"><i class="fa-solid fa-location-dot"></i> ${esc(loc || 'Yalova')}</div>
+          <h4 class="sb-listing-title">${esc(title)}</h4>
+          <div class="sb-listing-price">${esc(price)}</div>
         </div>
       </a>
     `;
@@ -92,7 +91,7 @@
       }
     }
     try {
-      const sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+      const sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
       // Try one_cikan=true first
       let { data, error } = await sb
         .from('properties')
