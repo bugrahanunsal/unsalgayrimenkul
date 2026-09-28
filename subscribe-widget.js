@@ -1056,30 +1056,40 @@
   // Home page ile tutarlı: .top-right içine, .top-social'dan sonra, .lang-switcher'dan önce
   function autoInjectAuthContainer() {
     if (window.location.pathname.toLowerCase().includes('/admin')) return;
-    if (document.querySelector('[data-iu-auth]')) return;
 
-    const authDiv = document.createElement('div');
-    authDiv.setAttribute('data-iu-auth', '');
-    authDiv.className = 'topbar-auth'; // Home page ile aynı class
-
-    // .top-right içine yerleştir (tüm sayfalarda var)
-    const topRight = document.querySelector('.top-bar-inner .top-right, .top-right');
-    if (topRight) {
-      // .lang-switcher'dan önce ekle
-      const langSw = topRight.querySelector('.lang-switcher, #langSwitcher');
-      if (langSw) {
-        topRight.insertBefore(authDiv, langSw);
+    // 1) TOPBAR auth (desktop için gösterilir, mobile'da CSS hide eder)
+    if (!document.querySelector('.topbar-auth[data-iu-auth]')) {
+      const topRight = document.querySelector('.top-bar-inner .top-right, .top-right');
+      if (topRight) {
+        const authDiv = document.createElement('div');
+        authDiv.setAttribute('data-iu-auth', '');
+        authDiv.className = 'topbar-auth';
+        const langSw = topRight.querySelector('.lang-switcher, #langSwitcher');
+        if (langSw) topRight.insertBefore(authDiv, langSw);
+        else topRight.appendChild(authDiv);
       } else {
-        topRight.appendChild(authDiv);
+        // Fallback: floating
+        const authDiv = document.createElement('div');
+        authDiv.setAttribute('data-iu-auth', '');
+        authDiv.className = 'topbar-auth';
+        authDiv.style.cssText = 'position:fixed;top:14px;right:20px;z-index:99998;background:rgba(10,42,94,0.95);padding:8px 14px;border-radius:24px;box-shadow:0 4px 20px rgba(0,0,0,0.25);';
+        document.body.appendChild(authDiv);
       }
-      console.log('[IUAuth] Auth widget top-right\'a eklendi');
-      return;
     }
 
-    // Fallback (top-right yoksa): sağ üste floating
-    authDiv.style.cssText = 'position:fixed;top:14px;right:20px;z-index:99998;background:rgba(10,42,94,0.95);padding:8px 14px;border-radius:24px;box-shadow:0 4px 20px rgba(0,0,0,0.25);';
-    document.body.appendChild(authDiv);
-    console.log('[IUAuth] Auth widget floating fallback');
+    // 2) NAV mobile menu içine auth (mobile'da menüyü açtığında görünür)
+    // Her sayfada nav var: <nav class="nav"> ... </nav>
+    if (!document.querySelector('.nav-auth-mobile[data-iu-auth]')) {
+      const nav = document.querySelector('nav.nav, .nav, #mainNav');
+      if (nav) {
+        const navAuthDiv = document.createElement('div');
+        navAuthDiv.setAttribute('data-iu-auth', '');
+        navAuthDiv.className = 'nav-auth-mobile';
+        // Nav'ın EN BAŞINA ekle (order: -1 CSS ile en üste geçer)
+        nav.insertBefore(navAuthDiv, nav.firstChild);
+        console.log('[IUAuth] nav-auth-mobile eklendi');
+      }
+    }
   }
 
   // Auth widget için tutarlı stil ekle - HOME PAGE İLE AYNI (index.html'den kopyalandı)

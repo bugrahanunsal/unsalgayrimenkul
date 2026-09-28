@@ -349,12 +349,11 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
   .footer .footer-brand a .logo-svg,
   footer .footer-brand a .logo-svg {
     display: block !important;
-    height: 220px !important;    /* 180 → 220 (daha büyük) */
-    max-width: 96% !important;
+    /* Yeni SVG viewBox 200x160 (1.25 aspect) — kare-ish, mobilde büyük */
+    height: 260px !important;
+    max-width: 90% !important;
     width: auto !important;
     margin: 0 auto !important;
-    object-fit: contain !important;
-    object-position: center !important;
   }
   .footer .footer-brand .footer-about,
   footer .footer-brand .footer-about {
@@ -815,5 +814,186 @@ nav.nav > .nav-auth-mobile,
   .topbar-auth .iu-authbar-btn {
     padding: 4px 8px !important;
     font-size: 10px !important;
+  }
+}
+
+/* ============================================================
+   NAV-AUTH-MOBILE — Auth widget mobil hamburger menü içinde
+   Tüm sayfalarda geçerli (index.html'den taşındı)
+   ============================================================ */
+
+/* Desktop: nav-auth-mobile TAMAMEN gizli */
+.nav-auth-mobile,
+.nav-auth-mobile * {
+  display: none !important;
+  visibility: hidden !important;
+  overflow: hidden !important;
+}
+
+/* .iu-mobile-actions desktop'ta gizli (topbar-auth versiyonu) */
+.topbar-auth .iu-mobile-actions {
+  display: none !important;
+}
+
+@media (max-width: 968px) {
+  /* Mobil'de topbar auth TAMAMEN gizli */
+  .topbar-auth {
+    display: none !important;
+  }
+
+  /* nav-auth-mobile'ı MOBİLDE göster + reset */
+  .nav-auth-mobile,
+  .nav-auth-mobile * {
+    visibility: visible !important;
+    overflow: visible !important;
+    width: auto !important;
+    height: auto !important;
+    display: revert !important;
+  }
+  .nav-auth-mobile {
+    display: block !important;
+    width: 100% !important;
+    order: -1 !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 16px !important;
+    border-bottom: 2px solid rgba(244,155,28,0.2) !important;
+  }
+  /* Nav'ın flex align-items'ini stretch yap ki child'lar full width olsun */
+  .nav.open, .nav.iu-mobile-active {
+    align-items: stretch !important;
+  }
+  .nav.open > *, .nav.iu-mobile-active > * {
+    width: 100% !important;
+  }
+  /* Giriş / Üye Ol (not signed in) — grid 2 kolon yan yana */
+  .nav-auth-mobile .iu-authbar {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .nav-auth-mobile .iu-authbar-btn {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+    padding: 10px 8px !important;
+    font-size: 13px !important;
+    line-height: 1.2 !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border-radius: 8px !important;
+    gap: 6px !important;
+    margin: 0 !important;
+  }
+  .nav-auth-mobile .iu-authbar-signup {
+    background: #F49B1C !important;
+    color: #0A2A5E !important;
+    border-color: #F49B1C !important;
+  }
+  .nav-auth-mobile .iu-authbar-login {
+    background: transparent !important;
+    color: #0A2A5E !important;
+    border-color: #0A2A5E !important;
+  }
+  /* LOGGED IN: kolon layout, user pill + actions */
+  .nav-auth-mobile.iu-signed-in .iu-authbar {
+    flex-direction: column !important;
+    display: flex !important;
+    gap: 8px !important;
+    align-items: stretch !important;
+  }
+  .nav-auth-mobile .iu-authbar-user {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    padding: 12px 14px !important;
+    background: #f0f4f9 !important;
+    border: 1px solid #e0e7ee !important;
+    border-radius: 12px !important;
+    gap: 10px !important;
+    box-sizing: border-box !important;
+  }
+  /* MAVİ AVATAR TAMAMEN GİZLİ */
+  .nav-auth-mobile .iu-authbar-avatar,
+  .nav-auth-mobile [class*="avatar"] {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    left: -99999px !important;
+    pointer-events: none !important;
+    flex: 0 0 0 !important;
+  }
+  .nav-auth-mobile .iu-authbar-name {
+    color: #0A2A5E !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    flex: 1 1 auto !important;
+    text-align: left !important;
+  }
+  /* Eski .iu-user-menu tamamen gizli (yerine .iu-mobile-actions) */
+  .nav-auth-mobile .iu-user-menu,
+  .nav-auth-mobile .iu-user-menu.open {
+    display: none !important;
+    position: absolute !important;
+    left: -99999px !important;
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  /* Yeni mobile actions container — grid 2 kolon */
+  .nav-auth-mobile .iu-mobile-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-top: 8px !important;
+    box-sizing: border-box !important;
+  }
+  .nav-auth-mobile .iu-mobile-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 14px 12px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    text-decoration: none !important;
+    text-align: center !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-shadow: 0 4px 12px rgba(10,42,94,0.12) !important;
+  }
+  .nav-auth-mobile .iu-mobile-btn-admin {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+    color: #ffffff !important;
+  }
+  .nav-auth-mobile .iu-mobile-btn-account {
+    background: linear-gradient(135deg, #0A2A5E 0%, #1B4380 100%) !important;
+    color: #ffffff !important;
+  }
+  .nav-auth-mobile .iu-mobile-btn-logout {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+    color: #ffffff !important;
+  }
+  .nav-auth-mobile .iu-mobile-btn:active {
+    transform: scale(0.97) !important;
   }
 }
