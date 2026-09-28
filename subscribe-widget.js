@@ -1300,6 +1300,19 @@
       if (IUAuth.user) container.classList.add('iu-signed-in');
       else container.classList.remove('iu-signed-in');
 
+      // Mobile'da nav-auth-mobile container'ında .iu-user-menu'yu
+      // render sonrası DOM'dan tamamen KALDIR (CSS display:none ile
+      // yeterince güvenli olmuyordu — bazı sayfalarda gap yaratıyordu).
+      // .iu-mobile-actions zaten butonları içeriyor, .iu-user-menu gereksiz.
+      const isNavMobile = container.classList.contains('nav-auth-mobile');
+      // Rendering sonrası: DOM'dan çıkar
+      setTimeout(() => {
+        if (isNavMobile) {
+          const oldMenu = container.querySelector('.iu-user-menu');
+          if (oldMenu) oldMenu.remove();
+        }
+      }, 0);
+
       // SVG icons (renksiz, sade)
       const iconUser = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="flex-shrink:0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
       const iconUserPlus = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="flex-shrink:0"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
