@@ -472,10 +472,12 @@
           pointer-events: none;
         }
         .nav.open {
-          max-height: 92vh !important;
+          max-height: calc(100vh - 120px) !important;
           opacity: 1 !important;
-          padding: 8px 14px !important;
+          padding: 8px 14px 20px !important;
           overflow-y: auto !important;
+          overscroll-behavior: contain !important;
+          -webkit-overflow-scrolling: touch !important;
           pointer-events: auto;
         }
 
@@ -520,11 +522,17 @@
         .nav.open a:last-of-type {
           border-bottom: none !important;
         }
-        /* Menü açıkken sayfa scroll'unu kilitle */
-        body.iu-nav-open {
+        /* Menü açıkken sayfa scroll'unu kilitle (iOS Safari için touch-action + overscroll) */
+        html.iu-nav-open, body.iu-nav-open {
           overflow: hidden !important;
           position: fixed !important;
           width: 100% !important;
+          height: 100% !important;
+          touch-action: none !important;
+          overscroll-behavior: none !important;
+        }
+        body.iu-nav-open .nav.open {
+          touch-action: pan-y !important;
         }
 
         /* Auth butonlarını EN ÜSTE koy - hemen görünsün */

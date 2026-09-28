@@ -320,19 +320,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const mainNav = document.getElementById('mainNav');
   const menuToggle = document.querySelector('.menu-toggle');
 
-  // Body scroll lock helper: .nav.open class değiştiğinde body'ye class ekle/çıkar
+  // Body scroll lock helper (iOS Safari uyumlu): .nav.open class değiştiğinde uygula
   let scrollY = 0;
+  // Menü içindeki scroll'a izin ver, arkasına yasak
+  function preventBodyScroll(e) {
+    const nav = document.getElementById('mainNav');
+    if (!nav || !nav.classList.contains('open')) return;
+    // Nav içindeki dokunma ise: içinde scroll edebilsin
+    if (nav.contains(e.target)) {
+      // Bottom veya top'a dayanmışsa preventDefault
+      const el = nav;
+      if (el.scrollTop <= 0 && e.touches && e.touches[0]) {
+        // top'ta ve aşağı çekiyorsa engelle
+        if (e.type === 'touchmove') e.preventDefault();
+      }
+      return; // İçeride serbest
+    }
+    // Arka planda scroll'u iptal et
+    e.preventDefault();
+  }
   function syncBodyLock(nav) {
     if (!nav) return;
     const isOpen = nav.classList.contains('open');
     if (isOpen) {
       scrollY = window.scrollY;
+      document.documentElement.classList.add('iu-nav-open');
       document.body.classList.add('iu-nav-open');
       document.body.style.top = '-' + scrollY + 'px';
+      // iOS için touchmove'u engelle
+      document.addEventListener('touchmove', preventBodyScroll, { passive: false });
     } else if (document.body.classList.contains('iu-nav-open')) {
+      document.documentElement.classList.remove('iu-nav-open');
       document.body.classList.remove('iu-nav-open');
       document.body.style.top = '';
       window.scrollTo(0, scrollY);
+      document.removeEventListener('touchmove', preventBodyScroll);
     }
   }
 

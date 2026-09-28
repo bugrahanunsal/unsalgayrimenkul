@@ -291,11 +291,12 @@ section { padding: 80px 24px; }
   .menu-toggle { display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--white); font-size: 22px; cursor: pointer; width: 44px; height: 44px; border-radius: 6px; }
   .header { padding: 12px 0; }
   .header-inner { gap: 12px; }
-  .nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--navy); flex-direction: column; padding: 8px 14px; border-top: 1px solid rgba(255,255,255,0.1); box-shadow: var(--shadow-lg); z-index: 999; max-height: 92vh; overflow-y: auto; }
+  .nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--navy); flex-direction: column; padding: 8px 14px 20px; border-top: 1px solid rgba(255,255,255,0.1); box-shadow: var(--shadow-lg); z-index: 999; max-height: calc(100vh - 120px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
   .nav.open { display: flex; }
   .nav a { width: 100%; padding: 5px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 14.5px; letter-spacing: 0.3px; line-height: 1.15; }
   .nav a:last-child { border-bottom: none; }
-  body.iu-nav-open { overflow: hidden !important; position: fixed !important; width: 100% !important; }
+  html.iu-nav-open, body.iu-nav-open { overflow: hidden !important; position: fixed !important; width: 100% !important; height: 100% !important; touch-action: none !important; overscroll-behavior: none !important; }
+  body.iu-nav-open .nav.open { touch-action: pan-y !important; }
   .header-cta { margin-top: 8px; text-align: center; justify-content: center; }
   .logo-svg { width: 180px; max-height: 56px; }
   .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
