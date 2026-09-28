@@ -22,8 +22,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 20px;
       box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
     }
+    .welcome-banner > div:first-child { flex: 1; min-width: 0; }
     .welcome-banner h2 {
       font-size: 24px;
       margin-bottom: 6px;
@@ -46,10 +48,28 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .welcome-banner .btn-view-site:hover {
       background: rgba(255,255,255,0.25);
       transform: translateY(-1px);
+    }
+    /* Mobile: welcome banner column stack, button full width below text */
+    @media (max-width: 720px) {
+      .welcome-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 22px 20px;
+        gap: 16px;
+      }
+      .welcome-banner h2 { font-size: 20px; }
+      .welcome-banner p { font-size: 13px; }
+      .welcome-banner .btn-view-site {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 20px;
+      }
     }
 
     .stats-grid {
