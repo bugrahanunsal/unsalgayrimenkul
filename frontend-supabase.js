@@ -192,52 +192,67 @@
 
   // ==================== SORGU FONKSİYONLARI ====================
 
-  // Timeout yardımcı: promise 10 saniyeden uzun sürerse iptal
-  function withTimeout(promise, ms = 10000, label = 'sorgu') {
-    return Promise.race([
-      promise,
-      new Promise((_, reject) => setTimeout(() => reject(new Error(label + ' timeout (' + ms + 'ms)')), ms))
-    ]);
-  }
-
-  // Property fetch - property_images ile join, sıralanmış
-  async function fetchProperties(filters = {}) {
-    const sb = init();
-    if (!sb) return { data: null, error: 'SDK yok' };
-
-    let q = sb.from('properties')
-      .select('*, property_images(url, ana_foto, sira)')
-      .eq('durum', 'aktif');
-
-    if (filters.tip) q = q.eq('tip', filters.tip);
-    if (filters.kategori) q = q.eq('kategori', filters.kategori);
-    if (filters.kategoriIn) q = q.in('kategori', filters.kategoriIn);
-    if (filters.ilce) q = q.eq('ilce', filters.ilce);
-    if (filters.one_cikan === true) q = q.eq('one_cikan', true);
-
-    q = q.order('one_cikan', { ascending: false }).order('created_at', { ascending: false });
-    if (filters.limit) q = q.limit(filters.limit);
-
+  // Basit timeout: query 8 saniyeden uzun sürerse iptal et
+  async function fetchWithTimeout(queryBuilder, ms = 8000) {
+    let timeoutId;
     try {
-      // 10 saniyelik timeout — sonsuz yükleme olmasın
-      const result = await withTimeout(q, 10000, 'properties fetch');
-      // Property_images join başarısız olursa (RLS/kolon eksik), retry — sadece properties
-      if (result.error && String(result.error.message || result.error).toLowerCase().includes('property_images')) {
-        console.warn('[Frontend] property_images join başarısız, sadece properties çekiliyor');
-        let q2 = sb.from('properties').select('*').eq('durum', 'aktif');
-        if (filters.tip) q2 = q2.eq('tip', filters.tip);
-        if (filters.kategori) q2 = q2.eq('kategori', filters.kategori);
-        if (filters.kategoriIn) q2 = q2.in('kategori', filters.kategoriIn);
-        if (filters.ilce) q2 = q2.eq('ilce', filters.ilce);
-        if (filters.one_cikan === true) q2 = q2.eq('one_cikan', true);
-        q2 = q2.order('one_cikan', { ascending: false }).order('created_at', { ascending: false });
-        if (filters.limit) q2 = q2.limit(filters.limit);
-        return await withTimeout(q2, 10000, 'properties fallback');
-      }
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error('Timeout ' + ms + 'ms')), ms);
+      });
+      // Supabase builder'ın .then() metodunu tetiklemek için Promise.resolve
+      const queryPromise = Promise.resolve().then(() => queryBuilder);
+      const result = await Promise.race([queryPromise, timeoutPromise]);
+      clearTimeout(timeoutId);
       return result;
     } catch (err) {
-      console.error('[Frontend] fetchProperties hata:', err);
-      return { data: null, error: err };
+      clearTimeout(timeoutId);
+      throw err;
+    }
+  }
+
+  // Property fetch — mümkünse image join ile, fallback: sadece properties
+  async function fetchProperties(filters = {}) {
+    const sb = init();
+    if (!sb) {
+      console.warn('[Frontend] Supabase SDK yok');
+      return { data: null, error: 'SDK yok' };
+    }
+
+    function buildQuery(withJoin) {
+      let q;
+      if (withJoin) {
+        q = sb.from('properties').select('*, property_images(url, ana_foto, sira)').eq('durum', 'aktif');
+      } else {
+        q = sb.from('properties').select('*').eq('durum', 'aktif');
+      }
+      if (filters.tip) q = q.eq('tip', filters.tip);
+      if (filters.kategori) q = q.eq('kategori', filters.kategori);
+      if (filters.kategoriIn) q = q.in('kategori', filters.kategoriIn);
+      if (filters.ilce) q = q.eq('ilce', filters.ilce);
+      if (filters.one_cikan === true) q = q.eq('one_cikan', true);
+      q = q.order('one_cikan', { ascending: false }).order('created_at', { ascending: false });
+      if (filters.limit) q = q.limit(filters.limit);
+      return q;
+    }
+
+    // 1. deneme: image join ile
+    try {
+      console.log('[Frontend] fetchProperties başladı', filters);
+      const result = await fetchWithTimeout(buildQuery(true), 8000);
+      console.log('[Frontend] fetchProperties tamamlandı:', result?.data?.length || 0, 'kayıt');
+      if (result && !result.error) return result;
+      throw new Error(result?.error?.message || 'Bilinmeyen hata');
+    } catch (err1) {
+      console.warn('[Frontend] Image join başarısız, fallback:', err1.message);
+      // 2. deneme: image join olmadan
+      try {
+        const result2 = await fetchWithTimeout(buildQuery(false), 8000);
+        console.log('[Frontend] fetchProperties fallback:', result2?.data?.length || 0, 'kayıt');
+        return result2;
+      } catch (err2) {
+        console.error('[Frontend] fetchProperties tamamen başarısız:', err2);
+        return { data: null, error: err2.message };
+      }
     }
   }
 
