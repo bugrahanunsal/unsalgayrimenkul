@@ -40,7 +40,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20260928-mobile-pnl';
+  const SITE_VERSION = '20260928-btn-w2';
 
   async function loadAllScripts() {
     try {
