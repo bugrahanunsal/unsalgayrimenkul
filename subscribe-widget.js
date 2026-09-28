@@ -1387,18 +1387,42 @@
           </div>
         `;
 
-        // ADDITIONAL SAFETY: After DOM render, force parent widths via JS
-        // (bazı CSS override zincirlerine karşı en son güvence)
+        // FORCE — DOM render sonrası her elementte inline style'ları setter
+        // ile tek tek uygula. cssText += string parse'inden daha güvenilir.
         if (isMobileNav) {
-          setTimeout(() => {
-            // Ensure the nav-auth-mobile is full width
-            container.style.cssText += ';display:block !important; width:100% !important;';
-            // Ensure .iu-authbar is full width
+          requestAnimationFrame(() => {
+            // Parent container full width
+            container.style.setProperty('display', 'block', 'important');
+            container.style.setProperty('width', '100%', 'important');
+            container.style.setProperty('box-sizing', 'border-box', 'important');
+            // .iu-authbar grid
             const bar = container.querySelector('.iu-authbar');
             if (bar) {
-              bar.style.cssText += ';width:100% !important; display:grid !important; grid-template-columns:1fr 1fr !important; gap:8px !important;';
+              bar.style.setProperty('display', 'grid', 'important');
+              bar.style.setProperty('grid-template-columns', '1fr 1fr', 'important');
+              bar.style.setProperty('gap', '8px', 'important');
+              bar.style.setProperty('width', '100%', 'important');
+              bar.style.setProperty('box-sizing', 'border-box', 'important');
+              bar.style.setProperty('padding', '0', 'important');
+              bar.style.setProperty('margin', '0', 'important');
             }
-          }, 0);
+            // Her buton width 100% + display flex
+            container.querySelectorAll('.iu-authbar-btn').forEach(btn => {
+              btn.style.setProperty('width', '100%', 'important');
+              btn.style.setProperty('min-width', '0', 'important');
+              btn.style.setProperty('max-width', 'none', 'important');
+              btn.style.setProperty('display', 'flex', 'important');
+              btn.style.setProperty('justify-content', 'center', 'important');
+              btn.style.setProperty('align-items', 'center', 'important');
+              btn.style.setProperty('padding', '12px 8px', 'important');
+              btn.style.setProperty('font-size', '14px', 'important');
+              btn.style.setProperty('font-weight', '700', 'important');
+              btn.style.setProperty('box-sizing', 'border-box', 'important');
+              btn.style.setProperty('border-radius', '10px', 'important');
+              btn.style.setProperty('margin', '0', 'important');
+              btn.style.setProperty('gap', '6px', 'important');
+            });
+          });
         }
       }
     });
