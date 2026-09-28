@@ -1372,13 +1372,13 @@
         `;
       } else {
         // Giriş yapmamış — inline styles ile mobile'da FULL WIDTH garantili
-        // (nav-auth-mobile içindeyse; topbar-auth'ta zaten kompakt)
         const isMobileNav = container.classList.contains('nav-auth-mobile');
+        // NAV mobile için full-width grid + fixed 48% width buttons (garantili)
         const barStyle = isMobileNav
-          ? 'display:flex !important; flex-direction:row !important; width:100% !important; gap:8px !important; box-sizing:border-box;'
+          ? 'display:grid !important; grid-template-columns:1fr 1fr !important; width:100% !important; gap:8px !important; box-sizing:border-box; padding:0; margin:0;'
           : '';
         const btnStyle = isMobileNav
-          ? 'flex:1 1 0 !important; width:100% !important; min-width:0 !important; max-width:none !important; padding:10px 8px !important; font-size:13px !important; justify-content:center !important; align-items:center !important; display:flex !important; box-sizing:border-box !important; border-radius:8px !important;'
+          ? 'width:100% !important; min-width:100% !important; max-width:100% !important; padding:12px 8px !important; font-size:14px !important; font-weight:700 !important; justify-content:center !important; align-items:center !important; display:flex !important; box-sizing:border-box !important; border-radius:10px !important; gap:6px !important; margin:0 !important;'
           : '';
         container.innerHTML = `
           <div class="iu-authbar" style="${barStyle}">
@@ -1386,6 +1386,20 @@
             <button class="iu-authbar-btn iu-authbar-signup" style="${btnStyle}" onclick="IUAuth.open('signup')">${iconUserPlus} Üye Ol</button>
           </div>
         `;
+
+        // ADDITIONAL SAFETY: After DOM render, force parent widths via JS
+        // (bazı CSS override zincirlerine karşı en son güvence)
+        if (isMobileNav) {
+          setTimeout(() => {
+            // Ensure the nav-auth-mobile is full width
+            container.style.cssText += ';display:block !important; width:100% !important;';
+            // Ensure .iu-authbar is full width
+            const bar = container.querySelector('.iu-authbar');
+            if (bar) {
+              bar.style.cssText += ';width:100% !important; display:grid !important; grid-template-columns:1fr 1fr !important; gap:8px !important;';
+            }
+          }, 0);
+        }
       }
     });
   }
