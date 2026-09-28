@@ -3,7 +3,32 @@
 #
 # ÖNEMLİ: Cloudflare Pages TEMİZ URL'LERİ OTOMATİK yönetir.
 # /sss.html → otomatik /sss URL'inde servis edilir.
-# Buraya sadece ALIAS'lar ve LEGACY yönlendirmeler yazılır.
+# Buraya sadece ALIAS'lar, LEGACY ve DİL yönlendirmeleri yazılır.
+
+# ============================================================
+# ÇOK DİLLİ URL'LER (rewrite: URL değişmez, içerik TR'den gelir)
+# Google Translate JS ile otomatik çeviri yapılır (translator.js)
+# ============================================================
+# İngilizce
+/en                         /                             200
+/en/                        /                             200
+/en/*                       /:splat                       200
+# Fransızca
+/fr                         /                             200
+/fr/                        /                             200
+/fr/*                       /:splat                       200
+# Almanca
+/de                         /                             200
+/de/                        /                             200
+/de/*                       /:splat                       200
+# Rusça
+/ru                         /                             200
+/ru/                        /                             200
+/ru/*                       /:splat                       200
+# Arapça (YENİ)
+/ar                         /                             200
+/ar/                        /                             200
+/ar/*                       /:splat                       200
 
 # ---- Aliaslar (FAQ sayfası için ek URL'ler) ----
 /faq                        /sss                          301

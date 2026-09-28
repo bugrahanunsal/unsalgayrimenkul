@@ -56,6 +56,9 @@
       // 4. FAQ (SEO ve SSS sayfası için)
       await loadScript('/faq-yalova-emlak.js?v=' + SITE_VERSION);
 
+      // 5. Çevirmen (otomatik dil çevirisi)
+      await loadScript('/translator.js?v=' + SITE_VERSION);
+
       console.log('[SiteLoader] Tüm scriptler yüklendi ✓ (v=' + SITE_VERSION + ')');
     } catch (err) {
       console.error('[SiteLoader] Yükleme hatası:', err);
@@ -129,6 +132,7 @@
           <a href="#" class="lang-option" data-lang="fr"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg></span><span>Français</span></a>
           <a href="#" class="lang-option" data-lang="de"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#000"/><rect width="60" height="13.33" y="13.33" fill="#DD0000"/><rect width="60" height="13.34" y="26.66" fill="#FFCE00"/></svg></span><span>Deutsch</span></a>
           <a href="#" class="lang-option" data-lang="ru"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#fff"/><rect width="60" height="13.33" y="13.33" fill="#0039A6"/><rect width="60" height="13.34" y="26.66" fill="#D52B1E"/></svg></span><span>Русский</span></a>
+          <a href="#" class="lang-option" data-lang="ar"><span class="flag"><svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#000"/><rect width="60" height="13.34" y="13.33" fill="#fff"/><rect width="60" height="13.33" y="26.67" fill="#007A3D"/><polygon points="20,20 26,17 26,23" fill="#CE1126"/></svg></span><span>العربية</span></a>
         </div>
       </div>
     </div>
@@ -262,6 +266,53 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     nav.appendChild(sssLink);
   }
+});
+
+// ==================== LANGUAGE SWITCHER ====================
+// Dil bayrağına tıklayınca URL'yi değiştir (/en/, /ar/, vs.)
+document.addEventListener('DOMContentLoaded', () => {
+  function attachLangHandlers() {
+    document.querySelectorAll('.lang-option[data-lang]').forEach(opt => {
+      if (opt.dataset.iuBound) return;
+      opt.dataset.iuBound = '1';
+      opt.addEventListener('click', (e) => {
+        e.preventDefault();
+        const lang = opt.dataset.lang;
+        if (window.IULang && typeof window.IULang.switchTo === 'function') {
+          window.IULang.switchTo(lang);
+        } else {
+          // Fallback: doğrudan URL değiştir
+          const cleanPath = location.pathname.replace(/^\/(en|fr|de|ru|ar)(\/|$)/, '/');
+          const newPath = lang === 'tr' ? cleanPath : ('/' + lang + cleanPath);
+          location.href = newPath + location.search + location.hash;
+        }
+      });
+    });
+
+    // Current language göstergesini güncelle
+    const currentEl = document.getElementById('currentLang');
+    const currentFlagEl = document.getElementById('currentFlag');
+    if (currentEl && window.IULang) {
+      const codeMap = { tr: 'TR', en: 'EN', fr: 'FR', de: 'DE', ru: 'RU', ar: 'AR' };
+      currentEl.textContent = codeMap[window.IULang.current] || 'TR';
+
+      // Aktif dilin bayrağını current alanına koy
+      const activeOpt = document.querySelector('.lang-option[data-lang="' + window.IULang.current + '"] .flag svg');
+      if (activeOpt && currentFlagEl) {
+        currentFlagEl.innerHTML = activeOpt.outerHTML;
+      }
+
+      // Active class'ı doğru dile ver
+      document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+      const activeLink = document.querySelector('.lang-option[data-lang="' + window.IULang.current + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  }
+
+  // İlk yükleme + header injection sonrası tekrar dene
+  attachLangHandlers();
+  setTimeout(attachLangHandlers, 500);
+  setTimeout(attachLangHandlers, 1500);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
