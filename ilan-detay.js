@@ -371,52 +371,19 @@
       '<label class="ild-hp" aria-hidden="true">Web sitesi<input name="website" type="text" tabindex="-1" autocomplete="off"></label>',
       '<label class="ild-consent"><input name="kvkk" type="checkbox" required> <span><a href="/gizlilik-politikasi" target="_blank">KVKK Aydınlatma Metni</a>\'ni okudum, iletişim için bilgilerimin kullanılmasını kabul ediyorum.</span></label>',
       '<button type="submit" class="ild-btn call"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Gönder</button>',
-      '<div class="ild-form-msg" role="status" aria-live="polite"></div>'
+      '<div class="ild-form-msg" data-lead-msg role="status" aria-live="polite"></div>'
     ].join('');
     form.querySelector('textarea').value = '"' + title(p) + '" ilanı hakkında bilgi almak istiyorum.';
-    const msgBox = form.querySelector('.ild-form-msg');
-    const say = (t, ok) => { msgBox.textContent = t; msgBox.className = 'ild-form-msg ' + (ok ? 'ok' : 'err'); };
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fd = new FormData(form);
-      if (fd.get('website')) return;                               // bot
-      const isim = String(fd.get('isim') || '').trim().slice(0, 80);
-      const telefon = String(fd.get('telefon') || '').replace(/[^\d+]/g, '').slice(0, 16);
-      const email = String(fd.get('email') || '').trim().slice(0, 120);
-      const mesaj = String(fd.get('mesaj') || '').trim().slice(0, 1000);
-      if (isim.length < 2) return say('Lütfen adınızı yazın.');
-      if (!/^\+?\d{10,15}$/.test(telefon)) return say('Lütfen geçerli bir telefon numarası yazın.');
-      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return say('E-posta adresi geçersiz görünüyor.');
-      if (!fd.get('kvkk')) return say('Devam etmek için KVKK onayını işaretleyin.');
-      try {                                                          // aynı tarayıcıdan dakikada 1 gönderim
-        const last = +sessionStorage.getItem('iu_lead_ts') || 0;
-        if (Date.now() - last < 60000) return say('Talebiniz zaten alındı. Kısa süre içinde size dönüş yapacağız.', true);
-      } catch (_) {}
-      const btn = form.querySelector('button[type=submit]');
-      btn.disabled = true;
-      try {
-        const sb = window.IUFrontend.client();
-        const { error } = await sb.from('leads').insert({
-          isim, telefon, email: email || null,
-          mesaj: mesaj + '\n\nİlan: ' + window.IUFrontend.listingUrl(p, true),
-          property_id: p.id
-        });
-        if (error) throw error;
-        try { sessionStorage.setItem('iu_lead_ts', String(Date.now())); } catch (_) {}
-        form.reset();
-        say('Teşekkürler! Talebiniz alındı, danışmanımız en kısa sürede sizi arayacak.', true);
-      } catch (err) {
-        console.warn('[İlan] Form kaydedilemedi:', err && err.message);
-        // Kayıt başarısızsa talep kaybolmasın: WhatsApp'a yönlendir
-        msgBox.className = 'ild-form-msg err';
-        msgBox.textContent = 'Form şu anda gönderilemedi. ';
-        const wa = 'https://wa.me/905075188482?text=' + encodeURIComponent(isim + ' — ' + telefon + '\n' + mesaj + '\n' + window.IUFrontend.listingUrl(p, true));
-        msgBox.appendChild(el('a', { href: wa, target: '_blank', rel: 'noopener noreferrer', text: 'WhatsApp ile gönderin →' }));
-      } finally {
-        btn.disabled = false;
-      }
-    });
+    // Gönderim: lead-form.js → /api/talep (Başvurular'a kayıt + ismunsal.59@gmail.com'a e-posta)
+    if (window.IULead) {
+      window.IULead.bind(form, {
+        kaynak: 'ilan',
+        extra: () => ({ property_id: p.id }),
+        successText: 'Teşekkürler! Talebiniz alındı, danışmanımız en kısa sürede sizi arayacak.'
+      });
+    } else {
+      form.addEventListener('submit', (e) => { e.preventDefault(); window.open(window.IUFrontend.waLink(p), '_blank', 'noopener'); });
+    }
     return form;
   }
 

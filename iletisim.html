@@ -177,6 +177,48 @@
 .qc-wa:hover { background: #1DA851; transform: translateX(8px); }
 .qc-li { background: #0A66C2; color: #FFFFFF; }
 .qc-li:hover { background: #084E97; transform: translateX(8px); }
+
+/* ============ İLETİŞİM FORMU ============ */
+.cf-hero-btn { display:inline-flex; align-items:center; gap:8px; margin-top:24px; background:#F49B1C; color:#0A2A5E; font-weight:800; padding:14px 26px; border-radius:10px; text-decoration:none; transition:transform .2s, box-shadow .2s; }
+.cf-hero-btn:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(244,155,28,0.35); }
+.cf-section { padding: 0 24px 80px; background: #F9FAFB; }
+.cf-card { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 360px 1fr; background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); scroll-margin-top: 110px; }
+.cf-side { background: linear-gradient(160deg, #0A2A5E 0%, #1B4380 100%); color: #fff; padding: 40px 32px; position: relative; overflow: hidden; }
+.cf-side::after { content:''; position:absolute; right:-80px; bottom:-80px; width:240px; height:240px; background: radial-gradient(circle, rgba(244,155,28,0.25) 0%, transparent 70%); pointer-events:none; }
+.cf-side h2 { font-family:'League Spartan','Montserrat',sans-serif; font-size: 28px; line-height:1.2; margin: 0 0 12px; }
+.cf-side > p { color: rgba(255,255,255,0.85); font-size: 15px; margin: 0 0 26px; }
+.cf-points { list-style:none; margin:0; padding:0; display:grid; gap:16px; }
+.cf-points li { display:flex; gap:12px; align-items:flex-start; font-size:14px; color: rgba(255,255,255,0.9); }
+.cf-points i { width:34px; height:34px; flex-shrink:0; border-radius:10px; background: rgba(244,155,28,0.18); color:#F49B1C; display:flex; align-items:center; justify-content:center; }
+.cf-points strong { display:block; color:#fff; font-size:15px; }
+.cf-form { padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; align-content: start; }
+.cf-form .full { grid-column: 1 / -1; }
+.cf-form label { display:grid; gap:6px; font-size:13px; font-weight:700; color:#0A2A5E; }
+.cf-form label em { font-weight:400; color:#9CA3AF; font-style:normal; }
+.cf-form input[type=text], .cf-form input[type=tel], .cf-form input[type=email], .cf-form select, .cf-form textarea {
+  font: inherit; font-size: 16px; font-weight: 400; color: #0A2A5E; padding: 13px 14px; border: 1.5px solid #D1D5DB; border-radius: 10px; background: #fff; width: 100%; box-sizing: border-box; transition: border-color .2s, box-shadow .2s; }
+.cf-form select { appearance:none; -webkit-appearance:none; background-image: linear-gradient(45deg, transparent 50%, #0A2A5E 50%), linear-gradient(135deg, #0A2A5E 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%; background-size: 6px 6px; background-repeat:no-repeat; padding-right: 36px; }
+.cf-form input:focus, .cf-form select:focus, .cf-form textarea:focus { outline:none; border-color:#F49B1C; box-shadow:0 0 0 3px rgba(244,155,28,0.18); }
+.cf-form textarea { resize: vertical; min-height: 130px; }
+.cf-form .cf-consent { display:flex; gap:10px; align-items:flex-start; font-weight:400; font-size:13px; color:#6B7280; line-height:1.5; }
+.cf-form .cf-consent input { width:18px; height:18px; margin-top:1px; flex-shrink:0; accent-color:#0A2A5E; }
+.cf-form .cf-consent a { color:#0A2A5E; text-decoration:underline; }
+.cf-hp { position:absolute !important; left:-10000px !important; width:1px; height:1px; overflow:hidden; }
+.cf-submit { display:inline-flex; align-items:center; justify-content:center; gap:10px; background:#0A2A5E; color:#fff; border:none; border-radius:10px; padding:15px 28px; font: inherit; font-weight:800; font-size:15px; cursor:pointer; transition: transform .15s, box-shadow .15s, background .15s; }
+.cf-submit:hover { background:#071F44; transform:translateY(-1px); box-shadow:0 8px 20px rgba(10,42,94,0.25); }
+.cf-submit[disabled] { opacity:.65; cursor:wait; }
+.cf-actions { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.cf-note { font-size:12px; color:#9CA3AF; }
+.cf-msg { font-size:14px; min-height:1em; }
+.cf-msg.ok { color:#15803D; font-weight:700; background:#ECFDF3; border:1px solid #BBF7D0; padding:12px 14px; border-radius:10px; }
+.cf-msg.err { color:#B91C1C; }
+.cf-msg a { color:#15803D; font-weight:700; margin-left:4px; }
+@media (max-width: 900px) {
+  .cf-card { grid-template-columns: 1fr; }
+  .cf-side { padding: 30px 24px; }
+  .cf-form { grid-template-columns: 1fr; padding: 26px 20px; }
+  .cf-submit { width: 100%; }
+}
 </style>
 <script src="/translator.js?v=20260928-batch" defer></script>
 <script src="/translations.js?v=20260928-svc" defer></script>
@@ -248,6 +290,7 @@
   <span style="display:inline-block; background: rgba(244,155,28,0.18); color: #F49B1C; border:1px solid rgba(244,155,28,0.4); padding: 6px 18px; border-radius: 50px; font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 20px;">BİZE ULAŞIN</span>
   <h1>İletişim</h1>
   <p>Yalova'da hayalinizdeki mülk için profesyonel danışmanlık. 7/24 ulaşabilirsiniz.</p>
+  <a href="#iletisim-formu" class="cf-hero-btn"><i class="fa-regular fa-envelope" aria-hidden="true"></i> Mesaj Gönderin</a>
 </section>
 
 <section class="contact-section">
@@ -327,6 +370,44 @@
   </div>
 </section>
 
+<section class="cf-section" aria-labelledby="cf-title">
+  <div class="cf-card" id="iletisim-formu">
+    <div class="cf-side">
+      <h2 id="cf-title">Bize Mesaj Gönderin</h2>
+      <p>Formu doldurun, TURYAP danışmanımız en kısa sürede sizi arasın.</p>
+      <ul class="cf-points">
+        <li><i class="fa-solid fa-bolt" aria-hidden="true"></i><span><strong>Aynı gün dönüş</strong>Mesai saatlerinde genellikle birkaç saat içinde arıyoruz.</span></li>
+        <li><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i><span><strong>Ücretsiz değerleme</strong>Mülkünüzün güncel piyasa değerini birlikte belirleyelim.</span></li>
+        <li><i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span><strong>Bilgileriniz güvende</strong>Sadece size dönüş yapmak için kullanılır, üçüncü kişilerle paylaşılmaz.</span></li>
+      </ul>
+    </div>
+    <form class="cf-form" id="contactForm" novalidate>
+      <label>Ad Soyad<input name="isim" type="text" autocomplete="name" maxlength="80" required></label>
+      <label>Telefon<input name="telefon" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="05xx xxx xx xx" required></label>
+      <label><span>E-posta <em>(isteğe bağlı)</em></span><input name="email" type="email" autocomplete="email" maxlength="120"></label>
+      <label>Konu
+        <select name="konu">
+          <option value="satin_alma">Gayrimenkul satın almak istiyorum</option>
+          <option value="satis">Mülkümü satmak istiyorum</option>
+          <option value="kiralama">Kiralık arıyorum</option>
+          <option value="kiraya_verme">Mülkümü kiraya vermek istiyorum</option>
+          <option value="degerleme">Ücretsiz değerleme istiyorum</option>
+          <option value="yatirim">Yatırım danışmanlığı</option>
+          <option value="diger">Diğer</option>
+        </select>
+      </label>
+      <label class="full">Mesajınız<textarea name="mesaj" rows="5" maxlength="1500" placeholder="Aradığınız bölge, bütçe, oda sayısı gibi detayları yazabilirsiniz."></textarea></label>
+      <label class="cf-hp" aria-hidden="true">Web sitesi<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+      <label class="cf-consent full"><input name="kvkk" type="checkbox" required><span><a href="gizlilik-politikasi.html" target="_blank">KVKK Aydınlatma Metni</a>'ni okudum, benimle iletişime geçilmesi için bilgilerimin kullanılmasını kabul ediyorum.</span></label>
+      <div class="cf-actions full">
+        <button type="submit" class="cf-submit"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Mesajı Gönder</button>
+        <span class="cf-note">Acil durumlar için: <a href="tel:+905075188482" style="color:#0A2A5E;font-weight:700">+90 507 518 84 82</a></span>
+      </div>
+      <div class="cf-msg full" data-lead-msg role="status" aria-live="polite"></div>
+    </form>
+  </div>
+</section>
+
 <footer class="footer">
   <div style="text-align: center; padding: 20px 0 10px;">
     <div class="turyap-badge"><i class="fa-solid fa-star" style="margin-right: 6px;"></i>RESMİ TURYAP YETKİLİ DANIŞMANI<i class="fa-solid fa-star" style="margin-left: 6px;"></i></div>
@@ -396,5 +477,10 @@ document.getElementById('langCurrent')?.addEventListener('click', () => {
 });
 </script>
 <script src="/script.js?v=20260928-ilan"></script>
+<script src="/lead-form.js?v=20260928-form"></script>
+<script>
+  // İletişim formu → /api/talep (Başvurular + ismunsal.59@gmail.com)
+  (function () { var f = document.getElementById('contactForm'); if (f && window.IULead) window.IULead.bind(f, { kaynak: 'iletisim' }); })();
+</script>
 </body>
 </html>
