@@ -563,6 +563,16 @@
 
       // Google için schema ekle
       injectSchema(faqs);
+
+      // FAQ render edildikten sonra Google Translate'e yeni içeriği çevirmesini söyle
+      // (translator.js'de tanımlı olan re-scan fonksiyonu)
+      if (typeof window.__IURetranslate === 'function') {
+        setTimeout(() => window.__IURetranslate(), 300);
+      }
+      // Ayrıca translations.js'in data-i18n çevirilerini uygula
+      if (typeof window.applyTranslations === 'function') {
+        setTimeout(() => window.applyTranslations(), 100);
+      }
     });
   }
 
