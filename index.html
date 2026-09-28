@@ -630,25 +630,30 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           gap: 12px !important;
         }
         .nav-auth-mobile .iu-authbar-avatar {
-          width: 40px !important;
-          height: 40px !important;
-          min-width: 40px !important;
-          max-width: 40px !important;
-          min-height: 40px !important;
-          max-height: 40px !important;
-          flex: 0 0 40px !important;
-          flex-basis: 40px !important;
+          width: 44px !important;
+          height: 44px !important;
+          min-width: 44px !important;
+          max-width: 44px !important;
+          min-height: 44px !important;
+          max-height: 44px !important;
+          flex: 0 0 44px !important;
+          flex-basis: 44px !important;
           flex-grow: 0 !important;
           flex-shrink: 0 !important;
           aspect-ratio: 1 / 1 !important;
           border-radius: 50% !important;
-          font-size: 16px !important;
+          font-size: 18px !important;
           font-weight: 700 !important;
-          display: inline-flex !important;
+          line-height: 1 !important;
+          text-align: center !important;
+          padding: 0 !important;
+          display: flex !important;
           align-items: center !important;
           justify-content: center !important;
           overflow: hidden !important;
           box-sizing: border-box !important;
+          /* "Y" harfini tam merkeze taşı — font ascent/descent ofsetini iptal */
+          text-indent: 0 !important;
         }
         .nav-auth-mobile .iu-authbar-name {
           color: #0A2A5E !important;
@@ -661,7 +666,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           white-space: nowrap !important;
           text-align: left !important;
         }
-        /* User menu inline — flex column, block-level items */
+        /* User menu inline — GRID 2 kolon YAN YANA (buton çakışma bug fix) */
         .nav-auth-mobile .iu-user-menu {
           position: static !important;
           top: auto !important;
@@ -679,21 +684,28 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           max-width: none !important;
           width: 100% !important;
           overflow: visible !important;
-          display: flex !important;
-          flex-direction: column !important;
-          gap: 6px !important;
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 8px !important;
           animation: none !important;
           z-index: auto !important;
+          box-sizing: border-box !important;
         }
-        /* Duplicate header in dropdown hidden (name+email already in the pill above) */
+        /* Duplicate header in dropdown hidden (grid'ten de çıkar) */
         .nav-auth-mobile .iu-user-menu > .iu-user-menu-header,
         .nav-auth-mobile .iu-user-menu-header {
           display: none !important;
+          grid-column: 1 / -1 !important;
           height: 0 !important;
           padding: 0 !important;
           margin: 0 !important;
           overflow: hidden !important;
           visibility: hidden !important;
+        }
+        /* Divider ise grid'te 2 kolonu geçsin */
+        .nav-auth-mobile .iu-user-menu-divider {
+          display: none !important;
+          grid-column: 1 / -1 !important;
         }
         .nav-auth-mobile .iu-user-menu a {
           position: relative !important;
@@ -704,19 +716,37 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           display: flex !important;
           flex-direction: row !important;
           align-items: center !important;
-          gap: 10px !important;
-          padding: 12px 14px !important;
+          justify-content: center !important;
+          gap: 8px !important;
+          padding: 12px 10px !important;
           margin: 0 !important;
           width: 100% !important;
+          min-width: 0 !important;
           box-sizing: border-box !important;
           background: #ffffff !important;
           border: 1px solid #e5e7eb !important;
           border-radius: 10px !important;
           color: #0A2A5E !important;
-          font-size: 14px !important;
+          font-size: 13px !important;
           font-weight: 600 !important;
           text-decoration: none !important;
+          text-align: center !important;
+          line-height: 1.2 !important;
           z-index: 1 !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+        }
+        .nav-auth-mobile .iu-user-menu a svg {
+          width: 14px !important;
+          height: 14px !important;
+          flex-shrink: 0 !important;
+        }
+        /* Admin: mavi vurgu inline style'ı yerine bizim tema mavi */
+        .nav-auth-mobile .iu-user-menu a[href*="/admin"] {
+          background: #dbeafe !important;
+          border-color: #93c5fd !important;
+          color: #1e40af !important;
         }
         .nav-auth-mobile .iu-user-menu a svg {
           color: #6b7280 !important;
@@ -1168,7 +1198,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 <a href="https://wa.me/905075188482" class="wa-float"><i class="fa-brands fa-whatsapp"></i></a>
 
-<script src="/script.js?v=20260928-grid-btn"></script>
+<script src="/script.js?v=20260928-grid-menu"></script>
 
 <script>
 // SMART FILTER & SEARCH SYSTEM - Facebook-grade live filtering
