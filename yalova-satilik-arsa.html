@@ -435,5 +435,139 @@ document.getElementById('langCurrent')?.addEventListener('click', () => {
   document.getElementById('langSwitcher')?.classList.toggle('active');
 });
 </script> <script src="/script.js"></script>
+
+<!-- Inline fetch: garanti render (script.js cache sorunları için) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var CFG = {
+    URL: 'https://gosmkthmamloafgtvhpj.supabase.co',
+    KEY: 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4'
+  };
+  var PLACEHOLDER = {
+    daire: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80',
+    villa: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80',
+    arsa: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80',
+    default: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80'
+  };
+
+  function getFilters() {
+    var p = location.pathname.toLowerCase();
+    var f = {};
+    if (p.indexOf('satilik') > -1) f.tip = 'satilik';
+    else if (p.indexOf('kiralik') > -1) f.tip = 'kiralik';
+    if (p.indexOf('arsa') > -1 || p.indexOf('tarla') > -1) f.kategoriIn = ['arsa','tarla'];
+    else if (p.indexOf('daire') > -1) f.kategori = 'daire';
+    else if (p.indexOf('villa') > -1) f.kategori = 'villa';
+    else if (p.indexOf('satilik-ev') > -1 || p.indexOf('kiralik-ev') > -1 || p.indexOf('mustakil') > -1) f.kategoriIn = ['villa','mustakil_ev'];
+    if (p.indexOf('cinarcik') > -1) f.ilce = 'Çınarcık';
+    else if (p.indexOf('termal') > -1) f.ilce = 'Termal';
+    else if (p.indexOf('altinova') > -1) f.ilce = 'Altınova';
+    else if (p.indexOf('armutlu') > -1) f.ilce = 'Armutlu';
+    else if (p.indexOf('merkez') > -1) f.ilce = 'Merkez';
+    return f;
+  }
+
+  function fmtPrice(p, cur) {
+    if (!p) return 'Bilgi İçin Arayın';
+    var sym = {TL:'₺', USD:'$', EUR:'€'}[cur] || (cur || '₺');
+    return new Intl.NumberFormat('tr-TR').format(p) + ' ' + sym;
+  }
+
+  function getImg(p) {
+    if (p.property_images && p.property_images.length) {
+      var m = p.property_images.find(function(i){return i.ana_foto===true;}) || p.property_images[0];
+      if (m && m.url) return m.url;
+    }
+    return PLACEHOLDER[p.kategori] || PLACEHOLDER.default;
+  }
+
+  function esc(s) { var d = document.createElement('div'); d.textContent = s==null?'':s; return d.innerHTML; }
+
+  function render(container, props) {
+    if (!props || props.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:60px 20px;grid-column:1/-1;"><div style="font-size:56px;margin-bottom:20px;">🏡</div><h3 style="color:#0A2A5E;margin-bottom:12px;font-size:22px;">Bu kategoride henüz ilan yok</h3><p style="color:#6B7280;max-width:400px;margin:0 auto;">Yakında yeni ilanlar eklenecek. İletişim sayfamızdan bize ulaşabilirsiniz.</p></div>';
+      return;
+    }
+    // Grid CSS ekle
+    if (!document.getElementById('iu-inline-card-css')) {
+      var st = document.createElement('style');
+      st.id = 'iu-inline-card-css';
+      st.textContent = '#iu-dynamic-listings{display:grid !important;grid-template-columns:repeat(auto-fill,minmax(320px,1fr)) !important;gap:28px !important;max-width:1280px !important;margin:0 auto !important;padding:0 20px 60px !important}article.iu-card-v2{display:block !important;width:100% !important;background:#fff !important;border-radius:14px !important;overflow:hidden !important;box-shadow:0 8px 24px rgba(10,42,94,0.08) !important;border:1px solid #E5E7EB !important;transition:transform .25s,box-shadow .25s,border-color .25s !important}article.iu-card-v2:hover{transform:translateY(-6px) !important;box-shadow:0 20px 40px rgba(10,42,94,0.15) !important;border-color:#F49B1C !important}article.iu-card-v2 .iu-img{display:block !important;width:100% !important;height:240px !important;position:relative !important;background-size:cover !important;background-position:center !important;background-color:#E5E7EB !important}article.iu-card-v2 .iu-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(10,42,94,.35))}article.iu-card-v2 .iu-tag{position:absolute !important;top:14px !important;left:14px !important;background:#F49B1C !important;color:#0A2A5E !important;padding:6px 14px !important;border-radius:50px !important;font-size:11px !important;font-weight:800 !important;letter-spacing:1px !important;z-index:2 !important}article.iu-card-v2 .iu-tag.vip{background:#0A2A5E !important;color:#F49B1C !important}article.iu-card-v2 .iu-type{position:absolute !important;top:14px !important;right:14px !important;background:rgba(255,255,255,.95) !important;color:#0A2A5E !important;padding:6px 14px !important;border-radius:50px !important;font-size:11px !important;font-weight:700 !important;z-index:2 !important}article.iu-card-v2 .iu-body{display:block !important;padding:22px !important;box-sizing:border-box !important}article.iu-card-v2 .iu-loc{color:#6B7280 !important;font-size:12px !important;margin:0 0 8px 0 !important;font-weight:600 !important;letter-spacing:.5px !important}article.iu-card-v2 .iu-loc i{color:#F49B1C !important}article.iu-card-v2 .iu-title{font-family:"League Spartan",Montserrat,sans-serif !important;font-size:19px !important;font-weight:700 !important;color:#0A2A5E !important;margin:0 0 14px 0 !important;line-height:1.3 !important}article.iu-card-v2 .iu-feats{display:grid !important;grid-template-columns:1fr 1fr !important;gap:8px !important;padding:14px 0 !important;border-top:1px solid #E5E7EB !important;border-bottom:1px solid #E5E7EB !important;margin:0 0 14px 0 !important}article.iu-card-v2 .iu-feats span{display:flex !important;align-items:center !important;gap:6px !important;color:#4B5563 !important;font-size:13px !important}article.iu-card-v2 .iu-feats i{color:#F49B1C !important}article.iu-card-v2 .iu-price{font-family:"League Spartan",Montserrat,sans-serif !important;font-size:22px !important;font-weight:800 !important;color:#0A2A5E !important;margin:0 0 12px 0 !important}article.iu-card-v2 .iu-desc{color:#6B7280 !important;font-size:13px !important;line-height:1.5 !important;margin:0 0 16px 0 !important}article.iu-card-v2 .iu-cta{display:grid !important;grid-template-columns:1fr 1fr !important;gap:10px !important}article.iu-card-v2 .iu-cta a{display:flex !important;align-items:center !important;justify-content:center !important;gap:8px !important;padding:12px 16px !important;border-radius:8px !important;font-weight:700 !important;font-size:13px !important;text-decoration:none !important;transition:transform .2s !important}article.iu-card-v2 .iu-cta .call{background:#0A2A5E !important;color:#fff !important}article.iu-card-v2 .iu-cta .wa{background:#25D366 !important;color:#fff !important}';
+      document.head.appendChild(st);
+    }
+    container.innerHTML = '';
+    props.forEach(function(p){
+      var isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 30*86400000;
+      var wa = 'https://wa.me/905075188482?text=' + encodeURIComponent('Merhaba, ' + (p.baslik_tr || 'İlan') + ' hakkında bilgi almak istiyorum');
+      var img = getImg(p);
+      var tagHtml = '';
+      if (p.one_cikan) tagHtml = '<span class="iu-tag vip">💎 VIP FIRSAT</span>';
+      else if (isNew) tagHtml = '<span class="iu-tag">🆕 YENİ İLAN</span>';
+      var feats = [];
+      if (p.m2) feats.push('<span><i class="fa-solid fa-mountain"></i> ' + esc(p.m2) + ' m²</span>');
+      if (p.oda_sayisi) feats.push('<span><i class="fa-solid fa-bed"></i> ' + esc(p.oda_sayisi) + '</span>');
+      if (p.emsal) feats.push('<span><i class="fa-solid fa-compass"></i> ' + esc(p.emsal) + ' Emsal</span>');
+      if (p.imar_durumu && feats.length < 4) feats.push('<span><i class="fa-solid fa-file-contract"></i> ' + esc(p.imar_durumu) + '</span>');
+      if (p.bina_yasi != null && feats.length < 4) feats.push('<span><i class="fa-solid fa-clock"></i> ' + esc(p.bina_yasi) + ' yaş</span>');
+      if (feats.length < 2) feats.push('<span><i class="fa-solid fa-location-dot"></i> ' + esc(p.ilce || 'Yalova') + '</span>');
+      var desc = (p.aciklama_tr || '').substring(0, 130);
+      var descHtml = desc ? '<p class="iu-desc">' + esc(desc) + ((p.aciklama_tr || '').length > 130 ? '...' : '') + '</p>' : '';
+      var article = document.createElement('article');
+      article.className = 'iu-card-v2';
+      article.innerHTML =
+        '<div class="iu-img" style="background-image:url(\'' + img.replace(/'/g, "\\'") + '\')">' +
+        tagHtml +
+        '<span class="iu-type">' + esc((p.tip || 'satilik').toUpperCase()) + '</span>' +
+        '</div>' +
+        '<div class="iu-body">' +
+        '<div class="iu-loc"><i class="fa-solid fa-location-dot"></i> ' + esc((p.ilce || 'YALOVA').toUpperCase()) + (p.mahalle ? ', ' + esc(p.mahalle.toUpperCase()) : '') + '</div>' +
+        '<h3 class="iu-title">' + esc(p.baslik_tr || 'İlan') + '</h3>' +
+        '<div class="iu-feats">' + feats.join('') + '</div>' +
+        '<div class="iu-price">' + esc(fmtPrice(p.fiyat, p.para_birimi)) + '</div>' +
+        descHtml +
+        '<div class="iu-cta">' +
+        '<a class="call" href="tel:+905075188482"><i class="fa-solid fa-phone"></i> Ara</a>' +
+        '<a class="wa" href="' + wa + '" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Sor</a>' +
+        '</div>' +
+        '</div>';
+      container.appendChild(article);
+    });
+  }
+
+  function run() {
+    var container = document.getElementById('iu-dynamic-listings');
+    if (!container) { console.warn('[Inline] #iu-dynamic-listings yok'); return; }
+    if (!window.supabase) { console.warn('[Inline] Supabase SDK henüz yüklenmedi, retry...'); setTimeout(run, 300); return; }
+    var sb = window.supabase.createClient(CFG.URL, CFG.KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+    var f = getFilters();
+    console.log('[Inline] Filtreler:', JSON.stringify(f));
+    var q = sb.from('properties').select('*, property_images(url, ana_foto, sira)').eq('durum', 'aktif');
+    if (f.tip) q = q.eq('tip', f.tip);
+    if (f.kategori) q = q.eq('kategori', f.kategori);
+    if (f.kategoriIn) q = q.in('kategori', f.kategoriIn);
+    if (f.ilce) q = q.eq('ilce', f.ilce);
+    q = q.order('created_at', { ascending: false });
+    q.then(function(res){
+      console.log('[Inline] Sonuç:', res.data ? res.data.length + ' ilan' : 'null', res.error);
+      if (res.error) {
+        // Retry without images join
+        var q2 = sb.from('properties').select('*').eq('durum', 'aktif');
+        if (f.tip) q2 = q2.eq('tip', f.tip);
+        if (f.kategori) q2 = q2.eq('kategori', f.kategori);
+        if (f.kategoriIn) q2 = q2.in('kategori', f.kategoriIn);
+        if (f.ilce) q2 = q2.eq('ilce', f.ilce);
+        q2 = q2.order('created_at', { ascending: false });
+        q2.then(function(res2){ console.log('[Inline] Fallback:', res2.data ? res2.data.length + ' ilan' : 'null'); render(container, res2.data); });
+        return;
+      }
+      render(container, res.data);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+})();
+</script>
+
 </body>
 </html>
