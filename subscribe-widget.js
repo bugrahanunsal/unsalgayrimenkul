@@ -1316,6 +1316,13 @@
         // Admin kullanıcı için Hesabım linki admin paneline gitsin (customer sayfası değil)
         const accountLink = isAdmin ? '/admin/index.html' : CONFIG.ACCOUNT_URL;
 
+        // Mobile-specific: separate action buttons (bypass .iu-user-menu
+        // positioning issues). Hidden on desktop via CSS.
+        const mobileAction1 = isAdmin
+          ? `<a href="/admin/index.html" class="iu-mobile-btn iu-mobile-btn-admin">Admin Panel</a>`
+          : `<a href="${accountLink}" class="iu-mobile-btn iu-mobile-btn-account">Hesabım</a>`;
+        const mobileAction2 = `<a href="#" onclick="IUAuth.logout(event); return false;" class="iu-mobile-btn iu-mobile-btn-logout">Çıkış Yap</a>`;
+
         container.innerHTML = `
           <div class="iu-authbar" style="position: relative;">
             <div class="iu-authbar-user" onclick="IUAuth.toggleUserMenu(event)">
@@ -1333,6 +1340,10 @@
               <a href="/aramalarim">${iconSearch} Kayıtlı Aramalar</a>` : ''}
               ${!isAdmin ? '<div class="iu-user-menu-divider"></div>' : ''}
               <a href="#" onclick="IUAuth.logout(event)" class="iu-user-menu-logout">${iconLogout} Çıkış Yap</a>
+            </div>
+            <div class="iu-mobile-actions">
+              ${mobileAction1}
+              ${mobileAction2}
             </div>
           </div>
         `;

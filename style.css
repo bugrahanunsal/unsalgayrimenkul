@@ -322,14 +322,16 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
     text-align: left !important;
     padding: 0 8px !important;
   }
-  /* LOGO — flex ile TAM ORTA + BÜYÜK */
+  /* LOGO — flex ile TAM ORTA + DAHA BÜYÜK */
   .footer .footer-brand,
   footer .footer-brand {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+    justify-content: center !important;
     text-align: center !important;
     width: 100% !important;
+    padding: 20px 0 !important;
   }
   .footer .footer-brand > a,
   footer .footer-brand > a {
@@ -337,17 +339,23 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
     align-items: center !important;
     justify-content: center !important;
     width: 100% !important;
-    margin: 0 auto 16px !important;
+    max-width: 100% !important;
+    margin: 0 auto 20px !important;
+    padding: 0 !important;
+    text-align: center !important;
   }
   .footer .footer-brand .logo-svg,
   footer .footer-brand .logo-svg,
   .footer .footer-brand a .logo-svg,
   footer .footer-brand a .logo-svg {
     display: block !important;
-    height: 110px !important;
-    max-width: 90% !important;
+    height: 140px !important;
+    max-width: 100% !important;
     width: auto !important;
     margin: 0 auto !important;
+    /* SVG viewBox padding sorunu: preserveAspectRatio ile ortala */
+    object-fit: contain !important;
+    object-position: center !important;
   }
   .footer .footer-brand .footer-about,
   footer .footer-brand .footer-about {

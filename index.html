@@ -50,7 +50,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="style.css?v=20260928-footer-fix">
+<link rel="stylesheet" href="style.css?v=20260928-mobile-btn-fix">
 
 <style>
 .hero {
@@ -477,6 +477,11 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
         height: 0 !important;
         overflow: hidden !important;
       }
+      /* .iu-mobile-actions: sadece nav-auth-mobile içinde @media
+         (max-width: 900px) tarafından gösterilir. Diğer her yerde gizli. */
+      .topbar-auth .iu-mobile-actions {
+        display: none !important;
+      }
 
       @media (max-width: 900px) {
         /* Üst bar'daki auth GİZLE */
@@ -635,30 +640,26 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           gap: 12px !important;
         }
         .nav-auth-mobile .iu-authbar-avatar {
-          width: 44px !important;
-          height: 44px !important;
-          min-width: 44px !important;
-          max-width: 44px !important;
-          min-height: 44px !important;
-          max-height: 44px !important;
-          flex: 0 0 44px !important;
-          flex-basis: 44px !important;
+          width: 36px !important;
+          height: 36px !important;
+          min-width: 36px !important;
+          max-width: 36px !important;
+          min-height: 36px !important;
+          max-height: 36px !important;
+          flex: 0 0 36px !important;
+          flex-basis: 36px !important;
           flex-grow: 0 !important;
           flex-shrink: 0 !important;
           aspect-ratio: 1 / 1 !important;
           border-radius: 50% !important;
-          font-size: 18px !important;
-          font-weight: 700 !important;
-          line-height: 1 !important;
-          text-align: center !important;
-          padding: 0 !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
+          /* Y HARFİNİ TAMAMEN GİZLE — sadece boş mavi daire kalsın */
+          font-size: 0 !important;
+          color: transparent !important;
+          text-indent: -9999px !important;
           overflow: hidden !important;
+          padding: 0 !important;
+          display: block !important;
           box-sizing: border-box !important;
-          /* "Y" harfini tam merkeze taşı — font ascent/descent ofsetini iptal */
-          text-indent: 0 !important;
         }
         .nav-auth-mobile .iu-authbar-name {
           color: #0A2A5E !important;
@@ -671,87 +672,62 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           white-space: nowrap !important;
           text-align: left !important;
         }
-        /* User menu inline — GRID 2 kolon YAN YANA (buton çakışma bug fix) */
+        /* Mobil'de eski .iu-user-menu dropdown'ı TAMAMEN gizle
+           (yerine JS'den gelen .iu-mobile-actions kullanılıyor) */
         .nav-auth-mobile .iu-user-menu {
-          position: static !important;
-          top: auto !important;
-          bottom: auto !important;
-          left: auto !important;
-          right: auto !important;
-          transform: none !important;
-          box-shadow: none !important;
-          border: none !important;
-          background: transparent !important;
-          border-radius: 0 !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          min-width: unset !important;
-          max-width: none !important;
-          width: 100% !important;
-          overflow: visible !important;
-          display: grid !important;
-          grid-template-columns: 1fr 1fr !important;
-          gap: 8px !important;
-          animation: none !important;
-          z-index: auto !important;
-          box-sizing: border-box !important;
-        }
-        /* Duplicate header in dropdown hidden (grid'ten de çıkar) */
-        .nav-auth-mobile .iu-user-menu > .iu-user-menu-header,
-        .nav-auth-mobile .iu-user-menu-header {
           display: none !important;
-          grid-column: 1 / -1 !important;
+          visibility: hidden !important;
           height: 0 !important;
+          width: 0 !important;
           padding: 0 !important;
           margin: 0 !important;
           overflow: hidden !important;
-          visibility: hidden !important;
         }
-        /* Divider ise grid'te 2 kolonu geçsin */
-        .nav-auth-mobile .iu-user-menu-divider {
-          display: none !important;
-          grid-column: 1 / -1 !important;
-        }
-        .nav-auth-mobile .iu-user-menu a {
+        /* YENİ mobile actions container — GRİD 2 kolon YAN YANA
+           .iu-user-menu'nın conflict çıkaran base CSS'i buraya uğramaz */
+        .nav-auth-mobile .iu-mobile-actions {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 8px !important;
+          width: 100% !important;
+          margin-top: 8px !important;
+          box-sizing: border-box !important;
           position: relative !important;
-          top: auto !important;
-          left: auto !important;
-          right: auto !important;
-          transform: none !important;
+        }
+        .nav-auth-mobile .iu-mobile-btn {
           display: flex !important;
-          flex-direction: row !important;
           align-items: center !important;
           justify-content: center !important;
-          gap: 8px !important;
           padding: 12px 10px !important;
-          margin: 0 !important;
           width: 100% !important;
           min-width: 0 !important;
+          max-width: none !important;
           box-sizing: border-box !important;
           background: #ffffff !important;
           border: 1px solid #e5e7eb !important;
           border-radius: 10px !important;
           color: #0A2A5E !important;
           font-size: 13px !important;
-          font-weight: 600 !important;
+          font-weight: 700 !important;
           text-decoration: none !important;
           text-align: center !important;
           line-height: 1.2 !important;
-          z-index: 1 !important;
           white-space: nowrap !important;
           overflow: hidden !important;
           text-overflow: ellipsis !important;
         }
-        .nav-auth-mobile .iu-user-menu a svg {
-          width: 14px !important;
-          height: 14px !important;
-          flex-shrink: 0 !important;
-        }
-        /* Admin: mavi vurgu inline style'ı yerine bizim tema mavi */
-        .nav-auth-mobile .iu-user-menu a[href*="/admin"] {
+        .nav-auth-mobile .iu-mobile-btn-admin {
           background: #dbeafe !important;
           border-color: #93c5fd !important;
           color: #1e40af !important;
+        }
+        .nav-auth-mobile .iu-mobile-btn-logout {
+          background: #fef2f2 !important;
+          border-color: #fecaca !important;
+          color: #dc2626 !important;
+        }
+        .nav-auth-mobile .iu-mobile-btn:active {
+          transform: scale(0.97) !important;
         }
         .nav-auth-mobile .iu-user-menu a svg {
           color: #6b7280 !important;
@@ -1203,7 +1179,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 <a href="https://wa.me/905075188482" class="wa-float"><i class="fa-brands fa-whatsapp"></i></a>
 
-<script src="/script.js?v=20260928-btn-width-fix"></script>
+<script src="/script.js?v=20260928-mobile-btn-fix"></script>
 
 <script>
 // SMART FILTER & SEARCH SYSTEM - Facebook-grade live filtering
@@ -1440,7 +1416,7 @@ loadFromURL();
 <!-- İSMAİL ÜNSAL - Auth Widget + Database Integration -->
 <!-- ============================================ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/subscribe-widget.js?v=20260928-ios-zoom"></script>
+<script src="/subscribe-widget.js?v=20260928-mobile-btn-fix"></script>
 <!-- Frontend'i Supabase database'ine bağlayan script -->
 <script src="/frontend-supabase.js"></script>
 
