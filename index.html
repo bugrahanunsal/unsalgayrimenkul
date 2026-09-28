@@ -198,8 +198,13 @@
 
 .services-section { padding: 100px 24px; background: var(--white); }
 .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; max-width: 1280px; margin: 32px auto 0; }
-.service-card { padding: 36px 28px; text-align: center; border-radius: 16px; transition: var(--transition); border: 1px solid var(--gray-100); }
+.service-card { padding: 36px 28px 30px; text-align: center; border-radius: 16px; transition: var(--transition); border: 1px solid var(--gray-100); text-decoration: none; color: inherit; display: flex; flex-direction: column; background: #FFFFFF; position: relative; }
 .service-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: var(--orange); }
+.service-card p { flex: 1; margin-bottom: 18px; }
+.service-cta { display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: var(--orange); font-weight: 700; font-size: 13px; margin-top: auto; letter-spacing: 0.5px; transition: color 0.2s; }
+.service-card:hover .service-cta { color: var(--navy); gap: 10px; }
+.service-cta i { font-size: 11px; transition: transform 0.2s; }
+.service-card:hover .service-cta i { transform: translateX(3px); }
 .service-icon { width: 80px; height: 80px; background: rgba(244,155,28,0.15); color: var(--orange); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 32px; }
 .service-card h3 { font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: 22px; color: var(--navy); margin-bottom: 12px; }
 .service-card p { color: var(--gray-500); font-size: 14px; line-height: 1.6; }
@@ -277,7 +282,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 </style>
 <script src="/translator.js?v=20260928-batch" defer></script>
-<script src="/translations.js?v=20260928-gt" defer></script>
+<script src="/translations.js?v=20260928-cta" defer></script>
 </head>
 
 <body>
@@ -931,26 +936,30 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
     <p data-i18n="services.subtitle">Turyap güvencesinde profesyonel emlak danışmanlığı</p>
   </div>
   <div class="services-grid">
-    <div class="service-card">
+    <a href="hakkimizda.html" class="service-card">
       <div class="service-icon"><i class="fa-solid fa-shield-halved"></i></div>
       <h3 data-i18n="service1.title">Turyap Güvencesi</h3>
       <p data-i18n="service1.text">Türkiye'nin en güvenilir emlak markası altında profesyonel hizmet</p>
-    </div>
-    <div class="service-card">
+      <span class="service-cta" data-i18n="service.cta.about">Hakkımızda <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+    <a href="blog.html" class="service-card">
       <div class="service-icon"><i class="fa-solid fa-map-location-dot"></i></div>
       <h3 data-i18n="service2.title">Yerel Uzmanlık</h3>
       <p data-i18n="service2.text">Yalova'nın her köşesini bilen, deneyimli kadro</p>
-    </div>
-    <div class="service-card">
+      <span class="service-cta" data-i18n="service.cta.blog">Bölge Rehberleri <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+    <a href="iletisim.html" class="service-card">
       <div class="service-icon"><i class="fa-solid fa-language"></i></div>
       <h3 data-i18n="service3.title">5 Dilde Hizmet</h3>
       <p data-i18n="service3.text">TR, EN, FR, DE, RU dillerinde uluslararası müşteri desteği</p>
-    </div>
-    <div class="service-card">
+      <span class="service-cta" data-i18n="service.cta.contact">İletişime Geç <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+    <a href="faq.html" class="service-card">
       <div class="service-icon"><i class="fa-solid fa-headset"></i></div>
       <h3 data-i18n="service4.title">7/24 Destek</h3>
       <p data-i18n="service4.text">WhatsApp ve telefon ile her zaman ulaşabileceğiniz danışmanlık</p>
-    </div>
+      <span class="service-cta" data-i18n="service.cta.faq">Sıkça Sorulan Sorular <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
   </div>
 </section>
 
@@ -998,13 +1007,13 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
       </ul>
     </div>
     <div class="footer-col">
-      <h4 data-i18n="footer.regions">Bölgeler</h4>
+      <h4 data-i18n="footer.blogguide">Blog & Rehber</h4>
       <ul>
-        <li><a href="#">Yalova Merkez</a></li>
-        <li><a href="#">Çınarcık</a></li>
-        <li><a href="#">Termal</a></li>
-        <li><a href="#">Altınova</a></li>
-        <li><a href="#">Armutlu</a></li>
+        <li><a href="blog.html" data-i18n="footer.allblog">Tüm Blog Yazıları</a></li>
+        <li><a href="blog-yalova-arsa-yatirimi-2026.html">Yalova Arsa Yatırımı 2026</a></li>
+        <li><a href="blog-akkoy-yatirim-rehberi.html">Akköy Bölge Rehberi</a></li>
+        <li><a href="faq.html" data-i18n="footer.faq">Sıkça Sorulan Sorular</a></li>
+        <li><a href="hakkimizda.html" data-i18n="nav.about">Hakkımızda</a></li>
       </ul>
     </div>
     <div class="footer-col">

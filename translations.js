@@ -132,6 +132,10 @@ const translations = {
     "service3.text": "TR, EN, FR, DE, RU dillerinde uluslararası müşteri desteği",
     "service4.title": "7/24 Destek",
     "service4.text": "WhatsApp ve telefon ile her zaman ulaşabileceğiniz danışmanlık",
+    "service.cta.about": "Hakkımızda",
+    "service.cta.blog": "Bölge Rehberleri",
+    "service.cta.contact": "İletişime Geç",
+    "service.cta.faq": "Sıkça Sorulan Sorular",
 
     // HOME CTA
     "homecta.title": "Hayalindeki Mülkü Bulalım",
@@ -143,6 +147,9 @@ const translations = {
     "footer.about": "Yalova'da güvenilir gayrimenkul danışmanlığı. Turyap güvencesinde profesyonel hizmet.",
     "footer.quick": "Hızlı Erişim",
     "footer.regions": "Bölgeler",
+    "footer.blogguide": "Blog & Rehber",
+    "footer.allblog": "Tüm Blog Yazıları",
+    "footer.faq": "Sıkça Sorulan Sorular",
     "footer.contact": "İletişim",
     "footer.copyright": "© 2026 ÜNSAL Gayrimenkul. Tüm hakları saklıdır. • İsmail Ünsal",
 
@@ -275,6 +282,10 @@ const translations = {
     "service3.text": "International customer support in TR, EN, FR, DE, RU",
     "service4.title": "24/7 Support",
     "service4.text": "Consultancy reachable anytime via WhatsApp and phone",
+    "service.cta.about": "About Us",
+    "service.cta.blog": "Regional Guides",
+    "service.cta.contact": "Contact Us",
+    "service.cta.faq": "FAQ",
 
     "homecta.title": "Let's Find Your Dream Property",
     "homecta.subtitle": "Contact us now for free consultation. Let us offer you the most suitable options.",
@@ -284,6 +295,9 @@ const translations = {
     "footer.about": "Trusted real estate consultancy in Yalova. Professional service under Turyap assurance.",
     "footer.quick": "Quick Links",
     "footer.regions": "Regions",
+    "footer.blogguide": "Blog & Guides",
+    "footer.allblog": "All Blog Posts",
+    "footer.faq": "FAQ",
     "footer.contact": "Contact",
     "footer.copyright": "© 2026 ÜNSAL Real Estate. All rights reserved. • İsmail Ünsal",
 
@@ -415,6 +429,10 @@ const translations = {
     "service3.text": "Support client international en TR, EN, FR, DE, RU",
     "service4.title": "Support 24/7",
     "service4.text": "Conseil joignable à tout moment via WhatsApp et téléphone",
+    "service.cta.about": "À Propos",
+    "service.cta.blog": "Guides Régionaux",
+    "service.cta.contact": "Nous Contacter",
+    "service.cta.faq": "FAQ",
 
     "homecta.title": "Trouvons Votre Propriété de Rêve",
     "homecta.subtitle": "Contactez-nous pour une consultation gratuite. Laissez-nous vous proposer les meilleures options.",
@@ -424,6 +442,9 @@ const translations = {
     "footer.about": "Conseil immobilier de confiance à Yalova. Service professionnel sous l'assurance Turyap.",
     "footer.quick": "Liens Rapides",
     "footer.regions": "Régions",
+    "footer.blogguide": "Blog & Guides",
+    "footer.allblog": "Tous les Articles",
+    "footer.faq": "FAQ",
     "footer.contact": "Contact",
     "footer.copyright": "© 2026 ÜNSAL Immobilier. Tous droits réservés. • İsmail Ünsal",
 
@@ -555,6 +576,10 @@ const translations = {
     "service3.text": "Internationaler Kundensupport in TR, EN, FR, DE, RU",
     "service4.title": "24/7 Support",
     "service4.text": "Beratung jederzeit über WhatsApp und Telefon erreichbar",
+    "service.cta.about": "Über Uns",
+    "service.cta.blog": "Regionalführer",
+    "service.cta.contact": "Kontakt",
+    "service.cta.faq": "FAQ",
 
     "homecta.title": "Lassen Sie Uns Ihre Traumimmobilie Finden",
     "homecta.subtitle": "Kontaktieren Sie uns jetzt für eine kostenlose Beratung. Lassen Sie uns Ihnen die besten Optionen anbieten.",
@@ -564,6 +589,9 @@ const translations = {
     "footer.about": "Vertrauenswürdige Immobilienberatung in Yalova. Professioneller Service unter Turyap-Sicherung.",
     "footer.quick": "Schnellzugriff",
     "footer.regions": "Regionen",
+    "footer.blogguide": "Blog & Ratgeber",
+    "footer.allblog": "Alle Blog-Beiträge",
+    "footer.faq": "FAQ",
     "footer.contact": "Kontakt",
     "footer.copyright": "© 2026 ÜNSAL Immobilien. Alle Rechte vorbehalten. • İsmail Ünsal",
 
@@ -695,6 +723,10 @@ const translations = {
     "service3.text": "Международная поддержка клиентов на TR, EN, FR, DE, RU",
     "service4.title": "Поддержка 24/7",
     "service4.text": "Консультации доступны в любое время через WhatsApp и телефон",
+    "service.cta.about": "О Нас",
+    "service.cta.blog": "Гиды по Районам",
+    "service.cta.contact": "Связаться",
+    "service.cta.faq": "Частые Вопросы",
 
     "homecta.title": "Давайте Найдем Вашу Идеальную Недвижимость",
     "homecta.subtitle": "Свяжитесь с нами для бесплатной консультации. Предложим вам наилучшие варианты.",
@@ -704,6 +736,9 @@ const translations = {
     "footer.about": "Надежные консультации по недвижимости в Ялове. Профессиональный сервис под гарантией Turyap.",
     "footer.quick": "Быстрые Ссылки",
     "footer.regions": "Регионы",
+    "footer.blogguide": "Блог & Гиды",
+    "footer.allblog": "Все Статьи Блога",
+    "footer.faq": "Частые Вопросы",
     "footer.contact": "Контакты",
     "footer.copyright": "© 2026 ÜNSAL Недвижимость. Все права защищены. • İsmail Ünsal",
 
@@ -835,6 +870,10 @@ const translations = {
     "service3.text": "دعم عملاء دولي بالتركية والإنجليزية والفرنسية والألمانية والروسية",
     "service4.title": "دعم 24/7",
     "service4.text": "استشارات متاحة في أي وقت عبر WhatsApp والهاتف",
+    "service.cta.about": "من نحن",
+    "service.cta.blog": "أدلة المناطق",
+    "service.cta.contact": "اتصل بنا",
+    "service.cta.faq": "الأسئلة الشائعة",
 
     "homecta.title": "دعنا نجد عقارك المثالي",
     "homecta.subtitle": "اتصل بنا الآن للحصول على استشارة مجانية. سنقدم لك أفضل الخيارات.",
@@ -844,6 +883,9 @@ const translations = {
     "footer.about": "استشارات عقارية موثوقة في يالوفا. خدمة احترافية بضمان Turyap.",
     "footer.quick": "روابط سريعة",
     "footer.regions": "المناطق",
+    "footer.blogguide": "مدونة وأدلة",
+    "footer.allblog": "جميع مقالات المدونة",
+    "footer.faq": "الأسئلة الشائعة",
     "footer.contact": "اتصل بنا",
     "footer.copyright": "© 2026 ÜNSAL العقارية. جميع الحقوق محفوظة. • İsmail Ünsal",
 
