@@ -40,10 +40,10 @@
   // Home page ile birebir aynı: SATILIK, KİRALIK, ARSA, LÜKS(YENİ), BLOG, HAKKIMIZDA, FAQ, İLETİŞİM
   // i18n key'leri Türkçe formatta (nav.satilik, nav.kiralik vb.)
   const menuItems = [
-    { href: lp('yalova-satilik-daire.html'), key: 'nav.satilik',    label: 'SATILIK',    match: ['satilik'] },
-    { href: lp('yalova-kiralik-daire.html'), key: 'nav.kiralik',    label: 'KİRALIK',    match: ['kiralik'] },
-    { href: lp('yalova-satilik-arsa.html'),  key: 'nav.arsa',       label: 'ARSA',       match: ['arsa'] },
-    { href: lp('yalova-kiralik-villa.html'), key: 'nav.luks',       label: 'LÜKS',       match: ['kiralik-villa','villa'], badge: 'YENİ', badgeKey: 'nav.luks.badge' },
+    { href: lp('yalova-satilik-daire.html'), key: 'nav.satilik',    label: 'SATILIK',    match: ['satilik-daire','satilik-ev'] },
+    { href: lp('yalova-kiralik-daire.html'), key: 'nav.kiralik',    label: 'KİRALIK',    match: ['kiralik-daire','kiralik-ev','esyali-kiralik','merkez-kiralik'] },
+    { href: lp('yalova-satilik-arsa.html'),  key: 'nav.arsa',       label: 'ARSA',       match: ['satilik-arsa'] },
+    { href: lp('yalova-kiralik-villa.html'), key: 'nav.luks',       label: 'LÜKS',       match: ['kiralik-villa'], badge: 'YENİ', badgeKey: 'nav.luks.badge' },
     { href: lp('blog.html'),                 key: 'nav.blog',       label: 'BLOG',       match: ['/blog'] },
     { href: lp('hakkimizda.html'),           key: 'nav.hakkimizda', label: 'HAKKIMIZDA', match: ['hakkimizda'] },
     { href: lp('faq.html'),                  key: 'nav.sss',        label: 'FAQ',        match: ['faq','sss'] },
@@ -57,7 +57,7 @@
     fr: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg>',
     de: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#000"/><rect width="60" height="13.33" y="13.33" fill="#DD0000"/><rect width="60" height="13.34" y="26.66" fill="#FFCE00"/></svg>',
     ru: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#fff"/><rect width="60" height="13.33" y="13.33" fill="#0039A6"/><rect width="60" height="13.34" y="26.66" fill="#D52B1E"/></svg>',
-    ar: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#006C35"/></svg>'
+    ar: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#000"/><rect width="60" height="13.34" y="13.33" fill="#fff"/><rect width="60" height="13.33" y="26.67" fill="#007A3D"/><polygon points="20,20 26,17 26,23" fill="#CE1126"/></svg>'
   };
   const langNames = { tr: 'Türkçe', en: 'English', fr: 'Français', de: 'Deutsch', ru: 'Русский', ar: 'العربية' };
 
@@ -67,7 +67,7 @@
     return ['tr','en','fr','de','ru','ar'].map(lang => {
       const url = (lang === 'tr' ? '' : '/' + lang) + (currentPage === '/' ? '/' : currentPage) + location.search + location.hash;
       const active = lang === currentLang ? ' active' : '';
-      return `<a href="${url}" class="lang-option${active}"><span class="flag">${flagSVGs[lang]}</span><span>${langNames[lang]}</span></a>`;
+      return `<a href="${url}" class="lang-option${active}" data-lang="${lang}"><span class="flag">${flagSVGs[lang]}</span><span>${langNames[lang]}</span></a>`;
     }).join('');
   }
 
@@ -88,8 +88,8 @@
 <div class="top-bar">
   <div class="top-bar-inner">
     <div class="top-info">
-      <span><i class="fa-solid fa-location-dot"></i> <span>Yalova, Türkiye</span></span>
-      <span><i class="fa-solid fa-clock"></i> <span>Pzt-Cmt: 09:00 - 19:00</span></span>
+      <span><i class="fa-solid fa-location-dot"></i> <span data-i18n="topbar.location">Yalova, Türkiye</span></span>
+      <span><i class="fa-solid fa-clock"></i> <span data-i18n="topbar.hours">Pzt-Cmt: 09:00 - 19:00</span></span>
       <span><i class="fa-solid fa-phone"></i> +90 507 518 84 82</span>
     </div>
     <div class="top-right">
@@ -102,8 +102,8 @@
       </div>
       <div class="lang-switcher" id="langSwitcher">
         <div class="lang-current" id="langCurrent">
-          <span class="flag">${flagSVGs[currentLang]}</span>
-          <span class="lang-code">${currentLang.toUpperCase()}</span>
+          <span class="flag" id="currentFlag">${flagSVGs[currentLang]}</span>
+          <span class="lang-code" id="currentLang">${currentLang.toUpperCase()}</span>
           <i class="fa-solid fa-chevron-down" style="font-size:10px"></i>
         </div>
         <div class="lang-dropdown">${buildLangDropdown()}</div>
@@ -131,7 +131,7 @@
       <div data-iu-auth class="nav-auth-mobile"></div>
     </nav>
     <div class="header-cta">
-      <a href="tel:+905075188482" class="btn-call"><i class="fa-solid fa-phone"></i> <span data-i18n="btn.callnow">HEMEN ARA</span></a>
+      <a href="tel:+905075188482" class="btn-call"><i class="fa-solid fa-phone"></i> <span data-i18n="nav.cta">HEMEN ARA</span></a>
       <button class="menu-toggle" aria-label="Menü" onclick="document.getElementById('mainNav').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
     </div>
   </div>
@@ -142,12 +142,37 @@
   // ============================================================
   // INJECTION: Replace existing header OR prepend to body
   // ============================================================
+  const HEADER_CSS_VERSION = '20260928-single';
+
+  // Add a stylesheet once. toBodyEnd=true → appended at end of <body> so it
+  // wins the cascade over page-specific header CSS. skipIfMatch → skip when
+  // an existing <link> href already contains that text (e.g. font-awesome).
+  function ensureStylesheet(href, id, toBodyEnd, skipIfMatch) {
+    if (document.getElementById(id)) return;
+    if (skipIfMatch && document.querySelector('link[href*="' + skipIfMatch + '"]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.id = id;
+    (toBodyEnd ? document.body : document.head).appendChild(link);
+  }
+
   function inject() {
     // If DOM not ready, wait
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', inject);
       return;
     }
+
+    // Tek kaynak header stili — body'nin EN SONUNA eklenir ki sayfaların
+    // kendi (farklı) header CSS'lerinden sonra gelsin ve home page ile
+    // birebir aynı görünüm garanti olsun.
+    ensureStylesheet('/header.css?v=' + HEADER_CSS_VERSION, 'iu-header-css', true);
+    ensureStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css', 'iu-fa-css', false, 'font-awesome');
+    ensureStylesheet('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800;900&display=swap', 'iu-fonts-css', false, 'League+Spartan');
+
+    // Hesabım / verify / unsubscribe sayfalarındaki eski mini header'ı kaldır
+    document.querySelectorAll('header.site-header').forEach(h => h.remove());
 
     const existingTopbar = document.querySelector('.top-bar');
     const existingHeader = document.querySelector('header.header');
@@ -187,18 +212,27 @@
       console.log('[UnifiedHeader] Prepended to body');
     }
 
-    // Wire up language switcher click behavior (unified)
-    const switcher = document.getElementById('langSwitcher');
-    const current = document.getElementById('langCurrent');
-    if (current && switcher) {
-      current.addEventListener('click', (e) => {
-        e.stopPropagation();
-        switcher.classList.toggle('active');
-      });
-      document.addEventListener('click', (e) => {
-        if (!switcher.contains(e.target)) switcher.classList.remove('active');
-      });
+    // Dil menüsü aç/kapa: translations.js zaten bağlıyorsa (home page ile aynı)
+    // tekrar bağlama — iki kez bağlanırsa toggle iki kez çalışır ve menü açılmaz.
+    if (typeof window.switchLanguageURL !== 'function') {
+      const switcher = document.getElementById('langSwitcher');
+      const current = document.getElementById('langCurrent');
+      if (current && switcher) {
+        current.addEventListener('click', (e) => {
+          e.stopPropagation();
+          switcher.classList.toggle('active');
+        });
+        document.addEventListener('click', (e) => {
+          if (!switcher.contains(e.target)) switcher.classList.remove('active');
+        });
+      }
     }
+
+    // TURYAP logosu, dil kodları, bayraklar ve auth alanı Google Translate ile çevrilmesin
+    document.querySelectorAll('.logo svg, .lang-code, .flag, .nav-badge, [data-iu-auth]').forEach(el => {
+      el.setAttribute('translate', 'no');
+      el.classList.add('notranslate');
+    });
 
     // Dispatch event so other scripts (auth widget, translator) know header is ready
     document.dispatchEvent(new CustomEvent('iu:header-injected'));

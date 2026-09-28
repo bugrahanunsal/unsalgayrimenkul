@@ -14,11 +14,12 @@
       background: linear-gradient(135deg, #0a1929 0%, #1a3a5f 100%);
       min-height: 100vh;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      flex-direction: column;   /* header üstte, kart altta ortada */
+      padding: 0;
     }
     .card {
+      margin: auto;
+      width: calc(100% - 40px) !important;
       background: white;
       border-radius: 20px;
       padding: 48px 40px;
@@ -27,7 +28,7 @@
       text-align: center;
       box-shadow: 0 25px 50px rgba(0,0,0,0.2);
     }
-    .logo { color: #3b82f6; font-size: 24px; font-weight: 700; letter-spacing: 2px; }
+    .card-logo { color: #3b82f6; font-size: 24px; font-weight: 700; letter-spacing: 2px; }
     .subtitle { color: #6b7280; font-size: 11px; letter-spacing: 2px; margin-bottom: 32px; }
     .icon { font-size: 64px; margin: 20px 0; display: block; }
     h1 { font-size: 24px; color: #0a1929; margin-bottom: 12px; }
@@ -102,9 +103,9 @@
 <script src="/translations.js?v=20260928-svc" defer></script>
 </head>
 <body>
-<script src="/unified-header.js?v=20260928-faq"></script>
+<script src="/unified-header.js?v=20260928-single"></script>
 <div class="card">
-    <div class="logo">İSMAİL ÜNSAL</div>
+    <div class="card-logo">İSMAİL ÜNSAL</div>
     <div class="subtitle">GAYRİMENKUL DANIŞMANI</div>
 
     <div id="content">
