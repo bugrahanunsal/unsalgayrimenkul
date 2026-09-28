@@ -40,7 +40,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20260928-single-header';
+  const SITE_VERSION = '20260928-copyright';
 
   async function loadAllScripts() {
     try {
@@ -78,6 +78,33 @@
 // ==================== HEADER ====================
 // Header artık SADECE /unified-header.js'ten gelir (tek kaynak).
 // Buradaki eski ikinci kopya kaldırıldı — iki sistem birbirinin üzerine yazıyordu.
+
+// ==================== TELİF SATIRI TEK SATIR (MOBİL) ====================
+// Mobilde telif yazısı iki satıra düşmesin: sığmıyorsa font'u 0.5px adımlarla
+// küçült (en az 9px). Çeviri/dil değişimi ve font yüklenmesinden sonra tekrar ölç.
+(function fitCopyrightLine() {
+  function fit() {
+    const p = document.querySelector('.footer-bottom > p:first-child');
+    if (!p) return;
+    p.style.fontSize = '';                        // CSS'teki başlangıç boyutuna dön
+    p.style.whiteSpace = '';
+    if (window.innerWidth > 968) return;          // sadece mobil/tablet
+    let size = parseFloat(getComputedStyle(p).fontSize);
+    while (p.scrollWidth > p.clientWidth + 1 && size > 9) {
+      size -= 0.5;
+      p.style.fontSize = size + 'px';
+    }
+    // En küçük boyutta bile sığmıyorsa (çok dar ekran + uzun dil) taşırma, alt satıra geç
+    p.style.whiteSpace = p.scrollWidth > p.clientWidth + 1 ? 'normal' : '';
+  }
+  const run = () => requestAnimationFrame(fit);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+  window.addEventListener('load', run);
+  window.addEventListener('resize', run);
+  document.addEventListener('iu:header-injected', () => setTimeout(run, 50));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
+  setTimeout(run, 1500);                          // translations.js metni değiştirdikten sonra
+})();
 
 // ==================== FOOTER LOGO DÜZELTMESİ ====================
 // Eski "ÜNSAL GAYRİMENKUL" logosunu yeni "TURYAP | İSMAİL ÜNSAL" logosuyla değiştir
