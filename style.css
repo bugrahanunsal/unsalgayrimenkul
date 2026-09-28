@@ -143,13 +143,13 @@ section { padding: 80px 24px; }
 
 /* İngilizce/Fransızca/Almanca/Rusça gibi çok sözcüklü dillerde
    nav item'ları daha da daraltılır — hepsi tek satırda kalsın */
-html[lang="en"] .nav, html[lang="fr"] .nav,
-html[lang="de"] .nav, html[lang="ru"] .nav,
-html[lang="ar"] .nav {
+body[data-lang="en"] .nav, body[data-lang="fr"] .nav,
+body[data-lang="de"] .nav, body[data-lang="ru"] .nav,
+body[data-lang="ar"] .nav {
   gap: 16px;
 }
-html[lang="en"] .nav a, html[lang="fr"] .nav a,
-html[lang="de"] .nav a, html[lang="ru"] .nav a {
+body[data-lang="en"] .nav a, body[data-lang="fr"] .nav a,
+body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
   font-size: 12px;
   letter-spacing: 0.2px;
 }
@@ -333,10 +333,10 @@ html[lang="de"] .nav a, html[lang="ru"] .nav a {
 /* ============ RESPONSIVE ============ */
 /* Çok sözcüklü dillerde (EN/FR/DE/RU) daha erken hamburger menü — 1050px */
 @media (max-width: 1050px) {
-  html[lang="en"] .menu-toggle,
-  html[lang="fr"] .menu-toggle,
-  html[lang="de"] .menu-toggle,
-  html[lang="ru"] .menu-toggle {
+  body[data-lang="en"] .menu-toggle,
+  body[data-lang="fr"] .menu-toggle,
+  body[data-lang="de"] .menu-toggle,
+  body[data-lang="ru"] .menu-toggle {
     display: flex !important;
     align-items: center;
     justify-content: center;
@@ -349,10 +349,10 @@ html[lang="de"] .nav a, html[lang="ru"] .nav a {
     height: 44px;
     border-radius: 6px;
   }
-  html[lang="en"] .nav,
-  html[lang="fr"] .nav,
-  html[lang="de"] .nav,
-  html[lang="ru"] .nav {
+  body[data-lang="en"] .nav,
+  body[data-lang="fr"] .nav,
+  body[data-lang="de"] .nav,
+  body[data-lang="ru"] .nav {
     display: none;
     position: absolute;
     top: 100%;
@@ -369,14 +369,14 @@ html[lang="de"] .nav a, html[lang="ru"] .nav a {
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
-  html[lang="en"] .nav.open,
-  html[lang="fr"] .nav.open,
-  html[lang="de"] .nav.open,
-  html[lang="ru"] .nav.open { display: flex !important; }
-  html[lang="en"] .nav a,
-  html[lang="fr"] .nav a,
-  html[lang="de"] .nav a,
-  html[lang="ru"] .nav a {
+  body[data-lang="en"] .nav.open,
+  body[data-lang="fr"] .nav.open,
+  body[data-lang="de"] .nav.open,
+  body[data-lang="ru"] .nav.open { display: flex !important; }
+  body[data-lang="en"] .nav a,
+  body[data-lang="fr"] .nav a,
+  body[data-lang="de"] .nav a,
+  body[data-lang="ru"] .nav a {
     width: 100%;
     padding: 5px 12px;
     border-bottom: 1px solid rgba(0,0,0,0.06);

@@ -900,7 +900,9 @@ function setLanguage(lang) {
   });
 
   // HTML lang attribute güncelle
-  document.documentElement.lang = lang;
+  // HTML lang="tr" olarak KALIYOR — Google Translate kaynak dili tanısın
+  // Hedef dil için body attribute (CSS ve JS kontrol için)
+  if (document.body) document.body.setAttribute('data-lang', lang);
 
   // Dil switcher UI güncelle
   updateLanguageSwitcher(lang);

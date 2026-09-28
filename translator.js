@@ -35,8 +35,15 @@
     }
   };
 
-  // HTML lang attribute'ünü güncelle (SEO için)
-  document.documentElement.lang = currentLang;
+  // HTML lang="tr" olarak KALIYOR — Google Translate kaynak dilini bilsin diye
+  // Hedef dil bilgisi için body[data-lang] kullanıyoruz (CSS matching için)
+  function setBodyLang() {
+    if (document.body) {
+      document.body.setAttribute('data-lang', currentLang);
+    }
+  }
+  if (document.body) setBodyLang();
+  else document.addEventListener('DOMContentLoaded', setBodyLang);
 
   // ZORLA LTR - Google Translate bazen dir="rtl" ekliyor,
   // header layout'ını bozuyor. Bunu engelle.
