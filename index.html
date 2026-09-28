@@ -585,27 +585,44 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           padding-bottom: 16px !important;
           border-bottom: 2px solid rgba(244,155,28,0.2);
         }
-        .nav.open { display: flex !important; flex-direction: column !important; }
+        /* align-items: stretch — children flex-column'da FULL WIDTH olsun
+           (base .nav align-items: center idi — child'lar content genişliğinde
+           kalıyordu, bu yüzden butonlar solda küçük görünüyordu) */
+        .nav.open {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: stretch !important;
+        }
+        .nav.open > * { width: 100% !important; }
         /* Not logged in: Giriş / Üye Ol side-by-side — GRID (predictable) */
         .nav-auth-mobile .iu-authbar {
           display: grid !important;
           grid-template-columns: 1fr 1fr !important;
           gap: 8px !important;
           width: 100% !important;
+          min-width: 100% !important;
+          max-width: 100% !important;
           box-sizing: border-box !important;
+          margin: 0 !important;
+          padding: 0 !important;
         }
         .nav-auth-mobile .iu-authbar-btn {
-          display: inline-flex !important;
+          /* display: flex (BLOCK-level, inline-flex değil) — grid cell'i doldurur */
+          display: flex !important;
           width: 100% !important;
-          max-width: none !important;
           min-width: 0 !important;
+          max-width: none !important;
+          justify-self: stretch !important;
+          align-self: stretch !important;
           box-sizing: border-box !important;
-          padding: 10px 12px !important;
+          padding: 10px 8px !important;
           font-size: 13px !important;
           line-height: 1.2 !important;
           justify-content: center !important;
           align-items: center !important;
           border-radius: 8px !important;
+          gap: 6px !important;
+          margin: 0 !important;
         }
         .nav-auth-mobile .iu-authbar-btn svg {
           width: 14px !important;
@@ -1179,7 +1196,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 <a href="https://wa.me/905075188482" class="wa-float"><i class="fa-brands fa-whatsapp"></i></a>
 
-<script src="/script.js?v=20260928-mobile-btn-fix"></script>
+<script src="/script.js?v=20260928-align-stretch"></script>
 
 <script>
 // SMART FILTER & SEARCH SYSTEM - Facebook-grade live filtering
