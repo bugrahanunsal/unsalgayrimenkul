@@ -205,10 +205,10 @@
         padding: 16px !important;
         background: #f9fafb !important;
         border-bottom: 1px solid #e5e7eb !important;
-        color: #ffffff !important;
+        color: #0a1929 !important;
       }
       .iu-user-menu-header > div:first-child {
-        color: #ffffff !important;
+        color: #0a1929 !important;
         font-weight: 700 !important;
       }
       .iu-user-menu-email {
@@ -221,7 +221,7 @@
         align-items: center !important;
         gap: 10px !important;
         padding: 12px 16px !important;
-        color: #ffffff !important;
+        color: #0a1929 !important;
         background: #ffffff !important;
         text-decoration: none !important;
         font-size: 14px !important;
@@ -231,7 +231,7 @@
       }
       .iu-user-menu a:hover {
         background: #f3f4f6 !important;
-        color: #ffffff !important;
+        color: #0a1929 !important;
       }
       .iu-user-menu a svg {
         color: #6b7280 !important;
@@ -302,18 +302,34 @@
         text-transform: uppercase;
       }
       .iu-modal-close {
-        position: absolute; top: 16px; right: 16px;
-        background: rgba(255,255,255,0.1);
-        border: none;
-        width: 32px; height: 32px;
-        border-radius: 8px;
+        position: absolute; top: 14px; right: 14px;
+        background: rgba(255,255,255,0.18);
+        border: 2px solid rgba(255,255,255,0.3);
+        width: 40px; height: 40px;
+        border-radius: 10px;
         cursor: pointer;
         color: white;
-        font-size: 20px;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1;
         display: flex; align-items: center; justify-content: center;
-        transition: background 0.15s;
+        transition: all 0.15s;
+        z-index: 10;
       }
-      .iu-modal-close:hover { background: rgba(255,255,255,0.2); }
+      .iu-modal-close:hover, .iu-modal-close:active {
+        background: rgba(255,255,255,0.3);
+        border-color: rgba(255,255,255,0.5);
+        transform: scale(1.05);
+      }
+      @media (max-width: 640px) {
+        .iu-modal-close {
+          width: 44px; height: 44px;
+          font-size: 28px;
+          top: 12px; right: 12px;
+          background: rgba(255,255,255,0.25);
+          border: 2px solid rgba(255,255,255,0.4);
+        }
+      }
 
       .iu-modal-body {
         padding: 24px 28px;
@@ -344,7 +360,7 @@
       }
       .iu-tab.active {
         background: white;
-        color: #ffffff;
+        color: #0a1929;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       }
       .iu-tab-content { display: none; animation: iuFadeIn 0.2s; }
@@ -375,7 +391,7 @@
         border: 1.5px solid #e5e7eb;
         border-radius: 8px;
         font-size: 14px;
-        color: #ffffff;
+        color: #0a1929;
         transition: all 0.15s;
         background: white;
         font-family: inherit;
@@ -384,7 +400,10 @@
         outline: none;
         border-color: #3b82f6;
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        color: #0a1929;
       }
+      .iu-input::placeholder { color: #9ca3af; }
+      .iu-checkbox-label { color: #374151; }
       .iu-checkboxes {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -1100,15 +1119,67 @@
         border-top: 1px solid #e5e7eb;
         margin: 4px 0;
       }
-      @media (max-width: 640px) {
+      @media (max-width: 768px) {
+        /* Not logged in: keep buttons in topbar but compact */
         .topbar-auth {
-          margin-right: 8px !important;
-          padding-right: 8px !important;
+          margin-right: 6px !important;
+          padding-right: 6px !important;
         }
         .topbar-auth .iu-authbar-name { display: none !important; }
         .topbar-auth .iu-authbar-btn {
-          padding: 4px 8px !important;
+          padding: 5px 10px !important;
           font-size: 10px !important;
+        }
+        /* When logged in: move the user badge OUT of topbar to a fixed
+           bottom-right floating pill so it does not compress the top row
+           (numbers + social icons + language switcher were crashing).
+           Both selectors so it works with or without :has() support. */
+        .topbar-auth.iu-signed-in,
+        .topbar-auth:has(.iu-authbar-user) {
+          position: fixed !important;
+          bottom: 20px !important;
+          left: 12px !important;
+          right: auto !important;
+          top: auto !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          z-index: 999997 !important;
+        }
+        .topbar-auth.iu-signed-in .iu-authbar-user,
+        .topbar-auth:has(.iu-authbar-user) .iu-authbar-user {
+          background: rgba(10,42,94,0.95) !important;
+          border: 2px solid rgba(244,155,28,0.5) !important;
+          padding: 8px 14px 8px 8px !important;
+          border-radius: 40px !important;
+          box-shadow: 0 6px 20px rgba(0,0,0,0.25) !important;
+          backdrop-filter: blur(8px);
+        }
+        .topbar-auth.iu-signed-in .iu-authbar-name,
+        .topbar-auth:has(.iu-authbar-user) .iu-authbar-name {
+          display: inline-block !important;
+          color: #ffffff !important;
+          font-size: 12px !important;
+          font-weight: 700 !important;
+          max-width: 100px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        .topbar-auth.iu-signed-in .iu-authbar-avatar,
+        .topbar-auth:has(.iu-authbar-user) .iu-authbar-avatar {
+          width: 32px !important;
+          height: 32px !important;
+          border: 2px solid #F49B1C !important;
+        }
+        /* User menu opens upward on mobile to stay on screen */
+        .topbar-auth.iu-signed-in .iu-user-menu,
+        .topbar-auth:has(.iu-authbar-user) .iu-user-menu {
+          top: auto !important;
+          bottom: calc(100% + 10px) !important;
+          left: 0 !important;
+          right: auto !important;
+          min-width: 260px !important;
+          max-width: calc(100vw - 24px) !important;
         }
       }
     `;
@@ -1126,6 +1197,9 @@
 
     containers.forEach(container => {
       container.innerHTML = ''; // temizle
+      // Class-based state marker (fallback for :has() unsupported browsers)
+      if (IUAuth.user) container.classList.add('iu-signed-in');
+      else container.classList.remove('iu-signed-in');
 
       // SVG icons (renksiz, sade)
       const iconUser = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="flex-shrink:0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
