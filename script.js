@@ -262,8 +262,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const existing = nav.querySelector('a[href*="/sss"], a[href="sss.html"], a[href*="/faq"], a[href="faq.html"]');
   if (existing) {
     existing.setAttribute('href', '/faq');
+    existing.setAttribute('data-i18n', 'nav.sss');
     existing.textContent = 'FAQ';
     return;
+  }
+
+  // Nav'da metin olarak 'SSS' geçen link var mı? (bazı sayfalarda text-based)
+  const allLinks = nav.querySelectorAll('a');
+  for (const a of allLinks) {
+    const t = (a.textContent || '').trim().toUpperCase();
+    if (t === 'SSS' || t === 'FAQ') {
+      a.setAttribute('href', '/faq');
+      a.setAttribute('data-i18n', 'nav.sss');
+      a.textContent = 'FAQ';
+      return;
+    }
   }
 
   const faqLink = document.createElement('a');
