@@ -487,7 +487,9 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
   .nav a:last-child { border-bottom: none; }
   html.iu-nav-open, body.iu-nav-open { overflow: hidden !important; position: fixed !important; width: 100% !important; height: 100% !important; touch-action: none !important; overscroll-behavior: none !important; }
   body.iu-nav-open .nav.open { touch-action: pan-y !important; }
-  .header-cta { margin-top: 8px; text-align: center; justify-content: center; }
+  .header-cta { margin-top: 0; text-align: center; justify-content: center; align-items: center; }
+  .header-cta > * { align-self: center; }
+  .menu-toggle i { line-height: 1; display: block; }
   .logo-svg { width: 180px; max-height: 56px; }
   .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
   .top-bar-inner { gap: 8px; padding: 0 16px; }
