@@ -37,15 +37,16 @@
   }
 
   // Menu items — CHANGE HERE, applies EVERYWHERE
+  // Home page ile birebir aynı (SATILIK, KİRALIK, ARSA, LÜKS, BLOG, HAKKIMIZDA, İLETİŞİM)
+  // i18n key'leri Türkçe formatta (nav.satilik, nav.kiralik vb.)
   const menuItems = [
-    { href: lp('yalova-satilik-daire.html'), key: 'nav.sale',    label: 'SATILIK',     match: ['satilik'] },
-    { href: lp('yalova-kiralik-daire.html'), key: 'nav.rent',    label: 'KİRALIK',     match: ['kiralik'] },
-    { href: lp('yalova-satilik-arsa.html'),  key: 'nav.land',    label: 'ARSA',        match: ['arsa'] },
-    { href: lp('yalova-kiralik-villa.html'), key: 'nav.luxury',  label: 'LÜKS', match: ['kiralik-villa','villa'], badge: 'YENİ' },
-    { href: lp('blog.html'),                 key: 'nav.blog',    label: 'BLOG',        match: ['/blog'] },
-    { href: lp('hakkimizda.html'),           key: 'nav.about',   label: 'HAKKIMIZDA',  match: ['hakkimizda'] },
-    { href: lp('faq.html'),                  key: 'nav.sss',     label: 'FAQ',         match: ['faq','sss'] },
-    { href: lp('iletisim.html'),             key: 'nav.contact', label: 'İLETİŞİM',    match: ['iletisim'] }
+    { href: lp('yalova-satilik-daire.html'), key: 'nav.satilik',    label: 'SATILIK',    match: ['satilik'] },
+    { href: lp('yalova-kiralik-daire.html'), key: 'nav.kiralik',    label: 'KİRALIK',    match: ['kiralik'] },
+    { href: lp('yalova-satilik-arsa.html'),  key: 'nav.arsa',       label: 'ARSA',       match: ['arsa'] },
+    { href: lp('yalova-kiralik-villa.html'), key: 'nav.luks',       label: 'LÜKS',       match: ['kiralik-villa','villa'], badge: 'YENİ', badgeKey: 'nav.luks.badge' },
+    { href: lp('blog.html'),                 key: 'nav.blog',       label: 'BLOG',       match: ['/blog'] },
+    { href: lp('hakkimizda.html'),           key: 'nav.hakkimizda', label: 'HAKKIMIZDA', match: ['hakkimizda'] },
+    { href: lp('iletisim.html'),             key: 'nav.iletisim',   label: 'İLETİŞİM',   match: ['iletisim'] }
   ];
 
   // Language flag SVGs (compact) — kept as data blobs
@@ -69,12 +70,15 @@
     }).join('');
   }
 
-  // Menu items HTML
+  // Menu items HTML — home page ile birebir aynı format
   function buildMenuHTML() {
     return menuItems.map(item => {
       const active = isActive(item.match) ? ' class="active"' : '';
-      const badge = item.badge ? `<span class="nav-badge">${item.badge}</span>` : '';
-      return `<a href="${item.href}"${active} data-i18n="${item.key}">${item.label}${badge}</a>`;
+      if (item.badge) {
+        // LÜKS gibi: <a><span data-i18n>LÜKS</span><span class="nav-badge" data-i18n>YENİ</span></a>
+        return `<a href="${item.href}"${active}><span data-i18n="${item.key}">${item.label}</span><span class="nav-badge" data-i18n="${item.badgeKey || 'nav.luks.badge'}">${item.badge}</span></a>`;
+      }
+      return `<a href="${item.href}"${active} data-i18n="${item.key}">${item.label}</a>`;
     }).join('\n      ');
   }
 
@@ -122,6 +126,8 @@
     </a>
     <nav class="nav" id="mainNav">
       ${buildMenuHTML()}
+      <!-- Mobile: hamburger içinde auth butonları (Giriş/Üye Ol veya user) -->
+      <div data-iu-auth class="nav-auth-mobile"></div>
     </nav>
     <div class="header-cta">
       <a href="tel:+905075188482" class="btn-call"><i class="fa-solid fa-phone"></i> <span data-i18n="btn.callnow">HEMEN ARA</span></a>
