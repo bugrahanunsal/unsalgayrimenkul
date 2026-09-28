@@ -47,3 +47,12 @@
 /yalova-satilik             /yalova-satilik-daire         301
 /yalova-kiralik             /yalova-kiralik-daire         301
 /luks                       /yalova-kiralik-villa         301
+
+# ---- Gizlilik / KVKK / Kullanım Koşulları — hepsi tek sayfaya ----
+/kvkk                       /gizlilik-politikasi          301
+/kvkk-aydinlatma-metni      /gizlilik-politikasi          301
+/kullanim-kosullari         /gizlilik-politikasi#kullanim-kosullari  301
+/privacy                    /gizlilik-politikasi          301
+/privacy-policy             /gizlilik-politikasi          301
+/terms                      /gizlilik-politikasi#kullanim-kosullari  301
+/gizlilik                   /gizlilik-politikasi          301

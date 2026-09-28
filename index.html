@@ -282,7 +282,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 </style>
 <script src="/translator.js?v=20260928-batch" defer></script>
-<script src="/translations.js?v=20260928-cta" defer></script>
+<script src="/translations.js?v=20260928-priv" defer></script>
 </head>
 
 <body>
@@ -866,68 +866,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
   </div>
 </section>
 
-<section class="blog-section">
-  <div class="section-header">
-    <span class="section-eyebrow" data-i18n="blog.eyebrow">BLOG & REHBER</span>
-    <h2 data-i18n="blog.title">Yatırım Rehberi & Piyasa Analizleri</h2>
-    <p data-i18n="blog.subtitle">Yalova emlak piyasası hakkında uzman görüşleri ve yatırım tavsiyeleri</p>
-  </div>
-  <div class="blog-grid-home">
-    <a href="blog.html" class="blog-card-home">
-      <div class="blog-card-image g1">
-        <i class="fa-solid fa-chart-line"></i>
-        <span class="blog-card-tag-home vip" data-i18n="blog.tag.vip">💎 VIP REHBER</span>
-      </div>
-      <div class="blog-card-content-home">
-        <div class="blog-card-meta-home">
-          <span><i class="fa-solid fa-calendar"></i> <span data-i18n="blog.coming">Yakında</span></span>
-          <span><i class="fa-solid fa-clock"></i> 8 dk okuma</span>
-        </div>
-        <h3 data-i18n="blog.post1.title">Yalova'da Arsa Yatırımı 2026 Rehberi</h3>
-        <p data-i18n="blog.post1.excerpt">İstanbul'a yakınlığı ve gelişen altyapısıyla Yalova'da arsa yatırımının avantajları ve fırsat bölgeleri...</p>
-        <span class="blog-card-link-home"><span data-i18n="blog.readmore">Devamını Oku</span> <i class="fa-solid fa-arrow-right"></i></span>
-      </div>
-    </a>
-
-    <a href="blog.html" class="blog-card-home">
-      <div class="blog-card-image g2">
-        <i class="fa-solid fa-house-chimney-window"></i>
-        <span class="blog-card-tag-home" data-i18n="blog.tag.analysis">PİYASA ANALİZİ</span>
-      </div>
-      <div class="blog-card-content-home">
-        <div class="blog-card-meta-home">
-          <span><i class="fa-solid fa-calendar"></i> <span data-i18n="blog.coming">Yakında</span></span>
-          <span><i class="fa-solid fa-clock"></i> 10 dk okuma</span>
-        </div>
-        <h3 data-i18n="blog.post2.title">2026 Yalova Emlak Piyasası Analizi</h3>
-        <p data-i18n="blog.post2.excerpt">Yalova'da daire fiyatları, kira getirileri ve 2026 yılı için piyasa öngörüleri...</p>
-        <span class="blog-card-link-home"><span data-i18n="blog.readmore">Devamını Oku</span> <i class="fa-solid fa-arrow-right"></i></span>
-      </div>
-    </a>
-
-    <a href="blog.html" class="blog-card-home">
-      <div class="blog-card-image g3">
-        <i class="fa-solid fa-water"></i>
-        <span class="blog-card-tag-home vip" data-i18n="blog.tag.region">💎 BÖLGE REHBERİ</span>
-      </div>
-      <div class="blog-card-content-home">
-        <div class="blog-card-meta-home">
-          <span><i class="fa-solid fa-calendar"></i> <span data-i18n="blog.coming">Yakında</span></span>
-          <span><i class="fa-solid fa-clock"></i> 7 dk okuma</span>
-        </div>
-        <h3 data-i18n="blog.post3.title">Termal Bölgesinde Yatırımın 7 Avantajı</h3>
-        <p data-i18n="blog.post3.excerpt">Yalova Termal'in turizm potansiyeli, sağlık turizmi ve gayrimenkul değerlendirmesi...</p>
-        <span class="blog-card-link-home"><span data-i18n="blog.readmore">Devamını Oku</span> <i class="fa-solid fa-arrow-right"></i></span>
-      </div>
-    </a>
-  </div>
-
-  <div style="text-align:center; margin-top: 40px;">
-    <a href="blog.html" class="btn-blog-all">
-      <span data-i18n="blog.allposts">Tüm Blog Yazıları</span> <i class="fa-solid fa-arrow-right"></i>
-    </a>
-  </div>
-</section>
+<!-- Blog section homepage'in sonuna taşındı — home-cta'dan sonra -->
 
 <section class="services-section">
   <div class="section-header">
@@ -972,6 +911,75 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
     </a>
     <a href="https://wa.me/905075188482" class="home-cta-wa">
       <i class="fa-brands fa-whatsapp"></i> <span data-i18n="homecta.wa">WHATSAPP</span>
+    </a>
+  </div>
+</section>
+
+<!-- ============================================================
+     BLOG SECTION — Sayfanın en sonunda, footer'dan hemen önce
+     Gerçek blog yazılarına internal link (SEO için)
+     ============================================================ -->
+<section class="blog-section">
+  <div class="section-header">
+    <span class="section-eyebrow" data-i18n="blog.eyebrow">BLOG & REHBER</span>
+    <h2 data-i18n="blog.title">Yatırım Rehberi & Piyasa Analizleri</h2>
+    <p data-i18n="blog.subtitle">Yalova emlak piyasası hakkında uzman görüşleri ve yatırım tavsiyeleri</p>
+  </div>
+  <div class="blog-grid-home">
+
+    <a href="blog-yalova-arsa-yatirimi-2026.html" class="blog-card-home">
+      <div class="blog-card-image g1" style="background-image:linear-gradient(135deg,rgba(10,42,94,0.5),rgba(10,42,94,0.7)),url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80'); background-size:cover; background-position:center;">
+        <i class="fa-solid fa-chart-line"></i>
+        <span class="blog-card-tag-home vip" data-i18n="blog.tag.vip">💎 YATIRIM REHBERİ</span>
+      </div>
+      <div class="blog-card-content-home">
+        <div class="blog-card-meta-home">
+          <span><i class="fa-solid fa-calendar"></i> 28 Eylül 2026</span>
+          <span><i class="fa-solid fa-clock"></i> 9 dk okuma</span>
+        </div>
+        <h3>Yalova'da Arsa Yatırımı 2026 Rehberi</h3>
+        <p>İmar durumu, tapu kontrolü, bölge fiyat tablosu, altyapı projelerinin etkisi ve yatırımcıların sık yaptığı hatalar — TURYAP uzmanından tam rehber.</p>
+        <span class="blog-card-link-home"><span data-i18n="blog.readmore">Devamını Oku</span> <i class="fa-solid fa-arrow-right"></i></span>
+      </div>
+    </a>
+
+    <a href="blog-akkoy-yatirim-rehberi.html" class="blog-card-home">
+      <div class="blog-card-image g2" style="background-image:linear-gradient(135deg,rgba(10,42,94,0.5),rgba(10,42,94,0.7)),url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80'); background-size:cover; background-position:center;">
+        <i class="fa-solid fa-water"></i>
+        <span class="blog-card-tag-home vip" data-i18n="blog.tag.region">💎 BÖLGE REHBERİ</span>
+      </div>
+      <div class="blog-card-content-home">
+        <div class="blog-card-meta-home">
+          <span><i class="fa-solid fa-calendar"></i> 28 Eylül 2026</span>
+          <span><i class="fa-solid fa-clock"></i> 7 dk okuma</span>
+        </div>
+        <h3>Akköy Bölgesi: Neden Yatırımcıların Gözdesi?</h3>
+        <p>Merkeze 5 dakika, deniz manzaralı, gelişmekte olan altyapı ve son 5 yılda %700+ değer artışı. Akköy'ün alt bölgeleri, güncel fiyat aralıkları ve 3 yıllık projeksiyon.</p>
+        <span class="blog-card-link-home"><span data-i18n="blog.readmore">Devamını Oku</span> <i class="fa-solid fa-arrow-right"></i></span>
+      </div>
+    </a>
+
+    <a href="faq.html" class="blog-card-home">
+      <div class="blog-card-image g3">
+        <i class="fa-solid fa-circle-question"></i>
+        <span class="blog-card-tag-home" data-i18n="blog.tag.faq">SIKÇA SORULANLAR</span>
+      </div>
+      <div class="blog-card-content-home">
+        <div class="blog-card-meta-home">
+          <span><i class="fa-solid fa-book"></i> Uzman Cevapları</span>
+          <span><i class="fa-solid fa-list"></i> 9 soru</span>
+        </div>
+        <h3>Yalova Emlak SSS — Uzmandan Cevaplar</h3>
+        <p>Yalova'da gayrimenkul yatırımı, tapu işlemleri, kira sözleşmesi, bölge seçimi ve fiyat aralıkları hakkında en sık sorulan soruların uzman TURYAP danışmanı cevapları.</p>
+        <span class="blog-card-link-home"><span data-i18n="blog.readmore">SSS'ye Git</span> <i class="fa-solid fa-arrow-right"></i></span>
+      </div>
+    </a>
+
+  </div>
+
+  <div style="text-align:center; margin-top: 40px;">
+    <a href="blog.html" class="btn-blog-all">
+      <span data-i18n="blog.allposts">Tüm Blog Yazıları</span> <i class="fa-solid fa-arrow-right"></i>
     </a>
   </div>
 </section>
@@ -1028,6 +1036,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
   </div>
   <div class="footer-bottom">
     <p data-i18n="footer.copyright">© 2026 ÜNSAL Gayrimenkul. Tüm hakları saklıdır. • İsmail Ünsal</p>
+    <p style="margin-top:8px; font-size:12px;"><a href="gizlilik-politikasi.html" style="color:#F49B1C; text-decoration:none;" data-i18n="footer.privacy">Gizlilik Politikası ve KVKK Aydınlatma Metni</a></p>
   </div>
 </footer>
 

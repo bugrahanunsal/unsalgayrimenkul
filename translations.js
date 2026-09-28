@@ -152,6 +152,7 @@ const translations = {
     "footer.faq": "Sıkça Sorulan Sorular",
     "footer.contact": "İletişim",
     "footer.copyright": "© 2026 ÜNSAL Gayrimenkul. Tüm hakları saklıdır. • İsmail Ünsal",
+    "footer.privacy": "Gizlilik Politikası ve KVKK Aydınlatma Metni",
 
     // SUGGESTIONS
     "sug.cinarcik": "Çınarcık satılık daire",
@@ -300,6 +301,7 @@ const translations = {
     "footer.faq": "FAQ",
     "footer.contact": "Contact",
     "footer.copyright": "© 2026 ÜNSAL Real Estate. All rights reserved. • İsmail Ünsal",
+    "footer.privacy": "Privacy Policy",
 
     "sug.cinarcik": "Çınarcık apartments for sale",
     "sug.termal": "Termal villa rentals",
@@ -447,6 +449,7 @@ const translations = {
     "footer.faq": "FAQ",
     "footer.contact": "Contact",
     "footer.copyright": "© 2026 ÜNSAL Immobilier. Tous droits réservés. • İsmail Ünsal",
+    "footer.privacy": "Politique de Confidentialité",
 
     "sug.cinarcik": "Appartements à vendre à Çınarcık",
     "sug.termal": "Locations de villa à Termal",
@@ -594,6 +597,7 @@ const translations = {
     "footer.faq": "FAQ",
     "footer.contact": "Kontakt",
     "footer.copyright": "© 2026 ÜNSAL Immobilien. Alle Rechte vorbehalten. • İsmail Ünsal",
+    "footer.privacy": "Datenschutzerklärung",
 
     "sug.cinarcik": "Çınarcık Wohnungen zum Verkauf",
     "sug.termal": "Termal Villa Vermietungen",
@@ -741,6 +745,7 @@ const translations = {
     "footer.faq": "Частые Вопросы",
     "footer.contact": "Контакты",
     "footer.copyright": "© 2026 ÜNSAL Недвижимость. Все права защищены. • İsmail Ünsal",
+    "footer.privacy": "Политика Конфиденциальности",
 
     "sug.cinarcik": "Чинарджик квартиры на продажу",
     "sug.termal": "Аренда виллы в Термале",
@@ -888,6 +893,7 @@ const translations = {
     "footer.faq": "الأسئلة الشائعة",
     "footer.contact": "اتصل بنا",
     "footer.copyright": "© 2026 ÜNSAL العقارية. جميع الحقوق محفوظة. • İsmail Ünsal",
+    "footer.privacy": "سياسة الخصوصية",
 
     "sug.cinarcik": "شقق للبيع في تشينارجيك",
     "sug.termal": "فيلات للإيجار في ترمال",
