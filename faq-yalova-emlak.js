@@ -200,33 +200,25 @@
     return d.innerHTML;
   }
 
-  // Helper: keyword, fiyat, bölge ve yüzde highlight — çok renkli, çok belirgin
+  // Helper: sade, temiz vurgular — sadece kalın + renkli metin
   function highlightKeywords(html) {
-    // 1) Büyük fiyat aralıkları (5.000.000 ₺ - 15.000.000 ₺) → altın pill
+    // Fiyat aralıkları ve tek fiyatlar → turuncu bold
+    html = html.replace(/(\d{1,3}(?:\.\d{3})+)\s*₺(?!\s*-\s*\d)/g,
+      '<strong class="iu-hi-price">$1 ₺</strong>');
     html = html.replace(/(\d{1,3}(?:\.\d{3})+)\s*₺\s*-\s*(\d{1,3}(?:\.\d{3})+)\s*₺/g,
-      '<span class="iu-price-range">💰 $1 ₺ – $2 ₺</span>');
-    // 2) Tek büyük fiyat (5.000.000 ₺) → altın pill
-    html = html.replace(/(\d{1,3}(?:\.\d{3})+)\s*₺/g,
-      '<span class="iu-price">$1 ₺</span>');
-    // 3) m² fiyatları (5.000-10.000 ₺/m²) → altın pill
+      '<strong class="iu-hi-price">$1 – $2 ₺</strong>');
+    // m² fiyatları
     html = html.replace(/(\d[\d.,–\-\s]*)\s*(?:₺|TL)\s*\/\s*m²/g,
-      '<span class="iu-price-m2">$1 ₺/m²</span>');
-    // 4) m² alan miktarı (5.000 m²)
-    html = html.replace(/\b(\d{1,3}(?:\.\d{3})*|\d+)\s*m²/g,
-      '<span class="iu-area">$1 m²</span>');
-    // 5) Yüzde aralıkları (%150-180) → yeşil pill
+      '<strong class="iu-hi-price">$1 ₺/m²</strong>');
+    // Yüzdeler → yeşil bold
     html = html.replace(/(%\d+(?:[-–]\d+)?)/g,
-      '<span class="iu-percent">📈 $1</span>');
-    // 6) Bölge isimleri → mavi pill (daha belirgin)
+      '<strong class="iu-hi-pct">$1</strong>');
+    // TURYAP markası → lacivert bold (sade)
     html = html.replace(/\b(TURYAP)\b/g,
-      '<span class="iu-brand">$1</span>');
+      '<strong class="iu-hi-brand">$1</strong>');
+    // Bölge/yer isimleri → lacivert bold (sade, ikon yok, pill yok)
     html = html.replace(/\b(Yalova|Çınarcık|Termal|Altınova|Armutlu|Akköy|Merkez)\b/g,
-      '<span class="iu-region">📍 $1</span>');
-    // 7) Yıl bilgisi (2018 sonrası, 5 yıllık)
-    html = html.replace(/\b(\d{4})\s+(sonrası|öncesi)\b/g,
-      '<strong style="color:#7c3aed;font-weight:700;">$1 $2</strong>');
-    html = html.replace(/\b(\d+)\s*(yıllık|saat|dakika|km)\b/g,
-      '<strong style="color:#0A2A5E;font-weight:700;">$1 $2</strong>');
+      '<strong class="iu-hi-region">$1</strong>');
     return html;
   }
 
@@ -403,149 +395,69 @@
         }
         .iu-answer .iu-para:last-child { margin-bottom: 0; }
 
-        /* Intro/tip kutucuğu */
+        /* Intro paragrafı — sade */
         .iu-intro-box {
-          display: flex; gap: 14px; align-items: flex-start;
-          padding: 16px 18px;
-          background: linear-gradient(135deg, rgba(10, 42, 94, 0.05) 0%, rgba(244, 155, 28, 0.05) 100%);
-          border-left: 4px solid #0A2A5E;
-          border-radius: 10px;
-          margin-bottom: 18px;
+          display: block;
+          margin: 0 0 14px 0;
         }
-        .iu-intro-box i {
-          color: #F49B1C;
-          font-size: 20px;
-          margin-top: 2px;
-          flex-shrink: 0;
-        }
+        .iu-intro-box i { display: none; }
         .iu-intro-box p {
           margin: 0;
-          color: #1f2937;
-          font-weight: 500;
-          line-height: 1.6;
+          color: #374151;
+          line-height: 1.7;
         }
 
-        /* Numaralı liste */
+        /* Numaralı liste — sade, minimal */
         .iu-num-list {
           list-style: none;
           padding: 0;
           margin: 0;
           display: grid;
-          gap: 12px;
-          counter-reset: iu-cnt;
+          gap: 8px;
         }
         .iu-num-item {
           display: flex;
-          gap: 16px;
+          gap: 12px;
           align-items: flex-start;
-          padding: 16px 18px;
-          background: #FFFFFF;
-          border: 1px solid #E5E7EB;
-          border-left: 4px solid #F49B1C;
-          border-radius: 12px;
-          transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-        }
-        .iu-num-item:hover {
-          transform: translateX(4px);
-          box-shadow: 0 6px 18px rgba(10, 42, 94, 0.08);
-          border-left-color: #d4831a;
+          padding: 0;
         }
         .iu-num-badge {
           flex-shrink: 0;
-          width: 34px; height: 34px;
-          background: linear-gradient(135deg, #F49B1C 0%, #d4831a 100%);
+          width: 22px; height: 22px;
+          background: #F49B1C;
           color: #FFFFFF;
           border-radius: 50%;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          font-weight: 800;
-          font-size: 14px;
-          box-shadow: 0 3px 10px rgba(244, 155, 28, 0.4);
+          font-weight: 700;
+          font-size: 12px;
+          margin-top: 2px;
         }
         .iu-num-text {
           flex: 1;
-          color: #1f2937;
+          color: #374151;
           line-height: 1.65;
-          padding-top: 5px;
         }
 
-        /* Highlight pill'leri */
-        .iu-price {
-          display: inline-block;
-          padding: 2px 10px;
-          background: linear-gradient(135deg, #FFF4E0 0%, #FFE9C4 100%);
+        /* Sade highlight'lar — sadece renk + kalın, arka plan yok */
+        .iu-hi-price {
           color: #B7791F;
-          border-radius: 6px;
-          font-weight: 800;
-          font-size: 0.94em;
-          white-space: nowrap;
-          border: 1px solid rgba(244, 155, 28, 0.3);
-        }
-        .iu-price-range {
-          display: inline-block;
-          padding: 3px 12px;
-          background: linear-gradient(135deg, #F49B1C 0%, #d4831a 100%);
-          color: #FFFFFF;
-          border-radius: 8px;
-          font-weight: 800;
-          font-size: 0.92em;
-          white-space: nowrap;
-          box-shadow: 0 2px 6px rgba(244, 155, 28, 0.35);
-          margin: 0 2px;
-        }
-        .iu-price-m2 {
-          display: inline-block;
-          padding: 2px 10px;
-          background: #FEF3E2;
-          color: #B7791F;
-          border-radius: 6px;
           font-weight: 700;
-          font-size: 0.92em;
           white-space: nowrap;
-          border: 1px dashed #F49B1C;
         }
-        .iu-area {
-          display: inline-block;
-          padding: 1px 8px;
-          background: rgba(10, 42, 94, 0.06);
+        .iu-hi-pct {
+          color: #059669;
+          font-weight: 700;
+        }
+        .iu-hi-brand {
           color: #0A2A5E;
-          border-radius: 4px;
           font-weight: 700;
-          font-size: 0.92em;
-          white-space: nowrap;
+          letter-spacing: 0.3px;
         }
-        .iu-percent {
-          display: inline-block;
-          padding: 2px 10px;
-          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-          color: #FFFFFF;
-          border-radius: 6px;
-          font-weight: 800;
-          font-size: 0.9em;
-          white-space: nowrap;
-          box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
-          margin: 0 1px;
-        }
-        .iu-brand {
-          display: inline-block;
-          padding: 1px 10px;
-          background: linear-gradient(135deg, #0A2A5E 0%, #1a4a8a 100%);
-          color: #FFFFFF;
-          border-radius: 5px;
-          font-weight: 800;
-          font-size: 0.88em;
-          letter-spacing: 0.5px;
-        }
-        .iu-region {
-          display: inline-block;
-          padding: 1px 10px;
-          background: rgba(10, 42, 94, 0.08);
+        .iu-hi-region {
           color: #0A2A5E;
-          border-radius: 5px;
           font-weight: 700;
-          font-size: 0.95em;
-          white-space: nowrap;
         }
         /* Legacy paragraf desteği */
         .iu-faq-a p { margin: 0 0 14px 0; }
