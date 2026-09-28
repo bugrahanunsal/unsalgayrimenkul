@@ -710,6 +710,145 @@ const translations = {
     "sug.deniz": "Недвижимость с видом на море",
     "sug.mustakil": "Отдельный дом с садом",
     "sug.havuzlu": "Люкс вилла с бассейном"
+  },
+
+  ar: {
+    "topbar.location": "يالوفا، تركيا",
+    "topbar.hours": "الاثنين-السبت: 09:00 - 19:00",
+
+    "nav.satilik": "للبيع",
+    "nav.kiralik": "للإيجار",
+    "nav.arsa": "أراضٍ",
+    "nav.luks": "فاخر",
+    "nav.luks.badge": "جديد",
+    "nav.blog": "المدونة",
+    "nav.hakkimizda": "من نحن",
+    "nav.iletisim": "اتصل بنا",
+    "nav.cta": "اتصل الآن",
+
+    "hero.eyebrow": "علامة يالوفا العقارية الموثوقة",
+    "hero.title.part1": "اعثر على",
+    "hero.title.highlight": "عقارك",
+    "hero.title.part2": "المثالي في يالوفا",
+    "hero.subtitle": "للبيع، للإيجار، أراضٍ، فيلات — كل شيء في مكان واحد. ابحث عما تريد في ثوانٍ بذكاء البحث.",
+
+    "search.all": "الكل",
+    "search.satilik": "للبيع",
+    "search.kiralik": "للإيجار",
+    "search.arsa": "أراضٍ",
+    "search.placeholder": "تشينارجيك، شقة، إطلالة بحرية، أرض...",
+    "search.button": "بحث",
+    "search.ai.hint": "بحث ذكي — اكتب بلغة طبيعية، اعثر فوراً",
+    "search.popular": "🔥 عمليات بحث شائعة",
+
+    "cat.eyebrow": "الفئات",
+    "cat.title.all": "جميع الفئات",
+    "cat.subtitle.all": "خيارات عقارية من كل منطقة في يالوفا",
+    "cat.title.satilik": "عقارات للبيع",
+    "cat.subtitle.satilik": "أفضل الفرص للشراء",
+    "cat.title.kiralik": "عقارات للإيجار",
+    "cat.subtitle.kiralik": "شقق ومنازل وفيلات للإيجار",
+    "cat.title.arsa": "فرص استثمار الأراضي",
+    "cat.subtitle.arsa": "أراضٍ مخصصة بإطلالة بحرية للاستثمار",
+
+    "cat.filter.showing": "فئة معروضة",
+    "cat.filter.total": "المجموع",
+    "cat.filter.activelisting": "إعلانات نشطة",
+    "cat.search.results": "نتائج لـ",
+    "cat.search.matching": "الفئات المطابقة لبحثك",
+
+    "card.satilik.daire.title": "شقق للبيع في يالوفا",
+    "card.satilik.daire.count": "87 إعلان نشط",
+    "card.kiralik.daire.title": "شقق للإيجار في يالوفا",
+    "card.kiralik.daire.count": "42 إعلان نشط",
+    "card.satilik.arsa.title": "أراضٍ للبيع في يالوفا",
+    "card.satilik.arsa.count": "23 إعلان نشط",
+    "card.satilik.arsa.tag": "فرص استثمارية",
+    "card.kiralik.villa.title": "فيلات للإيجار في يالوفا",
+    "card.kiralik.villa.count": "15 إعلان نشط",
+    "card.kiralik.villa.tag": "مسبح، إطلالة بحرية",
+    "card.satilik.ev.title": "منازل للبيع في يالوفا",
+    "card.satilik.ev.count": "31 إعلان نشط",
+    "card.esyali.kiralik.title": "شقق مفروشة للإيجار في يالوفا",
+    "card.esyali.kiralik.count": "18 إعلان نشط",
+    "card.merkez.kiralik.title": "إيجار في وسط المدينة",
+    "card.merkez.kiralik.count": "22 إعلان نشط",
+    "card.kiralik.ev.title": "منازل للإيجار في يالوفا",
+    "card.kiralik.ev.count": "14 إعلان نشط",
+    "card.cta": "عرض الإعلانات",
+
+    "tag.popular": "الأكثر شعبية",
+    "tag.popular2": "شائع",
+    "tag.vip": "💎 VIP",
+    "tag.luxury": "💎 فاخر",
+    "type.satilik": "للبيع",
+    "type.kiralik": "للإيجار",
+
+    "noresults.title": "لا توجد نتائج",
+    "noresults.text": "لا توجد فئات مطابقة لبحثك. أعد تعيين المرشحات وحاول مرة أخرى.",
+    "noresults.button": "إعادة تعيين",
+
+    "featured.tag": "💎 عرض خاص",
+    "featured.price.label": "أكوي، يالوفا • تصنيف سكني",
+    "featured.location": "أكوي، يالوفا",
+    "featured.title": "أرض استثمارية 435 م² بإطلالة بحرية",
+    "featured.description": "فرصة فريدة لأرض في منطقة أكوي النامية، بالقرب من إسطنبول، بإطلالة بحرية وتصنيف سكني. مثالية لمشاريع الفيلات أو الشقق الفندقية.",
+    "featured.stat.area": "المساحة",
+    "featured.stat.emsal": "معامل البناء",
+    "featured.stat.imar": "التصنيف",
+    "featured.stat.imar.value": "سكني",
+    "featured.stat.parsel": "البلوك/القطعة",
+    "featured.cta.details": "عرض التفاصيل",
+    "featured.cta.info": "معلومات",
+
+    "blog.eyebrow": "المدونة والدليل",
+    "blog.title": "أدلة الاستثمار وتحليل السوق",
+    "blog.subtitle": "رؤى الخبراء ونصائح الاستثمار في سوق يالوفا العقاري",
+    "blog.tag.vip": "💎 دليل VIP",
+    "blog.tag.analysis": "تحليل السوق",
+    "blog.tag.region": "💎 دليل المنطقة",
+    "blog.coming": "قريباً",
+    "blog.read": "دقيقة قراءة",
+    "blog.post1.title": "دليل استثمار الأراضي في يالوفا 2026",
+    "blog.post1.excerpt": "مزايا استثمار الأراضي في يالوفا بفضل قربها من إسطنبول والبنية التحتية النامية...",
+    "blog.post2.title": "تحليل سوق العقارات في يالوفا 2026",
+    "blog.post2.excerpt": "أسعار الشقق في يالوفا وعوائد الإيجار وتوقعات السوق لعام 2026...",
+    "blog.post3.title": "7 مزايا للاستثمار في منطقة ترمال",
+    "blog.post3.excerpt": "الإمكانات السياحية لترمال يالوفا والسياحة الصحية وتقييم العقارات...",
+    "blog.readmore": "اقرأ المزيد",
+    "blog.allposts": "جميع منشورات المدونة",
+
+    "services.eyebrow": "خدماتنا",
+    "services.title": "لماذا ÜNSAL العقارية؟",
+    "services.subtitle": "استشارات عقارية احترافية بضمان Turyap",
+    "service1.title": "ضمان Turyap",
+    "service1.text": "خدمة احترافية تحت أكثر علامات العقارات موثوقية في تركيا",
+    "service2.title": "خبرة محلية",
+    "service2.text": "فريق ذو خبرة يعرف كل ركن من أركان يالوفا",
+    "service3.title": "الخدمة بـ 5 لغات",
+    "service3.text": "دعم عملاء دولي بالتركية والإنجليزية والفرنسية والألمانية والروسية",
+    "service4.title": "دعم 24/7",
+    "service4.text": "استشارات متاحة في أي وقت عبر WhatsApp والهاتف",
+
+    "homecta.title": "دعنا نجد عقارك المثالي",
+    "homecta.subtitle": "اتصل بنا الآن للحصول على استشارة مجانية. سنقدم لك أفضل الخيارات.",
+    "homecta.call": "اتصل الآن: +90 507 518 84 82",
+    "homecta.wa": "WHATSAPP",
+
+    "footer.about": "استشارات عقارية موثوقة في يالوفا. خدمة احترافية بضمان Turyap.",
+    "footer.quick": "روابط سريعة",
+    "footer.regions": "المناطق",
+    "footer.contact": "اتصل بنا",
+    "footer.copyright": "© 2026 ÜNSAL العقارية. جميع الحقوق محفوظة. • İsmail Ünsal",
+
+    "sug.cinarcik": "شقق للبيع في تشينارجيك",
+    "sug.termal": "فيلات للإيجار في ترمال",
+    "sug.akkoy": "أرض استثمارية أكوي",
+    "sug.merkez": "إيجار 2+1 في وسط المدينة",
+    "sug.esyali": "شقق مفروشة للإيجار",
+    "sug.deniz": "عقارات بإطلالة بحرية للبيع",
+    "sug.mustakil": "منزل مستقل بحديقة",
+    "sug.havuzlu": "فيلا فاخرة بمسبح"
   }
 };
 
@@ -717,20 +856,16 @@ const translations = {
 // ÇEVİRİ MOTORU
 // ==========================================
 
-// AKILLI DİL TESPİTİ: Önce URL'den, sonra localStorage'dan, son çare TR
+// AKILLI DİL TESPİTİ: URL EN GÜÇLÜ KAYNAK - localStorage'a hiç bakmıyoruz
+// /ar/, /en/, /fr/, /de/, /ru/ URL prefix'i varsa o dil, yoksa TR
 function detectLangFromURL() {
   const path = window.location.pathname;
-  if (path.includes('/en/')) return 'en';
-  if (path.includes('/fr/')) return 'fr';
-  if (path.includes('/de/')) return 'de';
-  if (path.includes('/ru/')) return 'ru';
-  return null;
+  const m = path.match(/^\/(en|fr|de|ru|ar)(\/|$)/);
+  return m ? m[1] : 'tr';
 }
 
-const urlLang = detectLangFromURL();
-let currentLang = urlLang || localStorage.getItem('ungLang') || 'tr';
-// URL'de dil varsa localStorage'a da yaz (sonraki ziyaretler için)
-if (urlLang) localStorage.setItem('ungLang', urlLang);
+const currentLangInitial = detectLangFromURL();
+let currentLang = currentLangInitial;
 
 function setLanguage(lang) {
   if (!translations[lang]) return;
@@ -769,7 +904,7 @@ function setLanguage(lang) {
 }
 
 function updateLanguageSwitcher(lang) {
-  const langCodes = { tr: 'TR', en: 'EN', fr: 'FR', de: 'DE', ru: 'RU' };
+  const langCodes = { tr: 'TR', en: 'EN', fr: 'FR', de: 'DE', ru: 'RU', ar: 'AR' };
   const langCodeEl = document.getElementById('currentLang');
   if (langCodeEl) langCodeEl.textContent = langCodes[lang];
 
@@ -779,7 +914,8 @@ function updateLanguageSwitcher(lang) {
     en: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#012169"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="3"/><path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="6"/></svg>',
     fr: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg>',
     de: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#000"/><rect width="60" height="13.33" y="13.33" fill="#DD0000"/><rect width="60" height="13.34" y="26.66" fill="#FFCE00"/></svg>',
-    ru: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#fff"/><rect width="60" height="13.33" y="13.33" fill="#0039A6"/><rect width="60" height="13.34" y="26.66" fill="#D52B1E"/></svg>'
+    ru: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#fff"/><rect width="60" height="13.33" y="13.33" fill="#0039A6"/><rect width="60" height="13.34" y="26.66" fill="#D52B1E"/></svg>',
+    ar: '<svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="13.33" y="0" fill="#000"/><rect width="60" height="13.34" y="13.33" fill="#fff"/><rect width="60" height="13.33" y="26.67" fill="#007A3D"/><polygon points="20,20 26,17 26,23" fill="#CE1126"/></svg>'
   };
 
   const currentFlagEl = document.getElementById('currentFlag');
@@ -791,10 +927,56 @@ function updateLanguageSwitcher(lang) {
   });
 }
 
+// URL'den dile göre yeni URL oluştur
+function buildLangUrl(lang) {
+  const path = window.location.pathname;
+  // Mevcut dil prefix'ini kaldır
+  let cleanPath = path.replace(/^\/(en|fr|de|ru|ar)(\/|$)/, '/');
+  if (!cleanPath || cleanPath === '') cleanPath = '/';
+  return lang === 'tr' ? cleanPath : ('/' + lang + (cleanPath === '/' ? '/' : cleanPath));
+}
+
+// Dile göre navigate et (URL değiştir → sayfa yeniden yükler)
+function switchLanguageURL(lang) {
+  window.location.href = buildLangUrl(lang) + window.location.search + window.location.hash;
+}
+
+// applyTranslations: header injection sonrası tekrar çevir
+function applyTranslations(lang) {
+  lang = lang || currentLang;
+  if (!translations[lang]) return;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const translation = translations[lang][key];
+    if (translation) el.textContent = translation;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    const translation = translations[lang][key];
+    if (translation) el.setAttribute('placeholder', translation);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    const translation = translations[lang][key];
+    if (translation) el.innerHTML = translation;
+  });
+}
+
 // Dil seçici event listener
 document.addEventListener('DOMContentLoaded', () => {
   // İlk dili yükle
   setLanguage(currentLang);
+
+  // Href'leri set et — JS olmasa bile URL'e navigate etsin
+  function setLangHrefs() {
+    document.querySelectorAll('.lang-option[data-lang]').forEach(opt => {
+      const lang = opt.getAttribute('data-lang');
+      opt.setAttribute('href', buildLangUrl(lang));
+    });
+  }
+  setLangHrefs();
+  setTimeout(setLangHrefs, 500);
+  setTimeout(setLangHrefs, 1500);
 
   // Dropdown toggle
   const langSwitcher = document.getElementById('langSwitcher');
@@ -808,15 +990,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Dil seçenekleri
-  document.querySelectorAll('.lang-option').forEach(opt => {
-    opt.addEventListener('click', (e) => {
-      e.preventDefault();
-      const lang = opt.getAttribute('data-lang');
-      setLanguage(lang);
-      if (langSwitcher) langSwitcher.classList.remove('active');
-    });
-  });
+  // Dil seçenekleri — URL'e navigate (event delegation)
+  document.addEventListener('click', function(e) {
+    const opt = e.target.closest && e.target.closest('.lang-option[data-lang]');
+    if (!opt) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const lang = opt.getAttribute('data-lang');
+    switchLanguageURL(lang);
+  }, true);
 
   // Dışarı tıklayınca dropdown kapansın
   document.addEventListener('click', (e) => {
@@ -826,8 +1008,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// Header injection sonrası çevirileri tekrar uygula
+document.addEventListener('iu:header-injected', () => {
+  applyTranslations(currentLang);
+});
+
 // Translations'a erişim için global
 window.translations = translations;
 window.setLanguage = setLanguage;
 window.getCurrentLang = () => currentLang;
 window.t = (key) => (translations[currentLang] && translations[currentLang][key]) || key;
+window.applyTranslations = applyTranslations;
+window.buildLangUrl = buildLangUrl;
+window.switchLanguageURL = switchLanguageURL;
