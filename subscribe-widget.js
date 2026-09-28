@@ -402,6 +402,39 @@
       }
       .iu-input::placeholder { color: #9ca3af; }
       .iu-checkbox-label { color: #374151; }
+
+      /* Password field wrapper with show/hide toggle */
+      .iu-password-wrap {
+        position: relative;
+        width: 100%;
+      }
+      .iu-password-wrap .iu-input {
+        padding-right: 46px;
+      }
+      .iu-password-toggle {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        transition: all 0.15s;
+      }
+      .iu-password-toggle:hover {
+        background: #f3f4f6;
+        color: #0a1929;
+      }
+      .iu-password-toggle:active { transform: translateY(-50%) scale(0.94); }
+      .iu-password-toggle svg { width: 18px; height: 18px; }
       .iu-checkboxes {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -653,7 +686,12 @@
 
               <div class="iu-form-group">
                 <label class="iu-label">Şifre <span class="iu-required">*</span> <small style="font-weight:400;color:#6b7280;text-transform:none;letter-spacing:0">(En az 8 karakter)</small></label>
-                <input type="password" name="password" class="iu-input" required minlength="8" maxlength="128" placeholder="••••••••" autocomplete="new-password">
+                <div class="iu-password-wrap">
+                  <input type="password" name="password" id="iu-signup-password" class="iu-input" required minlength="8" maxlength="128" placeholder="••••••••" autocomplete="new-password">
+                  <button type="button" class="iu-password-toggle" onclick="IUAuth.togglePassword('iu-signup-password', this)" aria-label="Şifreyi göster/gizle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
               </div>
 
               <div class="iu-form-group">
@@ -691,7 +729,12 @@
 
               <div class="iu-form-group">
                 <label class="iu-label">Şifre</label>
-                <input type="password" name="password" class="iu-input" required minlength="8" placeholder="••••••••" autocomplete="current-password">
+                <div class="iu-password-wrap">
+                  <input type="password" name="password" id="iu-login-password" class="iu-input" required minlength="8" placeholder="••••••••" autocomplete="current-password">
+                  <button type="button" class="iu-password-toggle" onclick="IUAuth.togglePassword('iu-login-password', this)" aria-label="Şifreyi göster/gizle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
               </div>
 
               <a href="#" onclick="IUAuth.forgotPassword(event)" class="iu-forgot-link">Şifremi Unuttum</a>
@@ -1348,6 +1391,23 @@
       document.querySelectorAll('.iu-tab-content').forEach(c => {
         c.classList.toggle('active', c.id === `iu-tab-${tab}`);
       });
+    },
+
+    /**
+     * Toggle password visibility for a specific input.
+     * Security: only toggles the `type` attribute on the input; the value
+     * itself never leaves the client and no logging happens. Autocomplete
+     * hints (new-password / current-password) are preserved.
+     */
+    togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const isShown = input.type === 'text';
+      input.type = isShown ? 'password' : 'text';
+      // Swap icon: eye ↔ eye-off
+      const showSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+      const hideSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+      if (btn) btn.innerHTML = isShown ? showSvg : hideSvg;
     },
 
     async logout(e) {

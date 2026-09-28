@@ -579,16 +579,24 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
         }
         .nav.open { display: flex !important; flex-direction: column !important; }
         .nav-auth-mobile .iu-authbar {
+          display: flex !important;
           flex-direction: row !important;
-          gap: 8px !important;
-          width: 100%;
+          gap: 10px !important;
+          width: 100% !important;
+          box-sizing: border-box;
         }
         .nav-auth-mobile .iu-authbar-btn {
-          flex: 1 !important;
-          padding: 12px 14px !important;
-          font-size: 14px !important;
+          flex: 1 1 0 !important;
+          min-width: 0 !important;
+          padding: 14px 16px !important;
+          font-size: 15px !important;
+          font-weight: 700 !important;
           justify-content: center !important;
-          border-radius: 8px !important;
+          border-radius: 10px !important;
+          gap: 8px !important;
+        }
+        .nav-auth-mobile .iu-authbar-btn svg {
+          width: 16px !important; height: 16px !important;
         }
         .nav-auth-mobile .iu-authbar-signup {
           background: #F49B1C !important;
@@ -1045,7 +1053,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 <a href="https://wa.me/905075188482" class="wa-float"><i class="fa-brands fa-whatsapp"></i></a>
 
-<script src="/script.js?v=20260928-mobile-fs"></script>
+<script src="/script.js?v=20260928-pw-toggle"></script>
 
 <script>
 // SMART FILTER & SEARCH SYSTEM - Facebook-grade live filtering
@@ -1282,7 +1290,7 @@ loadFromURL();
 <!-- İSMAİL ÜNSAL - Auth Widget + Database Integration -->
 <!-- ============================================ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/subscribe-widget.js?v=20260928-mobile-fs"></script>
+<script src="/subscribe-widget.js?v=20260928-pw-toggle"></script>
 <!-- Frontend'i Supabase database'ine bağlayan script -->
 <script src="/frontend-supabase.js"></script>
 
