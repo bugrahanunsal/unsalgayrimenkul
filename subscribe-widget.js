@@ -621,9 +621,14 @@
         .iu-intro { font-size: 13px !important; margin-bottom: 14px !important; }
         .iu-form-group { margin-bottom: 10px !important; }
         .iu-label { font-size: 11px !important; margin-bottom: 4px !important; }
+        /* iOS Safari otomatik zoom fix: input font-size >= 16px olmalı
+           yoksa focus'ta zoom-in yapıp modal kapansa da geri gelmiyor */
         .iu-input, .iu-select {
-          padding: 10px 12px !important;
-          font-size: 14px !important;
+          padding: 12px 14px !important;
+          font-size: 16px !important;
+        }
+        .iu-widget-form input {
+          font-size: 16px !important;
         }
         .iu-btn {
           padding: 12px 18px !important;
@@ -1376,12 +1381,32 @@
     close() {
       const modal = document.getElementById('iu-auth-modal');
       if (!modal) return;
+      // Focus'u input'tan al ki iOS Safari zoom stuck'da kalmasın
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+      }
       modal.classList.remove('active');
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
       ['iu-signup-msg', 'iu-login-msg', 'iu-sub-msg'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = '';
       });
+      // iOS Safari için: viewport meta'yı toggle et → zoom seviyesi resetlensin
+      // Yalnız gerektiğinde (touch device'larda) ve maximum-scale değişikliği geçici
+      try {
+        const vp = document.querySelector('meta[name="viewport"]');
+        if (vp && /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          const orig = vp.getAttribute('content');
+          vp.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1');
+          // Bir sonraki tick'te orijinal viewport'a döndür (kullanıcı pinch-zoom yapabilsin)
+          setTimeout(() => {
+            vp.setAttribute('content', orig || 'width=device-width, initial-scale=1');
+          }, 300);
+        }
+      } catch (e) { /* noop */ }
     },
 
     switchTab(tab) {
