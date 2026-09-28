@@ -350,14 +350,14 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
   .footer .footer-brand a .logo-svg,
   footer .footer-brand a .logo-svg {
     display: block !important;
-    /* SVG viewBox 200x160 (1.25:1 aspect) — mobilde tam ekran genişliği */
+    /* Original TURYAP yatay logo — viewBox 340x80 (4.25:1)
+       viewBox="-30 0 340 80" trick ile content SVG merkezine gelir */
     height: auto !important;
-    width: 320px !important;         /* Sabit büyük genişlik */
-    max-width: 88vw !important;       /* Viewport %88 — ekran kenarlarına dayanır */
-    min-width: 260px !important;      /* Küçük ekranda bile min 260px */
+    width: 100% !important;
+    max-width: 400px !important;
+    min-width: 280px !important;
     margin: 0 auto !important;
     align-self: center !important;
-    /* SVG içinde text-anchor="middle" zaten var, dış centering CSS ile */
   }
   .footer .footer-brand .footer-about,
   footer .footer-brand .footer-about {
