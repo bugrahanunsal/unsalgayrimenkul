@@ -50,7 +50,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="style.css?v=20260928-authfix">
+<link rel="stylesheet" href="style.css?v=20260928-grid-btn">
 
 <style>
 .hero {
@@ -576,23 +576,30 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           border-bottom: 2px solid rgba(244,155,28,0.2);
         }
         .nav.open { display: flex !important; flex-direction: column !important; }
-        /* Not logged in: Giriş / Üye Ol side-by-side */
+        /* Not logged in: Giriş / Üye Ol side-by-side — GRID (predictable) */
         .nav-auth-mobile .iu-authbar {
-          display: flex !important;
-          flex-direction: row !important;
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
           gap: 8px !important;
           width: 100% !important;
-          box-sizing: border-box;
+          box-sizing: border-box !important;
         }
         .nav-auth-mobile .iu-authbar-btn {
-          flex: 1 1 0 !important;
-          min-width: 0 !important;
-          width: calc((100% - 8px) / 2) !important;
+          display: inline-flex !important;
+          width: 100% !important;
           max-width: none !important;
-          padding: 12px 14px !important;
-          font-size: 14px !important;
+          min-width: 0 !important;
+          box-sizing: border-box !important;
+          padding: 10px 12px !important;
+          font-size: 13px !important;
+          line-height: 1.2 !important;
           justify-content: center !important;
+          align-items: center !important;
           border-radius: 8px !important;
+        }
+        .nav-auth-mobile .iu-authbar-btn svg {
+          width: 14px !important;
+          height: 14px !important;
         }
         .nav-auth-mobile .iu-authbar-signup {
           background: #F49B1C !important;
@@ -1161,7 +1168,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 <a href="https://wa.me/905075188482" class="wa-float"><i class="fa-brands fa-whatsapp"></i></a>
 
-<script src="/script.js?v=20260928-defensive"></script>
+<script src="/script.js?v=20260928-grid-btn"></script>
 
 <script>
 // SMART FILTER & SEARCH SYSTEM - Facebook-grade live filtering

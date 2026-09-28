@@ -313,14 +313,18 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
 .footer-brand .logo-svg { margin-bottom: 16px; }
 /* Grid layout: footer 5 kolon (Brand + Hızlı Erişim + Blog & Rehber + İletişim) */
 .footer-inner { grid-template-columns: 2fr 1fr 1.4fr 1fr; }
-/* Mobile: footer logo BÜYÜT ve grid'i tek kolona indir */
+/* Mobile: footer logo BÜYÜT ve grid'i tek kolona indir; header'lar SOLA dayalı + büyük font */
 @media (max-width: 768px) {
   .footer-inner {
     grid-template-columns: 1fr !important;
-    gap: 32px !important;
+    gap: 28px !important;
+    text-align: left !important;
+    padding: 0 8px !important;
+  }
+  /* Logo TEK ORTALANAN element, kolonlar sola dayalı */
+  .footer-brand {
     text-align: center;
   }
-  .footer-brand { text-align: center; }
   .footer-brand .logo-svg,
   .footer-brand a .logo-svg {
     height: 88px !important;
@@ -329,8 +333,19 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
     margin: 0 auto 16px !important;
   }
   .footer-social { justify-content: center; }
-  .footer-col ul { padding: 0; }
-  .footer-col li { text-align: center; }
+  /* Kolon header'ları SOLA dayalı + FONT BÜYÜT */
+  .footer-col h4 {
+    text-align: left !important;
+    font-size: 22px !important;
+    margin-bottom: 14px !important;
+    padding-bottom: 10px !important;
+    border-bottom: 2px solid rgba(244,155,28,0.25) !important;
+  }
+  .footer-col ul { padding: 0; text-align: left !important; }
+  .footer-col li { text-align: left !important; padding: 4px 0 !important; }
+  .footer-col li a, .footer-col li span {
+    font-size: 15px !important;
+  }
 }
 .footer-about { color: rgba(255,255,255,0.7); font-size: 14px; margin-bottom: 20px; }
 .footer-social { display: flex; gap: 12px; }
