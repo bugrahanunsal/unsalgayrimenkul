@@ -38,36 +38,43 @@
   // HTML lang attribute'ünü güncelle (SEO için)
   document.documentElement.lang = currentLang;
 
-  // Arapça için minimal RTL desteği (SADECE body class'ı ekle)
-  // NOT: html[dir="rtl"] veya body direction:rtl KULLANMIYORUZ çünkü
-  // header/nav/telefon numaralarını bozuyor. Tarayıcı Arapça metinleri
-  // otomatik olarak doğru yönde render ediyor (bidi algorithm).
-  if (currentLang === 'ar') {
+  // ZORLA LTR - Google Translate bazen dir="rtl" ekliyor,
+  // header layout'ını bozuyor. Bunu engelle.
+  document.documentElement.dir = 'ltr';
+  document.documentElement.setAttribute('dir', 'ltr');
+
+  // MutationObserver ile dir değişikliklerini yakala ve ltr'a geri döndür
+  if (typeof MutationObserver !== 'undefined') {
+    const dirObserver = new MutationObserver(() => {
+      if (document.documentElement.getAttribute('dir') !== 'ltr') {
+        document.documentElement.setAttribute('dir', 'ltr');
+      }
+    });
+    dirObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
+    // Body için de aynı korumayı yap
     if (document.body) {
-      document.body.classList.add('iu-rtl');
+      dirObserver.observe(document.body, { attributes: true, attributeFilter: ['dir'] });
     } else {
-      document.addEventListener('DOMContentLoaded', () => document.body.classList.add('iu-rtl'));
+      document.addEventListener('DOMContentLoaded', () => {
+        dirObserver.observe(document.body, { attributes: true, attributeFilter: ['dir'] });
+        if (document.body.getAttribute('dir') === 'rtl') document.body.removeAttribute('dir');
+      });
     }
-    // SADECE hero başlık ve ana içerik metinleri için opsiyonel sağa hizalama
-    // Layout'a dokunmuyoruz — sadece uzun paragraflar için text-align:right
-    if (!document.getElementById('iu-rtl-css')) {
-      const s = document.createElement('style');
-      s.id = 'iu-rtl-css';
-      s.textContent = `
-        /* Arapça sadece uzun içerik paragraflarında sağdan başlar
-           Header, nav, footer, telefon, fiyat — hepsi LTR kalır */
-        body.iu-rtl .hero-inner p,
-        body.iu-rtl .page-hero-inner p,
-        body.iu-rtl .intro-inner p,
-        body.iu-rtl .seo-content-inner p,
-        body.iu-rtl .iu-card-v2__desc,
-        body.iu-rtl .about-hero-content p,
-        body.iu-rtl .iu-faq-a p {
-          text-align: right;
-        }
-      `;
-      document.head.appendChild(s);
-    }
+  }
+
+  // Zorla CSS override — herhangi bir yerden gelen rtl'ı engelle
+  if (!document.getElementById('iu-ltr-force')) {
+    const forceStyle = document.createElement('style');
+    forceStyle.id = 'iu-ltr-force';
+    forceStyle.textContent = `
+      html, body { direction: ltr !important; }
+      html[dir="rtl"], body[dir="rtl"] { direction: ltr !important; }
+      .top-bar, .top-bar-inner, .header, .header-inner, .nav, .footer, .footer-inner {
+        direction: ltr !important;
+        unicode-bidi: isolate !important;
+      }
+    `;
+    document.head.appendChild(forceStyle);
   }
 
   // TR ise çeviri yapma — orijinal içerik zaten Türkçe
