@@ -657,14 +657,14 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           gap: 12px !important;
         }
         .nav-auth-mobile .iu-authbar-avatar {
-          width: 36px !important;
-          height: 36px !important;
-          min-width: 36px !important;
-          max-width: 36px !important;
-          min-height: 36px !important;
-          max-height: 36px !important;
-          flex: 0 0 36px !important;
-          flex-basis: 36px !important;
+          width: 24px !important;
+          height: 24px !important;
+          min-width: 24px !important;
+          max-width: 24px !important;
+          min-height: 24px !important;
+          max-height: 24px !important;
+          flex: 0 0 24px !important;
+          flex-basis: 24px !important;
           flex-grow: 0 !important;
           flex-shrink: 0 !important;
           aspect-ratio: 1 / 1 !important;
@@ -690,15 +690,28 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           text-align: left !important;
         }
         /* Mobil'de eski .iu-user-menu dropdown'ı TAMAMEN gizle
-           (yerine JS'den gelen .iu-mobile-actions kullanılıyor) */
-        .nav-auth-mobile .iu-user-menu {
+           .open class'ı JS'den geldiğinde bile hidden kalsın —
+           subscribe-widget.js'in .iu-user-menu.open { display: block !important }
+           kuralına karşı 3'lü selector ile max specificity */
+        .nav-auth-mobile .iu-user-menu,
+        .nav-auth-mobile .iu-user-menu.open,
+        .nav-auth-mobile .iu-authbar .iu-user-menu,
+        .nav-auth-mobile .iu-authbar .iu-user-menu.open,
+        .nav.open .nav-auth-mobile .iu-user-menu {
           display: none !important;
           visibility: hidden !important;
           height: 0 !important;
+          max-height: 0 !important;
           width: 0 !important;
+          max-width: 0 !important;
           padding: 0 !important;
           margin: 0 !important;
           overflow: hidden !important;
+          position: absolute !important;
+          left: -9999px !important;
+          top: -9999px !important;
+          pointer-events: none !important;
+          opacity: 0 !important;
         }
         /* YENİ mobile actions container — GRİD 2 kolon YAN YANA
            .iu-user-menu'nın conflict çıkaran base CSS'i buraya uğramaz */
@@ -1196,7 +1209,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 <a href="https://wa.me/905075188482" class="wa-float"><i class="fa-brands fa-whatsapp"></i></a>
 
-<script src="/script.js?v=20260928-align-stretch"></script>
+<script src="/script.js?v=20260928-hide-old-menu"></script>
 
 <script>
 // SMART FILTER & SEARCH SYSTEM - Facebook-grade live filtering
