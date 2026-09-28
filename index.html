@@ -231,13 +231,25 @@
 .top-bar a, .top-bar i, .top-info span { color: #FFFFFF !important; }
 .top-social a:hover { color: #F49B1C !important; }
 .header { background: #FFFFFF !important; border-bottom: 2px solid #F49B1C !important; box-shadow: 0 2px 12px rgba(10,42,94,0.08) !important; }
-.nav a { color: #0A2A5E !important; font-weight: 700 !important; }
+.nav a { color: #0A2A5E !important; font-weight: 700 !important; white-space: nowrap !important; }
 .nav a:hover, .nav a.active { color: #F49B1C !important; }
-.nav-badge { background: #F49B1C !important; color: #0A2A5E !important; }
-.btn-call { background: #0A2A5E !important; color: #FFFFFF !important; border: 2px solid #0A2A5E !important; }
+.nav-badge { background: #F49B1C !important; color: #0A2A5E !important; white-space: nowrap !important; }
+.btn-call { background: #0A2A5E !important; color: #FFFFFF !important; border: 2px solid #0A2A5E !important; white-space: nowrap !important; }
 .btn-call:hover { background: #FFFFFF !important; color: #0A2A5E !important; }
 .menu-toggle { color: #0A2A5E !important; background: transparent !important; }
-.logo-svg { height: 56px !important; width: auto !important; max-width: 280px; }
+.logo-svg { height: 56px !important; width: auto !important; max-width: 260px; }
+
+/* Çok sözcüklü dillerde (EN/FR/DE/RU/AR) daha kompakt header */
+html[lang="en"] .nav, html[lang="fr"] .nav, html[lang="de"] .nav, html[lang="ru"] .nav, html[lang="ar"] .nav { gap: 16px !important; }
+html[lang="en"] .nav a, html[lang="fr"] .nav a, html[lang="de"] .nav a, html[lang="ru"] .nav a { font-size: 12px !important; letter-spacing: 0.2px !important; }
+html[lang="en"] .btn-call, html[lang="fr"] .btn-call, html[lang="de"] .btn-call, html[lang="ru"] .btn-call { padding: 10px 14px !important; font-size: 12px !important; }
+/* Mid-desktop: 1200px altında extra sıkı */
+@media (min-width: 969px) and (max-width: 1199px) {
+  .logo-svg { height: 48px !important; max-width: 200px; }
+  .nav { gap: 16px !important; }
+  .nav a { font-size: 12px !important; }
+  .btn-call { padding: 9px 14px !important; font-size: 12px !important; }
+}
 
 @media (max-width: 968px) {
   .btn-call { padding: 10px 14px !important; font-size: 12px !important; white-space: nowrap !important; }
