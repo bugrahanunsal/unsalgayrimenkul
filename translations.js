@@ -994,6 +994,7 @@ function buildLangUrl(lang) {
   const path = window.location.pathname;
   // Mevcut dil prefix'ini kaldır
   let cleanPath = path.replace(/^\/(en|fr|de|ru|ar)(\/|$)/, '/');
+  cleanPath = cleanPath.replace(/\/index\.html$/i, '/').replace(/\.html$/i, '');
   if (!cleanPath || cleanPath === '') cleanPath = '/';
   return lang === 'tr' ? cleanPath : ('/' + lang + (cleanPath === '/' ? '/' : cleanPath));
 }

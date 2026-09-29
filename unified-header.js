@@ -25,7 +25,8 @@
 
   // Language-aware URL builder
   function lp(page) {
-    return langPrefix + '/' + page.replace(/^\//, '');
+    // .html uzantısız temiz URL: Cloudflare "/ar/x.html" → "/x" yönlendirmesi dili düşürüyordu
+    return langPrefix + '/' + page.replace(/^\//, '').replace(/\.html$/i, '');
   }
 
   // Determine which menu item is active from URL
@@ -63,7 +64,7 @@
 
   // Build language dropdown pointing to current path in each language
   function buildLangDropdown() {
-    const currentPage = path.replace(/^\/(en|fr|de|ru|ar)/, '') || '/';
+    const currentPage = path.replace(/^\/(en|fr|de|ru|ar)/, '').replace(/\/index\.html$/i, '/').replace(/\.html$/i, '') || '/';
     return ['tr','en','fr','de','ru','ar'].map(lang => {
       const url = (lang === 'tr' ? '' : '/' + lang) + (currentPage === '/' ? '/' : currentPage) + location.search + location.hash;
       const active = lang === currentLang ? ' active' : '';
@@ -142,7 +143,7 @@
   // ============================================================
   // INJECTION: Replace existing header OR prepend to body
   // ============================================================
-  const HEADER_CSS_VERSION = '20260929-blue';
+  const HEADER_CSS_VERSION = '20260929-lang';
 
   // Add a stylesheet once. toBodyEnd=true → appended at end of <body> so it
   // wins the cascade over page-specific header CSS. skipIfMatch → skip when

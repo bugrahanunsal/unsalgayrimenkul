@@ -40,7 +40,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20260929-blue';
+  const SITE_VERSION = '20260929-lang';
 
   async function loadAllScripts() {
     try {
@@ -206,27 +206,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const lang = m[1];
   const prefix = '/' + lang;
 
-  function shouldSkip(href) {
-    if (!href) return true;
-    if (href.startsWith('#')) return true;
-    if (href.startsWith('tel:')) return true;
-    if (href.startsWith('mailto:')) return true;
-    if (href.startsWith('javascript:')) return true;
-    if (href.startsWith('http://') || href.startsWith('https://')) return true;
-    if (href.startsWith('//')) return true;
-    if (href.startsWith('data:')) return true;
-    // Zaten dil prefix'i varsa dokunma
-    if (href.match(/^\/(en|fr|de|ru|ar)(\/|$|\?)/)) return true;
-    // Admin panele dokunma (backend, dil bağımsız)
-    if (href.startsWith('/admin')) return true;
-    return false;
-  }
-
+  // Not: ".html" uzantısı MUTLAKA kaldırılır. Cloudflare Pages "/ar/x.html"
+  // isteğini temiz URL'ye ("/x") 308 ile yönlendirip dil önekini düşürüyordu.
+  const LANG_RE = /^\/(en|fr|de|ru|ar)(?=\/|$)/;
   function rewrite(href) {
-    if (shouldSkip(href)) return href;
-    // "/foo" veya "foo.html" veya "/foo.html" — hepsini /xx/foo formatına çevir
-    let clean = href.startsWith('/') ? href : ('/' + href);
-    return prefix + clean;
+    if (!href) return href;
+    const h = href.trim();
+    if (/^(#|tel:|mailto:|javascript:|data:|sms:|whatsapp:|blob:)/i.test(h)) return href;
+    let rest = h;
+    if (/^(https?:)?\/\//i.test(h)) {                    // mutlak URL: yalnızca aynı site
+      try {
+        const u = new URL(h, location.href);
+        if (u.origin !== location.origin) return href;
+        rest = u.pathname + u.search + u.hash;
+      } catch (e) { return href; }
+    }
+    const cut = rest.search(/[?#]/);
+    let p = cut === -1 ? rest : rest.slice(0, cut);
+    const tail = cut === -1 ? '' : rest.slice(cut);
+    p = p.replace(/^\.\//, '');
+    if (!p.startsWith('/')) p = '/' + p;                  // site düz yapıda: kök-göreli
+    if (/^\/(admin|api|cdn-cgi)(\/|$)/i.test(p)) return href;
+    const last = p.split('/').pop();
+    if (/\.[a-z0-9]{2,5}$/i.test(last) && !/\.html?$/i.test(last)) return href;  // resim/pdf/xml
+    p = p.replace(LANG_RE, '') || '/';
+    p = p.replace(/\/index\.html?$/i, '/').replace(/\.html?$/i, '');
+    return prefix + (p === '/' ? '/' : p) + tail;
   }
 
   function rewriteAllLinks(root) {
@@ -278,6 +283,15 @@ document.addEventListener('DOMContentLoaded', () => {
     else document.addEventListener('DOMContentLoaded', start);
   }
 
+  // Tıklama anında son kontrol (geç eklenen linkler için emniyet)
+  document.addEventListener('click', (e) => {
+    const a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a || a.closest('.lang-option, .lang-dropdown, .lang-switcher')) return;
+    if (a.target && a.target !== '_self') return;
+    const h = a.getAttribute('href'); const r = rewrite(h);
+    if (r !== h) a.setAttribute('href', r);
+  }, true);
+
   console.log('[LangPreserve] Aktif dil:', lang, '— tüm internal linkler', prefix, 'ile prefix\'lendi');
 })();
 
@@ -292,6 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const path = location.pathname;
     // Mevcut dil prefix'ini kaldır
     let cleanPath = path.replace(/^\/(en|fr|de|ru|ar)(?=\/|$)/, '');
+    cleanPath = cleanPath.replace(/\/index\.html$/i, '/').replace(/\.html$/i, '');
     if (!cleanPath || cleanPath === '') cleanPath = '/';
     // Yeni URL: TR ise prefix'siz, diğerleri /xx prefix ile
     const newPath = lang === 'tr' ? cleanPath : ('/' + lang + (cleanPath === '/' ? '/' : cleanPath));
