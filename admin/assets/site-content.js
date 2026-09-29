@@ -21,6 +21,7 @@
   let found = null;              // iframe'deki tarama
   let sel = null;                // seçili öğe {type:'t'|'i', item}
   let editor = null;
+  let kind = 'all';
   const rowKey = (scope, key) => (scope === 'genel' ? 'genel' : page) + '|' + key;
   const safeImg = (u) => /^https:\/\/[^\s"'<>()]+$/i.test(String(u || '').trim()) ? String(u).trim() : '';
 
@@ -81,25 +82,60 @@
     found.imgs.forEach(i => i.el.classList.toggle('cms-changed', rows.has(rowKey(i.scope, i.key))));
   }
 
+  function photoLabel(it) {
+    // Fotoğrafın ait olduğu kartın / bölümün başlığı (ör. "Yalova Satılık Daire")
+    for (let e = it.el; e && e.tagName !== 'BODY'; e = e.parentElement) {
+      const h = e.querySelector && e.querySelector('h1,h2,h3,h4');
+      if (h && h.textContent.trim()) return h.textContent.replace(/\s+/g, ' ').trim();
+    }
+    return it.alt || 'Fotoğraf';
+  }
   function renderList() {
     const box = $('itemList'); box.textContent = '';
     if (!found) return;
+    $('imgCount').textContent = found.imgs.length ? '(' + found.imgs.length + ')' : '';
     const q = $('search').value.trim().toLocaleLowerCase('tr-TR');
     const only = $('onlyChanged').checked;
-    const items = [...found.texts.map(t => ['t', t]), ...found.imgs.map(i => ['i', i])];
     let n = 0;
-    items.forEach(([type, it]) => {
-      const changed = rows.has(rowKey(it.scope, it.key));
-      if (only && !changed) return;
-      const label = type === 't' ? (it.el.textContent || '').replace(/\s+/g, ' ').trim() : ('Fotoğraf ' + (it.alt ? '— ' + it.alt : ''));
-      if (q && !label.toLocaleLowerCase('tr-TR').includes(q)) return;
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'sc-item' + (changed ? ' ch' : '') + (sel && sel.item === it ? ' sel' : '');
-      const tg = document.createElement('span'); tg.className = 't'; tg.textContent = type === 'i' ? 'FOTO' : (TAG_LABEL[it.tag] || it.tag).toUpperCase();
-      const x = document.createElement('span'); x.className = 'x'; x.textContent = label || '(boş)';
-      b.append(tg, x); b.onclick = () => select(type, it, true);
-      box.appendChild(b); n++;
-    });
-    if (!n) box.textContent = only ? 'Bu sayfada henüz değişiklik yok.' : 'Sonuç yok.';
+    // Fotoğraflar: küçük resimli ızgara
+    if (kind !== 't' && found.imgs.length) {
+      const grid = document.createElement('div'); grid.className = 'sc-photos';
+      found.imgs.forEach(it => {
+        const r = rows.get(rowKey(it.scope, it.key));
+        const changed = !!r;
+        if (only && !changed) return;
+        const label = photoLabel(it);
+        if (q && !label.toLocaleLowerCase('tr-TR').includes(q)) return;
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'sc-photo' + (sel && sel.item === it ? ' sel' : '');
+        const th = document.createElement('div'); th.className = 'th';
+        const cur = (r && safeImg(r.foto_url)) || it.src;
+        if (safeImg(cur) || /^\//.test(cur)) th.style.backgroundImage = 'url("' + String(cur).replace(/["\\]/g, '') + '")';
+        if (changed) { const c = document.createElement('span'); c.className = 'ch'; c.textContent = 'DEĞİŞTİ'; th.appendChild(c); }
+        const lb = document.createElement('div'); lb.className = 'lb'; lb.textContent = label;
+        const ed = document.createElement('span'); ed.className = 'ed'; ed.textContent = '📷 Değiştir';
+        b.append(th, lb, ed); b.onclick = () => select('i', it, true);
+        grid.appendChild(b); n++;
+      });
+      if (grid.children.length) {
+        if (kind === 'all') { const h = document.createElement('div'); h.className = 'form-label'; h.style.margin = '2px 0 6px'; h.textContent = '📷 Fotoğraflar'; box.appendChild(h); }
+        box.appendChild(grid);
+      }
+    }
+    if (kind !== 'i') {
+      if (kind === 'all' && n) { const h = document.createElement('div'); h.className = 'form-label'; h.style.margin = '12px 0 6px'; h.textContent = '📝 Yazılar'; box.appendChild(h); }
+      found.texts.forEach(it => {
+        const changed = rows.has(rowKey(it.scope, it.key));
+        if (only && !changed) return;
+        const label = (it.el.textContent || '').replace(/\s+/g, ' ').trim();
+        if (q && !label.toLocaleLowerCase('tr-TR').includes(q)) return;
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'sc-item' + (changed ? ' ch' : '') + (sel && sel.item === it ? ' sel' : '');
+        const tg = document.createElement('span'); tg.className = 't'; tg.textContent = (TAG_LABEL[it.tag] || it.tag).toUpperCase();
+        const x = document.createElement('span'); x.className = 'x'; x.textContent = label || '(boş)';
+        b.append(tg, x); b.onclick = () => select('t', it, true);
+        box.appendChild(b); n++;
+      });
+    }
+    if (!n) box.textContent = kind === 'i' ? 'Bu sayfada değiştirilebilir fotoğraf yok.' : (only ? 'Bu sayfada henüz değişiklik yok.' : 'Sonuç yok.');
   }
 
   function select(type, item, scroll) {
@@ -126,6 +162,7 @@
       setTimeout(() => editor.el.focus(), 30);
     } else {
       $('eiScope').style.display = it.scope === 'genel' ? '' : 'none';
+      $('eiLabel').textContent = photoLabel(it);
       const cur = (r && safeImg(r.foto_url)) || it.src;
       $('eiUrl').value = r && r.foto_url ? r.foto_url : '';
       $('eiPrev').src = cur;
@@ -241,13 +278,18 @@
     $('devMob').onclick = () => $('frame').classList.add('mob');
     $('devDesk').onclick = () => $('frame').classList.remove('mob');
     $('search').addEventListener('input', renderList);
+    document.querySelectorAll('.sc-kind button').forEach(bt => bt.onclick = () => {
+      kind = bt.dataset.kind;
+      document.querySelectorAll('.sc-kind button').forEach(x => x.classList.toggle('on', x === bt));
+      renderList();
+    });
     $('onlyChanged').addEventListener('change', renderList);
     $('etSave').onclick = saveText; $('etRevert').onclick = revertText;
     $('eiSave').onclick = saveImg; $('eiRevert').onclick = revertImg;
     $('eiUrl').addEventListener('input', () => { const u = safeImg($('eiUrl').value); if (u) $('eiPrev').src = u; });
     $('eiFile').addEventListener('change', async (e) => {
       const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-      try { const u = await uploadSiteImage(f, 'foto'); $('eiUrl').value = u; $('eiPrev').src = u; App.toast('Yüklendi — kaydetmeyi unutmayın', 'info'); }
+      try { const u = await uploadSiteImage(f, 'foto'); $('eiUrl').value = u; $('eiPrev').src = u; await saveImg(); }
       catch (err) { App.toast(err.message, 'error'); }
     });
     document.querySelectorAll('.sc-tab').forEach(t => t.onclick = () => {

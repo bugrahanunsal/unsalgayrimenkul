@@ -43,7 +43,7 @@
               <label class="form-label" for="pageSel">Düzenlenecek sayfa</label>
               <select id="pageSel" class="form-select"></select>
             </div>
-            <div class="sc-hint">👉 Önizlemede değiştirmek istediğiniz <b>yazıya veya fotoğrafa tıklayın</b>. Sağda düzenleme kutusu açılır. Sadece Türkçe yazın, diğer diller otomatik çevrilir. <span class="sc-legend"><i class="lg-e"></i>Değiştirilmiş</span></div>
+            <div class="sc-hint">👉 Önizlemede değiştirmek istediğiniz <b>yazıya veya fotoğrafa tıklayın</b> ya da sağdaki <b>📷 Fotoğraflar</b> sekmesinden seçin. Sağda düzenleme kutusu açılır. Sadece Türkçe yazın, diğer diller otomatik çevrilir. <span class="sc-legend"><i class="lg-e"></i>Değiştirilmiş</span></div>
           </div>
           <div class="sc-split">
             <div class="sc-preview card">
@@ -64,9 +64,10 @@
                   </div>
                 </div>
                 <div id="editImg" style="display:none;">
-                  <div class="sc-edit-head"><span class="badge badge-info">Fotoğraf</span><span id="eiScope" class="badge badge-gray" style="display:none;">Tüm sayfalarda</span></div>
+                  <div class="sc-edit-head"><span class="badge badge-info">Fotoğraf</span><b id="eiLabel" style="font-size:13px;color:#0A2A5E;align-self:center;"></b><span id="eiScope" class="badge badge-gray" style="display:none;">Tüm sayfalarda</span></div>
                   <img id="eiPrev" alt="" class="sc-imgprev">
                   <div class="form-group"><label class="form-label" for="eiUrl">Fotoğraf adresi</label><input id="eiUrl" type="url" class="form-input" placeholder="https://…"></div>
+                  <div class="form-help" style="margin:-4px 0 8px;">Yatay fotoğraf önerilir (en az 1200×800). JPG, PNG veya WEBP, en fazla 5MB.</div>
                   <label class="btn btn-outline btn-sm" style="cursor:pointer;">📷 Bilgisayardan yükle<input type="file" id="eiFile" accept="image/jpeg,image/png,image/webp" hidden></label>
                   <div class="sc-actions">
                     <button type="button" class="btn btn-outline btn-sm" id="eiRevert">↺ Orijinale dön</button>
@@ -75,6 +76,11 @@
                 </div>
               </div>
               <div class="card sc-listcard">
+                <div class="sc-kind" role="tablist">
+                  <button type="button" class="on" data-kind="all">Tümü</button>
+                  <button type="button" data-kind="t">📝 Yazılar</button>
+                  <button type="button" data-kind="i">📷 Fotoğraflar <span id="imgCount"></span></button>
+                </div>
                 <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
                   <input id="search" class="form-input" placeholder="🔍 Sayfada yazı ara…" style="flex:1;">
                   <label style="font-size:12px;white-space:nowrap;display:flex;gap:4px;align-items:center;"><input type="checkbox" id="onlyChanged"> Değişenler</label>
@@ -137,6 +143,16 @@
     .sc-item .t{flex-shrink:0;font-size:10px;font-weight:800;color:#2563EB;background:#DBEAFE;border-radius:4px;padding:2px 5px;margin-top:1px}
     .sc-item .x{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
     .sc-item.ch .t{background:#2563EB;color:#fff}
+    .sc-kind{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+    .sc-kind button{border:1.5px solid #E2E8F0;background:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;color:#334155;cursor:pointer}
+    .sc-kind button.on{background:#2563EB;border-color:#2563EB;color:#fff}
+    .sc-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .sc-photo{border:1.5px solid #E2E8F0;border-radius:10px;overflow:hidden;background:#fff;cursor:pointer;text-align:left;padding:0}
+    .sc-photo:hover{border-color:#93C5FD}.sc-photo.sel{border-color:#2563EB;box-shadow:0 0 0 2px rgba(37,99,235,.2)}
+    .sc-photo .th{height:90px;background:#E2E8F0 center/cover no-repeat;position:relative}
+    .sc-photo .ch{position:absolute;top:6px;left:6px;background:#2563EB;color:#fff;font-size:10px;font-weight:800;border-radius:4px;padding:2px 6px}
+    .sc-photo .lb{padding:6px 8px;font-size:12px;font-weight:600;color:#1E293B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sc-photo .ed{display:block;padding:0 8px 8px;font-size:11px;color:#2563EB;font-weight:700}
     .sc-brand{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
     .sc-brandprev{background:#fff;border:1.5px dashed #CBD5E1;border-radius:12px;padding:18px;display:flex;align-items:center;justify-content:center;min-height:100px}
     .sc-brandprev img{max-height:70px;max-width:100%}
