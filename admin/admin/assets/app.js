@@ -41,7 +41,7 @@ const App = {
       sidebar.innerHTML = `
         <div class="sidebar-header">
           <a href="/admin/index.html" style="text-decoration: none; color: inherit; display: block;">
-            <div class="sidebar-logo" style="font-size: 18px; letter-spacing: 1px;">İSMAİL <span style="color: #d4a54e;">ÜNSAL</span></div>
+            <div class="sidebar-logo" style="font-size: 18px; letter-spacing: 1px;">İSMAİL <span style="color: #2563EB;">ÜNSAL</span></div>
             <div class="sidebar-subtitle" style="font-size: 10px; letter-spacing: 2px; margin-top: 2px;">GAYRİMENKUL YÖNETİM</div>
           </a>
         </div>

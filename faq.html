@@ -31,16 +31,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="style.css?v=20260928-badge2">
+<link rel="stylesheet" href="style.css?v=20260929-blue">
 
 <style>
 .top-bar { background: #0A2A5E !important; color: #FFFFFF !important; }
 .top-bar a, .top-bar i, .top-info span { color: #FFFFFF !important; }
-.top-social a:hover { color: #F49B1C !important; }
-.header { background: #FFFFFF !important; border-bottom: 2px solid #F49B1C !important; box-shadow: 0 2px 12px rgba(10,42,94,0.08) !important; }
+.top-social a:hover { color: #60A5FA !important; }
+.header { background: #FFFFFF !important; border-bottom: 2px solid #2563EB !important; box-shadow: 0 2px 12px rgba(10,42,94,0.08) !important; }
 .nav a { color: #0A2A5E !important; font-weight: 700 !important; }
-.nav a:hover, .nav a.active { color: #F49B1C !important; }
-.nav-badge { background: #F49B1C !important; color: #0A2A5E !important; }
+.nav a:hover, .nav a.active { color: #2563EB !important; }
+.nav-badge { background: #2563EB !important; color: #FFFFFF !important; }
 .btn-call { background: #0A2A5E !important; color: #FFFFFF !important; border: 2px solid #0A2A5E !important; }
 .btn-call:hover { background: #FFFFFF !important; color: #0A2A5E !important; }
 .menu-toggle { color: #0A2A5E !important; background: transparent !important; }
@@ -58,19 +58,19 @@
   content: '';
   position: absolute; inset: 0;
   background:
-    radial-gradient(circle at 20% 30%, rgba(244,155,28,0.15) 0%, transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba(244,155,28,0.1) 0%, transparent 40%);
+    radial-gradient(circle at 20% 30%, rgba(37,99,235,0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(37,99,235,0.1) 0%, transparent 40%);
   pointer-events: none;
 }
 .sss-hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 2; }
 .sss-hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(244,155,28,0.18);
-  color: #F49B1C;
+  background: rgba(37,99,235,0.18);
+  color: #60A5FA;
   padding: 10px 22px;
   border-radius: 50px;
   font-size: 12px; font-weight: 800; letter-spacing: 2.5px;
-  border: 1px solid rgba(244,155,28,0.35);
+  border: 1px solid rgba(37,99,235,0.35);
   margin-bottom: 22px;
 }
 .sss-hero h1 {
@@ -79,7 +79,7 @@
   font-weight: 800; line-height: 1.15;
   margin-bottom: 20px;
 }
-.sss-hero h1 .accent { color: #F49B1C; }
+.sss-hero h1 .accent { color: #60A5FA; }
 .sss-hero p {
   font-size: 17px; line-height: 1.7;
   max-width: 700px; margin: 0 auto 32px;
@@ -102,7 +102,7 @@
 .sss-hero-stat-num {
   font-family: 'League Spartan', sans-serif;
   font-size: 32px; font-weight: 800;
-  color: #F49B1C;
+  color: #60A5FA;
   line-height: 1;
   margin-bottom: 6px;
 }
@@ -130,21 +130,21 @@
   display: inline-flex; align-items: center; gap: 8px;
 }
 .sss-cat-pill:hover {
-  border-color: #F49B1C;
-  color: #F49B1C;
+  border-color: #2563EB;
+  color: #2563EB;
   transform: translateY(-2px);
 }
 .sss-cat-pill.active {
-  background: #F49B1C;
-  color: #0A2A5E;
-  border-color: #F49B1C;
-  box-shadow: 0 6px 16px rgba(244,155,28,0.35);
+  background: #2563EB;
+  color: #FFFFFF;
+  border-color: #2563EB;
+  box-shadow: 0 6px 16px rgba(37,99,235,0.35);
 }
 
 /* CTA bölümü */
 .sss-cta {
-  background: linear-gradient(135deg, #F49B1C 0%, #FFB543 100%);
-  color: #0A2A5E;
+  background: linear-gradient(135deg, #2563EB 0%, #60A5FA 100%);
+  color: #FFFFFF;
   padding: 70px 24px;
   text-align: center;
   margin-top: 20px;
@@ -169,7 +169,7 @@
 .sss-cta-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(10,42,94,0.15); }
 .sss-cta-btn.primary { background: #0A2A5E; color: #FFF; }
 .sss-cta-btn.wa { background: #25D366; color: #FFF; }
-.sss-cta-btn.outline { background: transparent; color: #0A2A5E; border: 2px solid #0A2A5E; }
+.sss-cta-btn.outline { background: transparent; color: #FFFFFF; border: 2px solid #0A2A5E; }
 
 @media (max-width: 768px) {
   .sss-hero { padding: 60px 20px 70px; }
@@ -181,7 +181,7 @@
 <script src="/translations.js?v=20260928-svc" defer></script>
 </head>
 <body>
-<script src="/unified-header.js?v=20260929-logo"></script>
+<script src="/unified-header.js?v=20260929-blue"></script>
 <!-- top-bar + header script.js tarafından otomatik enjekte edilecek -->
 
 <section class="sss-hero">
@@ -298,7 +298,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2026 TURYAP İsmail Ünsal Real Estate. | <a href="gizlilik-politikasi.html" style="color:#F49B1C; text-decoration:none;">Gizlilik Politikası</a></p>
+    <p>© 2026 TURYAP İsmail Ünsal Real Estate. | <a href="gizlilik-politikasi.html" style="color:#60A5FA; text-decoration:none;">Gizlilik Politikası</a></p>
   </div>
 </footer>
 
@@ -357,7 +357,7 @@
 })();
 </script>
 
-<script src="/faq-yalova-emlak.js?v=20260929-faqbadge"></script>
-<script src="/script.js?v=20260929-logo"></script>
+<script src="/faq-yalova-emlak.js?v=20260929-blue"></script>
+<script src="/script.js?v=20260929-blue"></script>
 </body>
 </html>

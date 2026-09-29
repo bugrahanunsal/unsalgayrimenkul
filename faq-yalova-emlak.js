@@ -323,11 +323,11 @@
         }
         .iu-faq-item:hover {
           box-shadow: 0 8px 24px rgba(10, 42, 94, 0.1);
-          border-color: rgba(244, 155, 28, 0.3);
+          border-color: rgba(37,99,235, 0.3);
         }
         .iu-faq-item[open] {
-          border-color: #F49B1C;
-          box-shadow: 0 8px 32px rgba(244, 155, 28, 0.15);
+          border-color: #2563EB;
+          box-shadow: 0 8px 32px rgba(37,99,235, 0.15);
         }
         .iu-faq-item summary {
           cursor: pointer;
@@ -343,7 +343,7 @@
           transition: background 0.2s;
         }
         .iu-faq-item summary:hover {
-          background: rgba(244, 155, 28, 0.03);
+          background: rgba(37,99,235, 0.03);
         }
         .iu-faq-item summary::-webkit-details-marker { display: none; }
         .iu-faq-item summary::marker { display: none; }
@@ -354,7 +354,7 @@
         .iu-faq-icon {
           width: 34px;
           height: 34px;
-          background: linear-gradient(135deg, #F49B1C, #d4831a);
+          background: linear-gradient(135deg, #2563EB, #1D4ED8);
           color: #FFFFFF;
           border-radius: 50%;
           display: flex;
@@ -364,7 +364,7 @@
           font-weight: 300;
           flex-shrink: 0;
           transition: all 0.3s ease;
-          box-shadow: 0 2px 8px rgba(244, 155, 28, 0.3);
+          box-shadow: 0 2px 8px rgba(37,99,235, 0.3);
         }
         .iu-faq-item[open] .iu-faq-icon {
           transform: rotate(45deg);
@@ -376,10 +376,10 @@
           color: #374151;
           line-height: 1.75;
           font-size: 15px;
-          border-top: 1px solid rgba(244, 155, 28, 0.15);
+          border-top: 1px solid rgba(37,99,235, 0.15);
           margin-top: -4px;
           padding-top: 22px;
-          background: linear-gradient(180deg, rgba(244, 155, 28, 0.03), rgba(10, 42, 94, 0.01));
+          background: linear-gradient(180deg, rgba(37,99,235, 0.03), rgba(10, 42, 94, 0.01));
         }
         /* ==== ANSWER RICH FORMATTING ==== */
         .iu-answer {
@@ -422,7 +422,7 @@
         .iu-num-badge {
           flex-shrink: 0;
           width: 22px; height: 22px;
-          background: #F49B1C;
+          background: #2563EB;
           color: #FFFFFF;
           border-radius: 50%;
           display: inline-flex;
@@ -440,7 +440,7 @@
 
         /* Sade highlight'lar — sadece renk + kalın, arka plan yok */
         .iu-hi-price {
-          color: #B7791F;
+          color: #1E40AF;
           font-weight: 700;
           white-space: nowrap;
         }

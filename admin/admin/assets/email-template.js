@@ -154,7 +154,7 @@ const EmailTemplate = (() => {
       </tr>
       <tr>
         <td style="padding: 20px;">
-          <div style="font-size: 12px; color: #d4a54e; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+          <div style="font-size: 12px; color: #2563EB; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
             ${escapeHtml(property.kategori || '')} • ${escapeHtml(property.tip || '')}
           </div>
           <h2 style="font-size: 20px; color: #0a1929; margin: 0 0 12px 0; font-weight: 700; line-height: 1.3;">
@@ -171,7 +171,7 @@ const EmailTemplate = (() => {
                 </div>
               </td>
               <td align="right">
-                <a href="${propUrl}" style="display: inline-block; background: #d4a54e; color: #ffffff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px;">
+                <a href="${propUrl}" style="display: inline-block; background: #2563EB; color: #ffffff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px;">
                   ${t.viewDetails} →
                 </a>
               </td>
@@ -209,7 +209,7 @@ const EmailTemplate = (() => {
     table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
     img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
     body { margin: 0 !important; padding: 0 !important; width: 100% !important; background: #f3f4f6; }
-    a { color: #d4a54e; }
+    a { color: #2563EB; }
     @media screen and (max-width: 600px) {
       .container { width: 100% !important; }
       .mobile-padding { padding-left: 16px !important; padding-right: 16px !important; }
@@ -243,7 +243,7 @@ const EmailTemplate = (() => {
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                 <tr>
                   <td>
-                    <div style="font-size: 20px; color: #d4a54e; font-weight: 700; letter-spacing: 1px;">
+                    <div style="font-size: 20px; color: #2563EB; font-weight: 700; letter-spacing: 1px;">
                       İSMAİL ÜNSAL
                     </div>
                     <div style="font-size: 12px; color: #ffffff; opacity: 0.8; letter-spacing: 2px; margin-top: 4px;">
@@ -268,8 +268,8 @@ const EmailTemplate = (() => {
                 ${escapeHtml(t.intro)}
               </p>
               ${customMessage ? `
-                <div style="background: #fef7e9; border-left: 4px solid #d4a54e; padding: 12px 16px; margin: 16px 0; border-radius: 4px;">
-                  <p style="margin: 0; font-size: 14px; color: #78350f; line-height: 1.5;">
+                <div style="background: #EFF6FF; border-left: 4px solid #2563EB; padding: 12px 16px; margin: 16px 0; border-radius: 4px;">
+                  <p style="margin: 0; font-size: 14px; color: #1E3A8A; line-height: 1.5;">
                     ${escapeHtml(customMessage)}
                   </p>
                 </div>
@@ -320,7 +320,7 @@ const EmailTemplate = (() => {
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                 <tr>
                   <td align="center">
-                    <div style="font-size: 14px; color: #d4a54e; font-weight: 600; margin-bottom: 4px;">
+                    <div style="font-size: 14px; color: #2563EB; font-weight: 600; margin-bottom: 4px;">
                       ${escapeHtml(t.companyName)}
                     </div>
                     <div style="font-size: 12px; color: #ffffff; opacity: 0.7; margin-bottom: 16px;">
@@ -328,7 +328,7 @@ const EmailTemplate = (() => {
                     </div>
                     <div style="font-size: 11px; color: #ffffff; opacity: 0.6; line-height: 1.6; margin-bottom: 16px;">
                       ${escapeHtml(t.addressLabel)} ${escapeHtml(t.address)}<br>
-                      <a href="${SITE_URL}" style="color: #d4a54e; text-decoration: none;">ismailunsal.com.tr</a>
+                      <a href="${SITE_URL}" style="color: #2563EB; text-decoration: none;">ismailunsal.com.tr</a>
                     </div>
 
                     <!-- Unsubscribe links (KVKK/GDPR zorunlu) -->
@@ -336,11 +336,11 @@ const EmailTemplate = (() => {
                       <p style="font-size: 11px; color: #ffffff; opacity: 0.5; margin: 0 0 8px 0; line-height: 1.5;">
                         ${escapeHtml(t.footer)}
                       </p>
-                      <a href="${unsubUrl}" style="color: #d4a54e; text-decoration: underline; font-size: 11px; margin: 0 8px;">
+                      <a href="${unsubUrl}" style="color: #2563EB; text-decoration: underline; font-size: 11px; margin: 0 8px;">
                         ${escapeHtml(t.unsubscribe)}
                       </a>
                       <span style="color: #ffffff; opacity: 0.3;">•</span>
-                      <a href="${prefsUrl}" style="color: #d4a54e; text-decoration: underline; font-size: 11px; margin: 0 8px;">
+                      <a href="${prefsUrl}" style="color: #2563EB; text-decoration: underline; font-size: 11px; margin: 0 8px;">
                         ${escapeHtml(t.preferences)}
                       </a>
                     </div>
@@ -396,14 +396,14 @@ const EmailTemplate = (() => {
   <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding: 40px 20px;">
     <table width="500" cellpadding="0" cellspacing="0" style="background: #ffffff; border-radius: 12px; overflow: hidden;">
       <tr><td style="background: linear-gradient(135deg, #0a1929, #1a3a5f); padding: 40px; text-align: center;">
-        <div style="font-size: 24px; color: #d4a54e; font-weight: 700;">İSMAİL ÜNSAL</div>
+        <div style="font-size: 24px; color: #2563EB; font-weight: 700;">İSMAİL ÜNSAL</div>
         <div style="font-size: 12px; color: white; opacity: 0.8; margin-top: 4px;">GAYRİMENKUL</div>
       </td></tr>
       <tr><td style="padding: 40px;">
         <h1 style="color: #0a1929; margin: 0 0 16px 0;">${escapeHtml(vt.title)} ✉️</h1>
         <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">${escapeHtml(vt.text)}</p>
         <table cellpadding="0" cellspacing="0" style="margin: 30px auto;"><tr><td>
-          <a href="${verifyUrl}" style="display: inline-block; background: #d4a54e; color: white; padding: 16px 40px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+          <a href="${verifyUrl}" style="display: inline-block; background: #2563EB; color: white; padding: 16px 40px; border-radius: 8px; text-decoration: none; font-weight: 600;">
             ${escapeHtml(vt.button)}
           </a>
         </td></tr></table>

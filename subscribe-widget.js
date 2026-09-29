@@ -405,9 +405,9 @@
         color: #ffffff;
       }
       .iu-authbar-signup:hover {
-        background: #b8912e;
+        background: #1D4ED8;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(212,165,78,0.3);
+        box-shadow: 0 4px 12px rgba(37,99,235,0.3);
       }
       .iu-authbar-login {
         background: transparent;
@@ -421,13 +421,13 @@
       .iu-authbar-user {
         display: flex; align-items: center; gap: 8px;
         padding: 6px 14px 6px 6px;
-        background: rgba(212,165,78,0.1);
+        background: rgba(37,99,235,0.1);
         border-radius: 30px;
         cursor: pointer;
         transition: all 0.15s;
-        border: 1px solid rgba(212,165,78,0.3);
+        border: 1px solid rgba(37,99,235,0.3);
       }
-      .iu-authbar-user:hover { background: rgba(212,165,78,0.15); }
+      .iu-authbar-user:hover { background: rgba(37,99,235,0.15); }
       .iu-authbar-avatar {
         width: 28px; height: 28px;
         border-radius: 50%;
@@ -495,7 +495,7 @@
         color: #6b7280 !important;
         flex-shrink: 0;
       }
-      .iu-user-menu a:hover svg { color: #F49B1C !important; }
+      .iu-user-menu a:hover svg { color: #2563EB !important; }
       .iu-user-menu-divider {
         height: 1px !important;
         background: #e5e7eb !important;
@@ -727,9 +727,9 @@
       }
       .iu-btn-primary { background: #3b82f6; color: #ffffff; }
       .iu-btn-primary:hover:not(:disabled) {
-        background: #b8912e;
+        background: #1D4ED8;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(212,165,78,0.3);
+        box-shadow: 0 4px 12px rgba(37,99,235,0.3);
       }
       .iu-btn-dark { background: #0a1929; color: white; }
       .iu-btn-dark:hover:not(:disabled) { background: #1a3a5f; }
@@ -780,7 +780,7 @@
         right: -20%;
         width: 400px;
         height: 400px;
-        background: radial-gradient(circle, rgba(212,165,78,0.2), transparent 70%);
+        background: radial-gradient(circle, rgba(37,99,235,0.2), transparent 70%);
         pointer-events: none;
       }
       .iu-widget h3 { font-size: 26px; margin: 0 0 8px 0; color: #3b82f6; position: relative; }
@@ -806,7 +806,7 @@
         cursor: pointer;
         transition: all 0.15s;
       }
-      .iu-widget-form button:hover { background: #b8912e; }
+      .iu-widget-form button:hover { background: #1D4ED8; }
       .iu-widget small {
         display: block; margin-top: 16px;
         opacity: 0.7; font-size: 12px; position: relative;
@@ -1390,12 +1390,12 @@
         font-family: inherit;
       }
       .topbar-auth .iu-authbar-signup {
-        background: #F49B1C !important;
-        color: #0A2A5E !important;
-        border-color: #F49B1C !important;
+        background: #2563EB !important;
+        color: #FFFFFF !important;
+        border-color: #2563EB !important;
       }
       .topbar-auth .iu-authbar-signup:hover {
-        background: #FFB543 !important;
+        background: #1D4ED8 !important;
       }
       .topbar-auth .iu-authbar-login {
         background: transparent !important;
@@ -1419,8 +1419,8 @@
         width: 22px !important; height: 22px !important;
         font-size: 11px !important;
         border-radius: 50% !important;
-        background: linear-gradient(135deg, #F49B1C, #d4831a);
-        color: #0A2A5E;
+        background: linear-gradient(135deg, #2563EB, #1D4ED8);
+        color: #FFFFFF;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1509,7 +1509,7 @@
         .topbar-auth.iu-signed-in .iu-authbar-user,
         .topbar-auth:has(.iu-authbar-user) .iu-authbar-user {
           background: rgba(10,42,94,0.95) !important;
-          border: 2px solid rgba(244,155,28,0.5) !important;
+          border: 2px solid rgba(37,99,235,0.5) !important;
           padding: 8px 14px 8px 8px !important;
           border-radius: 40px !important;
           box-shadow: 0 6px 20px rgba(0,0,0,0.25) !important;
@@ -1530,7 +1530,7 @@
         .topbar-auth:has(.iu-authbar-user) .iu-authbar-avatar {
           width: 32px !important;
           height: 32px !important;
-          border: 2px solid #F49B1C !important;
+          border: 2px solid #2563EB !important;
         }
         /* User menu opens upward on mobile to stay on screen */
         .topbar-auth.iu-signed-in .iu-user-menu,

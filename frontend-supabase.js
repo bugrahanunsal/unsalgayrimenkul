@@ -79,17 +79,17 @@
         content: '' !important; position: absolute !important; inset: 0 !important; z-index: 3 !important;
       }
       article.iu-card-v2 .iu-card-v2__link:focus-visible { outline: none !important; }
-      article.iu-card-v2:focus-within { border-color: #F49B1C !important; }
+      article.iu-card-v2:focus-within { border-color: #2563EB !important; }
       article.iu-card-v2 .iu-card-v2__more {
         display: inline-flex !important; align-items: center !important; gap: 6px !important;
-        color: #F49B1C !important; font-weight: 700 !important; font-size: 13px !important;
+        color: #2563EB !important; font-weight: 700 !important; font-size: 13px !important;
         margin: 0 0 14px 0 !important; letter-spacing: 0.3px !important;
       }
       article.iu-card-v2:hover .iu-card-v2__more { gap: 10px !important; }
       article.iu-card-v2:hover {
         transform: translateY(-6px) !important;
         box-shadow: 0 20px 40px rgba(10,42,94,0.15) !important;
-        border-color: #F49B1C !important;
+        border-color: #2563EB !important;
       }
       /* Image */
       article.iu-card-v2 > .iu-card-v2__img {
@@ -111,13 +111,13 @@
       article.iu-card-v2 .iu-card-v2__tag {
         position: absolute !important;
         top: 14px !important; left: 14px !important;
-        background: #F49B1C !important; color: #0A2A5E !important;
+        background: #2563EB !important; color: #FFFFFF !important;
         padding: 6px 14px !important; border-radius: 50px !important;
         font-size: 11px !important; font-weight: 800 !important;
         letter-spacing: 1px !important; z-index: 2 !important;
       }
       article.iu-card-v2 .iu-card-v2__tag.vip {
-        background: #0A2A5E !important; color: #F49B1C !important;
+        background: #0A2A5E !important; color: #60A5FA !important;
       }
       article.iu-card-v2 .iu-card-v2__type {
         position: absolute !important;
@@ -139,7 +139,7 @@
         color: #6B7280 !important; font-size: 12px !important;
         margin: 0 0 8px 0 !important; font-weight: 600 !important; letter-spacing: 0.5px !important;
       }
-      article.iu-card-v2 .iu-card-v2__loc i { color: #F49B1C !important; }
+      article.iu-card-v2 .iu-card-v2__loc i { color: #2563EB !important; }
       article.iu-card-v2 .iu-card-v2__title {
         font-family: 'League Spartan', 'Montserrat', sans-serif !important;
         font-size: 19px !important; font-weight: 700 !important;
@@ -155,7 +155,7 @@
         display: flex !important; align-items: center !important; gap: 6px !important;
         color: #4B5563 !important; font-size: 13px !important;
       }
-      article.iu-card-v2 .iu-card-v2__feats i { color: #F49B1C !important; }
+      article.iu-card-v2 .iu-card-v2__feats i { color: #2563EB !important; }
       article.iu-card-v2 .iu-card-v2__price {
         font-family: 'League Spartan', 'Montserrat', sans-serif !important;
         font-size: 22px !important; font-weight: 800 !important;

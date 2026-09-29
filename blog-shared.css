@@ -38,7 +38,7 @@
 }
 .sb-card-header {
   padding: 16px 20px 14px;
-  border-bottom: 2px solid #F49B1C;
+  border-bottom: 2px solid #2563EB;
   background: linear-gradient(135deg, #0A2A5E 0%, #1B4380 100%);
   color: #FFFFFF;
 }
@@ -53,7 +53,7 @@
 .sb-card-header .sb-eyebrow {
   font-size: 10px;
   letter-spacing: 2px;
-  color: #F49B1C;
+  color: #60A5FA;
   font-weight: 700;
   display: block;
   margin-bottom: 4px;
@@ -77,7 +77,7 @@
   transition: all 0.2s;
 }
 .sb-member:hover {
-  border-color: #F49B1C;
+  border-color: #2563EB;
   background: #FFFFFF;
   box-shadow: 0 4px 12px rgba(10,42,94,0.08);
 }
@@ -87,7 +87,7 @@
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  border: 3px solid #F49B1C;
+  border: 3px solid #2563EB;
   background-color: #0A2A5E;
 }
 .sb-member-info {
@@ -139,7 +139,7 @@
   background-size: cover;
   background-position: center;
   margin: 0 auto 14px;
-  border: 3px solid #F49B1C;
+  border: 3px solid #2563EB;
   background-color: #0A2A5E;
 }
 .sb-author h4 {
@@ -195,7 +195,7 @@
 }
 .sb-listing-card:hover {
   transform: translateX(3px);
-  border-color: #F49B1C;
+  border-color: #2563EB;
   background: #FFFFFF;
   box-shadow: 0 4px 12px rgba(10,42,94,0.08);
 }
@@ -211,8 +211,8 @@
 .sb-listing-tag {
   position: absolute;
   top: 6px; left: 6px;
-  background: #F49B1C;
-  color: #0A2A5E;
+  background: #2563EB;
+  color: #FFFFFF;
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 9px;
@@ -234,7 +234,7 @@
   letter-spacing: 0.5px;
   font-weight: 600;
 }
-.sb-listing-loc i { color: #F49B1C; font-size: 9px; }
+.sb-listing-loc i { color: #2563EB; font-size: 9px; }
 .sb-listing-title {
   font-family: 'League Spartan', sans-serif;
   font-size: 13px;
@@ -249,7 +249,7 @@
 }
 .sb-listing-price {
   font-family: 'League Spartan', sans-serif;
-  color: #F49B1C;
+  color: #2563EB;
   font-weight: 800;
   font-size: 13px;
 }
@@ -278,9 +278,9 @@
   gap: 10px;
   transition: color 0.2s;
 }
-.sb-posts a:hover { color: #F49B1C; }
+.sb-posts a:hover { color: #2563EB; }
 .sb-posts a i {
-  color: #F49B1C;
+  color: #2563EB;
   font-size: 10px;
   margin-top: 5px;
   flex-shrink: 0;
@@ -302,12 +302,12 @@
   text-decoration: none;
   transition: all 0.2s;
 }
-.sb-cats a:hover { background: #F49B1C; color: #0A2A5E; }
+.sb-cats a:hover { background: #2563EB; color: #FFFFFF; }
 
 /* CTA card */
 .sb-cta {
-  background: linear-gradient(135deg, #F49B1C 0%, #FFB547 100%);
-  color: #0A2A5E;
+  background: linear-gradient(135deg, #2563EB 0%, #60A5FA 100%);
+  color: #FFFFFF;
   padding: 24px 20px;
   border-radius: 14px;
   text-align: center;
@@ -316,12 +316,12 @@
   font-family: 'League Spartan', sans-serif;
   font-size: 18px;
   margin: 0 0 8px;
-  color: #0A2A5E;
+  color: #FFFFFF;
 }
 .sb-cta p {
   font-size: 13px;
   margin: 0 0 14px;
-  color: rgba(10,42,94,0.85);
+  color: #FFFFFF;
   line-height: 1.5;
 }
 .sb-cta a {
@@ -355,7 +355,7 @@
 }
 .blog-post-card:hover {
   transform: translateY(-4px);
-  border-color: #F49B1C;
+  border-color: #2563EB;
   box-shadow: 0 20px 40px rgba(10,42,94,0.12);
 }
 .blog-post-img {
@@ -368,8 +368,8 @@
 .blog-post-cat {
   position: absolute;
   top: 14px; left: 14px;
-  background: #F49B1C;
-  color: #0A2A5E;
+  background: #2563EB;
+  color: #FFFFFF;
   padding: 5px 12px;
   border-radius: 50px;
   font-size: 10px;
@@ -386,7 +386,7 @@
   margin-bottom: 12px;
   font-weight: 600;
 }
-.blog-post-meta i { color: #F49B1C; margin-right: 5px; }
+.blog-post-meta i { color: #2563EB; margin-right: 5px; }
 .blog-post-body h2 {
   font-family: 'League Spartan', sans-serif;
   font-size: 22px;
@@ -395,7 +395,7 @@
   line-height: 1.25;
 }
 .blog-post-body h2 a { color: inherit; text-decoration: none; }
-.blog-post-body h2 a:hover { color: #F49B1C; }
+.blog-post-body h2 a:hover { color: #2563EB; }
 .blog-post-body p {
   color: #4B5563;
   font-size: 14px;
@@ -404,7 +404,7 @@
   flex: 1;
 }
 .blog-post-more {
-  color: #F49B1C;
+  color: #2563EB;
   font-weight: 700;
   text-decoration: none;
   font-size: 13px;
@@ -436,11 +436,11 @@
   color: rgba(255,255,255,0.7);
 }
 .article-hero .breadcrumb-page a { color: rgba(255,255,255,0.7); text-decoration: none; }
-.article-hero .breadcrumb-page a:hover { color: #F49B1C; }
+.article-hero .breadcrumb-page a:hover { color: #60A5FA; }
 .article-hero .article-cat {
   display: inline-block;
-  background: #F49B1C;
-  color: #0A2A5E;
+  background: #2563EB;
+  color: #FFFFFF;
   padding: 6px 16px;
   border-radius: 50px;
   font-size: 11px;
@@ -464,7 +464,7 @@
   font-weight: 600;
   flex-wrap: wrap;
 }
-.article-hero-meta i { color: #F49B1C; margin-right: 6px; }
+.article-hero-meta i { color: #60A5FA; margin-right: 6px; }
 
 .article-body {
   background: #FFFFFF;
@@ -488,7 +488,7 @@
   font-weight: 500;
   padding: 18px 22px;
   background: #F9FAFB;
-  border-left: 4px solid #F49B1C;
+  border-left: 4px solid #2563EB;
   border-radius: 6px;
   margin-bottom: 30px;
 }
@@ -506,7 +506,7 @@
   bottom: 0; left: 0;
   width: 50px;
   height: 3px;
-  background: #F49B1C;
+  background: #2563EB;
   border-radius: 2px;
 }
 .article-body h3 {
@@ -533,7 +533,7 @@
 }
 .article-body blockquote {
   background: #F9FAFB;
-  border-left: 4px solid #F49B1C;
+  border-left: 4px solid #2563EB;
   padding: 18px 22px;
   margin: 24px 0;
   color: #4B5563;
@@ -541,8 +541,8 @@
   border-radius: 6px;
 }
 .article-body .info-box {
-  background: rgba(244,155,28,0.08);
-  border: 1px solid rgba(244,155,28,0.3);
+  background: rgba(37,99,235,0.08);
+  border: 1px solid rgba(37,99,235,0.3);
   padding: 20px 24px;
   border-radius: 10px;
   margin: 24px 0;
@@ -553,7 +553,7 @@
   margin: 0 0 10px;
   display: flex; align-items: center; gap: 8px;
 }
-.article-body .info-box h4 i { color: #F49B1C; }
+.article-body .info-box h4 i { color: #2563EB; }
 .article-body .info-box p:last-child { margin-bottom: 0; }
 
 .article-body .price-table {
@@ -609,7 +609,7 @@
   transition: transform 0.2s;
 }
 .article-cta-inline .cta-buttons a:hover { transform: translateY(-2px); }
-.article-cta-inline .cta-phone { background: #F49B1C; color: #0A2A5E; }
+.article-cta-inline .cta-phone { background: #2563EB; color: #FFFFFF; }
 .article-cta-inline .cta-wa { background: #25D366; color: #FFFFFF; }
 
 .article-footer-meta {
@@ -635,7 +635,7 @@
   transition: all 0.2s;
 }
 .article-footer-meta .share a:hover {
-  background: #F49B1C;
+  background: #2563EB;
   transform: translateY(-2px);
 }
 .article-tags {

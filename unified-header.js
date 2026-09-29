@@ -142,7 +142,7 @@
   // ============================================================
   // INJECTION: Replace existing header OR prepend to body
   // ============================================================
-  const HEADER_CSS_VERSION = '20260928-single';
+  const HEADER_CSS_VERSION = '20260929-blue';
 
   // Add a stylesheet once. toBodyEnd=true → appended at end of <body> so it
   // wins the cascade over page-specific header CSS. skipIfMatch → skip when
