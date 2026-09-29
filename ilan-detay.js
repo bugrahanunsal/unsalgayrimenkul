@@ -334,7 +334,7 @@
 
   const AGENTS = [
     { name: 'İsmail Ünsal', role: 'TURYAP Gayrimenkul Danışmanı', phone: '+905075188482', phoneLabel: '+90 507 518 84 82', img: '/ismail-unsal.jpg' },
-    { name: 'Ramazan Aydemir', role: 'TURYAP Gayrimenkul Danışmanı', phone: '+905325013275', phoneLabel: '+90 532 501 32 75', img: '/ramazan-aydemir.jpg' }
+    { name: 'Ramazan Aydemir', role: 'TURYAP Gayrimenkul Danışmanı', phone: '+905325013275', phoneLabel: '+90 532 501 32 75', img: '/foto-bekleniyor.svg' }
   ];
   function buildAgents(p) {
     const box = el('div', { class: 'ild-agents' }, [el('h3', { text: 'İlan Danışmanlarınız' })]);
