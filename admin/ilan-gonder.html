@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Müşteriye İlan Gönder - Admin Panel</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .ig-grid { display:grid; grid-template-columns: minmax(0,420px) minmax(0,1fr); gap:20px; align-items:start; }
+    @media (max-width: 1100px) { .ig-grid { grid-template-columns: 1fr; } }
+    .ig-step { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .ig-step b { width:26px; height:26px; border-radius:50%; background:#0A2A5E; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+    .ig-step span { font-weight:700; color:#0A2A5E; font-size:15px; }
+    .chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .chip { position:relative; }
+    .chip input { position:absolute; opacity:0; pointer-events:none; }
+    .chip span { display:inline-block; padding:7px 12px; border:1.5px solid #E2E8F0; border-radius:999px; font-size:13px; font-weight:600; color:#334155; cursor:pointer; user-select:none; background:#fff; transition:.15s; }
+    .chip input:checked + span { background:#2563EB; border-color:#2563EB; color:#fff; }
+    .chip input:focus-visible + span { outline:2px solid #93C5FD; outline-offset:2px; }
+    .seg { display:inline-flex; border:1.5px solid #E2E8F0; border-radius:10px; overflow:hidden; }
+    .seg label { position:relative; }
+    .seg input { position:absolute; opacity:0; pointer-events:none; }
+    .seg span { display:block; padding:8px 14px; font-size:13px; font-weight:600; color:#334155; cursor:pointer; border-right:1px solid #E2E8F0; }
+    .seg label:last-child span { border-right:0; }
+    .seg input:checked + span { background:#0A2A5E; color:#fff; }
+    .range { display:flex; gap:8px; align-items:center; }
+    .range .form-input { min-width:0; }
+    .ig-sub { font-size:12px; color:#64748B; margin-top:4px; }
+    .ig-results-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+    .ig-count { font-size:14px; color:#334155; }
+    .ig-count strong { color:#0A2A5E; font-size:18px; }
+    .ig-list { display:flex; flex-direction:column; gap:10px; max-height:620px; overflow:auto; padding-right:4px; }
+    .ig-item { display:grid; grid-template-columns: 22px 88px minmax(0,1fr) auto; gap:12px; align-items:center; border:1.5px solid #E2E8F0; border-radius:12px; padding:10px; cursor:pointer; background:#fff; }
+    .ig-item.on { border-color:#2563EB; background:#F8FBFF; }
+    .ig-item img, .ig-item .noimg { width:88px; height:64px; object-fit:cover; border-radius:8px; background:#E2E8F0; display:block; }
+    .ig-item input { width:18px; height:18px; accent-color:#2563EB; }
+    .ig-t { font-weight:700; color:#0A2A5E; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ig-m { font-size:12px; color:#64748B; margin-top:2px; }
+    .ig-f { font-size:12px; color:#334155; margin-top:4px; }
+    .ig-p { font-weight:800; color:#0A2A5E; font-size:14px; white-space:nowrap; }
+    .ig-empty { text-align:center; color:#64748B; padding:40px 10px; border:1.5px dashed #CBD5E1; border-radius:12px; }
+    .ig-actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; margin-top:16px; }
+    .ig-note { background:#EFF6FF; border:1px solid #BFDBFE; color:#1E3A8A; border-radius:10px; padding:10px 14px; font-size:13px; line-height:1.5; }
+    .ig-warn { background:#FEF2F2; border:1px solid #FECACA; color:#991B1B; border-radius:10px; padding:10px 14px; font-size:13px; line-height:1.5; margin-top:12px; display:none; }
+    .ig-modal { position:fixed; inset:0; background:rgba(15,23,42,.6); display:none; align-items:center; justify-content:center; z-index:1000; padding:20px; }
+    .ig-modal-box { background:#fff; border-radius:14px; width:100%; max-width:680px; max-height:92vh; display:flex; flex-direction:column; overflow:hidden; }
+    .ig-modal-head { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid #E2E8F0; font-weight:700; color:#0A2A5E; }
+    .ig-modal iframe { width:100%; flex:1; min-height:70vh; border:0; }
+    .form-group { margin-bottom:14px; }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">🎯 Müşteriye İlan Gönder</h1>
+        <div class="topbar-actions"><div class="user-menu" id="userMenu"></div></div>
+      </header>
+
+      <div class="page-content">
+        <div class="ig-note" style="margin-bottom:18px;">
+          Müşterinin istediği kriterleri seçin — sadece <b>uyan ilanlar</b> listelenir. İstemediğiniz ilanın işaretini kaldırın ve müşteriye tek bir şık e-posta olarak gönderin. Tüm Yalova ilanları gitmez.
+        </div>
+
+        <div class="ig-grid">
+          <!-- SOL: müşteri + kriterler -->
+          <div>
+            <div class="card" style="margin-bottom:20px;">
+              <div class="ig-step"><b>1</b><span>Müşteri</span></div>
+              <div class="form-group">
+                <label class="form-label" for="pickCustomer">Kayıtlı müşteriden seç</label>
+                <select id="pickCustomer" class="form-select"><option value="">— Seçin veya aşağıya yazın —</option></select>
+                <div class="ig-sub">Mesajlar ve abonelerden e-postası olanlar listelenir.</div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label" for="toName">Ad Soyad</label><input id="toName" class="form-input" maxlength="60" placeholder="Örn: Ahmet Yılmaz"></div>
+                <div class="form-group"><label class="form-label" for="toEmail">E-posta *</label><input id="toEmail" type="email" class="form-input" maxlength="254" placeholder="musteri@gmail.com" autocomplete="off"></div>
+              </div>
+            </div>
+
+            <div class="card" id="criteria">
+              <div class="ig-step"><b>2</b><span>Müşterinin istediği kriterler</span></div>
+
+              <div class="form-group">
+                <label class="form-label">İşlem</label>
+                <div class="seg" id="fTip">
+                  <label><input type="radio" name="tip" value="" checked><span>Farketmez</span></label>
+                  <label><input type="radio" name="tip" value="satilik"><span>Satılık</span></label>
+                  <label><input type="radio" name="tip" value="kiralik"><span>Kiralık</span></label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Emlak türü</label>
+                <div class="chips" id="fKategori"></div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Bölge (ilçe)</label>
+                <div class="chips" id="fIlce"></div>
+                <div class="ig-sub">Hiçbiri seçilmezse tüm ilçeler.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="fMahalle">Mahalle / semt (isteğe bağlı)</label>
+                <input id="fMahalle" class="form-input" maxlength="60" placeholder="Örn: Koruköy, Esenköy (virgülle birden fazla)">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Oda sayısı</label>
+                <div class="chips" id="fOda"></div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="fBanyo">En az banyo</label>
+                  <select id="fBanyo" class="form-select"><option value="">Farketmez</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option></select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="fBahce">Bahçe</label>
+                  <select id="fBahce" class="form-select"><option value="">Farketmez</option><option value="evet">Bahçeli olsun</option><option value="hayir">Bahçesiz</option></select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="fKatTip">Kat</label>
+                  <select id="fKatTip" class="form-select">
+                    <option value="">Farketmez</option>
+                    <option value="zemin">Zemin / bahçe katı</option>
+                    <option value="zemin_degil">Zemin kat olmasın</option>
+                    <option value="aralik">Belirli kat aralığı</option>
+                  </select>
+                </div>
+                <div class="form-group" id="katAralik" style="display:none;">
+                  <label class="form-label">Kat aralığı</label>
+                  <div class="range"><input id="fKatMin" type="number" class="form-input" placeholder="min" min="-3" max="60"><span>–</span><input id="fKatMax" type="number" class="form-input" placeholder="max" min="-3" max="60"></div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Fiyat (₺)</label>
+                <div class="range"><input id="fFiyatMin" type="number" class="form-input" placeholder="En az" min="0"><span>–</span><input id="fFiyatMax" type="number" class="form-input" placeholder="En çok" min="0"></div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Metrekare (m²)</label>
+                <div class="range"><input id="fM2Min" type="number" class="form-input" placeholder="En az" min="0"><span>–</span><input id="fM2Max" type="number" class="form-input" placeholder="En çok" min="0"></div>
+              </div>
+
+              <div class="form-group" style="margin-bottom:6px;">
+                <label class="form-label">Mutlaka olsun</label>
+                <div class="chips" id="fOzellik"></div>
+              </div>
+
+              <div class="ig-actions" style="justify-content:flex-start;">
+                <button type="button" class="btn btn-outline btn-sm" id="resetBtn">Kriterleri temizle</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SAĞ: sonuçlar + mesaj -->
+          <div>
+            <div class="card" style="margin-bottom:20px;">
+              <div class="ig-step"><b>3</b><span>Uyan ilanlar</span></div>
+              <div class="ig-results-head">
+                <div class="ig-count"><strong id="matchCount">0</strong> ilan uyuyor · <b id="selCount">0</b> seçili</div>
+                <div style="display:flex;gap:8px;">
+                  <button type="button" class="btn btn-outline btn-sm" id="selAll">Tümünü seç</button>
+                  <button type="button" class="btn btn-outline btn-sm" id="selNone">Seçimi kaldır</button>
+                </div>
+              </div>
+              <div class="ig-list" id="results"><div class="loading">Yükleniyor...</div></div>
+            </div>
+
+            <div class="card">
+              <div class="ig-step"><b>4</b><span>Mesaj ve gönderim</span></div>
+              <div class="form-group">
+                <label class="form-label" for="subject">E-posta konusu (isteğe bağlı)</label>
+                <input id="subject" class="form-input" maxlength="150" placeholder="Boş bırakırsanız otomatik: Size özel 3 ilan — TURYAP İsmail Ünsal">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="message">Kişisel not (isteğe bağlı)</label>
+                <textarea id="message" class="form-textarea" rows="4" maxlength="1000" placeholder="Örn: Konuştuğumuz gibi Çınarcık'taki arsaları sizin için derledim. Görmek isterseniz haftasonu gezebiliriz."></textarea>
+              </div>
+              <div class="ig-warn" id="warn"></div>
+              <div class="ig-actions">
+                <button type="button" class="btn btn-outline" id="previewBtn">👁️ Önizle</button>
+                <button type="button" class="btn btn-primary" id="sendBtn">📨 Müşteriye Gönder</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="ig-modal" id="previewModal" role="dialog" aria-modal="true" aria-label="E-posta önizleme">
+    <div class="ig-modal-box">
+      <div class="ig-modal-head"><span id="previewSubject">Önizleme</span><button type="button" class="btn btn-outline btn-sm" id="closePreview">Kapat</button></div>
+      <iframe id="previewFrame" sandbox="" title="E-posta önizleme"></iframe>
+    </div>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js?v=20260929-admin"></script>
+  <script src="/admin/assets/security.js?v=20260929-admin"></script>
+  <script src="/admin/assets/auth.js?v=20260929-admin"></script>
+  <script src="/admin/assets/app.js?v=20260929-admin"></script>
+  <script src="/admin/assets/ilan-gonder.js?v=20260929-match"></script>
+</body>
+</html>

@@ -62,12 +62,7 @@
               <input type="text" name="baslik_tr" class="form-input" required maxlength="200">
             </div>
 
-            <div class="form-row">
-              <div class="form-group"><label class="form-label">TR EN</label><input type="text" name="baslik_en" class="form-input" maxlength="200"></div>
-              <div class="form-group"><label class="form-label">DE</label><input type="text" name="baslik_de" class="form-input" maxlength="200"></div>
-              <div class="form-group"><label class="form-label">FR</label><input type="text" name="baslik_fr" class="form-input" maxlength="200"></div>
-              <div class="form-group"><label class="form-label">RU</label><input type="text" name="baslik_ru" class="form-input" maxlength="200"></div>
-            </div>
+            <div class="form-hint" style="background:#EFF6FF;border:1px solid #BFDBFE;color:#1E3A8A;border-radius:8px;padding:10px 14px;font-size:13px;margin:-4px 0 16px;">🌐 Sadece Türkçe yazmanız yeterli — başlık ve açıklama sitede İngilizce, Almanca, Fransızca, Rusça ve Arapçaya otomatik çevrilir.</div>
 
             <div class="form-group">
               <label class="form-label">Açıklama (TR) *</label>
@@ -231,10 +226,10 @@
     </main>
   </div>
 
-  <script src="/admin/assets/supabase-config.js"></script>
-  <script src="/admin/assets/security.js"></script>
-  <script src="/admin/assets/auth.js"></script>
-  <script src="/admin/assets/app.js"></script>
+  <script src="/admin/assets/supabase-config.js?v=20260929-admin"></script>
+  <script src="/admin/assets/security.js?v=20260929-admin"></script>
+  <script src="/admin/assets/auth.js?v=20260929-admin"></script>
+  <script src="/admin/assets/app.js?v=20260929-admin"></script>
 
   <script>
     let property = null;
@@ -415,10 +410,10 @@
 
           const data = {
             baslik_tr: Security.sanitizeInput(fd.get('baslik_tr'), { maxLength: 200 }),
-            baslik_en: fd.get('baslik_en') || null,
-            baslik_de: fd.get('baslik_de') || null,
-            baslik_fr: fd.get('baslik_fr') || null,
-            baslik_ru: fd.get('baslik_ru') || null,
+            baslik_en: null,   // eski manuel çeviriler temizlenir — site otomatik çevirir
+            baslik_de: null,   // eski manuel çeviriler temizlenir — site otomatik çevirir
+            baslik_fr: null,   // eski manuel çeviriler temizlenir — site otomatik çevirir
+            baslik_ru: null,   // eski manuel çeviriler temizlenir — site otomatik çevirir
             aciklama_tr: Security.sanitizeInput(fd.get('aciklama_tr'), { maxLength: 5000 }),
             tip: fd.get('tip'),
             kategori: fd.get('kategori'),

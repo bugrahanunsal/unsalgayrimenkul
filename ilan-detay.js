@@ -63,8 +63,8 @@
   }
 
   function title(p) {
-    const lang = (window.IUFrontend ? window.IUFrontend.langPrefix() : '').replace('/', '');
-    return (lang && p['baslik_' + lang]) || p.baslik_tr || 'İlan';
+    // Tek kaynak Türkçe başlık; diğer diller translator.js ile otomatik çevrilir
+    return p.baslik_tr || 'İlan';
   }
 
   function fmtDate(d) {

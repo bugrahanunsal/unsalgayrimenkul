@@ -193,6 +193,8 @@ const Security = {
       const idleTimeout = 30 * 60 * 1000; // 30 dakika
 
       if (lastActivity && (now - lastActivity) > idleTimeout) {
+        // Sayaç da temizlenir; yoksa bir sonraki girişte tekrar düşürür (giriş döngüsü)
+        localStorage.removeItem('lastActivity');
         await supabaseClient.auth.signOut();
         return { valid: false, reason: 'Uzun süre işlem yapılmadı' };
       }

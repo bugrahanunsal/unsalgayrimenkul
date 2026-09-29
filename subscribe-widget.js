@@ -1201,15 +1201,23 @@
       // Admin mi kontrol et
       const { data: adminData } = await sb.from('admin_users').select('role').eq('id', data.user.id).maybeSingle();
 
-      // URL'den redirect parametresini al
+      // URL'den redirect parametresini al — GÜVENLİK: yalnızca site-içi yol
+      // (açık yönlendirme / javascript: saldırılarına karşı)
       const urlParams = new URLSearchParams(window.location.search);
-      const redirectTo = urlParams.get('redirect');
+      const rawRedirect = urlParams.get('redirect') || '';
+      const redirectTo = /^\/(?!\/)[A-Za-z0-9\-._~\/?=&%#]*$/.test(rawRedirect) && !/^\/\\/.test(rawRedirect) ? rawRedirect : '';
+
+      // Yeni oturum: admin panelinin 30 dk hareketsizlik sayacını sıfırla.
+      // (Eski zaman damgası kalınca panel yeni girişi anında düşürüp
+      // kullanıcıyı giriş döngüsüne sokuyordu.)
+      try { localStorage.setItem('lastActivity', Date.now().toString()); } catch (_) {}
 
       if (adminData) {
         showMsg('iu-login-msg', '✅ Admin girişi başarılı! Admin panele yönlendiriliyorsunuz...', 'success');
+        const adminTarget = redirectTo.startsWith('/admin/') ? redirectTo : '/admin/index.html';
         setTimeout(() => {
-          window.location.href = redirectTo || '/admin/index.html';
-        }, 800);
+          window.location.href = adminTarget;
+        }, 400);
       } else {
         showMsg('iu-login-msg', '✅ Hoş geldiniz! Yönlendiriliyorsunuz...', 'success');
         setTimeout(() => {

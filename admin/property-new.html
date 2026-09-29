@@ -109,27 +109,7 @@
               <input type="text" name="baslik_tr" class="form-input" required maxlength="200" placeholder="Örn: Akköy'de Deniz Manzaralı 435m² Arsa">
             </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Başlık (İngilizce)</label>
-                <input type="text" name="baslik_en" class="form-input" maxlength="200">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Başlık (Almanca)</label>
-                <input type="text" name="baslik_de" class="form-input" maxlength="200">
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Başlık (Fransızca)</label>
-                <input type="text" name="baslik_fr" class="form-input" maxlength="200">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Başlık (Rusça)</label>
-                <input type="text" name="baslik_ru" class="form-input" maxlength="200">
-              </div>
-            </div>
+            <div class="form-hint" style="background:#EFF6FF;border:1px solid #BFDBFE;color:#1E3A8A;border-radius:8px;padding:10px 14px;font-size:13px;margin:-4px 0 16px;">🌐 Sadece Türkçe yazmanız yeterli — başlık ve açıklama sitede İngilizce, Almanca, Fransızca, Rusça ve Arapçaya otomatik çevrilir.</div>
 
             <div class="form-group">
               <label class="form-label">Açıklama (Türkçe) <span class="required">*</span></label>
@@ -332,6 +312,13 @@
                   <input type="checkbox" name="one_cikan"> Bu ilanı ana sayfada öne çıkar
                 </label>
               </div>
+
+              <div class="form-group">
+                <label class="form-label">Abonelere Duyur</label>
+                <label class="form-checkbox" style="margin-top: 12px;">
+                  <input type="checkbox" name="abonelere_duyur" checked> Kaydedince, ilgi alanı uyan abonelere e-posta ile gönder (onay sorulur)
+                </label>
+              </div>
             </div>
 
             <div class="form-group">
@@ -354,10 +341,10 @@
     </main>
   </div>
 
-  <script src="/admin/assets/supabase-config.js"></script>
-  <script src="/admin/assets/security.js"></script>
-  <script src="/admin/assets/auth.js"></script>
-  <script src="/admin/assets/app.js"></script>
+  <script src="/admin/assets/supabase-config.js?v=20260929-admin"></script>
+  <script src="/admin/assets/security.js?v=20260929-admin"></script>
+  <script src="/admin/assets/auth.js?v=20260929-admin"></script>
+  <script src="/admin/assets/app.js?v=20260929-admin"></script>
 
   <script>
     let uploadedPhotos = []; // {file, url, name}
@@ -476,10 +463,6 @@
           // İlan verisi
           const propertyData = {
             baslik_tr: Security.sanitizeInput(fd.get('baslik_tr'), { maxLength: 200 }),
-            baslik_en: Security.sanitizeInput(fd.get('baslik_en'), { maxLength: 200 }) || null,
-            baslik_de: Security.sanitizeInput(fd.get('baslik_de'), { maxLength: 200 }) || null,
-            baslik_fr: Security.sanitizeInput(fd.get('baslik_fr'), { maxLength: 200 }) || null,
-            baslik_ru: Security.sanitizeInput(fd.get('baslik_ru'), { maxLength: 200 }) || null,
             aciklama_tr: Security.sanitizeInput(fd.get('aciklama_tr'), { maxLength: 5000 }),
             tip: fd.get('tip'),
             kategori: fd.get('kategori'),
@@ -555,6 +538,12 @@
           }
 
           App.toast('İlan başarıyla kaydedildi!', 'success', 'Başarılı');
+
+          // 📣 Abonelere duyuru (sadece aktif ilan + ilgi alanı uyan abonelere)
+          if (fd.get('abonelere_duyur') === 'on' && propertyData.durum === 'aktif') {
+            btnText.textContent = 'Abonelere duyuruluyor...';
+            await App.announceProperty(newProperty.id);
+          }
 
           setTimeout(() => {
             window.location.href = '/admin/properties.html';
