@@ -40,7 +40,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20260929-faqbadge';
+  const SITE_VERSION = '20260929-logo';
 
   async function loadAllScripts() {
     try {
@@ -117,16 +117,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Eski logoda "GAYRİMENKUL" veya küçük text yoksa (=TURYAP versiyonuysa) dokunma
   const svgHtml = oldLogo.outerHTML;
-  if (svgHtml.includes('TURYAP') && svgHtml.includes('İSMAİL ÜNSAL')) return;
+  if (svgHtml.includes('TURYAP') && svgHtml.includes('ÜNSAL')) return;
 
   // Yeni logoyla değiştir
   const newLogoSvg = `
-    <svg class="logo-svg" viewBox="0 0 340 80" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:16px">
+    <svg class="logo-svg" viewBox="-38 0 340 80" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TURYAP İsmail Ünsal Real Estate" style="margin-bottom:16px">
       <rect x="0" y="10" width="80" height="60" rx="4" fill="#FFFFFF"/>
       <text x="40" y="46" font-family="League Spartan, Montserrat, sans-serif" font-size="18" font-weight="800" fill="#0A2A5E" text-anchor="middle" letter-spacing="2">TURYAP</text>
-      <line x1="92" y1="20" x2="92" y2="60" stroke="#F49B1C" stroke-width="2"/>
-      <text x="100" y="42" font-family="League Spartan, Montserrat, sans-serif" font-size="20" font-weight="800" fill="#FFFFFF" letter-spacing="2">İSMAİL ÜNSAL</text>
-      <text x="100" y="60" font-family="Poppins, DM Sans, sans-serif" font-size="9" font-weight="600" fill="#F49B1C" letter-spacing="3">REAL ESTATE</text>
+      <line x1="93" y1="18" x2="93" y2="62" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1.5"/>
+      <text x="106" y="41" font-family="Poppins, DM Sans, sans-serif" font-size="21" font-weight="800" letter-spacing="1.2"><tspan fill="#FFFFFF">İSMAİL </tspan><tspan fill="#60A5FA">ÜNSAL</tspan></text>
+      <text x="107" y="60" font-family="Poppins, DM Sans, sans-serif" font-size="8.5" font-weight="600" fill="#FFFFFF" fill-opacity="0.6" letter-spacing="3.6">REAL ESTATE</text>
     </svg>
   `;
   oldLogo.outerHTML = newLogoSvg;

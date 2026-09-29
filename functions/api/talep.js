@@ -152,7 +152,7 @@ export function renderEmail(d, prop, now = new Date()) {
     const loc = [prop.mahalle, prop.ilce, 'Yalova'].filter(Boolean).join(', ');
     const facts = [prop.m2 ? prop.m2 + ' m²' : '', prop.oda_sayisi || ''].filter(Boolean).join(' • ');
     ilanHtml = `
-      <tr><td style="padding:8px 28px 4px"><div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:#F49B1C;font-family:Arial,Helvetica,sans-serif">İLGİLENİLEN İLAN</div></td></tr>
+      <tr><td style="padding:8px 28px 4px"><div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:#2563EB;font-family:Arial,Helvetica,sans-serif">İLGİLENİLEN İLAN</div></td></tr>
       <tr><td style="padding:8px 28px 20px">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;border-collapse:separate">
           ${img ? `<tr><td><a href="${esc(listingUrl(prop))}"><img src="${esc(img)}" width="544" alt="${esc(title)}" style="display:block;width:100%;max-width:544px;height:auto;border:0"></a></td></tr>` : ''}
@@ -160,7 +160,7 @@ export function renderEmail(d, prop, now = new Date()) {
             <div style="font-size:17px;font-weight:800;color:#0A2A5E;margin-bottom:4px">${esc(title)}</div>
             <div style="font-size:13px;color:#6B7280;margin-bottom:10px">📍 ${esc(loc)}${facts ? ' &nbsp;•&nbsp; ' + esc(facts) : ''}</div>
             <div style="font-size:22px;font-weight:800;color:#0A2A5E;margin-bottom:12px">${esc(fmtPrice(prop.fiyat, prop.para_birimi))}</div>
-            <a href="${esc(listingUrl(prop))}" style="display:inline-block;color:#0A2A5E;background:#FFF4E2;border:1px solid #F49B1C;text-decoration:none;font-weight:700;font-size:13px;padding:9px 14px;border-radius:8px">İlanı sitede aç →</a>
+            <a href="${esc(listingUrl(prop))}" style="display:inline-block;color:#0A2A5E;background:#EFF6FF;border:1px solid #2563EB;text-decoration:none;font-weight:700;font-size:13px;padding:9px 14px;border-radius:8px">İlanı sitede aç →</a>
           </td></tr>
         </table>
       </td></tr>`;
@@ -173,13 +173,18 @@ export function renderEmail(d, prop, now = new Date()) {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EEF1F5;padding:24px 8px">
 <tr><td align="center">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#FFFFFF;border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(10,42,94,0.08)">
-  <tr><td style="background:#0A2A5E;padding:22px 28px;border-bottom:4px solid #F49B1C">
+  <tr><td style="background:#0A2A5E;padding:20px 20px;border-bottom:4px solid #2563EB">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
       <td style="font-family:Arial,Helvetica,sans-serif">
-        <span style="display:inline-block;background:#FFFFFF;color:#0A2A5E;font-weight:900;font-size:13px;letter-spacing:2px;padding:7px 9px;border-radius:4px;vertical-align:middle">TURYAP</span>
-        <span style="display:inline-block;color:#FFFFFF;font-weight:800;font-size:15px;letter-spacing:2px;vertical-align:middle;margin-left:10px;border-left:2px solid #F49B1C;padding-left:10px">İSMAİL ÜNSAL<br><span style="font-size:9px;color:#F49B1C;letter-spacing:3px;font-weight:700">REAL ESTATE</span></span>
+        <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+          <td style="vertical-align:middle"><span style="display:inline-block;background:#FFFFFF;color:#0A2A5E;font-weight:900;font-size:12px;letter-spacing:2px;padding:7px 8px;border-radius:4px;white-space:nowrap">TURYAP</span></td>
+          <td style="vertical-align:middle;padding-left:11px"><div style="border-left:1px solid rgba(255,255,255,0.3);padding-left:11px;white-space:nowrap">
+            <div style="color:#FFFFFF;font-weight:800;font-size:15px;letter-spacing:1px;line-height:1.2">İSMAİL <span style="color:#60A5FA">ÜNSAL</span></div>
+            <div style="font-size:8.5px;color:rgba(255,255,255,0.6);letter-spacing:3px;font-weight:600;line-height:1.6">REAL ESTATE</div>
+          </div></td>
+        </tr></table>
       </td>
-      <td align="right" style="font-family:Arial,Helvetica,sans-serif"><span style="display:inline-block;background:#F49B1C;color:#0A2A5E;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:6px 10px;border-radius:20px">${etiket}</span></td>
+      <td align="right" style="font-family:Arial,Helvetica,sans-serif"><span style="display:inline-block;white-space:nowrap;background:#2563EB;color:#FFFFFF;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:6px 10px;border-radius:20px">${etiket}</span></td>
     </tr></table>
   </td></tr>
   <tr><td style="padding:26px 28px 6px;font-family:Arial,Helvetica,sans-serif">
@@ -199,8 +204,8 @@ export function renderEmail(d, prop, now = new Date()) {
     </table>
   </td></tr>
   ${d.mesaj ? `<tr><td style="padding:14px 28px 18px;font-family:Arial,Helvetica,sans-serif">
-    <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:#F49B1C;margin-bottom:8px">MESAJ</div>
-    <div style="background:#F5F7FA;border-left:4px solid #F49B1C;border-radius:8px;padding:14px 16px;font-size:15px;line-height:1.6;color:#1F2937;white-space:pre-wrap">${esc(d.mesaj)}</div>
+    <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:#2563EB;margin-bottom:8px">MESAJ</div>
+    <div style="background:#F5F7FA;border-left:4px solid #2563EB;border-radius:8px;padding:14px 16px;font-size:15px;line-height:1.6;color:#1F2937;white-space:pre-wrap">${esc(d.mesaj)}</div>
   </td></tr>` : ''}
   ${ilanHtml}
   <tr><td style="padding:6px 28px 24px;font-family:Arial,Helvetica,sans-serif">

@@ -117,12 +117,12 @@
 <header class="header">
   <div class="header-inner">
     <a href="${langPrefix || ''}/" class="logo" aria-label="Ana Sayfa">
-      <svg class="logo-svg" viewBox="0 0 340 80" xmlns="http://www.w3.org/2000/svg">
+      <svg class="logo-svg" viewBox="0 0 340 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TURYAP İsmail Ünsal Real Estate">
         <rect x="0" y="10" width="80" height="60" rx="4" fill="#0A2A5E"/>
         <text x="40" y="46" font-family="League Spartan, Montserrat, sans-serif" font-size="18" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">TURYAP</text>
-        <line x1="92" y1="20" x2="92" y2="60" stroke="#0A2A5E" stroke-width="2"/>
-        <text x="100" y="42" font-family="League Spartan, Montserrat, sans-serif" font-size="20" font-weight="800" fill="#0A2A5E" letter-spacing="2">İSMAİL ÜNSAL</text>
-        <text x="100" y="60" font-family="Poppins, DM Sans, sans-serif" font-size="9" font-weight="600" fill="#555555" letter-spacing="3">REAL ESTATE</text>
+        <line x1="93" y1="18" x2="93" y2="62" stroke="#0A2A5E" stroke-opacity="0.25" stroke-width="1.5"/>
+        <text x="106" y="41" font-family="Poppins, DM Sans, sans-serif" font-size="21" font-weight="800" letter-spacing="1.2"><tspan fill="#0A2A5E">İSMAİL </tspan><tspan fill="#2563EB">ÜNSAL</tspan></text>
+        <text x="107" y="60" font-family="Poppins, DM Sans, sans-serif" font-size="8.5" font-weight="600" fill="#6B7280" letter-spacing="3.6">REAL ESTATE</text>
       </svg>
     </a>
     <nav class="nav" id="mainNav">
