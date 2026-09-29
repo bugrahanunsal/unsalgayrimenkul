@@ -353,9 +353,10 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
     /* Original TURYAP yatay logo — viewBox 340x80 (4.25:1)
        viewBox="-30 0 340 80" trick ile content SVG merkezine gelir */
     height: auto !important;
-    width: 100% !important;
+    max-height: none !important;          /* genel .logo-svg 48px sınırı footer'da logoyu küçültüyordu */
+    width: min(340px, 88vw) !important;
     max-width: 400px !important;
-    min-width: 280px !important;
+    min-width: 0 !important;
     margin: 0 auto !important;
     align-self: center !important;
   }
