@@ -41,6 +41,264 @@
 (function() {
   'use strict';
 
+  // ==================== DİL (i18n) ====================
+  // Giriş/üye ol butonları, pencere ve mesajlar sayfanın diline göre yazılır
+  // (otomatik çeviri servisine bağımlı değil). Anahtar = Türkçe metin.
+  const IU_LANG = ((location.pathname.toLowerCase().match(/^\/(en|fr|de|ru|ar)(\/|$)/) || [])[1]) || 'tr';
+  const IU_I18N = {
+    "en": {
+      "Giriş": "Sign In",
+      "Üye Ol": "Sign Up",
+      "Hesabım": "My Account",
+      "Admin Panel": "Admin Panel",
+      "Admin Panele Git": "Go to Admin Panel",
+      "Çıkış Yap": "Sign Out",
+      "Kapat": "Close",
+      "Şifreyi göster/gizle": "Show/hide password",
+      "Gayrimenkul": "Real Estate",
+      "Bülten": "Newsletter",
+      "🏠 Hesap açarak favori ilanlarınızı kaydedin, kişiselleştirilmiş bildirimlere abone olun.": "🏠 Create an account to save your favourite listings and get personalised alerts.",
+      "Ad Soyad": "Full Name",
+      "Email": "Email",
+      "Telefon (opsiyonel)": "Phone (optional)",
+      "Şifre": "Password",
+      "(En az 8 karakter)": "(At least 8 characters)",
+      "Email Dili": "Email language",
+      "🎉 Hesap Oluştur": "🎉 Create Account",
+      "👋 Hoş geldiniz! Hesabınıza giriş yapın.": "👋 Welcome! Sign in to your account.",
+      "Şifremi Unuttum": "Forgot password?",
+      "🔐 Giriş Yap": "🔐 Sign In",
+      "Hesabınız yok mu?": "Don't have an account?",
+      "📬 Hesap açmadan hızlı bülten kaydı. Yeni ilanlardan haberdar olun.": "📬 Quick newsletter sign-up, no account needed. Be the first to hear about new listings.",
+      "İlgi Alanlarınız": "Your interests",
+      "Arsa": "Land",
+      "Daire": "Apartment",
+      "Villa": "Villa",
+      "İşyeri": "Commercial",
+      "📬 Bültene Kayıt Ol": "📬 Subscribe",
+      "Geçerli bir email girin.": "Please enter a valid email.",
+      "Çok fazla deneme. 1 saat sonra deneyin.": "Too many attempts. Please try again in 1 hour.",
+      "Çok fazla deneme. 1 saat sonra tekrar deneyin.": "Too many attempts. Please try again in 1 hour.",
+      "Çok fazla deneme. 1 dakika bekleyin.": "Too many attempts. Please wait 1 minute.",
+      "✅ Hoş geldiniz! Yönlendiriliyorsunuz...": "✅ Welcome! Redirecting...",
+      "✅ Admin girişi başarılı! Admin panele yönlendiriliyorsunuz...": "✅ Admin sign-in successful! Redirecting to the admin panel...",
+      "Şifre en az 8 karakter olmalı.": "Password must be at least 8 characters.",
+      "Bu email zaten kayıtlı. Giriş yapmayı deneyin.": "This email is already registered. Try signing in.",
+      "Bu email zaten kayıtlı.": "This email is already registered.",
+      "Geçerli bir telefon numarası girin.": "Please enter a valid phone number.",
+      "Ad soyad giriniz.": "Please enter your full name.",
+      "✅ Kayıt başarılı! Email adresinize doğrulama linki gönderdik.": "✅ Done! We've sent a verification link to your email.",
+      "Hata: ": "Error: ",
+      "Kayıt hatası: ": "Sign-up error: ",
+      "Beklenmeyen hata: ": "Unexpected error: ",
+      "KVKK_SIGNUP": "By signing up, you confirm that you have read the <a href=\"/kvkk\" target=\"_blank\">Privacy Notice (KVKK)</a> and accept the <a href=\"/kullanim-kosullari\" target=\"_blank\">Terms of Use</a>.",
+      "KVKK_SUB": "I accept the <a href=\"/kvkk\" target=\"_blank\">Privacy Notice (KVKK)</a>."
+    },
+    "fr": {
+      "Giriş": "Connexion",
+      "Üye Ol": "S'inscrire",
+      "Hesabım": "Mon compte",
+      "Admin Panel": "Admin",
+      "Admin Panele Git": "Aller à l'admin",
+      "Çıkış Yap": "Déconnexion",
+      "Kapat": "Fermer",
+      "Şifreyi göster/gizle": "Afficher/masquer le mot de passe",
+      "Gayrimenkul": "Immobilier",
+      "Bülten": "Newsletter",
+      "🏠 Hesap açarak favori ilanlarınızı kaydedin, kişiselleştirilmiş bildirimlere abone olun.": "🏠 Créez un compte pour enregistrer vos annonces favorites et recevoir des alertes personnalisées.",
+      "Ad Soyad": "Nom complet",
+      "Email": "E-mail",
+      "Telefon (opsiyonel)": "Téléphone (facultatif)",
+      "Şifre": "Mot de passe",
+      "(En az 8 karakter)": "(8 caractères minimum)",
+      "Email Dili": "Langue des e-mails",
+      "🎉 Hesap Oluştur": "🎉 Créer un compte",
+      "👋 Hoş geldiniz! Hesabınıza giriş yapın.": "👋 Bienvenue ! Connectez-vous à votre compte.",
+      "Şifremi Unuttum": "Mot de passe oublié ?",
+      "🔐 Giriş Yap": "🔐 Se connecter",
+      "Hesabınız yok mu?": "Pas encore de compte ?",
+      "📬 Hesap açmadan hızlı bülten kaydı. Yeni ilanlardan haberdar olun.": "📬 Inscription rapide à la newsletter, sans compte. Soyez informé des nouvelles annonces.",
+      "İlgi Alanlarınız": "Vos centres d'intérêt",
+      "Arsa": "Terrain",
+      "Daire": "Appartement",
+      "Villa": "Villa",
+      "İşyeri": "Local commercial",
+      "📬 Bültene Kayıt Ol": "📬 S'abonner",
+      "Geçerli bir email girin.": "Veuillez saisir un e-mail valide.",
+      "Çok fazla deneme. 1 saat sonra deneyin.": "Trop de tentatives. Réessayez dans 1 heure.",
+      "Çok fazla deneme. 1 saat sonra tekrar deneyin.": "Trop de tentatives. Réessayez dans 1 heure.",
+      "Çok fazla deneme. 1 dakika bekleyin.": "Trop de tentatives. Patientez 1 minute.",
+      "✅ Hoş geldiniz! Yönlendiriliyorsunuz...": "✅ Bienvenue ! Redirection...",
+      "✅ Admin girişi başarılı! Admin panele yönlendiriliyorsunuz...": "✅ Connexion admin réussie ! Redirection vers l'admin...",
+      "Şifre en az 8 karakter olmalı.": "Le mot de passe doit contenir au moins 8 caractères.",
+      "Bu email zaten kayıtlı. Giriş yapmayı deneyin.": "Cet e-mail est déjà inscrit. Essayez de vous connecter.",
+      "Bu email zaten kayıtlı.": "Cet e-mail est déjà inscrit.",
+      "Geçerli bir telefon numarası girin.": "Veuillez saisir un numéro de téléphone valide.",
+      "Ad soyad giriniz.": "Veuillez saisir votre nom complet.",
+      "✅ Kayıt başarılı! Email adresinize doğrulama linki gönderdik.": "✅ Inscription réussie ! Nous vous avons envoyé un lien de vérification.",
+      "Hata: ": "Erreur : ",
+      "Kayıt hatası: ": "Erreur d'inscription : ",
+      "Beklenmeyen hata: ": "Erreur inattendue : ",
+      "KVKK_SIGNUP": "En vous inscrivant, vous confirmez avoir lu la <a href=\"/kvkk\" target=\"_blank\">Notice de confidentialité (KVKK)</a> et accepter les <a href=\"/kullanim-kosullari\" target=\"_blank\">Conditions d'utilisation</a>.",
+      "KVKK_SUB": "J'accepte la <a href=\"/kvkk\" target=\"_blank\">Notice de confidentialité (KVKK)</a>."
+    },
+    "de": {
+      "Giriş": "Anmelden",
+      "Üye Ol": "Registrieren",
+      "Hesabım": "Mein Konto",
+      "Admin Panel": "Admin-Bereich",
+      "Admin Panele Git": "Zum Admin-Bereich",
+      "Çıkış Yap": "Abmelden",
+      "Kapat": "Schließen",
+      "Şifreyi göster/gizle": "Passwort anzeigen/verbergen",
+      "Gayrimenkul": "Immobilien",
+      "Bülten": "Newsletter",
+      "🏠 Hesap açarak favori ilanlarınızı kaydedin, kişiselleştirilmiş bildirimlere abone olun.": "🏠 Erstellen Sie ein Konto, um Lieblingsangebote zu speichern und persönliche Benachrichtigungen zu erhalten.",
+      "Ad Soyad": "Vollständiger Name",
+      "Email": "E-Mail",
+      "Telefon (opsiyonel)": "Telefon (optional)",
+      "Şifre": "Passwort",
+      "(En az 8 karakter)": "(Mindestens 8 Zeichen)",
+      "Email Dili": "E-Mail-Sprache",
+      "🎉 Hesap Oluştur": "🎉 Konto erstellen",
+      "👋 Hoş geldiniz! Hesabınıza giriş yapın.": "👋 Willkommen! Melden Sie sich bei Ihrem Konto an.",
+      "Şifremi Unuttum": "Passwort vergessen?",
+      "🔐 Giriş Yap": "🔐 Anmelden",
+      "Hesabınız yok mu?": "Noch kein Konto?",
+      "📬 Hesap açmadan hızlı bülten kaydı. Yeni ilanlardan haberdar olun.": "📬 Schnelle Newsletter-Anmeldung ohne Konto. Erfahren Sie als Erste(r) von neuen Angeboten.",
+      "İlgi Alanlarınız": "Ihre Interessen",
+      "Arsa": "Grundstück",
+      "Daire": "Wohnung",
+      "Villa": "Villa",
+      "İşyeri": "Gewerbe",
+      "📬 Bültene Kayıt Ol": "📬 Abonnieren",
+      "Geçerli bir email girin.": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      "Çok fazla deneme. 1 saat sonra deneyin.": "Zu viele Versuche. Bitte in 1 Stunde erneut versuchen.",
+      "Çok fazla deneme. 1 saat sonra tekrar deneyin.": "Zu viele Versuche. Bitte in 1 Stunde erneut versuchen.",
+      "Çok fazla deneme. 1 dakika bekleyin.": "Zu viele Versuche. Bitte 1 Minute warten.",
+      "✅ Hoş geldiniz! Yönlendiriliyorsunuz...": "✅ Willkommen! Sie werden weitergeleitet...",
+      "✅ Admin girişi başarılı! Admin panele yönlendiriliyorsunuz...": "✅ Admin-Anmeldung erfolgreich! Weiterleitung zum Admin-Bereich...",
+      "Şifre en az 8 karakter olmalı.": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+      "Bu email zaten kayıtlı. Giriş yapmayı deneyin.": "Diese E-Mail ist bereits registriert. Bitte melden Sie sich an.",
+      "Bu email zaten kayıtlı.": "Diese E-Mail ist bereits registriert.",
+      "Geçerli bir telefon numarası girin.": "Bitte geben Sie eine gültige Telefonnummer ein.",
+      "Ad soyad giriniz.": "Bitte geben Sie Ihren vollständigen Namen ein.",
+      "✅ Kayıt başarılı! Email adresinize doğrulama linki gönderdik.": "✅ Erfolgreich! Wir haben Ihnen einen Bestätigungslink gesendet.",
+      "Hata: ": "Fehler: ",
+      "Kayıt hatası: ": "Registrierungsfehler: ",
+      "Beklenmeyen hata: ": "Unerwarteter Fehler: ",
+      "KVKK_SIGNUP": "Mit der Registrierung bestätigen Sie, den <a href=\"/kvkk\" target=\"_blank\">Datenschutzhinweis (KVKK)</a> gelesen zu haben und die <a href=\"/kullanim-kosullari\" target=\"_blank\">Nutzungsbedingungen</a> zu akzeptieren.",
+      "KVKK_SUB": "Ich akzeptiere den <a href=\"/kvkk\" target=\"_blank\">Datenschutzhinweis (KVKK)</a>."
+    },
+    "ru": {
+      "Giriş": "Войти",
+      "Üye Ol": "Регистрация",
+      "Hesabım": "Мой аккаунт",
+      "Admin Panel": "Админ-панель",
+      "Admin Panele Git": "Перейти в админ-панель",
+      "Çıkış Yap": "Выйти",
+      "Kapat": "Закрыть",
+      "Şifreyi göster/gizle": "Показать/скрыть пароль",
+      "Gayrimenkul": "Недвижимость",
+      "Bülten": "Рассылка",
+      "🏠 Hesap açarak favori ilanlarınızı kaydedin, kişiselleştirilmiş bildirimlere abone olun.": "🏠 Создайте аккаунт, чтобы сохранять избранные объявления и получать персональные уведомления.",
+      "Ad Soyad": "Имя и фамилия",
+      "Email": "Эл. почта",
+      "Telefon (opsiyonel)": "Телефон (необязательно)",
+      "Şifre": "Пароль",
+      "(En az 8 karakter)": "(Не менее 8 символов)",
+      "Email Dili": "Язык писем",
+      "🎉 Hesap Oluştur": "🎉 Создать аккаунт",
+      "👋 Hoş geldiniz! Hesabınıza giriş yapın.": "👋 Добро пожаловать! Войдите в свой аккаунт.",
+      "Şifremi Unuttum": "Забыли пароль?",
+      "🔐 Giriş Yap": "🔐 Войти",
+      "Hesabınız yok mu?": "Нет аккаунта?",
+      "📬 Hesap açmadan hızlı bülten kaydı. Yeni ilanlardan haberdar olun.": "📬 Быстрая подписка на рассылку без регистрации. Узнавайте о новых объявлениях первыми.",
+      "İlgi Alanlarınız": "Ваши интересы",
+      "Arsa": "Участок",
+      "Daire": "Квартира",
+      "Villa": "Вилла",
+      "İşyeri": "Коммерческая",
+      "📬 Bültene Kayıt Ol": "📬 Подписаться",
+      "Geçerli bir email girin.": "Введите корректный email.",
+      "Çok fazla deneme. 1 saat sonra deneyin.": "Слишком много попыток. Попробуйте через час.",
+      "Çok fazla deneme. 1 saat sonra tekrar deneyin.": "Слишком много попыток. Попробуйте через час.",
+      "Çok fazla deneme. 1 dakika bekleyin.": "Слишком много попыток. Подождите минуту.",
+      "✅ Hoş geldiniz! Yönlendiriliyorsunuz...": "✅ Добро пожаловать! Перенаправляем...",
+      "✅ Admin girişi başarılı! Admin panele yönlendiriliyorsunuz...": "✅ Вход администратора выполнен! Переходим в админ-панель...",
+      "Şifre en az 8 karakter olmalı.": "Пароль должен содержать не менее 8 символов.",
+      "Bu email zaten kayıtlı. Giriş yapmayı deneyin.": "Этот email уже зарегистрирован. Попробуйте войти.",
+      "Bu email zaten kayıtlı.": "Этот email уже зарегистрирован.",
+      "Geçerli bir telefon numarası girin.": "Введите корректный номер телефона.",
+      "Ad soyad giriniz.": "Введите имя и фамилию.",
+      "✅ Kayıt başarılı! Email adresinize doğrulama linki gönderdik.": "✅ Готово! Мы отправили ссылку для подтверждения на ваш email.",
+      "Hata: ": "Ошибка: ",
+      "Kayıt hatası: ": "Ошибка регистрации: ",
+      "Beklenmeyen hata: ": "Непредвиденная ошибка: ",
+      "KVKK_SIGNUP": "Регистрируясь, вы подтверждаете, что ознакомились с <a href=\"/kvkk\" target=\"_blank\">Уведомлением о конфиденциальности (KVKK)</a> и принимаете <a href=\"/kullanim-kosullari\" target=\"_blank\">Условия использования</a>.",
+      "KVKK_SUB": "Я принимаю <a href=\"/kvkk\" target=\"_blank\">Уведомление о конфиденциальности (KVKK)</a>."
+    },
+    "ar": {
+      "Giriş": "دخول",
+      "Üye Ol": "تسجيل",
+      "Hesabım": "حسابي",
+      "Admin Panel": "لوحة الإدارة",
+      "Admin Panele Git": "الذهاب إلى لوحة الإدارة",
+      "Çıkış Yap": "تسجيل الخروج",
+      "Kapat": "إغلاق",
+      "Şifreyi göster/gizle": "إظهار/إخفاء كلمة المرور",
+      "Gayrimenkul": "العقارات",
+      "Bülten": "النشرة البريدية",
+      "🏠 Hesap açarak favori ilanlarınızı kaydedin, kişiselleştirilmiş bildirimlere abone olun.": "🏠 أنشئ حساباً لحفظ إعلاناتك المفضلة وتلقي تنبيهات مخصصة.",
+      "Ad Soyad": "الاسم الكامل",
+      "Email": "البريد الإلكتروني",
+      "Telefon (opsiyonel)": "الهاتف (اختياري)",
+      "Şifre": "كلمة المرور",
+      "(En az 8 karakter)": "(8 أحرف على الأقل)",
+      "Email Dili": "لغة البريد الإلكتروني",
+      "🎉 Hesap Oluştur": "🎉 إنشاء حساب",
+      "👋 Hoş geldiniz! Hesabınıza giriş yapın.": "👋 مرحباً! سجّل الدخول إلى حسابك.",
+      "Şifremi Unuttum": "نسيت كلمة المرور؟",
+      "🔐 Giriş Yap": "🔐 تسجيل الدخول",
+      "Hesabınız yok mu?": "ليس لديك حساب؟",
+      "📬 Hesap açmadan hızlı bülten kaydı. Yeni ilanlardan haberdar olun.": "📬 اشتراك سريع في النشرة دون حساب. كن أول من يعلم بالإعلانات الجديدة.",
+      "İlgi Alanlarınız": "اهتماماتك",
+      "Arsa": "أرض",
+      "Daire": "شقة",
+      "Villa": "فيلا",
+      "İşyeri": "تجاري",
+      "📬 Bültene Kayıt Ol": "📬 اشترك",
+      "Geçerli bir email girin.": "يرجى إدخال بريد إلكتروني صالح.",
+      "Çok fazla deneme. 1 saat sonra deneyin.": "محاولات كثيرة. حاول مجدداً بعد ساعة.",
+      "Çok fazla deneme. 1 saat sonra tekrar deneyin.": "محاولات كثيرة. حاول مجدداً بعد ساعة.",
+      "Çok fazla deneme. 1 dakika bekleyin.": "محاولات كثيرة. انتظر دقيقة واحدة.",
+      "✅ Hoş geldiniz! Yönlendiriliyorsunuz...": "✅ مرحباً! جارٍ التحويل...",
+      "✅ Admin girişi başarılı! Admin panele yönlendiriliyorsunuz...": "✅ تم دخول المسؤول! جارٍ التحويل إلى لوحة الإدارة...",
+      "Şifre en az 8 karakter olmalı.": "يجب ألا تقل كلمة المرور عن 8 أحرف.",
+      "Bu email zaten kayıtlı. Giriş yapmayı deneyin.": "هذا البريد مسجل مسبقاً. جرّب تسجيل الدخول.",
+      "Bu email zaten kayıtlı.": "هذا البريد مسجل مسبقاً.",
+      "Geçerli bir telefon numarası girin.": "يرجى إدخال رقم هاتف صالح.",
+      "Ad soyad giriniz.": "يرجى إدخال الاسم الكامل.",
+      "✅ Kayıt başarılı! Email adresinize doğrulama linki gönderdik.": "✅ تم التسجيل! أرسلنا رابط التحقق إلى بريدك الإلكتروني.",
+      "Hata: ": "خطأ: ",
+      "Kayıt hatası: ": "خطأ في التسجيل: ",
+      "Beklenmeyen hata: ": "خطأ غير متوقع: ",
+      "KVKK_SIGNUP": "بالتسجيل، تؤكد أنك قرأت <a href=\"/kvkk\" target=\"_blank\">إشعار الخصوصية (KVKK)</a> وتوافق على <a href=\"/kullanim-kosullari\" target=\"_blank\">شروط الاستخدام</a>.",
+      "KVKK_SUB": "أوافق على <a href=\"/kvkk\" target=\"_blank\">إشعار الخصوصية (KVKK)</a>."
+    }
+  };
+  const IU_HTML_TR = {"KVKK_SIGNUP": "Kayıt olarak <a href=\"/kvkk\" target=\"_blank\">KVKK Aydınlatma Metni</a>'ni okuduğunuzu ve <a href=\"/kullanim-kosullari\" target=\"_blank\">Kullanım Koşulları</a>'nı kabul ettiğinizi onaylarsınız.", "KVKK_SUB": "<a href=\"/kvkk\" target=\"_blank\">KVKK Aydınlatma Metni</a>'ni kabul ediyorum."};
+  function t(s) { return (IU_I18N[IU_LANG] && IU_I18N[IU_LANG][s]) || IU_HTML_TR[s] || s; }
+  // Mesajlar: tam eşleşme ya da "Hata: ..." gibi önek eşleşmesi
+  function tMsg(s) {
+    s = String(s == null ? '' : s);
+    const map = IU_I18N[IU_LANG];
+    if (!map) return s;
+    if (map[s]) return map[s];
+    for (const p of ['Kayıt hatası: ', 'Beklenmeyen hata: ', 'Hata: ']) if (s.indexOf(p) === 0) return map[p] + s.slice(p.length);
+    return s;
+  }
+
   const CONFIG = {
     SUPABASE_URL: 'https://gosmkthmamloafgtvhpj.supabase.co',
     SUPABASE_KEY: 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4',
@@ -656,142 +914,146 @@
       <div class="iu-modal-content" onclick="event.stopPropagation()">
         <div class="iu-modal-header">
           <div class="iu-modal-brand">İSMAİL <span class="accent">ÜNSAL</span></div>
-          <div class="iu-modal-subtitle">Gayrimenkul</div>
-          <button class="iu-modal-close" onclick="IUAuth.close()" aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          <div class="iu-modal-subtitle">${t('Gayrimenkul')}</div>
+          <button class="iu-modal-close" onclick="IUAuth.close()" aria-label="${t('Kapat')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
 
         <div class="iu-modal-body">
           <div class="iu-tabs">
-            <button class="iu-tab active" data-tab="signup" onclick="IUAuth.switchTab('signup')">Üye Ol</button>
-            <button class="iu-tab" data-tab="login" onclick="IUAuth.switchTab('login')">Giriş</button>
-            <button class="iu-tab" data-tab="subscribe" onclick="IUAuth.switchTab('subscribe')">Bülten</button>
+            <button class="iu-tab active" data-tab="signup" onclick="IUAuth.switchTab('signup')">${t('Üye Ol')}</button>
+            <button class="iu-tab" data-tab="login" onclick="IUAuth.switchTab('login')">${t('Giriş')}</button>
+            <button class="iu-tab" data-tab="subscribe" onclick="IUAuth.switchTab('subscribe')">${t('Bülten')}</button>
           </div>
 
           <!-- SIGNUP (Müşteri Kayıt) -->
           <div class="iu-tab-content active" id="iu-tab-signup">
-            <p class="iu-intro">🏠 Hesap açarak favori ilanlarınızı kaydedin, kişiselleştirilmiş bildirimlere abone olun.</p>
+            <p class="iu-intro">${t('🏠 Hesap açarak favori ilanlarınızı kaydedin, kişiselleştirilmiş bildirimlere abone olun.')}</p>
 
             <form id="iu-signup-form" novalidate>
               <input type="text" name="website" class="iu-hp" tabindex="-1" autocomplete="off">
 
               <div class="iu-form-group">
-                <label class="iu-label">Ad Soyad <span class="iu-required">*</span></label>
+                <label class="iu-label">${t('Ad Soyad')} <span class="iu-required">*</span></label>
                 <input type="text" name="full_name" class="iu-input" required maxlength="100" placeholder="Ahmet Yılmaz" autocomplete="name">
               </div>
 
               <div class="iu-form-group">
-                <label class="iu-label">Email <span class="iu-required">*</span></label>
+                <label class="iu-label">${t('Email')} <span class="iu-required">*</span></label>
                 <input type="email" name="email" class="iu-input" required maxlength="254" placeholder="ornek@email.com" autocomplete="email">
               </div>
 
               <div class="iu-form-group">
-                <label class="iu-label">Telefon (opsiyonel)</label>
+                <label class="iu-label">${t('Telefon (opsiyonel)')}</label>
                 <input type="tel" name="phone" class="iu-input" maxlength="20" placeholder="+90 555 123 45 67" autocomplete="tel">
               </div>
 
               <div class="iu-form-group">
-                <label class="iu-label">Şifre <span class="iu-required">*</span> <small style="font-weight:400;color:#6b7280;text-transform:none;letter-spacing:0">(En az 8 karakter)</small></label>
+                <label class="iu-label">${t('Şifre')} <span class="iu-required">*</span> <small style="font-weight:400;color:#6b7280;text-transform:none;letter-spacing:0">${t('(En az 8 karakter)')}</small></label>
                 <div class="iu-password-wrap">
                   <input type="password" name="password" id="iu-signup-password" class="iu-input" required minlength="8" maxlength="128" placeholder="••••••••" autocomplete="new-password">
-                  <button type="button" class="iu-password-toggle" onclick="IUAuth.togglePassword('iu-signup-password', this)" aria-label="Şifreyi göster/gizle">
+                  <button type="button" class="iu-password-toggle" onclick="IUAuth.togglePassword('iu-signup-password', this)" aria-label="${t('Şifreyi göster/gizle')}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>
                 </div>
               </div>
 
               <div class="iu-form-group">
-                <label class="iu-label">Email Dili</label>
+                <label class="iu-label">${t('Email Dili')}</label>
                 <select name="language" class="iu-select">
-                  <option value="tr">🇹🇷 Türkçe</option>
-                  <option value="en">🇬🇧 English</option>
-                  <option value="de">🇩🇪 Deutsch</option>
-                  <option value="fr">🇫🇷 Français</option>
-                  <option value="ru">🇷🇺 Русский</option>
+                  <option value="tr"${IU_LANG==='tr'?' selected':''}>🇹🇷 Türkçe</option>
+                  <option value="en"${IU_LANG==='en'?' selected':''}>🇬🇧 English</option>
+                  <option value="de"${IU_LANG==='de'?' selected':''}>🇩🇪 Deutsch</option>
+                  <option value="fr"${IU_LANG==='fr'?' selected':''}>🇫🇷 Français</option>
+                  <option value="ru"${IU_LANG==='ru'?' selected':''}>🇷🇺 Русский</option>
                 </select>
               </div>
 
               <div id="iu-signup-msg"></div>
 
               <button type="submit" class="iu-btn iu-btn-primary" id="iu-signup-btn">
-                🎉 Hesap Oluştur
+                ${t('🎉 Hesap Oluştur')}
               </button>
 
               <div class="iu-kvkk">
-                Kayıt olarak <a href="/kvkk" target="_blank">KVKK Aydınlatma Metni</a>'ni okuduğunuzu ve <a href="/kullanim-kosullari" target="_blank">Kullanım Koşulları</a>'nı kabul ettiğinizi onaylarsınız.
+                ${t('KVKK_SIGNUP')}
               </div>
             </form>
           </div>
 
           <!-- LOGIN (Genel Giriş - Müşteri/Admin otomatik) -->
           <div class="iu-tab-content" id="iu-tab-login">
-            <p class="iu-intro">👋 Hoş geldiniz! Hesabınıza giriş yapın.</p>
+            <p class="iu-intro">${t('👋 Hoş geldiniz! Hesabınıza giriş yapın.')}</p>
 
             <form id="iu-login-form" novalidate>
               <div class="iu-form-group">
-                <label class="iu-label">Email</label>
+                <label class="iu-label">${t('Email')}</label>
                 <input type="email" name="email" class="iu-input" required maxlength="254" placeholder="ornek@email.com" autocomplete="email">
               </div>
 
               <div class="iu-form-group">
-                <label class="iu-label">Şifre</label>
+                <label class="iu-label">${t('Şifre')}</label>
                 <div class="iu-password-wrap">
                   <input type="password" name="password" id="iu-login-password" class="iu-input" required minlength="8" placeholder="••••••••" autocomplete="current-password">
-                  <button type="button" class="iu-password-toggle" onclick="IUAuth.togglePassword('iu-login-password', this)" aria-label="Şifreyi göster/gizle">
+                  <button type="button" class="iu-password-toggle" onclick="IUAuth.togglePassword('iu-login-password', this)" aria-label="${t('Şifreyi göster/gizle')}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>
                 </div>
               </div>
 
-              <a href="#" onclick="IUAuth.forgotPassword(event)" class="iu-forgot-link">Şifremi Unuttum</a>
+              <a href="#" onclick="IUAuth.forgotPassword(event)" class="iu-forgot-link">${t('Şifremi Unuttum')}</a>
 
               <div id="iu-login-msg"></div>
 
               <button type="submit" class="iu-btn iu-btn-dark" id="iu-login-btn">
-                🔐 Giriş Yap
+                ${t('🔐 Giriş Yap')}
               </button>
 
               <div style="text-align: center; margin-top: 16px; font-size: 13px; color: #6b7280;">
-                Hesabınız yok mu? <a href="#" onclick="IUAuth.switchTab('signup'); return false;" style="color: #3b82f6; font-weight: 600; text-decoration: none;">Üye Ol</a>
+                ${t('Hesabınız yok mu?')} <a href="#" onclick="IUAuth.switchTab('signup'); return false;" style="color: #3b82f6; font-weight: 600; text-decoration: none;">${t('Üye Ol')}</a>
               </div>
             </form>
           </div>
 
           <!-- SUBSCRIBE (Hızlı Bülten - Hesap gerektirmez) -->
           <div class="iu-tab-content" id="iu-tab-subscribe">
-            <p class="iu-intro">📬 Hesap açmadan hızlı bülten kaydı. Yeni ilanlardan haberdar olun.</p>
+            <p class="iu-intro">${t('📬 Hesap açmadan hızlı bülten kaydı. Yeni ilanlardan haberdar olun.')}</p>
 
             <form id="iu-subscribe-form" novalidate>
               <input type="text" name="website" class="iu-hp" tabindex="-1" autocomplete="off">
 
               <div class="iu-form-group">
-                <label class="iu-label">Email <span class="iu-required">*</span></label>
+                <label class="iu-label">${t('Email')} <span class="iu-required">*</span></label>
                 <input type="email" name="email" class="iu-input" required maxlength="254" placeholder="ornek@email.com" autocomplete="email">
               </div>
 
               <div class="iu-form-group">
-                <label class="iu-label">İlgi Alanlarınız</label>
+                <label class="iu-label">${t('İlgi Alanlarınız')}</label>
                 <div class="iu-checkboxes">
-                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="arsa"> 🏞️ Arsa</label>
-                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="daire"> 🏢 Daire</label>
-                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="villa"> 🏡 Villa</label>
-                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="isyeri"> 🏪 İşyeri</label>
+                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="arsa"> 🏞️ ${t('Arsa')}</label>
+                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="daire"> 🏢 ${t('Daire')}</label>
+                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="villa"> 🏡 ${t('Villa')}</label>
+                  <label class="iu-checkbox-label"><input type="checkbox" name="kat" value="isyeri"> 🏪 ${t('İşyeri')}</label>
                 </div>
               </div>
 
               <div id="iu-sub-msg"></div>
 
               <button type="submit" class="iu-btn iu-btn-primary" id="iu-sub-btn">
-                📬 Bültene Kayıt Ol
+                ${t('📬 Bültene Kayıt Ol')}
               </button>
 
               <div class="iu-kvkk">
-                <a href="/kvkk" target="_blank">KVKK Aydınlatma Metni</a>'ni kabul ediyorum.
+                ${t('KVKK_SUB')}
               </div>
             </form>
           </div>
         </div>
       </div>
     `;
+    // Metinler zaten doğru dilde — otomatik çeviri tekrar dokunmasın
+    modal.setAttribute('translate', 'no');
+    modal.setAttribute('lang', IU_LANG);
+    modal.classList.add('notranslate');
     modal.addEventListener('click', () => IUAuth.close());
     document.body.appendChild(modal);
 
@@ -806,7 +1068,7 @@
   }
 
   function showMsg(id, text, type = 'info') {
-    document.getElementById(id).innerHTML = `<div class="iu-msg iu-msg-${type}">${Security.escapeHtml(text)}</div>`;
+    document.getElementById(id).innerHTML = `<div class="iu-msg iu-msg-${type}">${Security.escapeHtml(tMsg(text))}</div>`;
   }
 
   // MÜŞTERİ KAYIT
@@ -1331,7 +1593,7 @@
         // Admin için farklı menü - admin panele git en üstte olsun
         const adminMenuItem = isAdmin ? `
           <a href="/admin/index.html" style="background: linear-gradient(90deg, #dbeafe, transparent); color: #1e40af; font-weight: 600;">
-            ${iconAdmin} Admin Panele Git
+            ${iconAdmin} ${t('Admin Panele Git')}
           </a>
           <div class="iu-user-menu-divider"></div>
         ` : '';
@@ -1342,9 +1604,9 @@
         // Mobile-specific: separate action buttons (bypass .iu-user-menu
         // positioning issues). Hidden on desktop via CSS.
         const mobileAction1 = isAdmin
-          ? `<a href="/admin/index.html" class="iu-mobile-btn iu-mobile-btn-admin">Admin Panel</a>`
-          : `<a href="${accountLink}" class="iu-mobile-btn iu-mobile-btn-account">Hesabım</a>`;
-        const mobileAction2 = `<a href="#" onclick="IUAuth.logout(event); return false;" class="iu-mobile-btn iu-mobile-btn-logout">Çıkış Yap</a>`;
+          ? `<a href="/admin/index.html" class="iu-mobile-btn iu-mobile-btn-admin">${t('Admin Panel')}</a>`
+          : `<a href="${accountLink}" class="iu-mobile-btn iu-mobile-btn-account">${t('Hesabım')}</a>`;
+        const mobileAction2 = `<a href="#" onclick="IUAuth.logout(event); return false;" class="iu-mobile-btn iu-mobile-btn-logout">${t('Çıkış Yap')}</a>`;
 
         container.innerHTML = `
           <div class="iu-authbar" style="position: relative;">
@@ -1358,11 +1620,11 @@
                 <div class="iu-user-menu-email">${Security.escapeHtml(IUAuth.user.email)}</div>
               </div>
               ${adminMenuItem}
-              ${!isAdmin ? `<a href="${accountLink}">${iconAccount} Hesabım</a>
+              ${!isAdmin ? `<a href="${accountLink}">${iconAccount} ${t('Hesabım')}</a>
               <a href="/favorilerim">${iconHeart} Favorilerim</a>
               <a href="/aramalarim">${iconSearch} Kayıtlı Aramalar</a>` : ''}
               ${!isAdmin ? '<div class="iu-user-menu-divider"></div>' : ''}
-              <a href="#" onclick="IUAuth.logout(event)" class="iu-user-menu-logout">${iconLogout} Çıkış Yap</a>
+              <a href="#" onclick="IUAuth.logout(event)" class="iu-user-menu-logout">${iconLogout} ${t('Çıkış Yap')}</a>
             </div>
             <div class="iu-mobile-actions">
               ${mobileAction1}
@@ -1382,8 +1644,8 @@
           : '';
         container.innerHTML = `
           <div class="iu-authbar" style="${barStyle}">
-            <button class="iu-authbar-btn iu-authbar-login" style="${btnStyle}" onclick="IUAuth.open('login')">${iconUser} Giriş</button>
-            <button class="iu-authbar-btn iu-authbar-signup" style="${btnStyle}" onclick="IUAuth.open('signup')">${iconUserPlus} Üye Ol</button>
+            <button class="iu-authbar-btn iu-authbar-login" style="${btnStyle}" onclick="IUAuth.open('login')">${iconUser} ${t('Giriş')}</button>
+            <button class="iu-authbar-btn iu-authbar-signup" style="${btnStyle}" onclick="IUAuth.open('signup')">${iconUserPlus} ${t('Üye Ol')}</button>
           </div>
         `;
 

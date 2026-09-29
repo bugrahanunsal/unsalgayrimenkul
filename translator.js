@@ -39,6 +39,9 @@
   function setBodyLang() {
     if (document.body) document.body.setAttribute('data-lang', currentLang);
   }
+  // <html lang>: tarayıcı büyük harf dönüşümünü doğru dile göre yapsın
+  // (lang="tr" kalırsa CSS uppercase'te i → İ olur: "E-MAİL", "OPTİONAL")
+  try { document.documentElement.setAttribute('lang', currentLang); } catch (e) {}
   if (document.body) setBodyLang();
   else document.addEventListener('DOMContentLoaded', setBodyLang);
 
