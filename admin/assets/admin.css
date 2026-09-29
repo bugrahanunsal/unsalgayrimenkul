@@ -307,10 +307,10 @@ body {
   border-radius: var(--radius);
   margin-bottom: 16px;
   font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  line-height: 1.55;
+  display: block;            /* metin + kalın kelimeler tek akışta (flex sütunlara bölüyordu) */
 }
+.alert:has(> span + span) { display: flex; align-items: flex-start; gap: 10px; }
 
 .alert-error {
   background: #fef2f2;
