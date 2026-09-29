@@ -159,7 +159,7 @@
       },
       {
         q: 'Yalova\'da yabancı için en uygun bölgeler hangileridir?',
-        a: 'Yabancı yatırımcılar için Yalova\'da öne çıkan bölgeler: 1) Çınarcık deniz manzaralı daireler ve villalar için popülerdir, 2) Termal kaplıca turizmi arayan Ortadoğulu alıcılar tarafından tercih edilir, 3) Merkez daimi yaşam için hastane, üniversite ve alışveriş imkanlarına yakınlığı ile uygundur, 4) Altınova otoyola yakınlığı ve ticari fırsatlar için avantajlıdır, 5) Armutlu sakin, sahil kesimli yaşam arayanlar için idealdir. 5 dilde (İngilizce, Almanca, Fransızca, Rusça, Arapça) danışmanlık hizmeti sunuyoruz.'
+        a: 'Yabancı yatırımcılar için Yalova\'da öne çıkan bölgeler: 1) Çınarcık deniz manzaralı daireler ve villalar için popülerdir, 2) Termal kaplıca turizmi arayan Ortadoğulu alıcılar tarafından tercih edilir, 3) Merkez daimi yaşam için hastane, üniversite ve alışveriş imkanlarına yakınlığı ile uygundur, 4) Altınova otoyola yakınlığı ve ticari fırsatlar için avantajlıdır, 5) Armutlu sakin, sahil kesimli yaşam arayanlar için idealdir. Türkçe dahil 6 dilde (Türkçe, İngilizce, Almanca, Fransızca, Rusça, Arapça) danışmanlık hizmeti sunuyoruz.'
       }
     ],
 

@@ -1,5 +1,5 @@
 /**
- * EMAIL HTML TEMPLATE (5 Dilli)
+ * EMAIL HTML TEMPLATE (6 Dilli)
  * ismailunsal.com.tr
  *
  * Modern, responsive, inbox-friendly email template
