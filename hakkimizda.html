@@ -273,6 +273,39 @@ span.turyap-badge { color: #2563EB; }
   box-shadow: 0 12px 24px rgba(37,211,102,0.5);
 }
 
+
+/* ---- Mobil/tablet düzeni: rozetler ve butonlar düzenli ızgara ---- */
+@media (max-width: 900px) {
+  .about-hero-content { max-width: 520px; margin: 0 auto; width: 100%; }
+  .about-role { font-size: 16px; line-height: 1.45; }
+  .about-trust-badges {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px; margin-bottom: 26px;
+  }
+  .trust-badge {
+    flex-direction: column; justify-content: flex-start; text-align: center;
+    gap: 8px; padding: 16px 8px; min-width: 0;
+  }
+  .trust-badge i { font-size: 22px; }
+  .trust-badge .tb-text { min-width: 0; }
+  .trust-badge .tb-text strong { font-size: 15px; margin-bottom: 4px; }
+  .trust-badge .tb-text span { display: block; font-size: 10.5px; line-height: 1.35; letter-spacing: .3px; overflow-wrap: anywhere; }
+  .about-cta {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .about-cta a { justify-content: center; padding: 14px 10px; font-size: 15px; min-height: 52px; }
+  .about-cta .btn-phone { order: 1; }
+  .about-cta .btn-wa-about { order: 2; }
+  .about-cta .btn-linkedin { order: 3; grid-column: 1 / -1; background: transparent; border-color: rgba(255,255,255,.35); }
+  .new-member-ribbon {
+    position: static !important; display: table; margin: 0 auto 28px;
+  }
+}
+@media (max-width: 360px) {
+  .about-trust-badges { gap: 8px; }
+  .trust-badge { padding: 14px 6px; }
+  .trust-badge .tb-text span { font-size: 9.5px; }
+}
 .bio-section {
   padding: 100px 24px;
   background: #FFFFFF;
@@ -720,7 +753,7 @@ span.turyap-badge { color: #2563EB; }
 
 <!-- RAMAZAN AYDEMIR HERO — İkinci ekip üyesi -->
 <section class="about-hero" style="background: linear-gradient(135deg, #0A2A5E 0%, #1a3a6e 100%); position:relative;">
-  <div style="position:absolute; top:20px; right:20px; background:#2563EB; color: #FFFFFF; padding:8px 20px; border-radius:24px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; box-shadow:0 4px 12px rgba(37,99,235,0.4); z-index:5;">
+  <div class="new-member-ribbon" style="position:absolute; top:20px; right:20px; background:#2563EB; color: #FFFFFF; padding:8px 20px; border-radius:24px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; box-shadow:0 4px 12px rgba(37,99,235,0.4); z-index:5;">
     <i class="fa-solid fa-star"></i> YENİ EKİP ÜYESİ
   </div>
   <div class="about-hero-inner">
