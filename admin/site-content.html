@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Site İçeriği - Admin Panel</title>
+  <link rel="icon" type="image/svg+xml" href="/admin/assets/admin-icon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
+  <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
+  <meta name="theme-color" content="#0A2A5E">
   <link rel="stylesheet" href="/admin/assets/admin.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -20,245 +24,132 @@
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
       <header class="topbar">
-        <h1 class="page-title">🎨 Site İçeriği Editörü</h1>
+        <h1 class="page-title">🎨 Site İçeriği</h1>
         <div class="topbar-actions">
-          <a href="https://ismailunsal.com.tr" target="_blank" class="btn btn-outline btn-sm">🌐 Siteyi Aç</a>
+          <a href="/" target="_blank" rel="noopener" class="btn btn-outline btn-sm">🌐 Siteyi Aç</a>
           <div class="user-menu" id="userMenu"></div>
         </div>
       </header>
-
       <div class="page-content">
-        <div class="alert alert-info" style="margin-bottom: 20px;">
-          ℹ️ Burada yaptığın değişiklikler sitede otomatik güncellenir. Her sayfa için farklı içerik bölümleri var.
+        <div class="sc-tabs" role="tablist">
+          <button type="button" class="sc-tab on" data-tab="texts" role="tab">📄 Sayfa Yazıları & Görseller</button>
+          <button type="button" class="sc-tab" data-tab="brand" role="tab">🏷️ Logo & Favicon</button>
         </div>
 
-        <!-- Sayfa Seçimi -->
-        <div class="card" style="margin-bottom: 20px;">
-          <div class="form-group">
-            <label class="form-label">Sayfa Seçin</label>
-            <select id="pageSelect" class="form-select">
-              <option value="homepage">🏠 Ana Sayfa</option>
-              <option value="about">💡 Hakkımızda</option>
-              <option value="contact">📞 İletişim</option>
-              <option value="services">🏆 Hizmetler</option>
-            </select>
+        <!-- METİNLER -->
+        <section id="tab-texts">
+          <div class="card sc-top">
+            <div class="form-group" style="margin:0;flex:1;min-width:220px;">
+              <label class="form-label" for="pageSel">Düzenlenecek sayfa</label>
+              <select id="pageSel" class="form-select"></select>
+            </div>
+            <div class="sc-hint">👉 Önizlemede değiştirmek istediğiniz <b>yazıya veya fotoğrafa tıklayın</b>. Sağda düzenleme kutusu açılır. Sadece Türkçe yazın, diğer diller otomatik çevrilir. <span class="sc-legend"><i class="lg-e"></i>Değiştirilmiş</span></div>
           </div>
-        </div>
+          <div class="sc-split">
+            <div class="sc-preview card">
+              <div class="sc-prevbar"><span id="prevUrl">/</span><div><button type="button" class="btn btn-outline btn-sm" id="devDesk" title="Masaüstü">🖥️</button> <button type="button" class="btn btn-outline btn-sm" id="devMob" title="Mobil">📱</button> <button type="button" class="btn btn-outline btn-sm" id="reloadBtn">↻ Yenile</button></div></div>
+              <div class="sc-frame-wrap"><iframe id="frame" title="Sayfa önizleme"></iframe></div>
+            </div>
+            <div class="sc-side">
+              <div class="card" id="editCard">
+                <div id="editEmpty" class="sc-empty">Önizlemeden bir yazı veya fotoğraf seçin — ya da aşağıdaki listeden.</div>
+                <div id="editText" style="display:none;">
+                  <div class="sc-edit-head"><span id="etTag" class="badge badge-info"></span><span id="etScope" class="badge badge-gray" style="display:none;">Tüm sayfalarda (alt bilgi)</span></div>
+                  <div class="form-label" style="margin-top:10px;">Yeni metin</div>
+                  <div id="etHost"></div>
+                  <details class="sc-orig"><summary>Orijinal metin</summary><div id="etOrig"></div></details>
+                  <div class="sc-actions">
+                    <button type="button" class="btn btn-outline btn-sm" id="etRevert">↺ Orijinale dön</button>
+                    <button type="button" class="btn btn-primary" id="etSave">💾 Kaydet</button>
+                  </div>
+                </div>
+                <div id="editImg" style="display:none;">
+                  <div class="sc-edit-head"><span class="badge badge-info">Fotoğraf</span><span id="eiScope" class="badge badge-gray" style="display:none;">Tüm sayfalarda</span></div>
+                  <img id="eiPrev" alt="" class="sc-imgprev">
+                  <div class="form-group"><label class="form-label" for="eiUrl">Fotoğraf adresi</label><input id="eiUrl" type="url" class="form-input" placeholder="https://…"></div>
+                  <label class="btn btn-outline btn-sm" style="cursor:pointer;">📷 Bilgisayardan yükle<input type="file" id="eiFile" accept="image/jpeg,image/png,image/webp" hidden></label>
+                  <div class="sc-actions">
+                    <button type="button" class="btn btn-outline btn-sm" id="eiRevert">↺ Orijinale dön</button>
+                    <button type="button" class="btn btn-primary" id="eiSave">💾 Kaydet</button>
+                  </div>
+                </div>
+              </div>
+              <div class="card sc-listcard">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+                  <input id="search" class="form-input" placeholder="🔍 Sayfada yazı ara…" style="flex:1;">
+                  <label style="font-size:12px;white-space:nowrap;display:flex;gap:4px;align-items:center;"><input type="checkbox" id="onlyChanged"> Değişenler</label>
+                </div>
+                <div id="itemList" class="sc-list"></div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-        <!-- İçerik Listesi -->
-        <div id="contentSections">
-          <div class="loading">Yükleniyor...</div>
-        </div>
-
-        <div style="margin-top: 20px; text-align: right;">
-          <button onclick="addNewSection()" class="btn btn-outline">➕ Yeni Bölüm Ekle</button>
-        </div>
+        <!-- LOGO & FAVICON -->
+        <section id="tab-brand" style="display:none;">
+          <div class="sc-brand">
+            <div class="card">
+              <div class="card-title" style="margin-bottom:6px;">Site logosu</div>
+              <div class="form-help" style="margin-bottom:14px;">Üst menüde ve alt bilgide görünür. Şeffaf arka planlı, yatay PNG önerilir (örn. 600×160).</div>
+              <div class="sc-brandprev" id="logoPrev"></div>
+              <div class="sc-actions" style="justify-content:flex-start;">
+                <label class="btn btn-primary btn-sm" style="cursor:pointer;">📤 Yeni logo yükle<input type="file" id="logoFile" accept="image/png,image/webp,image/jpeg" hidden></label>
+                <button type="button" class="btn btn-outline btn-sm" id="logoReset">↺ Varsayılan logo</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title" style="margin-bottom:6px;">Favicon (tarayıcı sekmesi ikonu)</div>
+              <div class="form-help" style="margin-bottom:14px;">Kare PNG önerilir (en az 192×192).</div>
+              <div class="sc-favprev" id="favPrev"></div>
+              <div class="sc-actions" style="justify-content:flex-start;">
+                <label class="btn btn-primary btn-sm" style="cursor:pointer;">📤 Yeni favicon yükle<input type="file" id="favFile" accept="image/png,image/webp" hidden></label>
+                <button type="button" class="btn btn-outline btn-sm" id="favReset">↺ Varsayılan favicon</button>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   </div>
-
-  <script src="/admin/assets/supabase-config.js?v=20260929-admin"></script>
-  <script src="/admin/assets/security.js?v=20260929-admin"></script>
-  <script src="/admin/assets/auth.js?v=20260929-admin"></script>
-  <script src="/admin/assets/app.js?v=20260929-admin"></script>
-
-  <script>
-    let currentPage = 'homepage';
-    let sections = [];
-
-    (async () => {
-      const authed = await App.init('site-content');
-      if (!authed) return;
-
-      await loadContent();
-
-      document.getElementById('pageSelect').addEventListener('change', async (e) => {
-        currentPage = e.target.value;
-        await loadContent();
-      });
-    })();
-
-    async function loadContent() {
-      try {
-        const { data, error } = await supabaseClient
-          .from('site_content')
-          .select('*')
-          .eq('sayfa', currentPage)
-          .order('sira', { ascending: true });
-
-        if (error) throw error;
-        sections = data || [];
-        renderContent();
-      } catch (error) {
-        document.getElementById('contentSections').innerHTML =
-          '<div class="alert alert-error">' + Security.escapeHtml(error.message) + '</div>';
-      }
-    }
-
-    function renderContent() {
-      const container = document.getElementById('contentSections');
-
-      if (sections.length === 0) {
-        container.innerHTML = `
-          <div class="card">
-            <div class="empty-state">
-              <div class="empty-icon">📄</div>
-              <div>Bu sayfa için içerik yok</div>
-              <button onclick="addNewSection()" class="btn btn-primary btn-sm" style="margin-top: 16px;">İlk Bölümü Ekle</button>
-            </div>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = sections.map(s => `
-        <div class="card" style="margin-bottom: 16px;">
-          <div class="card-header">
-            <div>
-              <div class="card-title">${Security.escapeHtml(s.bolum_key)}</div>
-              <div class="card-subtitle">Sıra: ${s.sira} • ${s.aktif ? 'Aktif' : 'Pasif'}</div>
-            </div>
-            <button onclick="deleteSection('${s.id}', '${Security.escapeHtml(s.bolum_key)}')" class="btn btn-danger btn-sm">🗑️</button>
-          </div>
-
-          <div class="lang-tabs">
-            <button class="lang-tab active" onclick="switchLang(this, '${s.id}', 'tr')">🇹🇷 TR</button>
-            <button class="lang-tab" onclick="switchLang(this, '${s.id}', 'en')">🇬🇧 EN</button>
-            <button class="lang-tab" onclick="switchLang(this, '${s.id}', 'de')">🇩🇪 DE</button>
-            <button class="lang-tab" onclick="switchLang(this, '${s.id}', 'fr')">🇫🇷 FR</button>
-            <button class="lang-tab" onclick="switchLang(this, '${s.id}', 'ru')">🇷🇺 RU</button>
-          </div>
-
-          ${['tr','en','de','fr','ru'].map(lang => `
-            <div class="lang-content ${lang === 'tr' ? 'active' : ''}" data-lang="${lang}" data-section="${s.id}">
-              <textarea
-                id="content-${s.id}-${lang}"
-                class="form-textarea"
-                data-original="${Security.escapeHtml(s['icerik_' + lang] || '')}"
-                placeholder="${lang.toUpperCase()} içeriği...">${Security.escapeHtml(s['icerik_' + lang] || '')}</textarea>
-            </div>
-          `).join('')}
-
-          <div style="margin-top: 12px;">
-            <label class="form-label">Görsel URL (opsiyonel)</label>
-            <input type="text" id="photo-${s.id}" class="form-input" value="${Security.escapeHtml(s.foto_url || '')}" placeholder="https://...">
-            <input type="file" id="photoFile-${s.id}" accept="image/*" style="display: none;" onchange="uploadSectionPhoto('${s.id}', this)">
-            <button onclick="document.getElementById('photoFile-${s.id}').click()" class="btn btn-outline btn-sm" style="margin-top: 8px;">📷 Foto Yükle</button>
-          </div>
-
-          <div style="margin-top: 16px; text-align: right;">
-            <button onclick="saveSection('${s.id}')" class="btn btn-primary btn-sm">💾 Kaydet</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function switchLang(btn, sectionId, lang) {
-      // Tab active
-      btn.parentElement.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-
-      // Content active
-      const parent = btn.parentElement.parentElement;
-      parent.querySelectorAll('.lang-content').forEach(c => c.classList.remove('active'));
-      parent.querySelector(`.lang-content[data-lang="${lang}"][data-section="${sectionId}"]`).classList.add('active');
-    }
-    window.switchLang = switchLang;
-
-    async function saveSection(id) {
-      try {
-        const data = {
-          icerik_tr: document.getElementById(`content-${id}-tr`).value,
-          icerik_en: document.getElementById(`content-${id}-en`).value,
-          icerik_de: document.getElementById(`content-${id}-de`).value,
-          icerik_fr: document.getElementById(`content-${id}-fr`).value,
-          icerik_ru: document.getElementById(`content-${id}-ru`).value,
-          foto_url: document.getElementById(`photo-${id}`).value || null
-        };
-
-        const { error } = await supabaseClient
-          .from('site_content')
-          .update(data)
-          .eq('id', id);
-
-        if (error) throw error;
-        App.toast('İçerik kaydedildi', 'success');
-      } catch (error) {
-        App.toast(error.message, 'error');
-      }
-    }
-    window.saveSection = saveSection;
-
-    async function deleteSection(id, key) {
-      const confirmed = await App.confirm(`"${key}" bölümünü silmek istediğinize emin misiniz?`);
-      if (!confirmed) return;
-
-      try {
-        const { error } = await supabaseClient
-          .from('site_content')
-          .delete()
-          .eq('id', id);
-
-        if (error) throw error;
-        App.toast('Bölüm silindi', 'success');
-        await loadContent();
-      } catch (error) {
-        App.toast(error.message, 'error');
-      }
-    }
-    window.deleteSection = deleteSection;
-
-    async function addNewSection() {
-      const key = prompt('Bölüm anahtar adı (örn: hero_title, about_text):');
-      if (!key) return;
-
-      try {
-        const { error } = await supabaseClient
-          .from('site_content')
-          .insert({
-            sayfa: currentPage,
-            bolum_key: Security.sanitizeInput(key, { maxLength: 100 }),
-            icerik_tr: '',
-            sira: sections.length,
-            aktif: true
-          });
-
-        if (error) throw error;
-        App.toast('Bölüm eklendi', 'success');
-        await loadContent();
-      } catch (error) {
-        App.toast(error.message, 'error');
-      }
-    }
-    window.addNewSection = addNewSection;
-
-    async function uploadSectionPhoto(sectionId, input) {
-      const file = input.files[0];
-      if (!file) return;
-
-      try {
-        const ext = file.name.split('.').pop();
-        const filename = `site/${Date.now()}.${ext}`;
-
-        const { error: uploadError } = await supabaseClient
-          .storage
-          .from('property-photos')
-          .upload(filename, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabaseClient
-          .storage
-          .from('property-photos')
-          .getPublicUrl(filename);
-
-        document.getElementById(`photo-${sectionId}`).value = urlData.publicUrl;
-        App.toast('Foto yüklendi', 'success');
-      } catch (error) {
-        App.toast(error.message, 'error');
-      }
-    }
-    window.uploadSectionPhoto = uploadSectionPhoto;
-  </script>
+  <style>
+    .sc-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+    .sc-tab{border:1.5px solid #E2E8F0;background:#fff;border-radius:10px;padding:10px 16px;font-weight:700;color:#334155;cursor:pointer}
+    .sc-tab.on{background:#0A2A5E;color:#fff;border-color:#0A2A5E}
+    .sc-top{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px}
+    .sc-hint{flex:2;min-width:260px;font-size:13px;color:#1E3A8A;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:10px 14px;line-height:1.5}
+    .sc-legend{display:inline-flex;align-items:center;gap:5px;margin-left:8px;color:#475569}.sc-legend i{width:12px;height:12px;border-radius:3px;background:rgba(37,99,235,.18);border:2px solid #2563EB;display:inline-block}
+    .sc-split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(320px,1fr);gap:16px;align-items:start}
+    @media(max-width:1100px){.sc-split{grid-template-columns:1fr}}
+    .sc-preview{padding:0;overflow:hidden}
+    .sc-prevbar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #E2E8F0;background:#F8FAFC;font-size:12px;color:#64748B}
+    .sc-frame-wrap{background:#E2E8F0;display:flex;justify-content:center}
+    #frame{width:100%;height:78vh;border:0;background:#fff;transition:width .2s}
+    #frame.mob{width:390px}
+    .sc-side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+    .sc-empty{color:#64748B;font-size:14px;text-align:center;padding:24px 8px}
+    .sc-edit-head{display:flex;gap:6px;flex-wrap:wrap}
+    .sc-orig{margin-top:10px;font-size:13px;color:#475569}.sc-orig div{background:#F8FAFC;border-radius:8px;padding:8px 10px;margin-top:6px}
+    .sc-actions{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:12px;flex-wrap:wrap}
+    .sc-imgprev{width:100%;max-height:200px;object-fit:cover;border-radius:10px;background:#E2E8F0;margin:10px 0}
+    .sc-list{max-height:40vh;overflow:auto;display:flex;flex-direction:column;gap:4px}
+    .sc-item{display:flex;gap:8px;align-items:flex-start;text-align:left;border:1px solid #E2E8F0;background:#fff;border-radius:8px;padding:7px 9px;font-size:13px;color:#1E293B;cursor:pointer;width:100%}
+    .sc-item:hover{border-color:#93C5FD}.sc-item.sel{border-color:#2563EB;background:#EFF6FF}
+    .sc-item .t{flex-shrink:0;font-size:10px;font-weight:800;color:#2563EB;background:#DBEAFE;border-radius:4px;padding:2px 5px;margin-top:1px}
+    .sc-item .x{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+    .sc-item.ch .t{background:#2563EB;color:#fff}
+    .sc-brand{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+    .sc-brandprev{background:#fff;border:1.5px dashed #CBD5E1;border-radius:12px;padding:18px;display:flex;align-items:center;justify-content:center;min-height:100px}
+    .sc-brandprev img{max-height:70px;max-width:100%}
+    .sc-favprev{display:flex;gap:14px;align-items:center;background:#F8FAFC;border-radius:12px;padding:16px}
+    .sc-favprev img{border-radius:6px}
+  </style>
+  <script src="/admin/assets/supabase-config.js?v=20260929-cms"></script>
+  <script src="/admin/assets/security.js?v=20260929-cms"></script>
+  <script src="/admin/assets/auth.js?v=20260929-cms"></script>
+  <script src="/admin/assets/app.js?v=20260929-cms"></script>
+  <script src="/cms-safe.js?v=20260929-cms"></script>
+  <script src="/cms-content.js?v=20260929-cms" data-cms-noinit></script>
+  <script src="/admin/assets/rich-editor.js?v=20260929-cms"></script>
+  <script src="/admin/assets/site-content.js?v=20260929-cms"></script>
 </body>
 </html>

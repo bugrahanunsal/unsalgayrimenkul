@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Adminler - Admin Panel</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="/admin/assets/admin-icon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
+  <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
+  <meta name="theme-color" content="#0A2A5E">
   <link rel="stylesheet" href="/admin/assets/admin.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -145,8 +148,8 @@
         <div style="font-size: 18px; font-weight: 700;">Yeni Admin Ekle</div>
       </div>
       <form id="addForm" style="padding: 20px;">
-        <div class="alert alert-warning" style="margin-bottom: 16px;">
-          <strong>⚠️ Önemli:</strong> Kullanıcı zaten Supabase Auth'ta kayıtlı olmalı. Sadece rol atanacak.
+        <div class="alert alert-info" style="margin-bottom: 16px;">
+          ✉️ Kişinin e-postasına <b>davet</b> gönderilir. E-postadaki bağlantıya tıklayıp kendi şifresini belirler ve panele girer. Sitede zaten hesabı varsa sadece yetki verilir.
         </div>
         <div class="form-group">
           <label class="form-label">Email *</label>
@@ -159,24 +162,23 @@
         <div class="form-group">
           <label class="form-label">Rol *</label>
           <select id="addRole" class="form-select" required>
-            <option value="viewer">Viewer</option>
-            <option value="editor">Editor</option>
-            <option value="admin" selected>Admin</option>
-            <option value="super_admin">Super Admin</option>
+            <option value="admin" selected>Admin — ilan, blog, mesaj, e-posta (her şey, admin ekleme hariç)</option>
+            <option value="editor">Editör — içerik düzenler</option>
+            <option value="viewer">Görüntüleyici — sadece bakar</option>
           </select>
         </div>
         <div style="display: flex; gap: 12px; justify-content: flex-end;">
           <button type="button" onclick="closeAddAdmin()" class="btn btn-outline">İptal</button>
-          <button type="submit" class="btn btn-primary">➕ Ekle</button>
+          <button type="submit" class="btn btn-primary" id="addBtn">✉️ Davet Gönder</button>
         </div>
       </form>
     </div>
   </div>
 
-  <script src="/admin/assets/supabase-config.js?v=20260929-admin"></script>
-  <script src="/admin/assets/security.js?v=20260929-admin"></script>
-  <script src="/admin/assets/auth.js?v=20260929-admin"></script>
-  <script src="/admin/assets/app.js?v=20260929-admin"></script>
+  <script src="/admin/assets/supabase-config.js?v=20260929-cms"></script>
+  <script src="/admin/assets/security.js?v=20260929-cms"></script>
+  <script src="/admin/assets/auth.js?v=20260929-cms"></script>
+  <script src="/admin/assets/app.js?v=20260929-cms"></script>
 
   <script>
     let admins = [];
@@ -253,7 +255,7 @@
             </div>
             <div class="admin-actions">
               <button onclick="editAdmin('${a.id}')" class="btn btn-outline btn-sm" ${isCurrentUser ? 'disabled title="Kendi rolünüzü değiştiremezsiniz"' : ''}>✏️ Düzenle</button>
-              ${!isCurrentUser ? `<button onclick="deleteAdmin('${a.id}', '${Security.escapeHtml(a.email)}')" class="btn btn-danger btn-sm">🗑️</button>` : ''}
+              ${!isCurrentUser ? `<button onclick="deleteAdmin('${a.id}')" class="btn btn-danger btn-sm">🗑️</button>` : ''}
             </div>
           </div>
         `;
@@ -307,7 +309,8 @@
       }
     });
 
-    async function deleteAdmin(id, email) {
+    async function deleteAdmin(id) {
+      const email = ((admins.find(x => x.id === id) || {}).email) || '';
       const confirmed = await App.confirm(`"${email}" adminini silmek istediğinize emin misiniz?\n\nBu kullanıcı admin panele giremeyecek ama Supabase Auth hesabı silinmeyecek.`);
       if (!confirmed) return;
 
@@ -354,33 +357,26 @@
         return;
       }
 
+      const btn = document.getElementById('addBtn');
+      btn.disabled = true; btn.textContent = 'Gönderiliyor...';
       try {
-        // Önce auth.users'ta bu email var mı kontrol et
-        // Not: RLS nedeniyle client-side auth.users'a erişemeyiz, admin panelinde SQL fonksiyon gerekir
-        // Şimdilik direkt admin_users'a insert edelim, kullanıcı zaten auth'ta olmalı
-
-        const { data: existing } = await supabaseClient
-          .from('admin_users')
-          .select('id')
-          .eq('email', email)
-          .maybeSingle();
-
-        if (existing) {
-          App.toast('Bu email zaten admin listesinde', 'error');
-          return;
-        }
-
-        // Auth'taki kullanıcının ID'sini almak için bir RPC fonksiyonu gerekir
-        // Şimdilik uyarı gösterelim
-        App.toast('Kullanıcı önce Supabase Auth\'a kayıt olmalı. Kayıt olduktan sonra SQL ile ekleyin:', 'warning');
-
-        setTimeout(() => {
-          alert(`Kullanıcı önce ana siteden kayıt olsun (${email}).\n\nSonra Supabase SQL Editor'da:\n\nINSERT INTO admin_users (id, email, role, full_name)\nSELECT id, '${email}', '${role}', '${fullName}'\nFROM auth.users WHERE email = '${email}';`);
-        }, 500);
-
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) throw new Error('Oturum bulunamadı, tekrar giriş yapın.');
+        const r = await fetch('/api/admin/admin-ekle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+          body: JSON.stringify({ email, full_name: fullName, role })
+        });
+        let j = {}; try { j = await r.json(); } catch (_) {}
+        if (!r.ok || !j.ok) throw new Error(j.message || ('İşlem başarısız (' + r.status + ')'));
+        await Security.logSecurityEvent('admin_invited', { target_email: email, role }, 'warning');
+        App.toast(j.message, 'success', 'Admin eklendi');
         closeAddAdmin();
+        await loadAdmins();
       } catch (error) {
         App.toast(error.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = '✉️ Davet Gönder';
       }
     });
   </script>

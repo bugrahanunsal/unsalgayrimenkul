@@ -675,7 +675,7 @@ span.turyap-badge { color: #2563EB; }
 
     <div class="about-hero-content">
       <span class="about-eyebrow">EMLAK DANIŞMANI</span>
-      <h1>İsmail Ünsal</h1>
+      <h1 data-static-member="İsmail Ünsal">İsmail Ünsal</h1>
       <p class="about-role"><i class="fa-solid fa-building"></i>TURYAP Yetkili Gayrimenkul Danışmanı</p>
 
       <!-- DÜRÜST İSTATİSTİKLER: Marka odaklı, sayı yerine değer -->
@@ -735,7 +735,7 @@ span.turyap-badge { color: #2563EB; }
 
     <div class="about-hero-content">
       <span class="about-eyebrow">GAYRİMENKUL UZMANI</span>
-      <h1>Ramazan Aydemir</h1>
+      <h1 data-static-member="Ramazan Aydemir">Ramazan Aydemir</h1>
       <p class="about-role"><i class="fa-solid fa-building"></i>TURYAP Yetkili Gayrimenkul Uzmanı</p>
 
       <div class="about-trust-badges">
@@ -776,6 +776,33 @@ span.turyap-badge { color: #2563EB; }
     </div>
   </div>
 </section>
+
+<!-- EKİBİMİZ: panelde "Ekip" bölümünden eklenen üyeler (team-public.js) -->
+<section class="tm-section" id="teamSection" hidden>
+  <div class="tm-inner">
+    <span class="tm-eyebrow">EKİBİMİZ</span>
+    <h2 class="tm-title">Size Yardımcı Olacak Uzman Kadromuz</h2>
+    <div class="tm-grid"></div>
+  </div>
+</section>
+<style>
+.tm-section{background:#F8FAFC;padding:72px 20px}
+.tm-inner{max-width:1180px;margin:0 auto;text-align:center}
+.tm-eyebrow{display:inline-block;background:rgba(37,99,235,.1);color:#1D4ED8;font-weight:800;font-size:12px;letter-spacing:3px;padding:7px 16px;border-radius:999px}
+.tm-title{font-size:clamp(24px,3vw,34px);color:#0A2A5E;margin:14px 0 34px;font-weight:800}
+.tm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;text-align:left}
+.tm-card{background:#fff;border:1px solid #E5E7EB;border-radius:18px;overflow:hidden;box-shadow:0 8px 24px rgba(10,42,94,.06);display:flex;flex-direction:column}
+.tm-photo{aspect-ratio:4/4.2;background:linear-gradient(135deg,#0A2A5E,#2563EB);display:flex;align-items:center;justify-content:center}
+.tm-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.tm-initial{color:#fff;font-size:72px;font-weight:800}
+.tm-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:6px;flex:1}
+.tm-name{font-size:20px;color:#0A2A5E;margin:0;font-weight:800}
+.tm-role{color:#2563EB;font-weight:700;font-size:13px}
+.tm-bio{color:#4B5563;font-size:14px;line-height:1.6;margin:6px 0 0}
+.tm-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:12px}
+.tm-btn{display:inline-flex;align-items:center;gap:6px;border:1.5px solid #E2E8F0;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:700;color:#0A2A5E;text-decoration:none}
+.tm-btn:hover{border-color:#2563EB;color:#2563EB}.tm-btn.wa{background:#25D366;border-color:#25D366;color:#fff}
+</style>
 
 <section class="bio-section">
   <div class="bio-inner">
@@ -1005,5 +1032,9 @@ document.getElementById('langCurrent')?.addEventListener('click', () => {
 </script>
 
 <script src="/script.js?v=20260929-admin"></script>
+<script src="/cms-client.js?v=20260929-cms" defer></script>
+<script src="/team-public.js?v=20260929-cms" defer></script>
+<script src="/cms-safe.js?v=20260929-cms"></script>
+<script src="/cms-content.js?v=20260929-cms"></script>
 </body>
 </html>

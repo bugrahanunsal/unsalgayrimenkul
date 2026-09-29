@@ -17,6 +17,13 @@
 /de/ilan/*                  /ilan                         200
 /ru/ilan/*                  /ilan                         200
 /ar/ilan/*                  /ilan                         200
+# BLOG YAZISI: /blog/<slug> → blog-yazi.html (panelden yazılan yazılar)
+/blog/*                     /blog-yazi                    200
+/en/blog/*                  /blog-yazi                    200
+/fr/blog/*                  /blog-yazi                    200
+/de/blog/*                  /blog-yazi                    200
+/ru/blog/*                  /blog-yazi                    200
+/ar/blog/*                  /blog-yazi                    200
 # İngilizce
 /en                         /                             200
 /en/                        /                             200
@@ -45,6 +52,9 @@
 /sss/                       /faq                          301
 /sss.html                   /faq                          301
 /sikca-sorulan-sorular      /faq                          301
+
+# ---- Şifre sıfırlama / davet ----
+/sifre-sifirla               /sifre-belirle                200
 
 # ---- Türkçe/İngilizce alias'lar ----
 /hakkimda                   /hakkimizda                   301

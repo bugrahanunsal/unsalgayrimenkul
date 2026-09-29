@@ -136,7 +136,8 @@
     }
 
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const isMarketing = !urlParams.get('token') && !!urlParams.get('m');
+    const token = urlParams.get('token') || urlParams.get('m');
     const content = document.getElementById('content');
 
     if (!token || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token)) {
@@ -186,7 +187,7 @@
           auth: { persistSession: false }
         });
 
-        const { data, error } = await supabase.rpc('unsubscribe_by_token', {
+        const { data, error } = await supabase.rpc(isMarketing ? 'marketing_unsubscribe' : 'unsubscribe_by_token', {
           p_token: t,
           p_reason: reason
         });
