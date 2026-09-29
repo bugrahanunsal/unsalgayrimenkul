@@ -157,7 +157,7 @@
 .featured-section::before { content: ''; position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%); }
 .featured-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; position: relative; z-index: 2; }
 @media (max-width: 968px) { .featured-inner { grid-template-columns: 1fr; gap: 40px; } }
-.featured-image-wrap { height: 480px; border-radius: 20px; position: relative; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.4); background: linear-gradient(135deg, #1B4380 0%, #2C5282 100%); }
+.featured-image-wrap { display:block; color:inherit; text-decoration:none; background-size:cover !important; background-position:center !important; height: 480px; border-radius: 20px; position: relative; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.4); background: linear-gradient(135deg, #1B4380 0%, #2C5282 100%); }
 .featured-image-tag { position: absolute; top: 24px; left: 24px; background: var(--orange); color: #FFFFFF; padding: 8px 18px; border-radius: 50px; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; z-index: 3; }
 .featured-image-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.5) 100%); display: flex; align-items: flex-end; padding: 32px; z-index: 2; }
 .featured-image-overlay-content .num { font-size: 32px; font-weight: 800; color: #60A5FA; display: block; }
@@ -1041,39 +1041,26 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
   </div>
 </section>
 
-<section class="featured-section">
+<section class="featured-section" id="ozelFirsat" data-cms-skip hidden>
   <div class="featured-inner">
-    <div class="featured-image-wrap">
-      <span class="featured-image-tag" data-i18n="featured.tag">💎 ÖZEL FIRSAT</span>
-      <i class="fa-solid fa-mountain-sun featured-image-icon"></i>
+    <a class="featured-image-wrap" id="ofImg" href="#" aria-label="İlanı incele">
+      <span class="featured-image-tag"><span data-i18n="featured.tag">💎 ÖZEL FIRSAT</span></span>
+      <i class="fa-solid fa-mountain-sun featured-image-icon" id="ofIcon"></i>
       <div class="featured-image-overlay">
         <div class="featured-image-overlay-content">
-          <span class="num">3.500.000 ₺</span>
-          <span class="label" data-i18n="featured.price.label">Akköy, Yalova • Konut İmarlı</span>
+          <span class="num notranslate" translate="no" id="ofPrice"></span>
+          <span class="label" id="ofSub"></span>
         </div>
       </div>
-    </div>
+    </a>
     <div class="featured-content">
-      <span class="featured-location">
-        <i class="fa-solid fa-location-dot"></i> <span data-i18n="featured.location">AKKÖY, YALOVA</span>
-      </span>
-      <h2 data-i18n="featured.title">Deniz Manzaralı 435 m² Yatırımlık Arsa</h2>
-      <p data-i18n="featured.description">İstanbul'a yakın, gelişen Akköy bölgesinde, deniz manzaralı, konut imarlı eşsiz arsa fırsatı. 0.30 emsalli, villa veya apart projesi için ideal. Profesyonel danışmanlık ile yatırımınızı güvence altına alın.</p>
-
-      <div class="featured-stats">
-        <div class="featured-stat"><span class="num">435 m²</span><span class="label" data-i18n="featured.stat.area">ALAN</span></div>
-        <div class="featured-stat"><span class="num">0.30</span><span class="label" data-i18n="featured.stat.emsal">EMSAL</span></div>
-        <div class="featured-stat"><span class="num" data-i18n="featured.stat.imar.value">Konut</span><span class="label" data-i18n="featured.stat.imar">İMAR</span></div>
-        <div class="featured-stat"><span class="num">607/4</span><span class="label" data-i18n="featured.stat.parsel">ADA/PARSEL</span></div>
-      </div>
-
+      <span class="featured-location"><i class="fa-solid fa-location-dot"></i> <span id="ofLoc"></span></span>
+      <h2 id="ofTitle"></h2>
+      <p id="ofDesc"></p>
+      <div class="featured-stats" id="ofStats"></div>
       <div class="featured-cta">
-        <a href="yalova-satilik-arsa.html" class="btn-orange">
-          <i class="fa-solid fa-eye"></i> <span data-i18n="featured.cta.details">DETAYLARI GÖR</span>
-        </a>
-        <a href="https://wa.me/905075188482?text=Akköy%20arsa%20hakkında%20bilgi%20almak%20istiyorum" class="btn-outline">
-          <i class="fa-brands fa-whatsapp"></i> <span data-i18n="featured.cta.info">BİLGİ AL</span>
-        </a>
+        <a href="#" class="btn-orange" id="ofDetail"><i class="fa-solid fa-eye"></i> <span data-i18n="featured.cta.details">DETAYLARI GÖR</span></a>
+        <a href="https://wa.me/905075188482" class="btn-outline" id="ofWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> <span data-i18n="featured.cta.info">BİLGİ AL</span></a>
       </div>
     </div>
   </div>
@@ -1550,6 +1537,8 @@ loadFromURL();
   document.addEventListener('iu:header-injected', later);
 })();
 </script>
+<script src="/cms-client.js?v=20260929-of" defer></script>
+<script src="/ozel-firsat.js?v=20260929-of" defer></script>
 <script src="/cms-safe.js?v=20260929-cms"></script>
 <script src="/cms-content.js?v=20260929-cms"></script>
 </body>

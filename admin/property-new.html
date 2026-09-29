@@ -316,6 +316,12 @@
                   <input type="checkbox" name="one_cikan"> Bu ilanı ana sayfada öne çıkar
                 </label>
               </div>
+              <div class="form-group">
+                <label class="form-label">💎 Özel Fırsat</label>
+                <label class="form-checkbox" style="margin-top: 12px;">
+                  <input type="checkbox" name="ozel_firsat"> Ana sayfadaki büyük "Özel Fırsat" vitrininde göster <small style="color:var(--text-muted);">(aynı anda sadece 1 ilan)</small>
+                </label>
+              </div>
 
               <div class="form-group">
                 <label class="form-label">Abonelere Duyur</label>
@@ -345,10 +351,10 @@
     </main>
   </div>
 
-  <script src="/admin/assets/supabase-config.js?v=20260929-cms"></script>
-  <script src="/admin/assets/security.js?v=20260929-cms"></script>
-  <script src="/admin/assets/auth.js?v=20260929-cms"></script>
-  <script src="/admin/assets/app.js?v=20260929-cms"></script>
+  <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
+  <script src="/admin/assets/security.js?v=20260929-of"></script>
+  <script src="/admin/assets/auth.js?v=20260929-of"></script>
+  <script src="/admin/assets/app.js?v=20260929-of"></script>
 
   <script>
     let uploadedPhotos = []; // {file, url, name}
@@ -464,6 +470,13 @@
             balkonlu: fd.get('balkonlu') === 'on'
           };
 
+          // 💎 Özel fırsat: tek ilan kuralı
+          const ozelFirsat = fd.get('ozel_firsat') === 'on';
+          if (ozelFirsat) {
+            const other = await App.findOzelFirsat(null);
+            if (other) throw new Error(App.ozelFirsatError(other));
+          }
+
           // İlan verisi
           const propertyData = {
             baslik_tr: Security.sanitizeInput(fd.get('baslik_tr'), { maxLength: 200 }),
@@ -486,6 +499,7 @@
             emsal: Security.sanitizeInput(fd.get('emsal'), { maxLength: 20 }) || null,
             ozellikler,
             one_cikan: fd.get('one_cikan') === 'on',
+            ...(ozelFirsat || (typeof property !== 'undefined' && property && property.ozel_firsat) ? { ozel_firsat: ozelFirsat } : {}),
             durum: fd.get('durum') || 'aktif',
             turyap_link: fd.get('turyap_link') || null,
             slug: App.slugify(fd.get('baslik_tr')) + '-' + Date.now()
@@ -555,7 +569,7 @@
 
         } catch (error) {
           console.error('Save error:', error);
-          App.toast(error.message, 'error', 'Hata');
+          App.toast((/ozel_firsat_tek|duplicate key.*ozel_firsat/i.test(error.message || '') ? '💎 Özel Fırsat zaten başka bir ilanda seçili. Aynı anda sadece 1 ilan olabilir.' : error.message), 'error', 'Hata');
           btn.disabled = false;
           btnText.textContent = '💾 İlanı Kaydet';
           btnLoader.style.display = 'none';

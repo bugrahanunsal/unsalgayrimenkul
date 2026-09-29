@@ -264,6 +264,24 @@ const App = {
   },
 
   /**
+   * 💎 Özel Fırsat: aynı anda sadece 1 ilan olabilir.
+   * Başka bir ilan zaten seçiliyse onu döndürür (id, baslik_tr), yoksa null.
+   */
+  async findOzelFirsat(exceptId) {
+    let q = supabaseClient.from('properties').select('id,baslik_tr').eq('ozel_firsat', true).limit(1);
+    if (exceptId) q = q.neq('id', exceptId);
+    const { data, error } = await q;
+    if (error) {
+      if (/ozel_firsat/.test(error.message || '')) throw new Error('Özel Fırsat özelliği için veritabanı kurulumu gerekli (SQL dosyasını çalıştırın).');
+      throw error;
+    }
+    return (data && data[0]) || null;
+  },
+  ozelFirsatError(other) {
+    return `💎 Özel Fırsat zaten seçili: "${other.baslik_tr || 'bir ilan'}". Aynı anda sadece 1 ilan özel fırsat olabilir. Önce o ilanın işaretini kaldırın.`;
+  },
+
+  /**
    * Confirmation dialog
    */
   async confirm(message, title = 'Onay') {

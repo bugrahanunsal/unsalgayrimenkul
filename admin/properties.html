@@ -93,10 +93,10 @@
     </main>
   </div>
 
-  <script src="/admin/assets/supabase-config.js?v=20260929-cms"></script>
-  <script src="/admin/assets/security.js?v=20260929-cms"></script>
-  <script src="/admin/assets/auth.js?v=20260929-cms"></script>
-  <script src="/admin/assets/app.js?v=20260929-cms"></script>
+  <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
+  <script src="/admin/assets/security.js?v=20260929-of"></script>
+  <script src="/admin/assets/auth.js?v=20260929-of"></script>
+  <script src="/admin/assets/app.js?v=20260929-of"></script>
 
   <script>
     let allProperties = [];
@@ -110,15 +110,31 @@
       setupFilters();
     })();
 
+
+    async function toggleOzelFirsat(id) {
+      const p = (typeof allProperties !== 'undefined' ? allProperties : properties).find(x => x.id === id);
+      if (!p) return;
+      try {
+        if (!p.ozel_firsat) {
+          const other = await App.findOzelFirsat(id);
+          if (other) { App.toast(App.ozelFirsatError(other), 'error', 'Özel Fırsat'); return; }
+          if (p.durum !== 'aktif' && !(await App.confirm('Bu ilan aktif değil; aktif olana kadar ana sayfada görünmez. Yine de özel fırsat yapılsın mı?'))) return;
+        }
+        const { error } = await supabaseClient.from('properties').update({ ozel_firsat: !p.ozel_firsat }).eq('id', id);
+        if (error) throw error;
+        App.toast(p.ozel_firsat ? 'Özel Fırsat vitrininden kaldırıldı' : '💎 Ana sayfada Özel Fırsat olarak gösteriliyor', 'success');
+        await loadProperties();
+      } catch (e) {
+        App.toast(/ozel_firsat_tek|duplicate key/i.test(e.message || '') ? '💎 Özel Fırsat zaten başka bir ilanda seçili.' : e.message, 'error');
+      }
+    }
+    window.toggleOzelFirsat = toggleOzelFirsat;
+
     async function loadProperties() {
       try {
         const { data, error } = await supabaseClient
           .from('properties')
-          .select(`
-            id, baslik_tr, kategori, tip, fiyat, para_birimi,
-            ilce, m2, oda_sayisi, durum, goruntulenme, created_at,
-            property_images(url, ana_foto)
-          `)
+          .select('*, property_images(url, ana_foto)')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -162,7 +178,7 @@
               }
             </td>
             <td>
-              <div style="font-weight: 600;">${Security.escapeHtml(p.baslik_tr || 'İsimsiz')}</div>
+              <div style="font-weight: 600;">${p.ozel_firsat ? '<span class="badge badge-info" style="margin-right:6px;" title="Ana sayfa Özel Fırsat vitrini">💎 ÖZEL FIRSAT</span>' : ''}${Security.escapeHtml(p.baslik_tr || 'İsimsiz')}</div>
               <div style="font-size: 12px; color: var(--text-muted);">
                 ${p.m2 ? p.m2 + ' m² • ' : ''}${Security.escapeHtml(p.oda_sayisi || '')}
               </div>
@@ -183,6 +199,7 @@
             </td>
             <td>
               ${p.durum === 'aktif' ? `<a href="${Security.escapeHtml(p.slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug) ? '/ilan/' + p.slug : '/ilan?id=' + encodeURIComponent(p.id))}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" title="İlan sayfasını sitede aç">👁️</a>` : ''}
+              <button onclick="toggleOzelFirsat('${p.id}')" class="btn ${p.ozel_firsat ? 'btn-primary' : 'btn-outline'} btn-sm" title="${p.ozel_firsat ? 'Özel Fırsat vitrininden kaldır' : 'Ana sayfada Özel Fırsat yap'}">💎</button>
               ${p.durum === 'aktif' ? `<button onclick="App.announceProperty('${p.id}')" class="btn btn-outline btn-sm" title="İlgi alanı uyan abonelere e-posta ile duyur">📣</button>` : ''}
               <a href="/admin/property-edit.html?id=${p.id}" class="btn btn-outline btn-sm">✏️</a>
               <button onclick="deleteProperty('${p.id}')" class="btn btn-danger btn-sm">🗑️</button>
