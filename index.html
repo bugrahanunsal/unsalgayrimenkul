@@ -289,6 +289,10 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
   .hero-eyebrow { flex-wrap: nowrap !important; white-space: nowrap !important; font-size: min(11px, 2.8vw) !important; letter-spacing: 0.06em !important; padding: 7px 12px !important; max-width: 96% !important; }
   .hero-eyebrow-sep { margin: 0 0.7em; width: 4px; height: 4px; }
   .hero-eyebrow-brand { letter-spacing: 0.12em; }
+  /* Çok uzun dillerde en küçük boyutta bile sığmazsa: iki satır, taşma yok */
+  .hero-eyebrow.is-wrapped { flex-wrap: wrap !important; white-space: normal !important; row-gap: 2px !important; border-radius: 14px !important; }
+  .hero-eyebrow.is-wrapped .hero-eyebrow-sep { display: none; }
+  .hero-eyebrow.is-wrapped > span { flex-basis: 100%; text-align: center; }
   .hero h1 {
     font-size: 32px !important;
     line-height: 1.15 !important;
@@ -1497,5 +1501,51 @@ loadFromURL();
 <script src="/frontend-supabase.js"></script>
 
 <script src="/faq-yalova-emlak.js?v=20260928-gt"></script>
+<script>
+/* Hero rozeti (TURYAP • slogan): her dilde tek satıra sığdır.
+   Çeviri metni değiştirince / ekran dönünce yeniden ölçer. Sığmıyorsa
+   0.25px adımlarla küçültür (en az 7.5px); yine sığmazsa iki satıra geçer. */
+(function () {
+  var e = document.querySelector('.hero-eyebrow');
+  if (!e) return;
+  var busy = false;
+  // Yazıların gerçek genişliği > rozetin iç alanı (iç boşluk hariç) mi?
+  function tooWide() {
+    var cs = getComputedStyle(e);
+    var avail = e.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    var used = 0;
+    for (var i = 0; i < e.children.length; i++) {
+      var c = e.children[i], m = getComputedStyle(c);
+      if (m.display === 'none') continue;
+      used += c.getBoundingClientRect().width + parseFloat(m.marginLeft) + parseFloat(m.marginRight);
+    }
+    return used > avail + 0.5;
+  }
+  function fit() {
+    if (busy) return; busy = true;
+    e.style.removeProperty('font-size');
+    e.classList.remove('is-wrapped');
+    if (window.innerWidth <= 540) {
+      var fs = parseFloat(getComputedStyle(e).fontSize), n = 0;
+      while (tooWide() && fs > 7.5 && n++ < 40) {
+        fs -= 0.25;
+        e.style.setProperty('font-size', fs + 'px', 'important');
+      }
+      if (tooWide()) {
+        e.style.removeProperty('font-size');
+        e.classList.add('is-wrapped');
+      }
+    }
+    busy = false;
+  }
+  var t;
+  function later() { clearTimeout(t); t = setTimeout(fit, 60); }
+  fit();
+  window.addEventListener('resize', later);
+  window.addEventListener('load', later);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(later);
+  if (window.MutationObserver) new MutationObserver(later).observe(e, { childList: true, characterData: true, subtree: true });
+})();
+</script>
 </body>
 </html>
