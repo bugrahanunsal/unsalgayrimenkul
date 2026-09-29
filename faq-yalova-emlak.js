@@ -295,9 +295,7 @@
     container.innerHTML = `
       <section class="iu-faq-section" style="max-width:900px;margin:80px auto;padding:0 24px;">
         <div style="text-align:center;margin-bottom:48px;">
-          <span style="display:inline-block;background:linear-gradient(135deg, #F49B1C, #d4831a);color:#0A2A5E;padding:8px 22px;border-radius:24px;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;box-shadow:0 4px 12px rgba(244,155,28,0.3);">
-            📋 FAQ
-          </span>
+          <span class="iu-faq-badge notranslate" translate="no" style="display:inline-block;background:rgba(10,42,94,0.06);color:#0A2A5E;border:1.5px solid rgba(10,42,94,0.18);padding:9px 24px 9px 28px;border-radius:999px;font-size:15px;font-weight:800;letter-spacing:4px;text-transform:uppercase;line-height:1;margin-bottom:16px;">FAQ</span>
           <h2 style="font-size:36px;color:#0A2A5E;margin:16px 0 12px;font-weight:800;line-height:1.2;font-family:'League Spartan','Montserrat',sans-serif;">${esc(title)}</h2>
           <p style="color:#6B7280;font-size:16px;max-width:600px;margin:0 auto;">${esc(subtitle)}</p>
         </div>
