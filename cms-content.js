@@ -148,7 +148,9 @@
 
   function init() {
     if (!document.body) return;
-    const page = pageKey(location.pathname);
+    // Sayfaya panelden özel adres (slug) verildiyse sunucu asıl sayfa anahtarını <html data-iu-page> ile bildirir
+    const real = document.documentElement.getAttribute('data-iu-page') || '';
+    const page = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(real) ? real : pageKey(location.pathname);
     const res = scan(document);
     res.texts.forEach(t => t.el.setAttribute('data-cms-h', t.key));
     res.imgs.forEach(i => i.el.setAttribute('data-cms-i', i.key));

@@ -107,18 +107,26 @@
     const cat = (TIP[p.tip] || '') + ' ' + (KATEGORI[p.kategori] || 'Gayrimenkul');
     const loc = [p.mahalle, p.ilce, 'Yalova'].filter(Boolean).join(', ');
     const price = window.IUFrontend.formatPrice(p.fiyat, p.para_birimi);
-    const url = SITE + window.IUFrontend.listingUrl(p);
-    const desc = (loc + ' — ' + cat + ' — ' + price + '. ' + (p.aciklama_tr || '')).replace(/\s+/g, ' ').slice(0, 158);
-    document.title = t + ' | ' + cat + ' ' + (p.ilce || 'Yalova') + ' — TURYAP İsmail Ünsal';
-    setMeta('name', 'description', desc);
-    setMeta('property', 'og:title', t);
-    setMeta('property', 'og:description', desc);
-    setMeta('property', 'og:url', url);
-    setMeta('property', 'og:type', 'product');
-    if (images[0]) setMeta('property', 'og:image', images[0]);
-    let c = document.head.querySelector('link[rel="canonical"]');
-    if (!c) { c = document.createElement('link'); c.rel = 'canonical'; document.head.appendChild(c); }
-    c.href = url;
+    // Canonical her zaman Türkçe ana adres (dil sürümleri aynı içeriğin çevirisi)
+    const url = (p.slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug) && p.slug.length <= 220)
+      ? SITE + '/ilan/' + p.slug : SITE + window.IUFrontend.listingUrl(p);
+    const desc = (typeof p.seo_aciklama === 'string' && p.seo_aciklama.trim()) ? p.seo_aciklama.trim()
+      : (loc + ' — ' + cat + ' — ' + price + '. ' + (p.aciklama_tr || '')).replace(/\s+/g, ' ').slice(0, 158);
+    // Sunucu (functions/_middleware.js) başlık/açıklama/canonical'ı zaten yazdıysa (data-iu-seo) dokunma;
+    // yazamadıysa (yedek) panelde girilen SEO alanlarını ya da otomatik metni kullan.
+    if (!document.documentElement.hasAttribute('data-iu-seo')) {
+      document.title = (typeof p.seo_baslik === 'string' && p.seo_baslik.trim()) ? p.seo_baslik.trim()
+        : t + ' | ' + cat + ' ' + (p.ilce || 'Yalova') + ' — TURYAP İsmail Ünsal';
+      setMeta('name', 'description', desc);
+      setMeta('property', 'og:title', document.title);
+      setMeta('property', 'og:description', desc);
+      setMeta('property', 'og:url', url);
+      setMeta('property', 'og:type', 'product');
+      if (images[0]) setMeta('property', 'og:image', images[0]);
+      let c = document.head.querySelector('link[rel="canonical"]');
+      if (!c) { c = document.createElement('link'); c.rel = 'canonical'; document.head.appendChild(c); }
+      c.href = url;
+    }
 
     const ld = {
       '@context': 'https://schema.org',

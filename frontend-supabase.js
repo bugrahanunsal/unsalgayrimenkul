@@ -28,6 +28,16 @@
   };
 
   let sbClient;
+  // Sayfanın asıl yolu: panelden özel adres (slug) verildiyse sunucu asıl sayfayı <html data-iu-page> ile bildirir.
+  // Kategori (satılık/kiralık, daire/arsa...) tespiti adres değişse de doğru çalışsın.
+  function logicalPath() {
+    const real = document.documentElement.getAttribute('data-iu-page') || '';
+    if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(real)) {
+      const m = window.location.pathname.toLowerCase().match(/^\/(en|fr|de|ru|ar)(?=\/|$)/);
+      return (m ? m[0] : '') + (real === 'index' ? '/' : '/' + real);
+    }
+    return window.location.pathname.toLowerCase();
+  }
   function init() {
     if (!window.supabase) { console.warn('[Frontend] Supabase SDK yüklenmemiş'); return null; }
     if (!sbClient) {
@@ -519,7 +529,7 @@
 
   async function loadCategoryPageProperties() {
     // Blog, hakkımızda, iletişim, hesabım vs. gibi sayfalarda kategori render etme
-    const pathname = window.location.pathname.toLowerCase();
+    const pathname = logicalPath();
     const skipPaths = ['/blog', '/hakkimizda', '/hakkimda', '/iletisim', '/contact',
                        '/hesabim', '/account', '/sss', '/faq', '/verify', '/unsubscribe', '/admin', '/ilan'];
     if (skipPaths.some(p => pathname.includes(p))) {
@@ -637,7 +647,7 @@
   // ==================== OTOMATİK FAQ INJECTION ====================
 
   function autoInjectFAQ() {
-    const pathname = window.location.pathname.toLowerCase();
+    const pathname = logicalPath();
     if (pathname.includes('/sss') || pathname.includes('/faq')) return;
     if (pathname.includes('/ilan')) return;       // ilan detay sayfası
     if (pathname.includes('/hesabim') || pathname.includes('/account')) return;

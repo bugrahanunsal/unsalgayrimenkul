@@ -40,7 +40,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20260929-6dil';
+  const SITE_VERSION = '20260930-seo';
 
   async function loadAllScripts() {
     try {
@@ -172,8 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
   faqLink.textContent = 'FAQ';
   faqLink.setAttribute('data-i18n', 'nav.sss');
 
-  // Aktif sayfa kontrolü
-  const p = window.location.pathname.toLowerCase();
+  // Aktif sayfa kontrolü (özel adreste asıl sayfa anahtarı <html data-iu-page> ile gelir)
+  const p = document.documentElement.getAttribute('data-iu-page') === 'faq' ? '/faq' : window.location.pathname.toLowerCase();
   if (p.includes('/faq') || p.includes('/sss')) {
     faqLink.className = 'active';
   }
@@ -202,9 +202,17 @@ document.addEventListener('DOMContentLoaded', () => {
 (function() {
   const path = window.location.pathname;
   const m = path.match(/^\/(en|fr|de|ru|ar)(\/|$)/);
-  if (!m) return; // Türkçe (kök URL) — rewrite gereksiz
-  const lang = m[1];
-  const prefix = '/' + lang;
+  // Panelden (SEO Ayarları) adresi değiştirilen sayfalar: sunucu <html data-iu-slugs="eski=yeni,..."> verir.
+  // Menü/kart gibi sonradan eklenen linkler de doğrudan yeni adrese gitsin (yönlendirme beklemeden).
+  const SLUGS = {};
+  String(document.documentElement.getAttribute('data-iu-slugs') || '').split(',').forEach(pair => {
+    const kv = pair.split('=');
+    if (kv.length === 2 && /^[a-z0-9-]{1,80}$/.test(kv[0]) && /^[a-z0-9-]{1,80}$/.test(kv[1])) SLUGS[kv[0]] = kv[1];
+  });
+  const hasSlugs = Object.keys(SLUGS).length > 0;
+  if (!m && !hasSlugs) return; // Türkçe (kök URL) ve özel adres yok — rewrite gereksiz
+  const lang = m ? m[1] : '';
+  const prefix = lang ? '/' + lang : '';
 
   // Not: ".html" uzantısı MUTLAKA kaldırılır. Cloudflare Pages "/ar/x.html"
   // isteğini temiz URL'ye ("/x") 308 ile yönlendirip dil önekini düşürüyordu.
@@ -231,6 +239,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (/\.[a-z0-9]{2,5}$/i.test(last) && !/\.html?$/i.test(last)) return href;  // resim/pdf/xml
     p = p.replace(LANG_RE, '') || '/';
     p = p.replace(/\/index\.html?$/i, '/').replace(/\.html?$/i, '');
+    const mapped = SLUGS[p.replace(/^\/+|\/+$/g, '').toLowerCase()];
+    if (mapped) p = '/' + mapped;
+    if (!prefix) return mapped ? p + tail : href;   // Türkçe: yalnızca adresi değişen sayfalara dokun
     return prefix + (p === '/' ? '/' : p) + tail;
   }
 
@@ -292,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (r !== h) a.setAttribute('href', r);
   }, true);
 
-  console.log('[LangPreserve] Aktif dil:', lang, '— tüm internal linkler', prefix, 'ile prefix\'lendi');
+  if (lang) console.log('[LangPreserve] Aktif dil:', lang, '— tüm internal linkler', prefix, 'ile prefix\'lendi');
 })();
 
 // ==================== LANGUAGE SWITCHER ====================

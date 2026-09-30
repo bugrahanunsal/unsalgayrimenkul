@@ -23,14 +23,24 @@
   const currentLang = langMatch ? langMatch[1] : 'tr';
   const langPrefix = currentLang === 'tr' ? '' : '/' + currentLang;
 
+  // Panelden (SEO Ayarları) adresi değiştirilen sayfalar: sunucu <html data-iu-slugs="eski=yeni,..."> verir
+  const SLUGS = {};
+  String(document.documentElement.getAttribute('data-iu-slugs') || '').split(',').forEach(function (pair) {
+    const kv = pair.split('=');
+    if (kv.length === 2 && /^[a-z0-9-]{1,80}$/.test(kv[0]) && /^[a-z0-9-]{1,80}$/.test(kv[1])) SLUGS[kv[0]] = kv[1];
+  });
+  const REAL_PAGE = (document.documentElement.getAttribute('data-iu-page') || '').match(/^[a-z0-9-]{1,80}$/) ? document.documentElement.getAttribute('data-iu-page') : '';
+
   // Language-aware URL builder
   function lp(page) {
     // .html uzantısız temiz URL: Cloudflare "/ar/x.html" → "/x" yönlendirmesi dili düşürüyordu
-    return langPrefix + '/' + page.replace(/^\//, '').replace(/\.html$/i, '');
+    let p = page.replace(/^\//, '').replace(/\.html$/i, '');
+    if (SLUGS[p]) p = SLUGS[p];
+    return langPrefix + '/' + p;
   }
 
-  // Determine which menu item is active from URL
-  const cleanPath = path.replace(/^\/(en|fr|de|ru|ar)/, '') || '/';
+  // Determine which menu item is active from URL (özel adreste sayfanın asıl anahtarı kullanılır)
+  const cleanPath = REAL_PAGE ? (REAL_PAGE === 'index' ? '/' : '/' + REAL_PAGE) : (path.replace(/^\/(en|fr|de|ru|ar)/, '') || '/');
   function isActive(match) {
     if (match === '/') return cleanPath === '/' || cleanPath === '/index.html';
     if (Array.isArray(match)) return match.some(m => cleanPath.includes(m));

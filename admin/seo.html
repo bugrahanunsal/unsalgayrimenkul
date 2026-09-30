@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>SEO Ayarları - Admin Panel</title>
+  <link rel="icon" type="image/svg+xml" href="/admin/assets/admin-icon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
+  <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
+  <meta name="theme-color" content="#0A2A5E">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
+  <link rel="stylesheet" href="/admin/assets/seo-admin.css?v=20260930-seo1">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">🔎 SEO Ayarları</h1>
+        <div class="topbar-actions">
+          <a href="/" target="_blank" rel="noopener" class="btn btn-outline btn-sm">🌐 Siteyi Aç</a>
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+      <div class="page-content">
+        <div id="setupAlert" class="alert alert-warning" hidden>
+          <b>Veritabanı kurulumu gerekli.</b> SEO ayarlarını kaydedebilmek için Supabase'de
+          <b>supabase-seo-2026-09-30.sql</b> dosyasını bir kez çalıştırın (Supabase → SQL Editor → New query → yapıştır → RUN).
+          Şu an sayfalardaki mevcut değerleri görüyorsunuz; kurulumdan sonra buradan değiştirebilirsiniz.
+        </div>
+
+        <div class="seo-intro">
+          <div class="seo-intro-text">
+            Her sayfanın <b>Google'da ve paylaşımlarda nasıl görüneceğini</b> buradan yönetin: odak anahtar kelime, SEO başlığı,
+            adres (slug), meta açıklama ve sayfa fotoğrafı. Değişiklikler kaydettikten sonra <b>en geç 1 dakika</b> içinde sitede yayında olur.
+            Adres değişirse <b>eski adres otomatik olarak yeni adrese yönlenir</b> (Google sıralaması korunur).
+          </div>
+          <div class="seo-legend" aria-label="Renklerin anlamı">
+            <span><i class="dot good"></i>İyi</span><span><i class="dot ok"></i>Geliştirilebilir</span><span><i class="dot bad"></i>Sorunlu</span>
+          </div>
+        </div>
+
+        <div class="seo-tabs" role="tablist" aria-label="İçerik türü">
+          <button type="button" class="seo-tab on" data-tab="sayfa" role="tab" aria-selected="true">📄 Sayfalar <span class="cnt" id="cnt-sayfa"></span></button>
+          <button type="button" class="seo-tab" data-tab="ilan" role="tab" aria-selected="false">🏠 İlanlar <span class="cnt" id="cnt-ilan"></span></button>
+          <button type="button" class="seo-tab" data-tab="blog" role="tab" aria-selected="false">📝 Blog yazıları <span class="cnt" id="cnt-blog"></span></button>
+        </div>
+
+        <div class="seo-tools">
+          <input id="q" type="search" class="form-input" placeholder="Sayfa, başlık veya anahtar kelime ara…" aria-label="Ara">
+          <div class="seo-filter" role="group" aria-label="Filtre">
+            <button type="button" class="on" data-f="">Tümü</button>
+            <button type="button" data-f="fix">Düzeltilecekler</button>
+            <button type="button" data-f="changed">Değiştirdiklerim</button>
+          </div>
+        </div>
+
+        <div id="list" class="seo-list" aria-live="polite"><div class="loading">Yükleniyor…</div></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ============ DÜZENLEYİCİ ============ -->
+  <div id="ed" class="seo-modal" hidden>
+    <div class="seo-sheet" role="dialog" aria-modal="true" aria-labelledby="edTitle">
+      <div class="seo-head">
+        <span id="edFace" class="face" aria-hidden="true"></span>
+        <div class="seo-head-t">
+          <div id="edTitle" class="seo-head-name"></div>
+          <a id="edOpen" class="seo-head-link" target="_blank" rel="noopener"></a>
+        </div>
+        <div class="seo-head-nav">
+          <button type="button" id="edPrev" class="icon-btn" title="Önceki" aria-label="Önceki">‹</button>
+          <button type="button" id="edNext" class="icon-btn" title="Sonraki" aria-label="Sonraki">›</button>
+          <button type="button" id="edClose" class="icon-btn" title="Kapat (Esc)" aria-label="Kapat">×</button>
+        </div>
+      </div>
+
+      <div class="seo-body">
+        <!-- Odak anahtar kelime -->
+        <section class="yo-sec">
+          <h3 class="yo-h">Odak anahtar kelime</h3>
+          <label class="form-label" for="fOdak">Odak anahtar kelime</label>
+          <input id="fOdak" class="form-input" maxlength="100" autocomplete="off" placeholder="ör. yalova satılık daire">
+          <p class="yo-help">Bu sayfanın Google'da bulunmasını istediğiniz ana kelime veya ifade. Başlık, adres ve açıklama bu kelimeye göre değerlendirilir.</p>
+          <div id="odakWarn" class="yo-warn" hidden></div>
+        </section>
+
+        <!-- Arama görünümü -->
+        <section class="yo-sec">
+          <h3 class="yo-h">Arama görünümü</h3>
+          <p class="yo-help" style="margin-top:-4px">Sayfanın Google arama sonuçlarında nasıl görüneceği.</p>
+          <div class="gp-bar">
+            <div class="form-label" style="margin:0">Google önizlemesi</div>
+            <div class="seg" role="group" aria-label="Önizleme cihazı">
+              <button type="button" data-dev="mobile" class="on">📱 Mobil</button>
+              <button type="button" data-dev="desktop">🖥️ Masaüstü</button>
+            </div>
+          </div>
+          <div id="gp" class="gp mobile" aria-label="Google önizlemesi">
+            <div class="gp-site"><span class="gp-fav"><img src="/favicon-32.png" alt=""></span><span><span class="gp-name">TURYAP İsmail Ünsal</span><span class="gp-url" id="gpUrl"></span></span><span class="gp-dots" aria-hidden="true">⋮</span></div>
+            <div class="gp-title" id="gpTitle"></div>
+            <div class="gp-row"><div class="gp-desc"><span class="gp-date" id="gpDate"></span><span id="gpDesc"></span></div><div class="gp-img" id="gpImg"></div></div>
+          </div>
+
+          <div class="yo-field">
+            <div class="yo-lab"><label class="form-label" for="fTitle">SEO başlığı</label><button type="button" class="btn btn-outline btn-xs" id="sugTitle">✨ Başlık öner</button></div>
+            <input id="fTitle" class="form-input" maxlength="120" autocomplete="off">
+            <div class="yo-bar"><i id="barTitle"></i></div>
+            <div class="yo-meta"><span id="metaTitle"></span><button type="button" class="linkbtn" id="rstTitle">↺ Varsayılan başlık</button></div>
+          </div>
+
+          <div class="yo-field">
+            <div class="yo-lab"><label class="form-label" for="fSlug">Adres (slug)</label></div>
+            <div class="slugrow"><span class="slugpre" id="slugPre">ismailunsal.com.tr/</span><input id="fSlug" class="form-input" maxlength="220" autocomplete="off" spellcheck="false"></div>
+            <div class="yo-meta"><span id="metaSlug" class="yo-note"></span><button type="button" class="linkbtn" id="sugSlug">✨ Anahtar kelimeden oluştur</button></div>
+          </div>
+
+          <div class="yo-field">
+            <div class="yo-lab"><label class="form-label" for="fDesc">Meta açıklama</label><button type="button" class="btn btn-outline btn-xs" id="sugDesc">✨ Açıklama öner</button></div>
+            <textarea id="fDesc" class="form-input" rows="3" maxlength="320"></textarea>
+            <div class="yo-bar"><i id="barDesc"></i></div>
+            <div class="yo-meta"><span id="metaDesc"></span><button type="button" class="linkbtn" id="rstDesc">↺ Varsayılan açıklama</button></div>
+          </div>
+        </section>
+
+        <!-- Sayfa fotoğrafı -->
+        <section class="yo-sec">
+          <h3 class="yo-h">Sayfa fotoğrafı</h3>
+          <p class="yo-help" id="photoHelp" style="margin-top:-4px"></p>
+          <div class="ph-wrap">
+            <div id="phPrev" class="ph-prev"><div class="ph-hero"><span id="phH1"></span></div><div id="phEmpty" class="ph-empty">Fotoğraf yok</div></div>
+            <div class="ph-side">
+              <div id="phState" class="ph-state"></div>
+              <div class="ph-btns" id="phBtns">
+                <label class="btn btn-primary btn-sm" id="phUpBtn">📷 Fotoğraf yükle<input type="file" id="phFile" accept="image/jpeg,image/png,image/webp" hidden></label>
+                <button type="button" class="btn btn-outline btn-sm" id="phUrlBtn">🔗 Adres ile ekle</button>
+                <button type="button" class="btn btn-danger btn-sm" id="phDel">🗑️ Fotoğrafı sil</button>
+                <button type="button" class="btn btn-outline btn-sm" id="phReset">↺ Varsayılana dön</button>
+              </div>
+              <div id="phUrlRow" class="ph-urlrow" hidden><input id="phUrl" type="url" class="form-input" placeholder="https://…"><button type="button" class="btn btn-primary btn-sm" id="phUrlOk">Ekle</button></div>
+              <label class="yo-check" id="phKapakRow"><input type="checkbox" id="phKapak"> Sayfanın en üstünde (kapak alanında) göster</label>
+              <div class="yo-range" id="phDarkRow"><label for="phDark">Kapak karartma: <b id="phDarkV"></b></label><input type="range" id="phDark" min="50" max="95" step="5"></div>
+              <a id="phListingLink" class="btn btn-outline btn-sm" hidden>📷 İlan fotoğraflarını düzenle →</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- SEO analizi -->
+        <section class="yo-sec">
+          <h3 class="yo-h">SEO analizi <span id="scoreTxt" class="yo-score"></span></h3>
+          <div id="analysis" class="an"></div>
+        </section>
+
+        <!-- Gelişmiş -->
+        <section class="yo-sec">
+          <h3 class="yo-h">Gelişmiş</h3>
+          <label class="yo-check" id="noindexRow"><input type="checkbox" id="fNoindex"> Bu sayfayı Google'da <b>gösterme</b> (noindex)</label>
+          <div id="oldBox" class="old-box" hidden>
+            <div class="form-label" style="margin:12px 0 6px">Eski adresler <span class="yo-note">(bu adreslere gelenler otomatik olarak yeni adrese yönlenir)</span></div>
+            <div id="oldList" class="old-list"></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="seo-foot">
+        <button type="button" class="btn btn-outline btn-sm" id="edReset" title="Bu sayfanın tüm SEO ayarlarını sitedeki varsayılanlara döndürür">↺ Tümünü varsayılana döndür</button>
+        <span id="dirty" class="dirty" hidden>● Kaydedilmemiş değişiklik</span>
+        <div class="seo-foot-r">
+          <button type="button" class="btn btn-outline" id="edCancel">Kapat</button>
+          <button type="button" class="btn btn-primary" id="edSave">💾 Kaydet</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
+  <script src="/admin/assets/security.js?v=20260929-of"></script>
+  <script src="/admin/assets/auth.js?v=20260929-of"></script>
+  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
+  <script src="/admin/assets/seo-admin.js?v=20260930-seo1"></script>
+</body>
+</html>

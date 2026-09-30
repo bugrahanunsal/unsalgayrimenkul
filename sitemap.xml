@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
-
-  <url>
-    <loc>https://www.unsalgayrimenkul.com/</loc>
-    <lastmod>2026-05-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="tr" href="https://www.unsalgayrimenkul.com/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.unsalgayrimenkul.com/en/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://www.unsalgayrimenkul.com/fr/"/>
-    <xhtml:link rel="alternate" hreflang="de" href="https://www.unsalgayrimenkul.com/de/"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://www.unsalgayrimenkul.com/ru/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.unsalgayrimenkul.com/"/>
-  </url>
-
-  <url><loc>https://www.unsalgayrimenkul.com/hakkimizda.html</loc><lastmod>2026-05-17</lastmod><priority>0.9</priority></url>
-  <url><loc>https://www.unsalgayrimenkul.com/iletisim.html</loc><lastmod>2026-05-17</lastmod><priority>0.8</priority></url>
-  <url><loc>https://www.unsalgayrimenkul.com/en/</loc><lastmod>2026-05-17</lastmod><priority>0.9</priority></url>
-  <url><loc>https://www.unsalgayrimenkul.com/fr/</loc><lastmod>2026-05-17</lastmod><priority>0.9</priority></url>
-  <url><loc>https://www.unsalgayrimenkul.com/de/</loc><lastmod>2026-05-17</lastmod><priority>0.9</priority></url>
-  <url><loc>https://www.unsalgayrimenkul.com/ru/</loc><lastmod>2026-05-17</lastmod><priority>0.9</priority></url>
-  <url><loc>https://www.unsalgayrimenkul.com/yalova-satilik-daire.html</loc><priority>0.8</priority></url>
-  <url><loc>https://www.unsalgayrimenkul.com/yalova-kiralik-daire.html</loc><priority>0.8</priority></url>
-  <url><loc>https://www.unsalgayrimenkul.com/yalova-satilik-arsa.html</loc><priority>0.9</priority></url>
-  <url><loc>https://www.unsalgayrimenkul.com/yalova-kiralik-villa.html</loc><priority>0.8</priority></url>
-
+<!-- Yedek site haritası: canlıda /sitemap.xml sunucu tarafında her zaman güncel oluşturulur (functions/_middleware.js) -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://ismailunsal.com.tr/</loc></url>
+  <url><loc>https://ismailunsal.com.tr/hakkimizda</loc></url>
+  <url><loc>https://ismailunsal.com.tr/iletisim</loc></url>
+  <url><loc>https://ismailunsal.com.tr/blog</loc></url>
+  <url><loc>https://ismailunsal.com.tr/faq</loc></url>
+  <url><loc>https://ismailunsal.com.tr/yalova-satilik-daire</loc></url>
+  <url><loc>https://ismailunsal.com.tr/yalova-satilik-ev</loc></url>
+  <url><loc>https://ismailunsal.com.tr/yalova-satilik-arsa</loc></url>
+  <url><loc>https://ismailunsal.com.tr/yalova-kiralik-daire</loc></url>
+  <url><loc>https://ismailunsal.com.tr/yalova-kiralik-ev</loc></url>
+  <url><loc>https://ismailunsal.com.tr/yalova-kiralik-villa</loc></url>
+  <url><loc>https://ismailunsal.com.tr/yalova-esyali-kiralik-daire</loc></url>
+  <url><loc>https://ismailunsal.com.tr/yalova-merkez-kiralik-daire</loc></url>
+  <url><loc>https://ismailunsal.com.tr/yerel-uzmanlik</loc></url>
+  <url><loc>https://ismailunsal.com.tr/cok-dilli-hizmet</loc></url>
+  <url><loc>https://ismailunsal.com.tr/724-destek</loc></url>
+  <url><loc>https://ismailunsal.com.tr/blog-yalova-arsa-yatirimi-2026</loc></url>
+  <url><loc>https://ismailunsal.com.tr/blog-akkoy-yatirim-rehberi</loc></url>
+  <url><loc>https://ismailunsal.com.tr/gizlilik-politikasi</loc></url>
 </urlset>

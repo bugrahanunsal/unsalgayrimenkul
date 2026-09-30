@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/admin/*",
+    "/README.md",
+    "/YUKLEME_REHBERI.md",
+    "/apple-touch-icon.png",
+    "/blog-list.js",
+    "/blog-shared.css",
+    "/blog-sidebar.js",
+    "/blog-yazi.js",
+    "/cms-client.js",
+    "/cms-content.js",
+    "/cms-safe.js",
+    "/faq-yalova-emlak.js",
+    "/favicon-16.png",
+    "/favicon-192.png",
+    "/favicon-32.png",
+    "/favicon.ico",
+    "/favicon.svg",
+    "/foto-bekleniyor.svg",
+    "/frontend-supabase.js",
+    "/header.css",
+    "/ilan-detay.js",
+    "/ismail-unsal.jpg",
+    "/lead-form.js",
+    "/ozel-firsat.js",
+    "/paylasim.jpg",
+    "/robots.txt",
+    "/script.js",
+    "/style.css",
+    "/subscribe-widget.js",
+    "/team-public.js",
+    "/translations.js",
+    "/translator.js",
+    "/unified-header.js"
+  ]
+}

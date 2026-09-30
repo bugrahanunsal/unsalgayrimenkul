@@ -60,13 +60,18 @@
     const desc = String(post.ozet_tr || '').replace(/\s+/g, ' ').trim().slice(0, 158) || title;
     const url = 'https://ismailunsal.com.tr/blog/' + slug;
     const cover = window.IUCms.safeImg(post.kapak_foto);
-    document.title = title + ' | TURYAP İsmail Ünsal';
-    setMeta('meta[name="description"]', 'content', desc);
-    setMeta('link[rel="canonical"]', 'href', url);
-    setMeta('meta[property="og:title"]', 'content', title);
-    setMeta('meta[property="og:description"]', 'content', desc);
-    setMeta('meta[property="og:url"]', 'content', url);
-    if (cover) setMeta('meta[property="og:image"]', 'content', cover);
+    // Sunucu (functions/_middleware.js) SEO etiketlerini zaten yazdıysa (data-iu-seo) dokunma; yoksa yedek olarak yaz
+    if (!document.documentElement.hasAttribute('data-iu-seo')) {
+      const seoTitle = (typeof post.seo_baslik === 'string' && post.seo_baslik.trim()) ? post.seo_baslik.trim() : title + ' | TURYAP İsmail Ünsal';
+      const seoDesc = (typeof post.seo_aciklama === 'string' && post.seo_aciklama.trim()) ? post.seo_aciklama.trim() : desc;
+      document.title = seoTitle;
+      setMeta('meta[name="description"]', 'content', seoDesc);
+      setMeta('link[rel="canonical"]', 'href', url);
+      setMeta('meta[property="og:title"]', 'content', seoTitle);
+      setMeta('meta[property="og:description"]', 'content', seoDesc);
+      setMeta('meta[property="og:url"]', 'content', url);
+      if (cover) setMeta('meta[property="og:image"]', 'content', cover);
+    }
 
     $('bpTitle').textContent = title;
     $('bpCrumb').textContent = title.length > 40 ? title.slice(0, 40) + '…' : title;
