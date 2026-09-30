@@ -1052,3 +1052,10 @@ nav.nav > .nav-auth-mobile,
     transform: scale(0.97) !important;
   }
 }
+
+/* SSS: açık sorunun kapatma (×) simgesi her durumda marka laciverti — kırmızı değil
+   (faq-yalova-emlak.js'deki kuralın yedeği; eski önbellekli sürümler de lacivert görünür) */
+.iu-faq-item[open] .iu-faq-icon {
+  background: linear-gradient(135deg, #0A2A5E, #1B4380) !important;
+  box-shadow: 0 2px 8px rgba(10, 42, 94, 0.28) !important;
+}
