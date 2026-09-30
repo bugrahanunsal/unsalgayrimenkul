@@ -368,8 +368,8 @@
         }
         .iu-faq-item[open] .iu-faq-icon {
           transform: rotate(45deg);
-          background: linear-gradient(135deg, #dc2626, #b91c1c);
-          box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+          background: linear-gradient(135deg, #0A2A5E, #1B4380);
+          box-shadow: 0 2px 8px rgba(10, 42, 94, 0.28);
         }
         .iu-faq-a {
           padding: 8px 26px 26px;

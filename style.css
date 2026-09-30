@@ -313,6 +313,19 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
 .footer-brand .logo-svg { margin-bottom: 16px; }
 /* Grid layout: footer 5 kolon (Brand + Hızlı Erişim + Blog & Rehber + İletişim) */
 .footer-inner { grid-template-columns: 2fr 1fr 1.4fr 1fr; }
+/* Masaüstü footer logosu: biraz daha büyük ve alttaki yazıyla aynı sol hizada
+   (SVG viewBox içeriğe oturtuldu; soldaki boşluk logoyu sağa kaydırıyordu) */
+@media (min-width: 769px) {
+  .footer .footer-brand .logo-svg,
+  footer .footer-brand .logo-svg {
+    display: block;
+    height: 68px !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 0 18px 0 !important;
+  }
+}
 /* Mobile: footer logo BÜYÜT ve grid'i tek kolona indir; header'lar SOLA dayalı + büyük font */
 @media (max-width: 768px) {
   .footer .footer-inner,
@@ -354,7 +367,7 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
        viewBox="-30 0 340 80" trick ile content SVG merkezine gelir */
     height: auto !important;
     max-height: none !important;          /* genel .logo-svg 48px sınırı footer'da logoyu küçültüyordu */
-    width: min(340px, 88vw) !important;
+    width: min(270px, 70vw) !important;   /* viewBox içeriğe oturtuldu (0 0 270 80) → aynı görünür boyut */
     max-width: 400px !important;
     min-width: 0 !important;
     margin: 0 auto !important;
