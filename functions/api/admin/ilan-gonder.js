@@ -103,7 +103,7 @@ function card(p) {
       <tr><td style="padding:16px 18px 18px;font-family:Arial,Helvetica,sans-serif;">
         ${badge ? `<div style="display:inline-block;background:#EFF6FF;color:#1D4ED8;font-size:11px;font-weight:700;letter-spacing:.5px;padding:4px 10px;border-radius:999px;margin-bottom:8px;">${esc(badge.toUpperCase())}</div>` : ''}
         <div style="font-size:17px;font-weight:700;color:#0A2A5E;line-height:1.35;margin-bottom:4px;">${esc(p.baslik_tr || 'İlan')}</div>
-        <div style="font-size:13px;color:#6B7280;margin-bottom:10px;">📍 ${esc(loc)}</div>
+        <div style="font-size:13px;color:#6B7280;margin-bottom:10px;">${esc(loc)}</div>
         ${facts(p).length ? `<div style="font-size:13px;color:#374151;margin-bottom:12px;">${facts(p).map(esc).join(' &nbsp;•&nbsp; ')}</div>` : ''}
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
           <td style="font-size:19px;font-weight:800;color:#0A2A5E;white-space:nowrap;">${esc(fmtPrice(p.fiyat, p.para_birimi))}</td>
@@ -136,7 +136,7 @@ export function renderListingsEmail({ name, message, properties, intro, unsubscr
   <tr><td style="background:#FFFFFF;padding:4px 22px 24px;font-family:Arial,Helvetica,sans-serif;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EFF6FF;border-radius:10px;"><tr><td style="padding:16px 18px;">
       <div style="font-size:14px;font-weight:700;color:#0A2A5E;margin-bottom:6px;">Görmek veya bilgi almak ister misiniz?</div>
-      <div style="font-size:13px;color:#374151;line-height:1.6;">📞 <a href="tel:+905075188482" style="color:#1D4ED8;text-decoration:none;font-weight:700;">${PHONE}</a> &nbsp;·&nbsp; 💬 <a href="${WA}" style="color:#1D4ED8;text-decoration:none;font-weight:700;">WhatsApp</a><br>Bu e-postayı yanıtlayarak da bize ulaşabilirsiniz.</div>
+      <div style="font-size:13px;color:#374151;line-height:1.6;">Tel: <a href="tel:+905075188482" style="color:#1D4ED8;text-decoration:none;font-weight:700;">${PHONE}</a> &nbsp;·&nbsp; WhatsApp: <a href="${WA}" style="color:#1D4ED8;text-decoration:none;font-weight:700;">WhatsApp</a><br>Bu e-postayı yanıtlayarak da bize ulaşabilirsiniz.</div>
     </td></tr></table>
   </td></tr>
   <tr><td style="background:#0A2A5E;border-radius:0 0 14px 14px;padding:16px 22px;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:rgba(255,255,255,.7);text-align:center;">

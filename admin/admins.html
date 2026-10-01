@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .admin-card {
@@ -89,16 +89,16 @@
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
       <header class="topbar">
-        <h1 class="page-title">👤 Admin Yönetimi</h1>
+        <h1 class="page-title">Admin Yönetimi</h1>
         <div class="topbar-actions">
-          <button onclick="openAddAdmin()" class="btn btn-primary btn-sm">➕ Yeni Admin</button>
+          <button onclick="openAddAdmin()" class="btn btn-primary btn-sm"><i class="ic ic-user-plus" aria-hidden="true"></i> Yeni Admin</button>
           <div class="user-menu" id="userMenu"></div>
         </div>
       </header>
 
       <div class="page-content">
         <div class="alert alert-info" style="margin-bottom: 20px;">
-          <strong>ℹ️ Admin Yönetimi:</strong> Sağ üstteki <b>"Yeni Admin"</b> ile kişiye davet e-postası gönderin; kişi şifresini kendisi belirleyip panele girer. Supabase'e girmenize gerek yok. Yetkiyi "Düzenle" ile değiştirebilir veya kaldırabilirsiniz.
+          <strong><i class="ic ic-info" aria-hidden="true"></i> Admin Yönetimi:</strong> Sağ üstteki <b>"Yeni Admin"</b> ile kişiye davet e-postası gönderin; kişi şifresini kendisi belirleyip panele girer. Supabase'e girmenize gerek yok. Yetkiyi "Düzenle" ile değiştirebilir veya kaldırabilirsiniz.
         </div>
 
         <div id="adminsList"><div class="loading">Yükleniyor...</div></div>
@@ -135,7 +135,7 @@
         </div>
         <div style="display: flex; gap: 12px; justify-content: flex-end;">
           <button type="button" onclick="closeRoleModal()" class="btn btn-outline">İptal</button>
-          <button type="submit" class="btn btn-primary">💾 Kaydet</button>
+          <button type="submit" class="btn btn-primary"><i class="ic ic-save" aria-hidden="true"></i> Kaydet</button>
         </div>
       </form>
     </div>
@@ -149,7 +149,7 @@
       </div>
       <form id="addForm" style="padding: 20px;">
         <div class="alert alert-info" style="margin-bottom: 16px;">
-          <span style="font-size:18px;line-height:1;flex-shrink:0;">✉️</span>
+          <span style="font-size:18px;line-height:1;flex-shrink:0;"><i class="ic ic-mail" aria-hidden="true"></i></span>
           <span style="line-height:1.55;">Kişinin e-postasına <b>davet</b> gönderilir. E-postadaki bağlantıya tıklayıp kendi şifresini belirler ve panele girer. Sitede zaten hesabı varsa sadece yetki verilir.</span>
         </div>
         <div class="form-group">
@@ -170,7 +170,7 @@
         </div>
         <div style="display: flex; gap: 12px; justify-content: flex-end;">
           <button type="button" onclick="closeAddAdmin()" class="btn btn-outline">İptal</button>
-          <button type="submit" class="btn btn-primary" id="addBtn">✉️ Davet Gönder</button>
+          <button type="submit" class="btn btn-primary" id="addBtn"><i class="ic ic-mail" aria-hidden="true"></i> Davet Gönder</button>
         </div>
       </form>
     </div>
@@ -179,7 +179,7 @@
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
 
   <script>
     let admins = [];
@@ -217,7 +217,7 @@
         container.innerHTML = `
           <div class="card">
             <div class="empty-state">
-              <div class="empty-icon">👤</div>
+              <div class="empty-icon"><i class="ic ic-user" aria-hidden="true"></i></div>
               <div>Henüz admin yok</div>
             </div>
           </div>
@@ -255,8 +255,8 @@
               </div>
             </div>
             <div class="admin-actions">
-              <button onclick="editAdmin('${a.id}')" class="btn btn-outline btn-sm" ${isCurrentUser ? 'disabled title="Kendi rolünüzü değiştiremezsiniz"' : ''}>✏️ Düzenle</button>
-              ${!isCurrentUser ? `<button onclick="deleteAdmin('${a.id}')" class="btn btn-danger btn-sm">🗑️</button>` : ''}
+              <button onclick="editAdmin('${a.id}')" class="btn btn-outline btn-sm" ${isCurrentUser ? 'disabled title="Kendi rolünüzü değiştiremezsiniz"' : ''}><i class="ic ic-edit" aria-hidden="true"></i> Düzenle</button>
+              ${!isCurrentUser ? `<button onclick="deleteAdmin('${a.id}')" class="btn btn-danger btn-sm" title="Sil" aria-label="Sil"><i class="ic ic-trash" aria-hidden="true"></i></button>` : ''}
             </div>
           </div>
         `;
@@ -377,7 +377,7 @@
       } catch (error) {
         App.toast(error.message, 'error');
       } finally {
-        btn.disabled = false; btn.textContent = '✉️ Davet Gönder';
+        btn.disabled = false; App.iconText(btn, 'mail', 'Davet Gönder');
       }
     });
   </script>

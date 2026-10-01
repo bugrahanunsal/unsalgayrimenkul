@@ -1,7 +1,9 @@
 /**
  * Panel — Site İçeriği (görsel düzenleyici)
- * Sayfa önizlemesinde tıklanan yazı/fotoğraf düzenlenir, site_content tablosuna kaydedilir.
+ * Sayfa önizlemesinde (veya sağdaki listede) seçilen yazı / fotoğraf düzenlenir, site_content tablosuna kaydedilir.
  * Kayıt anahtarı = orijinal içeriğin parmak izi (cms-content.js ile aynı algoritma).
+ * Fotoğraflar: tıklayınca "Fotoğrafı değiştir" (bilgisayardan yükle / Görsel Deposu'ndan seç), dosya adı ve alt metin.
+ * Güvenlik: veritabanı / kullanıcı verisi DOM'a yalnızca textContent / value ile yazılır; görsel adresleri doğrulanır.
  */
 (function () {
   'use strict';
@@ -21,21 +23,33 @@
   let found = null;              // iframe'deki tarama
   let sel = null;                // seçili öğe {type:'t'|'i', item}
   let editor = null;
-  let kind = 'all';
+  let kind = 'i';
+  let altCol = true;             // site_content.foto_alt var mı (SQL çalıştırıldı mı)
+  let busy = false;
+  let savedImg = '';
   const rowKey = (scope, key) => (scope === 'genel' ? 'genel' : page) + '|' + key;
-  const safeImg = (u) => /^https:\/\/[^\s"'<>()]+$/i.test(String(u || '').trim()) ? String(u).trim() : '';
+  const safeImg = (u) => /^https:\/\/[^\s"'<>()\\`]+$/i.test(String(u || '').trim()) ? String(u).trim() : '';
+  const clean = (s) => String(s == null ? '' : s).replace(/\p{Cc}+/gu, ' ').replace(/\s+/g, ' ').trim();
+  const missingAlt = (e) => !!e && /foto_alt|column|42703|PGRST204/i.test(((e.message || '') + ' ' + (e.code || '')));
+  function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  const userErr = (msg) => Object.assign(new Error(msg), { user: true });
 
   async function loadRows() {
-    const { data, error } = await supabaseClient.from('site_content').select('id,sayfa,bolum_key,icerik_tr,foto_url,aktif').in('sayfa', [page, 'genel']).limit(3000);
-    if (error) { App.toast('İçerik okunamadı: ' + error.message, 'error'); return; }
-    rows = new Map((data || []).map(r => [r.sayfa + '|' + r.bolum_key, r]));
+    let res = await supabaseClient.from('site_content').select('id,sayfa,bolum_key,icerik_tr,foto_url,foto_alt,aktif').in('sayfa', [page, 'genel']).limit(3000);
+    if (res.error && missingAlt(res.error)) {
+      altCol = false;
+      res = await supabaseClient.from('site_content').select('id,sayfa,bolum_key,icerik_tr,foto_url,aktif').in('sayfa', [page, 'genel']).limit(3000);
+    }
+    if (res.error) { App.toast('İçerik okunamadı: ' + res.error.message, 'error'); return; }
+    rows = new Map((res.data || []).map(r => [r.sayfa + '|' + r.bolum_key, r]));
+    $('setupAlert').hidden = altCol;
   }
 
   function frameDoc() { try { return $('frame').contentDocument; } catch (_) { return null; } }
 
   function loadFrame() {
     found = null; sel = null; showEditor(null);
-    $('itemList').textContent = 'Önizleme yükleniyor…';
+    const box = $('itemList'); box.textContent = ''; box.appendChild(el('div', 'sc-note', 'Önizleme yükleniyor…'));
     const path = page === 'index' ? '/' : '/' + page;
     $('prevUrl').textContent = path;
     $('frame').src = path + '?cms-edit=' + Date.now();
@@ -47,13 +61,14 @@
     const t0 = Date.now();
     (function wait() {
       if (w.IUCmsContent && w.IUCmsContent.found) return setup(w, d);
-      if (Date.now() - t0 > 8000) { $('itemList').textContent = 'Bu sayfa düzenlenemiyor.'; return; }
+      if (Date.now() - t0 > 8000) { const box = $('itemList'); box.textContent = ''; box.appendChild(el('div', 'sc-note', 'Bu sayfa düzenlenemiyor.')); return; }
       setTimeout(wait, 100);
     })();
   }
 
   function setup(w, d) {
     found = w.IUCmsContent.found;
+    found.imgs.forEach(it => { try { it.abs = it.kind === 'img' ? new URL(it.src, d.baseURI).href : it.src; } catch (_) { it.abs = it.src; } });
     const st = d.createElement('style');
     st.textContent = `[data-cms-h],[data-cms-i]{cursor:pointer!important;transition:outline-color .15s}
       [data-cms-h]:hover,[data-cms-i]:hover{outline:2px dashed #2563EB!important;outline-offset:3px}
@@ -82,6 +97,7 @@
     found.imgs.forEach(i => i.el.classList.toggle('cms-changed', rows.has(rowKey(i.scope, i.key))));
   }
 
+  // ------------------------------------------------------------------ fotoğraf yardımcıları
   function photoLabel(it) {
     // Fotoğrafın ait olduğu kartın / bölümün başlığı (ör. "Yalova Satılık Daire")
     for (let e = it.el; e && e.tagName !== 'BODY'; e = e.parentElement) {
@@ -90,93 +106,168 @@
     }
     return it.alt || 'Fotoğraf';
   }
+  const rowOf = (it) => rows.get(rowKey(it.scope, it.key));
+  function curSrc(it) { const r = rowOf(it); return (r && safeImg(r.foto_url)) || it.abs || it.src; }
+  function curAlt(it) { const r = rowOf(it); return r && r.foto_alt != null ? r.foto_alt : (it.alt || ''); }
+  function viewSrc(u) { const s = String(u || ''); return /^https?:\/\//i.test(s) || s.startsWith('/') ? s : ''; }
+  /** Dosya adı → { base, ext, stored } (stored: Görsel Deposu'nda mı) */
+  function fileOf(it) {
+    const src = curSrc(it);
+    const sto = Medya.parseUrl(src);
+    if (sto) { const p = Medya.splitExt(Medya.baseName(sto.path)); return { base: p.base, ext: p.ext || '.jpg', stored: sto, src }; }
+    let last = '';
+    try { last = decodeURIComponent(new URL(src, location.origin).pathname.split('/').pop() || ''); } catch (_) { last = ''; }
+    const p = Medya.splitExt(last);
+    return { base: Medya.slug(p.base, 60) || 'fotograf', ext: p.ext && /^\.(jpe?g|png|webp)$/i.test(p.ext) ? p.ext.toLowerCase() : '.jpg', stored: null, src };
+  }
+  function applyImg(it, url) {
+    if (it.kind === 'img') { it.el.setAttribute('src', url); it.el.removeAttribute('srcset'); }
+    else it.el.style.backgroundImage = 'url("' + String(url).replace(/["\\]/g, '') + '")';
+  }
+
+  // ------------------------------------------------------------------ liste
   function renderList() {
     const box = $('itemList'); box.textContent = '';
     if (!found) return;
-    $('imgCount').textContent = found.imgs.length ? '(' + found.imgs.length + ')' : '';
+    $('imgCount').textContent = String(found.imgs.length);
+    $('txtCount').textContent = String(found.texts.length);
     const q = $('search').value.trim().toLocaleLowerCase('tr-TR');
     const only = $('onlyChanged').checked;
     let n = 0;
-    // Fotoğraflar: küçük resimli ızgara
-    if (kind !== 't' && found.imgs.length) {
-      const grid = document.createElement('div'); grid.className = 'sc-photos';
+    if (kind === 'i') {
+      const grid = el('div', 'sc-pgrid');
       found.imgs.forEach(it => {
-        const r = rows.get(rowKey(it.scope, it.key));
-        const changed = !!r;
+        const changed = !!rowOf(it);
         if (only && !changed) return;
         const label = photoLabel(it);
-        if (q && !label.toLocaleLowerCase('tr-TR').includes(q)) return;
-        const b = document.createElement('button'); b.type = 'button'; b.className = 'sc-photo' + (sel && sel.item === it ? ' sel' : '');
-        const th = document.createElement('div'); th.className = 'th';
-        const cur = (r && safeImg(r.foto_url)) || it.src;
-        if (safeImg(cur) || /^\//.test(cur)) th.style.backgroundImage = 'url("' + String(cur).replace(/["\\]/g, '') + '")';
-        if (changed) { const c = document.createElement('span'); c.className = 'ch'; c.textContent = 'DEĞİŞTİ'; th.appendChild(c); }
-        const lb = document.createElement('div'); lb.className = 'lb'; lb.textContent = label;
-        const ed = document.createElement('span'); ed.className = 'ed'; ed.textContent = '📷 Değiştir';
-        b.append(th, lb, ed); b.onclick = () => select('i', it, true);
-        grid.appendChild(b); n++;
+        if (q && !label.toLocaleLowerCase('tr-TR').includes(q) && !fileOf(it).base.includes(q)) return;
+        const card = el('div', 'sc-pcard' + (sel && sel.item === it ? ' sel' : ''));
+        const th = el('button', 'sc-pthumb'); th.type = 'button'; th.setAttribute('aria-label', 'Fotoğrafı değiştir: ' + label);
+        const img = el('img'); img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+        const v = viewSrc(curSrc(it)); if (v) img.src = v;
+        const ov = el('span', 'sc-pov'); const ovs = el('span'); App.iconText(ovs, 'camera', 'Fotoğrafı değiştir'); ov.appendChild(ovs);
+        const chg = el('span', 'sc-pchg'); chg.appendChild(App.icon('camera'));
+        th.append(img, ov, chg);
+        if (changed) th.appendChild(el('span', 'sc-pbadge', 'DEĞİŞTİ'));
+        th.addEventListener('click', () => { select('i', it, true); changePhoto(); });
+        const lb = el('button', 'sc-plabel'); lb.type = 'button'; lb.title = 'Dosya adı ve alt metin';
+        lb.appendChild(el('span', null, label)); lb.appendChild(App.icon('edit'));
+        lb.setAttribute('aria-label', label + ' — dosya adı ve alt metin');
+        lb.addEventListener('click', () => select('i', it, true));
+        card.append(th, lb);
+        grid.appendChild(card); n++;
       });
-      if (grid.children.length) {
-        if (kind === 'all') { const h = document.createElement('div'); h.className = 'form-label'; h.style.margin = '2px 0 6px'; h.textContent = '📷 Fotoğraflar'; box.appendChild(h); }
-        box.appendChild(grid);
-      }
-    }
-    if (kind !== 'i') {
-      if (kind === 'all' && n) { const h = document.createElement('div'); h.className = 'form-label'; h.style.margin = '12px 0 6px'; h.textContent = '📝 Yazılar'; box.appendChild(h); }
+      if (n) box.appendChild(grid);
+    } else {
       found.texts.forEach(it => {
         const changed = rows.has(rowKey(it.scope, it.key));
         if (only && !changed) return;
         const label = (it.el.textContent || '').replace(/\s+/g, ' ').trim();
         if (q && !label.toLocaleLowerCase('tr-TR').includes(q)) return;
-        const b = document.createElement('button'); b.type = 'button'; b.className = 'sc-item' + (changed ? ' ch' : '') + (sel && sel.item === it ? ' sel' : '');
-        const tg = document.createElement('span'); tg.className = 't'; tg.textContent = (TAG_LABEL[it.tag] || it.tag).toUpperCase();
-        const x = document.createElement('span'); x.className = 'x'; x.textContent = label || '(boş)';
-        b.append(tg, x); b.onclick = () => select('t', it, true);
+        const b = el('button', 'sc-item' + (changed ? ' ch' : '') + (sel && sel.item === it ? ' sel' : '')); b.type = 'button';
+        const tg = el('span', 't', (TAG_LABEL[it.tag] || it.tag).toLocaleUpperCase('tr-TR'));
+        const x = el('span', 'x', label || '(boş)');
+        b.append(tg, x); b.addEventListener('click', () => select('t', it, true));
         box.appendChild(b); n++;
       });
     }
-    if (!n) box.textContent = kind === 'i' ? 'Bu sayfada değiştirilebilir fotoğraf yok.' : (only ? 'Bu sayfada henüz değişiklik yok.' : 'Sonuç yok.');
+    if (!n) box.appendChild(el('div', 'sc-note', kind === 'i' ? (only ? 'Bu sayfada değiştirilmiş fotoğraf yok.' : (q ? 'Sonuç yok.' : 'Bu sayfada değiştirilebilir fotoğraf yok.')) : (only ? 'Bu sayfada henüz değişiklik yok.' : 'Sonuç yok.')));
+  }
+
+  function setKind(k) {
+    kind = k;
+    document.querySelectorAll('.sc-seg button').forEach(x => { const on = x.dataset.kind === k; x.classList.toggle('on', on); x.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    renderList();
+  }
+
+  /** Yalnızca önizlemeyi kaydırır (scrollIntoView panelin kendisini de kaydırıyordu) */
+  function scrollFrameTo(node) {
+    try {
+      const w = $('frame').contentWindow; const r = node.getBoundingClientRect();
+      w.scrollTo({ top: Math.max(0, w.scrollY + r.top - w.innerHeight / 2 + r.height / 2), behavior: 'smooth' });
+    } catch (_) { /* önizleme hazır değil */ }
   }
 
   function select(type, item, scroll) {
+    if (sel && sel.type === 'i' && sel.item !== item && imgDirty() && !window.confirm('Fotoğraf bilgilerinde kaydedilmemiş değişiklik var. Kaydetmeden geçilsin mi?')) return;
     const d = frameDoc();
     if (d) d.querySelectorAll('.cms-sel').forEach(x => x.classList.remove('cms-sel'));
     sel = { type, item };
     item.el.classList.add('cms-sel');
-    if (scroll) item.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (scroll) scrollFrameTo(item.el);
+    if ((type === 'i') !== (kind === 'i')) setKind(type === 'i' ? 'i' : 't');
     showEditor(sel); renderList();
+    if (window.innerWidth <= 1100) $('editCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  // ------------------------------------------------------------------ düzenleyici
+  const imgDraft = () => JSON.stringify({ n: Medya.slug($('eiName').value, 60), a: clean($('eiAlt').value) });
+  const imgDirty = () => !!sel && sel.type === 'i' && imgDraft() !== savedImg;
+  function updImgDirty() { $('eiDirty').hidden = !imgDirty(); $('eiAltCount').textContent = String($('eiAlt').value.length); }
+
   function showEditor(s) {
-    $('editEmpty').style.display = s ? 'none' : '';
-    $('editText').style.display = s && s.type === 't' ? '' : 'none';
-    $('editImg').style.display = s && s.type === 'i' ? '' : 'none';
+    $('editEmpty').hidden = !!s;
+    $('editText').hidden = !(s && s.type === 't');
+    $('editImg').hidden = !(s && s.type === 'i');
     if (!s) return;
-    const it = s.item, r = rows.get(rowKey(it.scope, it.key));
+    const it = s.item, r = rowOf(it);
     if (s.type === 't') {
       $('etTag').textContent = TAG_LABEL[it.tag] || it.tag;
-      $('etScope').style.display = it.scope === 'genel' ? '' : 'none';
+      $('etScope').hidden = it.scope !== 'genel';
+      const st = $('etState'); st.textContent = r ? 'Değiştirildi' : 'Orijinal'; st.className = 'sc-chip' + (r ? ' ch' : '');
       editor.setHTML(r && r.icerik_tr != null ? r.icerik_tr : it.html);
       $('etOrig').textContent = it.text;
       $('etRevert').disabled = !r;
       setTimeout(() => editor.el.focus(), 30);
-    } else {
-      $('eiScope').style.display = it.scope === 'genel' ? '' : 'none';
-      $('eiLabel').textContent = photoLabel(it);
-      const cur = (r && safeImg(r.foto_url)) || it.src;
-      $('eiUrl').value = r && r.foto_url ? r.foto_url : '';
-      $('eiPrev').src = cur;
-      $('eiRevert').disabled = !r;
+      return;
     }
+    $('eiScope').hidden = it.scope !== 'genel';
+    $('eiLabel').textContent = photoLabel(it);
+    const st = $('eiState'); st.textContent = r ? 'Değiştirildi' : 'Orijinal'; st.className = 'sc-chip' + (r ? ' ch' : '');
+    const f = fileOf(it);
+    const prev = $('eiPrev'); const v = viewSrc(f.src);
+    prev.alt = it.kind === 'img' ? curAlt(it) : '';
+    const info = $('eiInfo');
+    const drawInfo = (w, h) => {
+      info.textContent = [f.base + f.ext, w && h ? w + ' × ' + h + ' px' : '', f.stored ? 'Görsel Deposu' : 'Sitenin orijinal fotoğrafı'].filter(Boolean).join(' · ');
+    };
+    drawInfo(0, 0);
+    prev.onload = () => { if (sel && sel.item === it) drawInfo(prev.naturalWidth, prev.naturalHeight); };
+    if (v) prev.src = v; else prev.removeAttribute('src');
+    const lib = $('eiLib');
+    lib.hidden = !f.stored;
+    if (f.stored) lib.href = '/admin/medya.html?dosya=' + encodeURIComponent(f.stored.bucket) + '/' + f.stored.path.split('/').map(encodeURIComponent).join('/');
+    $('eiName').value = f.base; $('eiExt').textContent = f.ext;
+    $('eiNameHelp').textContent = f.stored
+      ? 'Kısa, tire ile ayrılmış, Türkçe karaktersiz (ör. yalova-satilik-daire). Değişince fotoğrafın adresi de değişir; sitede kullanıldığı her yer otomatik güncellenir.'
+      : 'Bu, sitenin orijinal fotoğrafı. Dosya adını değiştirirseniz fotoğrafın bu adla bir kopyası Görsel Deposu\'na kaydedilir ve burada o kullanılır.';
+    const alt = $('eiAlt');
+    if (it.kind === 'img') {
+      alt.disabled = false; alt.value = curAlt(it);
+      $('eiAltHelp').textContent = altCol ? 'Fotoğrafta ne görünüyor? Görme engelliler ve Google için kısa açıklama (125 karaktere kadar ideal).' : 'Alt metni kaydetmek için önce veritabanı güncellemesini yapın (sayfanın üstündeki uyarı).';
+    } else {
+      alt.disabled = true; alt.value = '';
+      $('eiAltHelp').textContent = 'Bu fotoğraf arka plan görseli: Google arka plan görsellerini okumaz, alt metin gerekmez.';
+    }
+    $('eiRevert').disabled = !r;
+    savedImg = imgDraft(); updImgDirty();
   }
 
+  // ------------------------------------------------------------------ kayıt
   async function upsert(scope, key, fields) {
     const sayfa = scope === 'genel' ? 'genel' : page;
     const existing = rows.get(sayfa + '|' + key);
-    const data = Object.assign({ sayfa, bolum_key: key, aktif: true }, fields);
-    const res = existing
-      ? await supabaseClient.from('site_content').update(fields).eq('id', existing.id).select().single()
-      : await supabaseClient.from('site_content').insert(Object.assign({ sira: 0 }, data)).select().single();
+    const run = (f) => existing
+      ? supabaseClient.from('site_content').update(f).eq('id', existing.id).select().single()
+      : supabaseClient.from('site_content').insert(Object.assign({ sira: 0, sayfa, bolum_key: key, aktif: true }, f)).select().single();
+    let res = await run(fields);
+    if (res.error && 'foto_alt' in fields && missingAlt(res.error)) {
+      altCol = false; $('setupAlert').hidden = false;
+      const f2 = Object.assign({}, fields); delete f2.foto_alt;
+      if (!Object.keys(f2).length) throw userErr('Alt metni kaydetmek için önce veritabanı güncellemesini yapın.');
+      res = await run(f2);
+      App.toast('Fotoğraf kaydedildi; alt metin için veritabanı güncellemesi gerekli.', 'warning');
+    }
     if (res.error) throw res.error;
     rows.set(sayfa + '|' + key, res.data);
   }
@@ -186,6 +277,11 @@
     const { error } = await supabaseClient.from('site_content').delete().eq('id', r.id);
     if (error) throw error;
     rows.delete(sayfa + '|' + key);
+  }
+  /** Boş kalan fotoğraf kaydını sil (ne fotoğraf ne alt metin değişikliği kaldıysa) */
+  async function tidy(it) {
+    const r = rowOf(it);
+    if (r && !safeImg(r.foto_url) && (r.foto_alt == null) && r.icerik_tr == null) await removeRow(it.scope, it.key);
   }
 
   async function saveText() {
@@ -199,7 +295,7 @@
       it.el.innerHTML = html; it.el.removeAttribute('data-i18n');
       App.toast('Kaydedildi — sitede görünüyor', 'success');
       markChanged(); showEditor(sel); renderList();
-    } catch (e) { App.toast(e.message, 'error'); }
+    } catch (e) { App.toast(e && e.user ? e.message : e.message, 'error'); }
     finally { btn.disabled = false; }
   }
   async function revertText() {
@@ -210,7 +306,98 @@
     catch (e) { App.toast(e.message, 'error'); }
   }
 
-  async function uploadSiteImage(file, prefix) {
+  /** "Fotoğrafı değiştir": bilgisayardan yükle veya Görsel Deposu'ndan seç → hemen kaydedilir */
+  async function changePhoto() {
+    if (!sel || sel.type !== 'i' || busy) return;
+    const it = sel.item;
+    const res = await Medya.picker({
+      title: 'Fotoğrafı değiştir', name: Medya.slug(photoLabel(it), 60), alt: it.kind === 'img' ? curAlt(it) : '',
+      altDisabled: it.kind !== 'img', folder: 'site', current: curSrc(it)
+    });
+    if (!res || !safeImg(res.url)) return;
+    busy = true;
+    try {
+      const fields = { foto_url: res.url };
+      if (it.kind === 'img' && altCol) fields.foto_alt = res.alt === (it.alt || '') ? null : res.alt;
+      await upsert(it.scope, it.key, fields);
+      applyImg(it, res.url);
+      if (it.kind === 'img') it.el.setAttribute('alt', res.alt || it.alt || '');
+      markChanged(); showEditor(sel); renderList();
+      App.toast('Fotoğraf değiştirildi — sitede görünüyor', 'success');
+    } catch (e) { App.toast(e && e.user ? e.message : Medya.friendly(e), 'error', 'Kaydedilemedi'); }
+    finally { busy = false; }
+  }
+
+  async function fetchOriginal(url) {
+    const r = await fetch(url, { mode: 'cors', credentials: 'omit', cache: 'force-cache' });
+    if (!r.ok) throw userErr('Orijinal fotoğraf indirilemedi.');
+    const b = await r.blob();
+    if (!/^image\/(jpeg|png|webp)$/.test(b.type)) throw userErr('Orijinal fotoğraf kopyalanamadı (desteklenmeyen biçim).');
+    return b;
+  }
+
+  /** Dosya adı ve alt metni kaydet */
+  async function saveImgDetails() {
+    if (!sel || sel.type !== 'i' || busy) return;
+    const it = sel.item;
+    const f = fileOf(it);
+    const newBase = Medya.slug($('eiName').value, 60);
+    if (!newBase) { App.toast('Dosya adı boş olamaz.', 'warning'); $('eiName').focus(); return; }
+    const alt = clean($('eiAlt').value).slice(0, 250);
+    const nameChanged = newBase !== f.base;
+    const altChanged = it.kind === 'img' && alt !== clean(curAlt(it));
+    if (!nameChanged && !altChanged) { App.toast('Değişiklik yok.', 'info'); return; }
+    if (altChanged && !altCol && !nameChanged) { App.toast('Alt metni kaydetmek için önce veritabanı güncellemesini yapın.', 'warning'); return; }
+    if (nameChanged && f.stored) {
+      const ok = await App.confirm('Dosya adı "' + f.base + f.ext + '" → "' + newBase + f.ext + '" olacak.\n\nBu fotoğraf sitede başka yerlerde de kullanılıyorsa, hepsi yeni adrese otomatik taşınır. Eski dosya, gönderilmiş e-postalar bozulmasın diye arşivde saklanır.', 'Dosya adını değiştir');
+      if (!ok) return;
+    }
+    busy = true; const btn = $('eiSave'); btn.disabled = true; App.iconText(btn, 'clock', 'Kaydediliyor…');
+    try {
+      let url = f.src;
+      if (nameChanged) {
+        if (f.stored) {
+          const item = { bucket: f.stored.bucket, path: f.stored.path, name: Medya.baseName(f.stored.path), url: f.src, alt, folder: Medya.folderOf(f.stored.bucket, f.stored.path) };
+          const renamed = await Medya.rename(item, newBase);
+          url = renamed.url;
+          await loadRows();                                      // adres veritabanında her yerde taşındı
+        } else {
+          const blob = await fetchOriginal(f.src);
+          const up = await Medya.upload(new File([blob], newBase + f.ext, { type: blob.type }), { name: newBase, folder: 'site', alt: it.kind === 'img' ? alt : '' });
+          url = up.url;
+          await upsert(it.scope, it.key, { foto_url: url });
+        }
+        applyImg(it, url);
+      }
+      if (altChanged && altCol) {
+        const v = alt === clean(it.alt || '') ? null : alt;
+        if (rowOf(it) || v !== null) await upsert(it.scope, it.key, { foto_alt: v });
+        const sto = Medya.parseUrl(url);
+        if (sto) { try { await supabaseClient.from('medya').upsert({ bucket: sto.bucket, yol: sto.path, alt_metin: alt || null }, { onConflict: 'bucket,yol' }); } catch (_) { /* önemli değil */ } }
+        it.el.setAttribute('alt', alt || it.alt || '');
+      }
+      await tidy(it);
+      markChanged(); showEditor(sel); renderList();
+      App.toast(nameChanged ? 'Dosya adı ve bilgiler kaydedildi — sitede görünüyor' : 'Alt metin kaydedildi — sitede görünüyor', 'success');
+    } catch (e) {
+      App.toast(e && e.user ? e.message : Medya.friendly(e), 'error', 'Kaydedilemedi');
+    } finally {
+      busy = false; btn.disabled = false; App.iconText(btn, 'save', 'Kaydet');
+    }
+  }
+  async function revertImg() {
+    if (!sel || sel.type !== 'i') return;
+    if (!(await App.confirm('Bu fotoğraf sitenin orijinal fotoğrafına (ve orijinal alt metnine) dönsün mü?', 'Orijinale dön'))) return;
+    const it = sel.item;
+    try {
+      await removeRow(it.scope, it.key); applyImg(it, it.src);
+      if (it.kind === 'img') it.el.setAttribute('alt', it.alt || '');
+      markChanged(); showEditor(sel); renderList(); App.toast('Orijinal fotoğrafa dönüldü', 'success');
+    } catch (e) { App.toast(e.message, 'error'); }
+  }
+
+  // ---------- Logo & favicon ----------
+  async function uploadBrandImage(file, prefix) {
     const ext = (file.name.split('.').pop() || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     if (!/^(jpe?g|png|webp)$/.test(ext)) throw new Error('Sadece JPG, PNG veya WEBP yükleyebilirsiniz');
     if (file.size > 5 * 1024 * 1024) throw new Error('Dosya 5MB\'dan küçük olmalı');
@@ -219,36 +406,17 @@
     if (error) throw error;
     return supabaseClient.storage.from('property-photos').getPublicUrl(name).data.publicUrl;
   }
-  function applyImg(it, url) {
-    if (it.kind === 'img') { it.el.setAttribute('src', url); it.el.removeAttribute('srcset'); }
-    else it.el.style.backgroundImage = 'url("' + url.replace(/["\\]/g, '') + '")';
-  }
-  async function saveImg() {
-    if (!sel || sel.type !== 'i') return;
-    const it = sel.item; const u = safeImg($('eiUrl').value);
-    if (!u) { App.toast('Fotoğraf adresi https:// ile başlamalı (veya yükleyin)', 'warning'); return; }
-    try { await upsert(it.scope, it.key, { foto_url: u }); applyImg(it, u); markChanged(); showEditor(sel); renderList(); App.toast('Fotoğraf kaydedildi', 'success'); }
-    catch (e) { App.toast(e.message, 'error'); }
-  }
-  async function revertImg() {
-    if (!sel || sel.type !== 'i') return;
-    try { await removeRow(sel.item.scope, sel.item.key); applyImg(sel.item, sel.item.src); markChanged(); showEditor(sel); renderList(); App.toast('Orijinal fotoğrafa dönüldü', 'success'); }
-    catch (e) { App.toast(e.message, 'error'); }
-  }
-
-  // ---------- Logo & favicon ----------
   async function loadBrand() {
     const { data } = await supabaseClient.from('site_content').select('id,bolum_key,foto_url').eq('sayfa', 'genel').in('bolum_key', ['logo_url', 'favicon_url']);
     const m = new Map((data || []).map(r => [r.bolum_key, r]));
     const lp = $('logoPrev'); lp.textContent = '';
     const lu = m.get('logo_url') && safeImg(m.get('logo_url').foto_url);
-    if (lu) { const i = document.createElement('img'); i.src = lu; i.alt = 'Logo'; lp.appendChild(i); }
-    else { const i = document.createElement('img'); i.src = '/admin/assets/default-logo.svg'; i.alt = 'Varsayılan logo'; lp.appendChild(i); }
+    const li = el('img'); li.src = lu || '/admin/assets/default-logo.svg'; li.alt = lu ? 'Logo' : 'Varsayılan logo'; lp.appendChild(li);
     $('logoReset').disabled = !lu;
     const fp = $('favPrev'); fp.textContent = '';
     const fu = (m.get('favicon_url') && safeImg(m.get('favicon_url').foto_url)) || '/favicon-192.png';
-    [16, 32, 64].forEach(s => { const i = document.createElement('img'); i.src = fu; i.width = s; i.height = s; i.alt = ''; fp.appendChild(i); });
-    const note = document.createElement('span'); note.style.cssText = 'font-size:12px;color:#64748B'; note.textContent = m.get('favicon_url') ? 'Özel favicon' : 'Varsayılan favicon'; fp.appendChild(note);
+    [16, 32, 64].forEach(s => { const i = el('img'); i.src = fu; i.width = s; i.height = s; i.alt = ''; fp.appendChild(i); });
+    const note = el('span', null, m.get('favicon_url') ? 'Özel favicon' : 'Varsayılan favicon'); note.style.cssText = 'font-size:12px;color:#64748B'; fp.appendChild(note);
     $('favReset').disabled = !m.get('favicon_url');
     return m;
   }
@@ -269,43 +437,50 @@
     if (!(await App.init('site-content'))) return;
     editor = RichEditor.create($('etHost'), { compact: true, placeholder: 'Yeni metni yazın…' });
     const ps = $('pageSel');
-    PAGES.forEach(([v, l]) => { const o = document.createElement('option'); o.value = v; o.textContent = l; ps.appendChild(o); });
+    PAGES.forEach(([v, l]) => { const o = el('option', null, l); o.value = v; ps.appendChild(o); });
     const qp = new URLSearchParams(location.search).get('sayfa');
     if (qp && PAGES.some(p => p[0] === qp)) { page = qp; ps.value = qp; }
-    ps.onchange = async () => { page = ps.value; await loadRows(); loadFrame(); };
+    ps.addEventListener('change', async () => {
+      if (imgDirty() && !window.confirm('Fotoğraf bilgilerinde kaydedilmemiş değişiklik var. Sayfa değiştirilsin mi?')) { ps.value = page; return; }
+      page = ps.value; await loadRows(); loadFrame();
+    });
     $('frame').addEventListener('load', onFrameLoad);
-    $('reloadBtn').onclick = loadFrame;
-    $('devMob').onclick = () => $('frame').classList.add('mob');
-    $('devDesk').onclick = () => $('frame').classList.remove('mob');
+    $('reloadBtn').addEventListener('click', loadFrame);
+    const setDev = (mob) => {
+      $('frame').classList.toggle('mob', mob);
+      $('devMob').classList.toggle('on', mob); $('devDesk').classList.toggle('on', !mob);
+      $('devMob').setAttribute('aria-pressed', mob ? 'true' : 'false'); $('devDesk').setAttribute('aria-pressed', mob ? 'false' : 'true');
+    };
+    $('devMob').addEventListener('click', () => setDev(true));
+    $('devDesk').addEventListener('click', () => setDev(false));
     $('search').addEventListener('input', renderList);
-    document.querySelectorAll('.sc-kind button').forEach(bt => bt.onclick = () => {
-      kind = bt.dataset.kind;
-      document.querySelectorAll('.sc-kind button').forEach(x => x.classList.toggle('on', x === bt));
-      renderList();
-    });
+    document.querySelectorAll('.sc-seg button').forEach(bt => bt.addEventListener('click', () => setKind(bt.dataset.kind)));
     $('onlyChanged').addEventListener('change', renderList);
-    $('etSave').onclick = saveText; $('etRevert').onclick = revertText;
-    $('eiSave').onclick = saveImg; $('eiRevert').onclick = revertImg;
-    $('eiUrl').addEventListener('input', () => { const u = safeImg($('eiUrl').value); if (u) $('eiPrev').src = u; });
-    $('eiFile').addEventListener('change', async (e) => {
-      const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-      try { const u = await uploadSiteImage(f, 'foto'); $('eiUrl').value = u; $('eiPrev').src = u; await saveImg(); }
-      catch (err) { App.toast(err.message, 'error'); }
+    $('etSave').addEventListener('click', saveText); $('etRevert').addEventListener('click', revertText);
+    $('eiPhoto').addEventListener('click', changePhoto);
+    $('eiSave').addEventListener('click', saveImgDetails); $('eiRevert').addEventListener('click', revertImg);
+    $('eiName').addEventListener('input', () => {
+      const v = $('eiName').value; const s = v.toLocaleLowerCase('tr-TR').replace(/\s+/g, '-');
+      if (s !== v) $('eiName').value = s;
+      updImgDirty();
     });
-    document.querySelectorAll('.sc-tab').forEach(t => t.onclick = () => {
-      document.querySelectorAll('.sc-tab').forEach(x => x.classList.toggle('on', x === t));
-      $('tab-texts').style.display = t.dataset.tab === 'texts' ? '' : 'none';
-      $('tab-brand').style.display = t.dataset.tab === 'brand' ? '' : 'none';
+    $('eiName').addEventListener('blur', () => { if (sel && sel.type === 'i') { $('eiName').value = Medya.slug($('eiName').value, 60) || fileOf(sel.item).base; updImgDirty(); } });
+    $('eiAlt').addEventListener('input', updImgDirty);
+    window.addEventListener('beforeunload', (e) => { if (imgDirty()) { e.preventDefault(); e.returnValue = ''; } });
+    document.querySelectorAll('.sc-tab').forEach(t => t.addEventListener('click', () => {
+      document.querySelectorAll('.sc-tab').forEach(x => { x.classList.toggle('on', x === t); x.setAttribute('aria-selected', x === t ? 'true' : 'false'); });
+      $('tab-texts').hidden = t.dataset.tab !== 'texts';
+      $('tab-brand').hidden = t.dataset.tab !== 'brand';
       if (t.dataset.tab === 'brand') loadBrand();
-    });
+    }));
     const brandUp = (inputId, key, prefix) => $(inputId).addEventListener('change', async (e) => {
       const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-      try { const u = await uploadSiteImage(f, prefix); await setBrand(key, u); App.toast('Kaydedildi — sitede görünüyor', 'success'); loadBrand(); }
+      try { const u = await uploadBrandImage(f, prefix); await setBrand(key, u); App.toast('Kaydedildi — sitede görünüyor', 'success'); loadBrand(); }
       catch (err) { App.toast(err.message, 'error'); }
     });
     brandUp('logoFile', 'logo_url', 'logo'); brandUp('favFile', 'favicon_url', 'favicon');
-    $('logoReset').onclick = () => resetBrand('logo_url');
-    $('favReset').onclick = () => resetBrand('favicon_url');
+    $('logoReset').addEventListener('click', () => resetBrand('logo_url'));
+    $('favReset').addEventListener('click', () => resetBrand('favicon_url'));
     await loadRows(); loadFrame();
   });
 })();

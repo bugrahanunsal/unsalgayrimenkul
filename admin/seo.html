@@ -9,8 +9,8 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
-  <link rel="stylesheet" href="/admin/assets/seo-admin.css?v=20260930-seo1">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
+  <link rel="stylesheet" href="/admin/assets/seo-admin.css?v=20261001-medya">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -18,9 +18,9 @@
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
       <header class="topbar">
-        <h1 class="page-title">🔎 SEO Ayarları</h1>
+        <h1 class="page-title">SEO Ayarları</h1>
         <div class="topbar-actions">
-          <a href="/" target="_blank" rel="noopener" class="btn btn-outline btn-sm">🌐 Siteyi Aç</a>
+          <a href="/" target="_blank" rel="noopener" class="btn btn-outline btn-sm"><i class="ic ic-external" aria-hidden="true"></i> Siteyi Aç</a>
           <div class="user-menu" id="userMenu"></div>
         </div>
       </header>
@@ -43,9 +43,9 @@
         </div>
 
         <div class="seo-tabs" role="tablist" aria-label="İçerik türü">
-          <button type="button" class="seo-tab on" data-tab="sayfa" role="tab" aria-selected="true">📄 Sayfalar <span class="cnt" id="cnt-sayfa"></span></button>
-          <button type="button" class="seo-tab" data-tab="ilan" role="tab" aria-selected="false">🏠 İlanlar <span class="cnt" id="cnt-ilan"></span></button>
-          <button type="button" class="seo-tab" data-tab="blog" role="tab" aria-selected="false">📝 Blog yazıları <span class="cnt" id="cnt-blog"></span></button>
+          <button type="button" class="seo-tab on" data-tab="sayfa" role="tab" aria-selected="true"><i class="ic ic-file" aria-hidden="true"></i> Sayfalar <span class="cnt" id="cnt-sayfa"></span></button>
+          <button type="button" class="seo-tab" data-tab="ilan" role="tab" aria-selected="false"><i class="ic ic-home" aria-hidden="true"></i> İlanlar <span class="cnt" id="cnt-ilan"></span></button>
+          <button type="button" class="seo-tab" data-tab="blog" role="tab" aria-selected="false"><i class="ic ic-file-text" aria-hidden="true"></i> Blog yazıları <span class="cnt" id="cnt-blog"></span></button>
         </div>
 
         <div class="seo-tools">
@@ -95,8 +95,8 @@
           <div class="gp-bar">
             <div class="form-label" style="margin:0">Google önizlemesi</div>
             <div class="seg" role="group" aria-label="Önizleme cihazı">
-              <button type="button" data-dev="mobile" class="on">📱 Mobil</button>
-              <button type="button" data-dev="desktop">🖥️ Masaüstü</button>
+              <button type="button" data-dev="mobile" class="on"><i class="ic ic-smartphone" aria-hidden="true"></i> Mobil</button>
+              <button type="button" data-dev="desktop"><i class="ic ic-monitor" aria-hidden="true"></i> Masaüstü</button>
             </div>
           </div>
           <div id="gp" class="gp mobile" aria-label="Google önizlemesi">
@@ -106,23 +106,23 @@
           </div>
 
           <div class="yo-field">
-            <div class="yo-lab"><label class="form-label" for="fTitle">SEO başlığı</label><button type="button" class="btn btn-outline btn-xs" id="sugTitle">✨ Başlık öner</button></div>
+            <div class="yo-lab"><label class="form-label" for="fTitle">SEO başlığı</label><button type="button" class="btn btn-outline btn-xs" id="sugTitle"><i class="ic ic-sparkles" aria-hidden="true"></i> Başlık öner</button></div>
             <input id="fTitle" class="form-input" maxlength="120" autocomplete="off">
             <div class="yo-bar"><i id="barTitle"></i></div>
-            <div class="yo-meta"><span id="metaTitle"></span><button type="button" class="linkbtn" id="rstTitle">↺ Varsayılan başlık</button></div>
+            <div class="yo-meta"><span id="metaTitle"></span><button type="button" class="linkbtn" id="rstTitle"><i class="ic ic-undo" aria-hidden="true"></i> Varsayılan başlık</button></div>
           </div>
 
           <div class="yo-field">
             <div class="yo-lab"><label class="form-label" for="fSlug">Adres (slug)</label></div>
             <div class="slugrow"><span class="slugpre" id="slugPre">ismailunsal.com.tr/</span><input id="fSlug" class="form-input" maxlength="220" autocomplete="off" spellcheck="false"></div>
-            <div class="yo-meta"><span id="metaSlug" class="yo-note"></span><button type="button" class="linkbtn" id="sugSlug">✨ Anahtar kelimeden oluştur</button></div>
+            <div class="yo-meta"><span id="metaSlug" class="yo-note"></span><button type="button" class="linkbtn" id="sugSlug"><i class="ic ic-sparkles" aria-hidden="true"></i> Anahtar kelimeden oluştur</button></div>
           </div>
 
           <div class="yo-field">
-            <div class="yo-lab"><label class="form-label" for="fDesc">Meta açıklama</label><button type="button" class="btn btn-outline btn-xs" id="sugDesc">✨ Açıklama öner</button></div>
+            <div class="yo-lab"><label class="form-label" for="fDesc">Meta açıklama</label><button type="button" class="btn btn-outline btn-xs" id="sugDesc"><i class="ic ic-sparkles" aria-hidden="true"></i> Açıklama öner</button></div>
             <textarea id="fDesc" class="form-input" rows="3" maxlength="320"></textarea>
             <div class="yo-bar"><i id="barDesc"></i></div>
-            <div class="yo-meta"><span id="metaDesc"></span><button type="button" class="linkbtn" id="rstDesc">↺ Varsayılan açıklama</button></div>
+            <div class="yo-meta"><span id="metaDesc"></span><button type="button" class="linkbtn" id="rstDesc"><i class="ic ic-undo" aria-hidden="true"></i> Varsayılan açıklama</button></div>
           </div>
         </section>
 
@@ -135,15 +135,15 @@
             <div class="ph-side">
               <div id="phState" class="ph-state"></div>
               <div class="ph-btns" id="phBtns">
-                <label class="btn btn-primary btn-sm" id="phUpBtn">📷 Fotoğraf yükle<input type="file" id="phFile" accept="image/jpeg,image/png,image/webp" hidden></label>
-                <button type="button" class="btn btn-outline btn-sm" id="phUrlBtn">🔗 Adres ile ekle</button>
-                <button type="button" class="btn btn-danger btn-sm" id="phDel">🗑️ Fotoğrafı sil</button>
-                <button type="button" class="btn btn-outline btn-sm" id="phReset">↺ Varsayılana dön</button>
+                <button type="button" class="btn btn-primary btn-sm ph-main" id="phUpBtn"><i class="ic ic-camera" aria-hidden="true"></i> Fotoğrafı değiştir</button>
+                <button type="button" class="btn btn-outline btn-sm" id="phUrlBtn"><i class="ic ic-link" aria-hidden="true"></i> Adres ile ekle</button>
+                <button type="button" class="btn btn-outline btn-sm ph-del" id="phDel"><i class="ic ic-trash" aria-hidden="true"></i> Fotoğrafı kaldır</button>
+                <button type="button" class="btn btn-outline btn-sm" id="phReset"><i class="ic ic-undo" aria-hidden="true"></i> Varsayılana dön</button>
               </div>
               <div id="phUrlRow" class="ph-urlrow" hidden><input id="phUrl" type="url" class="form-input" placeholder="https://…"><button type="button" class="btn btn-primary btn-sm" id="phUrlOk">Ekle</button></div>
               <label class="yo-check" id="phKapakRow"><input type="checkbox" id="phKapak"> Sayfanın en üstünde (kapak alanında) göster</label>
               <div class="yo-range" id="phDarkRow"><label for="phDark">Kapak karartma: <b id="phDarkV"></b></label><input type="range" id="phDark" min="50" max="95" step="5"></div>
-              <a id="phListingLink" class="btn btn-outline btn-sm" hidden>📷 İlan fotoğraflarını düzenle →</a>
+              <a id="phListingLink" class="btn btn-outline btn-sm" hidden><i class="ic ic-camera" aria-hidden="true"></i> İlan fotoğraflarını düzenle</a>
             </div>
           </div>
         </section>
@@ -166,11 +166,11 @@
       </div>
 
       <div class="seo-foot">
-        <button type="button" class="btn btn-outline btn-sm" id="edReset" title="Bu sayfanın tüm SEO ayarlarını sitedeki varsayılanlara döndürür">↺ Tümünü varsayılana döndür</button>
+        <button type="button" class="btn btn-outline btn-sm" id="edReset" title="Bu sayfanın tüm SEO ayarlarını sitedeki varsayılanlara döndürür"><i class="ic ic-undo" aria-hidden="true"></i> Tümünü varsayılana döndür</button>
         <span id="dirty" class="dirty" hidden>● Kaydedilmemiş değişiklik</span>
         <div class="seo-foot-r">
           <button type="button" class="btn btn-outline" id="edCancel">Kapat</button>
-          <button type="button" class="btn btn-primary" id="edSave">💾 Kaydet</button>
+          <button type="button" class="btn btn-primary" id="edSave"><i class="ic ic-save" aria-hidden="true"></i> Kaydet</button>
         </div>
       </div>
     </div>
@@ -179,7 +179,8 @@
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
-  <script src="/admin/assets/seo-admin.js?v=20260930-seo1"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
+  <script src="/admin/assets/medya.js?v=20261001-medya"></script>
+  <script src="/admin/assets/seo-admin.js?v=20261001-medya"></script>
 </body>
 </html>

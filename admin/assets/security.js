@@ -18,7 +18,7 @@
 const Security = {
 
   /**
-   * 🛡️ XSS Koruması - HTML Escape
+  * XSS Koruması - HTML Escape
    * Kullanıcı input'unu HTML olarak render etmeden önce temizler
    */
   escapeHtml(text) {
@@ -37,7 +37,7 @@ const Security = {
   },
 
   /**
-   * 🛡️ Input Sanitization
+  * Input Sanitization
    * Genel input temizleme
    */
   sanitizeInput(input, options = {}) {
@@ -69,7 +69,7 @@ const Security = {
   },
 
   /**
-   * 🛡️ Email Validation
+  * Email Validation
    */
   isValidEmail(email) {
     if (!email) return false;
@@ -78,7 +78,7 @@ const Security = {
   },
 
   /**
-   * 🛡️ Phone Validation (Türkiye)
+  * Phone Validation (Türkiye)
    */
   isValidPhone(phone) {
     if (!phone) return false;
@@ -87,7 +87,7 @@ const Security = {
   },
 
   /**
-   * 🛡️ Password Strength Check
+  * Password Strength Check
    */
   checkPasswordStrength(password) {
     if (!password) return { score: 0, level: 'çok zayıf', valid: false };
@@ -125,7 +125,7 @@ const Security = {
   },
 
   /**
-   * 🛡️ Rate Limiter (Client-side)
+  * Rate Limiter (Client-side)
    * Aynı işlemin çok sık yapılmasını önler
    */
   rateLimiter: {
@@ -168,7 +168,7 @@ const Security = {
   },
 
   /**
-   * 🛡️ Session Validator
+  * Session Validator
    * Aktif session kontrol
    */
   async validateSession() {
@@ -210,7 +210,7 @@ const Security = {
   },
 
   /**
-   * 🛡️ Role Check
+  * Role Check
    * Kullanıcının yetkisi var mı?
    */
   async checkRole(requiredRole = 'admin') {
@@ -251,7 +251,7 @@ const Security = {
   },
 
   /**
-   * 🛡️ CSRF Token
+  * CSRF Token
    * Cross-site request forgery koruması
    */
   csrf: {
@@ -278,7 +278,7 @@ const Security = {
   },
 
   /**
-   * 🛡️ Get Client IP (approximate)
+  * Get Client IP (approximate)
    */
   async getClientIP() {
     try {
@@ -291,7 +291,7 @@ const Security = {
   },
 
   /**
-   * 🛡️ Log Security Event
+  * Log Security Event
    */
   async logSecurityEvent(eventType, metadata = {}, severity = 'info') {
     try {
@@ -313,7 +313,7 @@ const Security = {
   },
 
   /**
-   * 🛡️ Detect Suspicious Activity
+  * Detect Suspicious Activity
    */
   detectSuspicious(input) {
     const suspiciousPatterns = [
@@ -355,4 +355,4 @@ window.Security = Security;
   }, { passive: true });
 });
 
-console.log('✅ Security layer loaded');
+console.log(' Security layer loaded');

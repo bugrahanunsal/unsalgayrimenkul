@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .cp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
@@ -43,10 +43,10 @@
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
       <header class="topbar">
-        <h1 class="page-title">📨 E-posta Kampanyaları</h1>
+        <h1 class="page-title">E-posta Kampanyaları</h1>
         <div class="topbar-actions">
-          <a href="/admin/email-tasarim.html" class="btn btn-outline btn-sm">🖌️ Tasarımlar</a>
-          <a href="/admin/kisiler.html" class="btn btn-outline btn-sm">📇 Kişi Listeleri</a>
+          <a href="/admin/email-tasarim.html" class="btn btn-outline btn-sm"><i class="ic ic-pen-tool" aria-hidden="true"></i> Tasarımlar</a>
+          <a href="/admin/kisiler.html" class="btn btn-outline btn-sm"><i class="ic ic-users" aria-hidden="true"></i> Kişi Listeleri</a>
           <div class="user-menu" id="userMenu"></div>
         </div>
       </header>
@@ -74,7 +74,7 @@
                 <label><input type="checkbox" id="useManuel"> <span>Belirli e-postalar<small>Virgülle veya alt alta yazın.</small></span></label>
                 <div class="cp-sub"><textarea id="manuel" class="form-textarea" rows="3" placeholder="ahmet@gmail.com, ayse@hotmail.com"></textarea></div>
               </div>
-              <div class="cp-count"><div><strong id="cnt">0</strong> kişi<small id="cntNote">Kaynak seçin</small></div><button type="button" class="btn btn-outline btn-sm" id="cntBtn" style="background:#fff;">↻ Hesapla</button></div>
+              <div class="cp-count"><div><strong id="cnt">0</strong> kişi<small id="cntNote">Kaynak seçin</small></div><button type="button" class="btn btn-outline btn-sm" id="cntBtn" style="background:#fff;"><i class="ic ic-refresh" aria-hidden="true"></i> Hesapla</button></div>
             </div>
 
             <div class="card">
@@ -82,11 +82,11 @@
               <div class="form-group"><label class="form-label" for="subject">E-posta konusu *</label><input id="subject" class="form-input" maxlength="150" placeholder="Örn: Çınarcık'ta yeni deniz manzaralı arsalar"></div>
               <div class="form-group"><label class="form-label" for="pre">Önizleme metni (gelen kutusunda konunun yanında görünür)</label><input id="pre" class="form-input" maxlength="140" placeholder="Örn: Bu hafta portföye eklenen 5 fırsat"></div>
               <div class="form-group"><label class="form-label" for="testTo">Test e-postası</label>
-                <div style="display:flex;gap:8px;"><input id="testTo" type="email" class="form-input" maxlength="254"><button type="button" class="btn btn-outline" id="testBtn" style="white-space:nowrap;">🧪 Test gönder</button></div>
+                <div style="display:flex;gap:8px;"><input id="testTo" type="email" class="form-input" maxlength="254"><button type="button" class="btn btn-outline" id="testBtn" style="white-space:nowrap;"><i class="ic ic-mail" aria-hidden="true"></i> Test gönder</button></div>
                 <div class="form-help">Önce kendinize gönderip telefonda nasıl göründüğüne bakın.</div>
               </div>
               <div class="cp-warn" id="warn"></div>
-              <div class="cp-actions"><button type="button" class="btn btn-primary" id="sendBtn">📨 Kampanyayı Gönder</button></div>
+              <div class="cp-actions"><button type="button" class="btn btn-primary" id="sendBtn"><i class="ic ic-send" aria-hidden="true"></i> Kampanyayı Gönder</button></div>
             </div>
           </div>
 
@@ -94,15 +94,15 @@
             <div class="cp-step"><b>2</b><span>Tasarım</span></div>
             <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
               <select id="tplSel" class="form-select" style="flex:1;min-width:200px;"></select>
-              <a id="editTpl" class="btn btn-outline btn-sm" href="/admin/email-tasarim.html" target="_blank" rel="noopener">✏️ Tasarımı düzenle</a>
-              <button type="button" class="btn btn-outline btn-sm" id="reloadTpl" title="Tasarımları yenile">↻</button>
+              <a id="editTpl" class="btn btn-outline btn-sm" href="/admin/email-tasarim.html" target="_blank" rel="noopener"><i class="ic ic-edit" aria-hidden="true"></i> Tasarımı düzenle</a>
+              <button type="button" class="btn btn-outline btn-sm" id="reloadTpl" title="Tasarımları yenile" aria-label="Tasarımları yenile"><i class="ic ic-refresh" aria-hidden="true"></i></button>
             </div>
             <iframe id="pv" sandbox="allow-same-origin" title="E-posta önizleme"></iframe>
           </div>
         </div>
 
         <div class="card" style="margin-top:18px;">
-          <div class="card-title" style="margin-bottom:10px;">🕘 Gönderilen kampanyalar</div>
+          <div class="card-title" style="margin-bottom:10px;"><i class="ic ic-clock" aria-hidden="true"></i> Gönderilen kampanyalar</div>
           <div style="overflow:auto;"><table class="cp-hist" style="width:100%;border-collapse:collapse;"><thead><tr><th>Tarih</th><th>Konu</th><th>Kişi</th><th>Durum</th></tr></thead><tbody id="hist"></tbody></table></div>
         </div>
       </div>
@@ -111,9 +111,9 @@
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
   <script src="/cms-safe.js?v=20260929-of"></script>
-  <script src="/admin/assets/email-render.js?v=20260929-of"></script>
-  <script src="/admin/assets/kampanya.js?v=20260929-of"></script>
+  <script src="/admin/assets/email-render.js?v=20261001-medya"></script>
+  <script src="/admin/assets/kampanya.js?v=20261001-medya"></script>
 </body>
 </html>

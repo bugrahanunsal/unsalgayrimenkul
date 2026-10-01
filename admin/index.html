@@ -10,10 +10,7 @@
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
 
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="DENY">
-
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .welcome-banner {
@@ -111,10 +108,7 @@
       width: 24px;
       height: 24px;
     }
-    .stat-icon-box.blue { background: #dbeafe; color: #2563eb; }
-    .stat-icon-box.green { background: #d1fae5; color: #059669; }
-    .stat-icon-box.purple { background: #ede9fe; color: #7c3aed; }
-    .stat-icon-box.orange { background: #DBEAFE; color: #1D4ED8; }
+    .stat-icon-box { background: #F1F5F9; color: #0A2A5E; border: 1px solid #E2E8F0; }
     .stat-content { flex: 1; min-width: 0; }
     .stat-value {
       font-size: 28px;
@@ -166,7 +160,7 @@
     .card-title svg {
       width: 18px;
       height: 18px;
-      color: var(--accent);
+      color: #0A2A5E;
     }
     .card-subtitle {
       font-size: 12px;
@@ -203,7 +197,7 @@
     .quick-action svg {
       width: 20px;
       height: 20px;
-      color: var(--accent);
+      color: #334155;
       flex-shrink: 0;
     }
     .quick-action.primary {
@@ -275,7 +269,7 @@
         <!-- Welcome Banner -->
         <div class="welcome-banner">
           <div>
-            <h2 id="welcomeTitle">Hoş geldiniz 👋</h2>
+            <h2 id="welcomeTitle">Hoş geldiniz</h2>
             <p>İsmail Ünsal Gayrimenkul yönetim paneline hoş geldiniz. Bugün <span id="todayDate"></span></p>
           </div>
           <a href="/" target="_blank" class="btn-view-site">
@@ -440,7 +434,7 @@
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
 
   <script>
     (async () => {
@@ -452,7 +446,7 @@
       const name = user?.profile?.full_name?.split(' ')[0] || 'Hoş geldiniz';
       const hour = new Date().getHours();
       const greeting = hour < 12 ? 'Günaydın' : hour < 18 ? 'İyi günler' : 'İyi akşamlar';
-      document.getElementById('welcomeTitle').textContent = `${greeting}, ${name}! 👋`;
+      document.getElementById('welcomeTitle').textContent = `${greeting}, ${name}!`;
 
       // Tarih
       document.getElementById('todayDate').textContent = new Date().toLocaleDateString('tr-TR', {

@@ -54,6 +54,7 @@ const App = {
       audit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>',
       admins: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
       settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+      media: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="14" height="14" rx="2"/><path d="M3 16V5a2 2 0 0 1 2-2h11"/><circle cx="11.5" cy="11.5" r="1.5"/><polyline points="21 17 17.5 13.5 11 20"/></svg>',
       logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'
     };
 
@@ -97,6 +98,10 @@ const App = {
             <a href="/admin/site-content.html" class="nav-item ${activePage === 'site-content' ? 'active' : ''}">
               <span class="nav-icon">${icons.site}</span>
               <span>Site İçeriği</span>
+            </a>
+            <a href="/admin/medya.html" class="nav-item ${activePage === 'medya' ? 'active' : ''}">
+              <span class="nav-icon">${icons.media}</span>
+              <span>Görsel Deposu</span>
             </a>
             <a href="/admin/seo.html" class="nav-item ${activePage === 'seo' ? 'active' : ''}">
               <span class="nav-icon">${icons.seo}</span>
@@ -204,6 +209,28 @@ const App = {
   },
 
   /**
+   * Tek renk çizgi ikon (admin.css → .ic-*). Renk yazı renginden gelir; renkli emoji kullanılmaz.
+   * App.icon('save') → <i class="ic ic-save" aria-hidden="true"></i> öğesi
+   */
+  icon(name, cls) {
+    const i = document.createElement('i');
+    i.className = 'ic ic-' + String(name || '').replace(/[^a-z0-9-]/g, '') + (cls ? ' ' + cls : '');
+    i.setAttribute('aria-hidden', 'true');
+    return i;
+  },
+  iconHtml(name, cls) {
+    return '<i class="ic ic-' + String(name || '').replace(/[^a-z0-9-]/g, '') + (cls ? ' ' + String(cls).replace(/[^a-z0-9 -]/g, '') : '') + '" aria-hidden="true"></i>';
+  },
+  /** el'in içeriğini "ikon + yazı" yapar; yazı her zaman düz metin olarak eklenir (güvenli) */
+  iconText(el, name, text) {
+    if (!el) return el;
+    el.textContent = '';
+    if (name) el.appendChild(this.icon(name));
+    if (text != null && text !== '') el.appendChild(document.createTextNode((name ? ' ' : '') + text));
+    return el;
+  },
+
+  /**
    * Toast bildirimi
    */
   toast(message, type = 'info', title = '') {
@@ -218,10 +245,10 @@ const App = {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
 
-    const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+    const icons = { success: 'check-circle', error: 'x-circle', warning: 'alert', info: 'info' };
 
     toast.innerHTML = `
-      ${title ? `<div class="toast-title">${icons[type] || ''} ${Security.escapeHtml(title)}</div>` : ''}
+      ${title ? `<div class="toast-title">${icons[type] ? App.iconHtml(icons[type]) : ''} ${Security.escapeHtml(title)}</div>` : ''}
       <div class="toast-message">${Security.escapeHtml(message)}</div>
     `;
 
@@ -234,7 +261,7 @@ const App = {
   },
 
   /**
-   * 📣 Yeni ilanı, ilgi alanı uyan abonelere e-posta ile duyur.
+  * Yeni ilanı, ilgi alanı uyan abonelere e-posta ile duyur.
    * Önce kaç kişiye gideceğini sorar (dry_run), onay gelirse gönderir.
    * Sunucu (/api/admin/ilan-gonder) admin yetkisini ayrıca doğrular.
    */
@@ -269,7 +296,7 @@ const App = {
   },
 
   /**
-   * 💎 Özel Fırsat: aynı anda sadece 1 ilan olabilir.
+  * Özel Fırsat: aynı anda sadece 1 ilan olabilir.
    * Başka bir ilan zaten seçiliyse onu döndürür (id, baslik_tr), yoksa null.
    */
   async findOzelFirsat(exceptId) {
@@ -283,7 +310,7 @@ const App = {
     return (data && data[0]) || null;
   },
   ozelFirsatError(other) {
-    return `💎 Özel Fırsat zaten seçili: "${other.baslik_tr || 'bir ilan'}". Aynı anda sadece 1 ilan özel fırsat olabilir. Önce o ilanın işaretini kaldırın.`;
+    return `Özel Fırsat zaten seçili: "${other.baslik_tr || 'bir ilan'}". Aynı anda sadece 1 ilan özel fırsat olabilir. Önce o ilanın işaretini kaldırın.`;
   },
 
   /**
@@ -368,4 +395,4 @@ const App = {
 };
 
 window.App = App;
-console.log('✅ App loaded');
+console.log(' App loaded');

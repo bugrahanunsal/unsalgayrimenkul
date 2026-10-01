@@ -60,7 +60,7 @@
     const bad = parsed.length - valid.length;
     $('csvInfo').textContent = '';
     const s = document.createElement('div');
-    s.innerHTML = `✅ <b></b> geçerli kişi` + (bad ? ` · <span class="kl-bad">⚠️ <b></b> satırda e-posta geçersiz (atlanacak)</span>` : '') + (valid.length !== uniq.size ? ` · ${valid.length - uniq.size} tekrar birleştirildi` : '');
+    s.innerHTML = `<i class="ic ic-check-circle" aria-hidden="true"></i> <b></b> geçerli kişi` + (bad ? ` · <span class="kl-bad"><i class="ic ic-alert" aria-hidden="true"></i> <b></b> satırda e-posta geçersiz (atlanacak)</span>` : '') + (valid.length !== uniq.size ? ` · ${valid.length - uniq.size} tekrar birleştirildi` : '');
     s.querySelectorAll('b')[0].textContent = uniq.size; if (bad) s.querySelectorAll('b')[1].textContent = bad;
     $('csvInfo').appendChild(s);
     parsed = [...uniq.values()];
@@ -84,7 +84,7 @@
       try { txt = new TextDecoder('utf-8', { fatal: true }).decode(rd.result); }
       catch (_) { try { txt = new TextDecoder('windows-1254').decode(rd.result); } catch (__) { txt = new TextDecoder('iso-8859-9').decode(rd.result); } }
       parsed = mapRows(parseCSV(txt));
-      if (!parsed.length) { $('csvInfo').textContent = '❌ Dosyada e-posta sütunu bulunamadı.'; $('csvPrev').hidden = true; updateBtn(); return; }
+      if (!parsed.length) { $('csvInfo').textContent = 'Dosyada e-posta sütunu bulunamadı.'; $('csvPrev').hidden = true; updateBtn(); return; }
       if (!$('listName').value) $('listName').value = tagClean(f.name.replace(/\.[a-z]+$/i, '')).slice(0, 40);
       showParsed();
     };
@@ -121,7 +121,7 @@
       parsed = []; $('csvPrev').hidden = true; $('csvInfo').textContent = ''; $('consent').checked = false;
       activeTag = tag; await loadContacts();
     } catch (e) { App.toast(e.message.includes('marketing_contacts') ? 'Veritabanı kurulumu eksik (SQL dosyasını çalıştırın)' : e.message, 'error'); }
-    finally { btn.textContent = '📥 Listeye ekle'; updateBtn(); }
+    finally { App.iconText(btn, 'plus', 'Listeye ekle'); updateBtn(); }
   }
 
   async function addOne() {
@@ -162,7 +162,7 @@
       const st = document.createElement('span'); st.className = 'badge ' + (c.unsubscribed ? 'badge-gray' : 'badge-success'); st.textContent = c.unsubscribed ? 'Çıktı' : 'Aktif'; td(st);
       const act = document.createElement('div'); act.style.cssText = 'display:flex;gap:4px;justify-content:flex-end;';
       if (activeTag) { const rm = document.createElement('button'); rm.className = 'btn btn-outline btn-sm'; rm.textContent = 'Listeden çıkar'; rm.onclick = () => removeTag(c); act.appendChild(rm); }
-      const del = document.createElement('button'); del.className = 'btn btn-danger btn-sm'; del.textContent = '🗑️'; del.title = 'Kişiyi tamamen sil'; del.onclick = () => removeContact(c); act.appendChild(del);
+      const del = document.createElement('button'); del.className = 'btn btn-danger btn-sm'; App.iconText(del, 'trash'); del.title = 'Kişiyi tamamen sil'; del.setAttribute('aria-label', 'Kişiyi tamamen sil'); del.onclick = () => removeContact(c); act.appendChild(del);
       td(act);
       tb.appendChild(tr);
     });

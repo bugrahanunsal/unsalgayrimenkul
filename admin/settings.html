@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -17,7 +17,7 @@
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
       <header class="topbar">
-        <h1 class="page-title">⚙️ Ayarlar</h1>
+        <h1 class="page-title">Ayarlar</h1>
         <div class="topbar-actions">
           <div class="user-menu" id="userMenu"></div>
         </div>
@@ -27,7 +27,7 @@
         <!-- Profil -->
         <div class="card" style="margin-bottom: 20px;">
           <div class="card-header">
-            <div class="card-title">👤 Profil Bilgileri</div>
+            <div class="card-title"><i class="ic ic-user" aria-hidden="true"></i> Profil Bilgileri</div>
           </div>
           <form id="profileForm">
             <div class="form-row">
@@ -48,14 +48,14 @@
               <label class="form-label">Rol (değiştirilemez)</label>
               <input type="text" name="role" class="form-input" readonly disabled>
             </div>
-            <button type="submit" class="btn btn-primary">💾 Profili Kaydet</button>
+            <button type="submit" class="btn btn-primary"><i class="ic ic-save" aria-hidden="true"></i> Profili Kaydet</button>
           </form>
         </div>
 
         <!-- Şifre Değiştir -->
         <div class="card" style="margin-bottom: 20px;">
           <div class="card-header">
-            <div class="card-title">🔑 Şifre Değiştir</div>
+            <div class="card-title"><i class="ic ic-key" aria-hidden="true"></i> Şifre Değiştir</div>
           </div>
           <form id="passwordForm">
             <div class="form-group">
@@ -70,14 +70,14 @@
               <label class="form-label">Yeni Şifre (Tekrar) <span class="required">*</span></label>
               <input type="password" name="confirm_password" class="form-input" required minlength="8">
             </div>
-            <button type="submit" class="btn btn-primary">🔒 Şifreyi Değiştir</button>
+            <button type="submit" class="btn btn-primary"><i class="ic ic-lock" aria-hidden="true"></i> Şifreyi Değiştir</button>
           </form>
         </div>
 
         <!-- Login Geçmişi -->
         <div class="card">
           <div class="card-header">
-            <div class="card-title">📊 Son Girişler</div>
+            <div class="card-title"><i class="ic ic-clock" aria-hidden="true"></i> Son Girişler</div>
           </div>
           <div id="loginHistory">
             <div class="loading">Yükleniyor...</div>
@@ -90,7 +90,7 @@
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
 
   <script>
     (async () => {

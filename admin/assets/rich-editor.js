@@ -44,12 +44,12 @@
     const block = (tag) => exec('formatBlock', tag);
 
     const tools = opts.compact
-      ? [['<b>B</b>', 'Kalın', () => exec('bold')], ['<span style="color:#2563EB;font-style:italic;font-weight:800">Vurgu</span>', 'Seçili kelimeyi mavi vurgulu yap (başlıklarda)', highlight], ['<i>I</i>', 'İtalik', () => exec('italic')], ['• Liste', 'Madde listesi', () => exec('insertUnorderedList')], ['🔗', 'Link', addLink], ['⌫', 'Biçimi temizle', () => exec('removeFormat')]]
+      ? [['<b>B</b>', 'Kalın', () => exec('bold')], ['<span style="color:#2563EB;font-style:italic;font-weight:800">Vurgu</span>', 'Seçili kelimeyi mavi vurgulu yap (başlıklarda)', highlight], ['<i>I</i>', 'İtalik', () => exec('italic')], ['• Liste', 'Madde listesi', () => exec('insertUnorderedList')], ['<i class="ic ic-link" aria-hidden="true"></i>', 'Link', addLink], ['<i class="ic ic-eraser" aria-hidden="true"></i>', 'Biçimi temizle', () => exec('removeFormat')]]
       : [['Başlık', 'Büyük başlık (H2)', () => block('H2')], ['Alt başlık', 'Alt başlık (H3)', () => block('H3')], ['¶ Paragraf', 'Normal paragraf', () => block('P')], 'sep',
          ['<b>B</b>', 'Kalın', () => exec('bold')], ['<i>I</i>', 'İtalik', () => exec('italic')], ['<u>U</u>', 'Altı çizili', () => exec('underline')], 'sep',
-         ['• Liste', 'Madde listesi', () => exec('insertUnorderedList')], ['1. Liste', 'Numaralı liste', () => exec('insertOrderedList')], ['❝ Alıntı', 'Alıntı', () => block('BLOCKQUOTE')], 'sep',
-         ['🔗 Link', 'Link ekle', addLink], ['🖼️ Görsel', 'Görsel yükle', addImage], ['ℹ️ Bilgi kutusu', 'Vurgulu bilgi kutusu', addInfo], 'sep',
-         ['⌫ Temizle', 'Seçili metnin biçimini temizle', () => exec('removeFormat')]];
+         ['• Liste', 'Madde listesi', () => exec('insertUnorderedList')], ['1. Liste', 'Numaralı liste', () => exec('insertOrderedList')], ['<i class="ic ic-quote" aria-hidden="true"></i> Alıntı', 'Alıntı', () => block('BLOCKQUOTE')], 'sep',
+         ['<i class="ic ic-link" aria-hidden="true"></i> Link', 'Link ekle', addLink], ['<i class="ic ic-image" aria-hidden="true"></i> Görsel', 'Görsel yükle', addImage], ['<i class="ic ic-info" aria-hidden="true"></i> Bilgi kutusu', 'Vurgulu bilgi kutusu', addInfo], 'sep',
+         ['<i class="ic ic-eraser" aria-hidden="true"></i> Temizle', 'Seçili metnin biçimini temizle', () => exec('removeFormat')]];
     tools.forEach(t => {
       if (t === 'sep') { const s = document.createElement('span'); s.className = 'sep'; bar.appendChild(s); return; }
       bar.appendChild(btn(t[0], t[1], t[2]));

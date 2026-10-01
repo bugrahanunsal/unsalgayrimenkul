@@ -166,7 +166,7 @@
       else { img = document.createElement('div'); img.className = 'noimg'; }
       const info = document.createElement('div'); info.style.minWidth = '0';
       const t = document.createElement('div'); t.className = 'ig-t'; t.textContent = p.baslik_tr || 'İlan';
-      const m = document.createElement('div'); m.className = 'ig-m'; m.textContent = '📍 ' + [p.mahalle, p.ilce].filter(Boolean).join(', ');
+      const m = document.createElement('div'); m.className = 'ig-m'; App.iconText(m, 'map-pin', [p.mahalle, p.ilce].filter(Boolean).join(', '));
       const fa = document.createElement('div'); fa.className = 'ig-f'; fa.textContent = factsText(p);
       info.append(t, m, fa);
       const pr = document.createElement('div'); pr.className = 'ig-p'; pr.textContent = priceText(p);
@@ -278,7 +278,7 @@
       App.toast(`${payload.property_ids.length} ilan ${payload.to_email} adresine gönderildi.`, 'success', 'Gönderildi');
       try { await Security.logSecurityEvent('listings_sent_to_customer', { to: payload.to_email, count: payload.property_ids.length }, 'info'); } catch (_) {}
     } catch (e) { showWarn(e.message); App.toast(e.message, 'error'); }
-    finally { btn.disabled = false; btn.textContent = '📨 Müşteriye Gönder'; }
+    finally { btn.disabled = false; App.iconText(btn, 'send', 'Müşteriye Gönder'); }
   }
 
   function reset() {

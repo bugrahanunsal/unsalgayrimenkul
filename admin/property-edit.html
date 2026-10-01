@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .photo-uploader { border: 2px dashed var(--border); border-radius: var(--radius); padding: 30px; text-align: center; cursor: pointer; transition: var(--transition); }
@@ -28,7 +28,7 @@
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
       <header class="topbar">
-        <h1 class="page-title" id="pageTitle">✏️ İlan Düzenle</h1>
+        <h1 class="page-title" id="pageTitle">İlan Düzenle</h1>
         <div class="topbar-actions">
           <a href="/admin/properties.html" class="btn btn-outline btn-sm">← Geri</a>
           <div class="user-menu" id="userMenu"></div>
@@ -44,12 +44,12 @@
           <!-- Fotoğraflar -->
           <div class="card" style="margin-bottom: 20px;">
             <div class="card-header">
-              <div class="card-title">📸 Fotoğraflar</div>
+              <div class="card-title"><i class="ic ic-camera" aria-hidden="true"></i> Fotoğraflar</div>
               <div id="photoCount"></div>
             </div>
 
             <div class="photo-uploader" onclick="document.getElementById('photoInput').click()">
-              <div style="font-size: 40px;">📷</div>
+              <div style="font-size: 40px; color: var(--text-muted);"><i class="ic ic-upload" aria-hidden="true"></i></div>
               <div style="font-weight: 600; margin-top: 8px;">Fotoğraf ekle</div>
               <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
             </div>
@@ -59,14 +59,14 @@
 
           <!-- Başlıklar -->
           <div class="card" style="margin-bottom: 20px;">
-            <div class="card-header"><div class="card-title">📝 Başlıklar</div></div>
+            <div class="card-header"><div class="card-title"><i class="ic ic-file-text" aria-hidden="true"></i> Başlıklar</div></div>
 
             <div class="form-group">
               <label class="form-label">Başlık (TR) *</label>
               <input type="text" name="baslik_tr" class="form-input" required maxlength="200">
             </div>
 
-            <div class="form-hint" style="background:#EFF6FF;border:1px solid #BFDBFE;color:#1E3A8A;border-radius:8px;padding:10px 14px;font-size:13px;margin:-4px 0 16px;">🌐 Sadece Türkçe yazmanız yeterli — başlık ve açıklama sitede İngilizce, Almanca, Fransızca, Rusça ve Arapçaya otomatik çevrilir.</div>
+            <div class="form-hint" style="background:#EFF6FF;border:1px solid #BFDBFE;color:#1E3A8A;border-radius:8px;padding:10px 14px;font-size:13px;margin:-4px 0 16px;"><i class="ic ic-globe" aria-hidden="true"></i> Sadece Türkçe yazmanız yeterli — başlık ve açıklama sitede İngilizce, Almanca, Fransızca, Rusça ve Arapçaya otomatik çevrilir.</div>
 
             <div class="form-group">
               <label class="form-label">Açıklama (TR) *</label>
@@ -76,7 +76,7 @@
 
           <!-- Kategori & Fiyat -->
           <div class="card" style="margin-bottom: 20px;">
-            <div class="card-header"><div class="card-title">💰 Kategori & Fiyat</div></div>
+            <div class="card-header"><div class="card-title"><i class="ic ic-tag" aria-hidden="true"></i> Kategori & Fiyat</div></div>
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Tip *</label>
@@ -115,7 +115,7 @@
 
           <!-- Özellikler -->
           <div class="card" style="margin-bottom: 20px;">
-            <div class="card-header"><div class="card-title">🏗️ Özellikler</div></div>
+            <div class="card-header"><div class="card-title"><i class="ic ic-layers" aria-hidden="true"></i> Özellikler</div></div>
             <div class="form-row">
               <div class="form-group"><label class="form-label">m²</label><input type="number" name="m2" class="form-input" min="0"></div>
               <div class="form-group">
@@ -163,7 +163,7 @@
 
           <!-- Konum -->
           <div class="card" style="margin-bottom: 20px;">
-            <div class="card-header"><div class="card-title">📍 Konum</div></div>
+            <div class="card-header"><div class="card-title"><i class="ic ic-map-pin" aria-hidden="true"></i> Konum</div></div>
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">İlçe *</label>
@@ -196,7 +196,7 @@
 
           <!-- Yayın -->
           <div class="card" style="margin-bottom: 20px;">
-            <div class="card-header"><div class="card-title">🚀 Yayın</div></div>
+            <div class="card-header"><div class="card-title"><i class="ic ic-globe" aria-hidden="true"></i> Yayın</div></div>
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Durum</label>
@@ -215,7 +215,7 @@
                 </label>
               </div>
               <div class="form-group">
-                <label class="form-label">💎 Özel Fırsat</label>
+                <label class="form-label"><i class="ic ic-gem" aria-hidden="true"></i> Özel Fırsat</label>
                 <label class="form-checkbox" style="margin-top: 12px;">
                   <input type="checkbox" name="ozel_firsat"> Ana sayfadaki büyük "Özel Fırsat" vitrininde göster <small style="color:var(--text-muted);">(aynı anda sadece 1 ilan)</small>
                 </label>
@@ -229,7 +229,7 @@
 
           <div style="display: flex; gap: 12px; justify-content: flex-end;">
             <a href="/admin/properties.html" class="btn btn-outline">İptal</a>
-            <button type="submit" class="btn btn-primary" id="submitBtn">💾 Değişiklikleri Kaydet</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn"><i class="ic ic-save" aria-hidden="true"></i> Değişiklikleri Kaydet</button>
           </div>
         </form>
       </div>
@@ -239,7 +239,7 @@
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
 
   <script>
     let property = null;
@@ -299,7 +299,7 @@
 
         renderPhotos();
 
-        document.getElementById('pageTitle').textContent = '✏️ ' + (data.baslik_tr || 'İlan Düzenle');
+        document.getElementById('pageTitle').textContent = (data.baslik_tr || 'İlan Düzenle');
         document.getElementById('loadingState').style.display = 'none';
         document.getElementById('propertyForm').style.display = 'block';
       } catch (error) {
@@ -418,7 +418,7 @@
             ozellikler[cb.dataset.ozellik] = cb.checked;
           });
 
-          // 💎 Özel fırsat: tek ilan kuralı
+     // Özel fırsat: tek ilan kuralı
           const ozelFirsat = fd.get('ozel_firsat') === 'on';
           if (ozelFirsat) {
             const other = await App.findOzelFirsat(property.id);
@@ -491,9 +491,9 @@
           App.toast('İlan güncellendi', 'success');
           setTimeout(() => window.location.href = '/admin/properties.html', 1000);
         } catch (error) {
-          App.toast((/ozel_firsat_tek|duplicate key.*ozel_firsat/i.test(error.message || '') ? '💎 Özel Fırsat zaten başka bir ilanda seçili. Aynı anda sadece 1 ilan olabilir.' : error.message), 'error');
+          App.toast((/ozel_firsat_tek|duplicate key.*ozel_firsat/i.test(error.message || '') ? 'Özel Fırsat zaten başka bir ilanda seçili. Aynı anda sadece 1 ilan olabilir.' : error.message), 'error');
           btn.disabled = false;
-          btn.textContent = '💾 Değişiklikleri Kaydet';
+          App.iconText(btn, 'save', 'Değişiklikleri Kaydet');
         }
       });
     }

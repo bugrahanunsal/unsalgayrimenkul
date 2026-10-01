@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .kl-grid{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:18px;align-items:start}
@@ -35,15 +35,15 @@
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
       <header class="topbar">
-        <h1 class="page-title">📇 Kişi Listeleri</h1>
-        <div class="topbar-actions"><a href="/admin/campaigns.html" class="btn btn-outline btn-sm">📨 Kampanyalar</a><div class="user-menu" id="userMenu"></div></div>
+        <h1 class="page-title">Kişi Listeleri</h1>
+        <div class="topbar-actions"><a href="/admin/campaigns.html" class="btn btn-outline btn-sm"><i class="ic ic-send" aria-hidden="true"></i> Kampanyalar</a><div class="user-menu" id="userMenu"></div></div>
       </header>
       <div class="page-content">
         <div class="kl-grid">
           <div class="card">
-            <div class="card-title" style="margin-bottom:10px;">📥 CSV / Excel listesi içe aktar</div>
+            <div class="card-title" style="margin-bottom:10px;"><i class="ic ic-upload" aria-hidden="true"></i> CSV / Excel listesi içe aktar</div>
             <div class="form-help" style="margin-bottom:12px;">Excel'de <b>Farklı Kaydet → CSV</b> ile kaydedin. İlk satır başlık olmalı: <b>email</b> (zorunlu), <b>ad</b>, <b>telefon</b>, <b>bolge</b>. Türkçe başlıklar da tanınır (E-posta, Ad Soyad, Telefon…).</div>
-            <div class="kl-drop" id="drop" tabindex="0" role="button" aria-label="CSV dosyası seç">📄 CSV dosyasını buraya sürükleyin veya <b>tıklayıp seçin</b><input type="file" id="csvFile" accept=".csv,text/csv,text/plain" hidden></div>
+            <div class="kl-drop" id="drop" tabindex="0" role="button" aria-label="CSV dosyası seç"><i class="ic ic-file" aria-hidden="true"></i> CSV dosyasını buraya sürükleyin veya <b>tıklayıp seçin</b><input type="file" id="csvFile" accept=".csv,text/csv,text/plain" hidden></div>
             <div id="csvInfo" style="margin-top:10px;font-size:13px;"></div>
             <div class="kl-prev" id="csvPrev" hidden></div>
             <div class="form-group" style="margin-top:12px;">
@@ -53,19 +53,19 @@
               <div class="form-help">Kampanya gönderirken bu listeyi seçebileceksiniz. Aynı kişi birden fazla listede olabilir.</div>
             </div>
             <label class="kl-consent"><input type="checkbox" id="consent"> <span>Bu listedeki kişilerin bizden <b>e-posta almayı kabul ettiğini</b> onaylıyorum (KVKK / ticari ileti onayı). Onayı olmayan kişilere toplu e-posta göndermeyin.</span></label>
-            <div style="display:flex;justify-content:flex-end;margin-top:12px;"><button type="button" class="btn btn-primary" id="importBtn" disabled>📥 Listeye ekle</button></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:12px;"><button type="button" class="btn btn-primary" id="importBtn" disabled><i class="ic ic-plus" aria-hidden="true"></i> Listeye ekle</button></div>
             <hr style="border:0;border-top:1px solid #E2E8F0;margin:18px 0;">
-            <div class="card-title" style="margin-bottom:8px;">✍️ Tek kişi ekle</div>
+            <div class="card-title" style="margin-bottom:8px;"><i class="ic ic-user-plus" aria-hidden="true"></i> Tek kişi ekle</div>
             <div class="form-row">
               <div class="form-group"><input id="oneEmail" class="form-input" type="email" placeholder="E-posta" maxlength="254"></div>
               <div class="form-group"><input id="oneName" class="form-input" placeholder="Ad Soyad" maxlength="80"></div>
             </div>
-            <div style="display:flex;justify-content:flex-end;"><button type="button" class="btn btn-outline btn-sm" id="oneBtn">➕ Ekle (yukarıdaki liste adıyla)</button></div>
+            <div style="display:flex;justify-content:flex-end;"><button type="button" class="btn btn-outline btn-sm" id="oneBtn"><i class="ic ic-plus" aria-hidden="true"></i> Ekle (yukarıdaki liste adıyla)</button></div>
           </div>
           <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
-              <div class="card-title">👥 Kişiler <span id="total" style="color:#64748B;font-weight:600;font-size:14px;"></span></div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="search" class="form-input" placeholder="🔍 Ara…" style="width:200px;"><button type="button" class="btn btn-outline btn-sm" id="exportBtn">⬇️ CSV indir</button></div>
+              <div class="card-title"><i class="ic ic-users" aria-hidden="true"></i> Kişiler <span id="total" style="color:#64748B;font-weight:600;font-size:14px;"></span></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="search" class="form-input" placeholder="Ara…" style="width:200px;"><button type="button" class="btn btn-outline btn-sm" id="exportBtn"><i class="ic ic-download" aria-hidden="true"></i> CSV indir</button></div>
             </div>
             <div class="kl-tags" id="tags"></div>
             <div style="overflow:auto;"><table class="kl-table"><thead><tr><th>E-posta</th><th>Ad</th><th>Listeler</th><th>Durum</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
@@ -78,7 +78,7 @@
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
-  <script src="/admin/assets/kisiler.js?v=20260929-of"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
+  <script src="/admin/assets/kisiler.js?v=20261001-medya"></script>
 </body>
 </html>

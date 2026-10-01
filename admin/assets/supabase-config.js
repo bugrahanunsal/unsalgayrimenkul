@@ -4,7 +4,7 @@
  * İsmail Ünsal Emlak - Admin Panel
  * ============================================
  *
- * ⚠️ GÜVENLİK NOTU:
+ * GÜVENLİK NOTU:
  * - Bu key PUBLIC key'dir (publishable)
  * - RLS politikaları onu kısıtlar
  * - Sadece login yapmış kullanıcılar yazma/silme yapabilir
@@ -88,4 +88,4 @@ window.PROPERTY_STATUS = PROPERTY_STATUS;
 window.CATEGORIES = CATEGORIES;
 window.ILCELER = ILCELER;
 
-console.log('✅ Supabase client initialized');
+console.log(' Supabase client initialized');

@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -20,7 +20,7 @@
       <header class="topbar">
         <h1 class="page-title">İlan Yönetimi</h1>
         <div class="topbar-actions">
-          <a href="/admin/property-new.html" class="btn btn-primary btn-sm">➕ Yeni İlan</a>
+          <a href="/admin/property-new.html" class="btn btn-primary btn-sm"><i class="ic ic-plus" aria-hidden="true"></i> Yeni İlan</a>
           <div class="user-menu" id="userMenu"></div>
         </div>
       </header>
@@ -96,7 +96,7 @@
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
 
   <script>
     let allProperties = [];
@@ -122,10 +122,10 @@
         }
         const { error } = await supabaseClient.from('properties').update({ ozel_firsat: !p.ozel_firsat }).eq('id', id);
         if (error) throw error;
-        App.toast(p.ozel_firsat ? 'Özel Fırsat vitrininden kaldırıldı' : '💎 Ana sayfada Özel Fırsat olarak gösteriliyor', 'success');
+        App.toast(p.ozel_firsat ? 'Özel Fırsat vitrininden kaldırıldı' : 'Ana sayfada Özel Fırsat olarak gösteriliyor', 'success');
         await loadProperties();
       } catch (e) {
-        App.toast(/ozel_firsat_tek|duplicate key/i.test(e.message || '') ? '💎 Özel Fırsat zaten başka bir ilanda seçili.' : e.message, 'error');
+        App.toast(/ozel_firsat_tek|duplicate key/i.test(e.message || '') ? 'Özel Fırsat zaten başka bir ilanda seçili.' : e.message, 'error');
       }
     }
     window.toggleOzelFirsat = toggleOzelFirsat;
@@ -156,7 +156,7 @@
         tbody.innerHTML = `
           <tr><td colspan="8">
             <div class="empty-state">
-              <div class="empty-icon">🏡</div>
+              <div class="empty-icon"><i class="ic ic-home" aria-hidden="true"></i></div>
               <div>Henüz ilan yok veya filtreye uygun sonuç bulunamadı</div>
               <a href="/admin/property-new.html" class="btn btn-primary btn-sm" style="margin-top: 16px;">İlk İlanı Ekle</a>
             </div>
@@ -174,11 +174,11 @@
             <td>
               ${mainPhoto
                 ? `<img src="${Security.escapeHtml(mainPhoto)}" style="width: 60px; height: 45px; object-fit: cover; border-radius: 4px;" alt="">`
-                : '<div style="width: 60px; height: 45px; background: var(--bg); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🏡</div>'
+                : '<div style="width: 60px; height: 45px; background: var(--bg); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-muted);"><i class="ic ic-home" aria-hidden="true"></i></div>'
               }
             </td>
             <td>
-              <div style="font-weight: 600;">${p.ozel_firsat ? '<span class="badge badge-info" style="margin-right:6px;" title="Ana sayfa Özel Fırsat vitrini">💎 ÖZEL FIRSAT</span>' : ''}${Security.escapeHtml(p.baslik_tr || 'İsimsiz')}</div>
+              <div style="font-weight: 600;">${p.ozel_firsat ? '<span class="badge badge-info" style="margin-right:6px;" title="Ana sayfa Özel Fırsat vitrini"><i class="ic ic-gem" aria-hidden="true"></i> ÖZEL FIRSAT</span>' : ''}${Security.escapeHtml(p.baslik_tr || 'İsimsiz')}</div>
               <div style="font-size: 12px; color: var(--text-muted);">
                 ${p.m2 ? p.m2 + ' m² • ' : ''}${Security.escapeHtml(p.oda_sayisi || '')}
               </div>
@@ -198,11 +198,11 @@
               </span>
             </td>
             <td>
-              ${p.durum === 'aktif' ? `<a href="${Security.escapeHtml(p.slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug) ? '/ilan/' + p.slug : '/ilan?id=' + encodeURIComponent(p.id))}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" title="İlan sayfasını sitede aç">👁️</a>` : ''}
-              <button onclick="toggleOzelFirsat('${p.id}')" class="btn ${p.ozel_firsat ? 'btn-primary' : 'btn-outline'} btn-sm" title="${p.ozel_firsat ? 'Özel Fırsat vitrininden kaldır' : 'Ana sayfada Özel Fırsat yap'}">💎</button>
-              ${p.durum === 'aktif' ? `<button onclick="App.announceProperty('${p.id}')" class="btn btn-outline btn-sm" title="İlgi alanı uyan abonelere e-posta ile duyur">📣</button>` : ''}
-              <a href="/admin/property-edit.html?id=${p.id}" class="btn btn-outline btn-sm">✏️</a>
-              <button onclick="deleteProperty('${p.id}')" class="btn btn-danger btn-sm">🗑️</button>
+              ${p.durum === 'aktif' ? `<a href="${Security.escapeHtml(p.slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug) ? '/ilan/' + p.slug : '/ilan?id=' + encodeURIComponent(p.id))}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" title="İlan sayfasını sitede aç" aria-label="İlan sayfasını sitede aç"><i class="ic ic-external" aria-hidden="true"></i></a>` : ''}
+              <button onclick="toggleOzelFirsat('${p.id}')" class="btn ${p.ozel_firsat ? 'btn-primary' : 'btn-outline'} btn-sm" title="${p.ozel_firsat ? 'Özel Fırsat vitrininden kaldır' : 'Ana sayfada Özel Fırsat yap'}" aria-label="Özel Fırsat"><i class="ic ic-gem" aria-hidden="true"></i></button>
+              ${p.durum === 'aktif' ? `<button onclick="App.announceProperty('${p.id}')" class="btn btn-outline btn-sm" title="İlgi alanı uyan abonelere e-posta ile duyur" aria-label="Abonelere duyur"><i class="ic ic-megaphone" aria-hidden="true"></i></button>` : ''}
+              <a href="/admin/property-edit.html?id=${p.id}" class="btn btn-outline btn-sm" title="Düzenle" aria-label="Düzenle"><i class="ic ic-edit" aria-hidden="true"></i></a>
+              <button onclick="deleteProperty('${p.id}')" class="btn btn-danger btn-sm" title="Sil" aria-label="Sil"><i class="ic ic-trash" aria-hidden="true"></i></button>
             </td>
           </tr>
         `;

@@ -122,7 +122,7 @@
         const hit = kws.filter(k => sw.some(s => wm(s, k) || wm(k, s))).length;
         if (kws.length && hit === kws.length) add('good', 'Anahtar kelime adreste (slug) geçiyor.');
         else if (hit > 0) add('ok', 'Anahtar kelimenin bir kısmı adreste (slug) geçiyor.');
-        else add('ok', 'Anahtar kelime adreste (slug) geçmiyor. Adresi değiştirmek isterseniz "✨ Anahtar kelimeden oluştur"u kullanabilirsiniz (eski adres otomatik yönlenir).');
+        else add('ok', 'Anahtar kelime adreste (slug) geçmiyor. Adresi değiştirmek isterseniz "Anahtar kelimeden oluştur"u kullanabilirsiniz (eski adres otomatik yönlenir).');
       }
       if (c.h1s) {
         if (!c.h1s.length) add('bad', 'Sayfada ana başlık (H1) yok.');
@@ -187,14 +187,6 @@
     return p >= 7.6 ? 'good' : p >= 5.6 ? 'ok' : 'bad';
   }
   const SCORE_TXT = { good: 'İyi', ok: 'Geliştirilebilir', bad: 'Sorunlu' };
-  function faceSvg(s) {
-    const mouth = s === 'good' ? 'M7 13.5c1.3 1.6 2.9 2.4 5 2.4s3.7-.8 5-2.4' : s === 'ok' ? 'M7.5 15h9' : 'M7 16.2c1.3-1.6 2.9-2.4 5-2.4s3.7.8 5 2.4';
-    const ns = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('fill', 'none');
-    svg.setAttribute('stroke', '#fff'); svg.setAttribute('stroke-width', '2'); svg.setAttribute('stroke-linecap', 'round');
-    const p = document.createElementNS(ns, 'path'); p.setAttribute('d', mouth + 'M9 9h.01M15 9h.01'); svg.appendChild(p);
-    return svg;
-  }
 
   // ------------------------------------------------------------------ öğe modeli
   const allItems = () => S.items.sayfa.concat(S.items.ilan, S.items.blog);
@@ -409,7 +401,7 @@
     arr.forEach(it => {
       if (it.grup && it.grup !== lastGroup) { box.appendChild(el('div', 'seo-group', it.grup)); lastGroup = it.grup; }
       const b = el('button', 'seo-row'); b.type = 'button';
-      const face = el('span', 'face ' + it.score); face.appendChild(faceSvg(it.score)); face.title = 'SEO: ' + SCORE_TXT[it.score];
+      const face = el('span', 'face ' + it.score); face.title = 'SEO: ' + SCORE_TXT[it.score]; face.setAttribute('role', 'img'); face.setAttribute('aria-label', 'SEO: ' + SCORE_TXT[it.score]);
       const mid = el('div');
       const nm = el('div', 'r-name', it.ad);
       if (it.changed) nm.appendChild(el('span', 'tag ch', 'DEĞİŞTİRİLDİ'));
@@ -419,7 +411,7 @@
       mid.appendChild(el('div', 'r-url', 'ismailunsal.com.tr' + pathOf(it, it.val.slug)));
       mid.appendChild(el('div', 'r-title', it.val.baslik || '(başlık yok)'));
       const meta = el('div', 'r-meta');
-      const k = el('span'); k.append('🔑 '); k.appendChild(el('b', null, it.val.odak || '—')); meta.appendChild(k);
+      const k = el('span'); k.appendChild(App.icon('key')); k.append(' '); k.appendChild(el('b', null, it.val.odak || '—')); meta.appendChild(k);
       const ts = titleState(it.val.baslik), ds = descState(it.val.aciklama);
       const t1 = el('span'); t1.appendChild(el('i', 'dot ' + ts.s)); t1.append(' Başlık ' + it.val.baslik.length); meta.appendChild(t1);
       const t2 = el('span'); t2.appendChild(el('i', 'dot ' + ds.s)); t2.append(' Açıklama ' + it.val.aciklama.length); meta.appendChild(t2);
@@ -453,7 +445,7 @@
     $('slugPre').textContent = 'ismailunsal.com.tr' + (it.kind === 'sayfa' ? '/' : it.prefix);
     $('fNoindex').checked = S.draft.noindex; $('noindexRow').hidden = it.kind !== 'sayfa';
     const editable = canEdit(it);
-    ['fOdak', 'fTitle', 'fDesc', 'edSave', 'edReset', 'sugTitle', 'sugDesc', 'rstTitle', 'rstDesc', 'fNoindex', 'phFile', 'phUrlBtn', 'phDel', 'phReset', 'phKapak', 'phDark'].forEach(id => { $(id).disabled = !editable; });
+    ['fOdak', 'fTitle', 'fDesc', 'edSave', 'edReset', 'sugTitle', 'sugDesc', 'rstTitle', 'rstDesc', 'fNoindex', 'phUpBtn', 'phUrlBtn', 'phDel', 'phReset', 'phKapak', 'phDark'].forEach(id => { $(id).disabled = !editable; });
     if (!it.locked) $('fSlug').disabled = !editable;
     $('edSave').title = editable ? 'Kaydet (Ctrl+S)' : 'Önce veritabanı kurulumunu yapın (SQL dosyası)';
     $('phUrlRow').hidden = true;
@@ -492,11 +484,11 @@
     const livePath = pathOf(it, it.locked ? '' : (sl.slug || ''));
     const savedPath = pathOf(it, it.val.slug);
     const openable = it.kind === 'sayfa' || ['aktif', 'yayinda'].includes(it.status);
-    $('edOpen').textContent = openable ? ('ismailunsal.com.tr' + savedPath + ' ↗') : ('ismailunsal.com.tr' + savedPath + ' (' + (DURUM[it.status] || it.status || '') + ')');
+    App.iconText($('edOpen'), openable ? 'external' : '', openable ? ('ismailunsal.com.tr' + savedPath) : ('ismailunsal.com.tr' + savedPath + ' (' + (DURUM[it.status] || it.status || '') + ')'));
     if (openable) $('edOpen').href = savedPath + '?iu-seo-yenile=' + Date.now(); else $('edOpen').removeAttribute('href');
     // Odak kelime uyarısı
     const dup = dupOf(it, d.odak);
-    $('odakWarn').hidden = !dup; if (dup) $('odakWarn').textContent = '⚠️ Bu anahtar kelime "' + dup.ad + '" için de kullanılıyor.';
+    $('odakWarn').hidden = !dup; if (dup) App.iconText($('odakWarn'), 'alert', 'Bu anahtar kelime "' + dup.ad + '" için de kullanılıyor.');
     // Google önizlemesi
     const gp = $('gp'); gp.className = 'gp ' + S.device;
     document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', b.dataset.dev === S.device));
@@ -514,7 +506,7 @@
     renderPhoto();
     // Analiz
     const R = analyze(it, d); const sc = score(R);
-    $('edFace').className = 'face ' + sc; $('edFace').textContent = ''; $('edFace').appendChild(faceSvg(sc));
+    $('edFace').className = 'face ' + sc; $('edFace').title = 'SEO: ' + SCORE_TXT[sc];
     $('scoreTxt').className = 'yo-score ' + sc; $('scoreTxt').textContent = SCORE_TXT[sc];
     const an = $('analysis'); const open = new Set(Array.from(an.querySelectorAll('.an-group:not(.closed)')).map(g => g.dataset.g));
     an.textContent = '';
@@ -569,14 +561,14 @@
     }
     if (it.kind === 'blog') {
       help.textContent = 'Yazının kapak fotoğrafı: yazının üstünde, Google\'da ve paylaşımlarda görünür.';
-      st.textContent = isCustom ? '✅ Kapak fotoğrafı var.' : 'Kapak fotoğrafı yok.';
+      st.textContent = isCustom ? 'Kapak fotoğrafı var.' : 'Kapak fotoğrafı yok.';
       $('phDel').disabled = !canEdit(it) || !isCustom; $('phReset').hidden = true;
       return;
     }
     $('phReset').hidden = false;
     help.textContent = 'Sayfanın fotoğrafı Google\'da ve paylaşımlarda (WhatsApp, Facebook) görünür.' + (it.kapak ? ' İsterseniz sayfanın en üstünde (kapak alanında) da gösterilir.' : '');
-    if (isCustom) st.textContent = '✅ Özel fotoğraf yüklendi' + (it.kapak ? (d.foto_kapak ? ' — sayfanın üstünde ve paylaşımlarda görünüyor.' : ' — yalnızca paylaşımlarda görünüyor.') : '.');
-    else if (d.foto_kaldir) st.textContent = '🗑️ Fotoğraf silindi — sayfada ve paylaşımlarda fotoğraf görünmüyor.';
+    if (isCustom) st.textContent = 'Özel fotoğraf yüklendi' + (it.kapak ? (d.foto_kapak ? ' — sayfanın üstünde ve paylaşımlarda görünüyor.' : ' — yalnızca paylaşımlarda görünüyor.') : '.');
+    else if (d.foto_kaldir) st.textContent = 'Fotoğraf silindi — sayfada ve paylaşımlarda fotoğraf görünmüyor.';
     else if (it.defHero) st.textContent = 'Varsayılan: sayfanın mevcut üst fotoğrafı. Yeni fotoğraf yükleyerek değiştirebilir ya da silebilirsiniz.';
     else st.textContent = ph ? 'Varsayılan: sitenin paylaşım görseli (sayfanın üstünde fotoğraf yok). Bu sayfaya özel fotoğraf yükleyebilirsiniz.' : 'Bu sayfada fotoğraf yok.';
     $('phDel').disabled = !canEdit(it) || !ph;
@@ -647,7 +639,7 @@
     d.odak = clean($('fOdak').value).slice(0, 100); d.baslik = clean($('fTitle').value).slice(0, 120); d.aciklama = clean($('fDesc').value).slice(0, 320);
     const sl = slugCheck();
     if (sl.err) { App.toast(sl.err, 'error'); $('fSlug').focus(); return; }
-    if (!d.baslik) { App.toast('SEO başlığı boş olamaz ("↺ Varsayılan başlık" ile geri alabilirsiniz).', 'warning'); $('fTitle').focus(); return; }
+    if (!d.baslik) { App.toast('SEO başlığı boş olamaz ("Varsayılan başlık" ile geri alabilirsiniz).', 'warning'); $('fTitle').focus(); return; }
     if (!d.aciklama) { App.toast('Meta açıklama boş olamaz.', 'warning'); $('fDesc').focus(); return; }
     const newSlug = it.locked ? '' : sl.slug;
     if (!it.locked && newSlug !== it.val.slug && it.val.slug) {
@@ -703,7 +695,7 @@
     } catch (e) {
       App.toast(friendly(e), 'error', 'Kaydedilemedi');
     } finally {
-      S.busy = false; $('edSave').disabled = !canEdit(it); $('edSave').textContent = '💾 Kaydet';
+      S.busy = false; $('edSave').disabled = !canEdit(it); App.iconText($('edSave'), 'save', 'Kaydet');
     }
   }
   function friendly(e) {
@@ -740,37 +732,16 @@
     } catch (e) { App.toast(friendly(e), 'error', 'Fotoğraf kaydedilemedi'); }
   }
 
-  async function compressImage(file) {
-    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error('Sadece JPG, PNG veya WEBP yükleyebilirsiniz.');
-    if (file.size > 15 * 1024 * 1024) throw new Error('Dosya çok büyük (en fazla 15 MB).');
-    const url = URL.createObjectURL(file);
-    try {
-      const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('Görsel okunamadı.')); i.src = url; });
-      const w = img.naturalWidth, h = img.naturalHeight;
-      if (w < 300 || h < 150) throw new Error('Görsel çok küçük (en az 1200×630 önerilir).');
-      const scale = Math.min(1, 1920 / w);
-      if (scale === 1 && file.size <= 450 * 1024 && file.type === 'image/jpeg') return { blob: file, w, h };
-      const c = document.createElement('canvas'); c.width = Math.round(w * scale); c.height = Math.round(h * scale);
-      const ctx = c.getContext('2d'); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
-      const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.84));
-      if (!blob) throw new Error('Görsel işlenemedi.');
-      return { blob, w: c.width, h: c.height };
-    } finally { URL.revokeObjectURL(url); }
-  }
-  async function uploadPhoto(file) {
-    const it = S.cur; if (!it || !canEdit(it)) return;
-    const up = $('phUpBtn'); up.classList.add('disabled'); const old = up.firstChild.nodeValue; up.firstChild.nodeValue = '⏳ Yükleniyor… ';
-    try {
-      const { blob, w } = await compressImage(file);
-      const bucket = it.kind === 'blog' ? 'blog-photos' : 'property-photos';
-      const name = (it.kind === 'blog' ? 'blog/' : 'site/seo-' + it.id + '-') + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
-      const { error } = await supabaseClient.storage.from(bucket).upload(name, blob, { cacheControl: '31536000', upsert: false, contentType: 'image/jpeg' });
-      if (error) throw error;
-      const url = supabaseClient.storage.from(bucket).getPublicUrl(name).data.publicUrl;
-      if (!safeImg(url)) throw new Error('Yükleme adresi geçersiz.');
-      await savePhoto({ foto_url: url, foto_kaldir: false, foto_kapak: true }, (w < 1200 ? 'Yüklendi ve kaydedildi. (İpucu: en iyi görünüm için en az 1200 px genişlik önerilir.)' : 'Fotoğraf yüklendi ve kaydedildi.'));
-    } catch (e) { App.toast(friendly(e), 'error', 'Fotoğraf'); }
-    finally { up.classList.remove('disabled'); up.firstChild.nodeValue = old; }
+  /** "Fotoğrafı değiştir": bilgisayardan yükle veya Görsel Deposu'ndan seç (dosya adıyla birlikte) → hemen kaydedilir */
+  async function pickPhoto() {
+    const it = S.cur; if (!it || !canEdit(it) || it.kind === 'ilan') return;
+    const res = await Medya.picker({
+      title: it.kind === 'blog' ? 'Kapak fotoğrafı' : 'Sayfa fotoğrafı',
+      name: Medya.slug(clean(S.draft.odak || it.def.odak || it.ad), 60), noAlt: true,
+      folder: it.kind === 'blog' ? 'blog' : 'site', current: effPhoto(it, S.draft)
+    });
+    if (!res || !safeImg(res.url)) return;
+    await savePhoto({ foto_url: res.url, foto_kaldir: false, foto_kapak: true }, 'Fotoğraf kaydedildi.');
   }
 
   // ------------------------------------------------------------------ olaylar
@@ -814,7 +785,7 @@
     $('fNoindex').onchange = () => { S.draft.noindex = $('fNoindex').checked; renderEditor(); };
     $('phKapak').onchange = () => { S.draft.foto_kapak = $('phKapak').checked; renderEditor(); };
     $('phDark').addEventListener('input', () => { S.draft.foto_karartma = +$('phDark').value; renderEditor(); });
-    $('phFile').addEventListener('change', (e) => { const f = e.target.files[0]; e.target.value = ''; if (f) uploadPhoto(f); });
+    $('phUpBtn').addEventListener('click', pickPhoto);
     $('phUrlBtn').onclick = () => { $('phUrlRow').hidden = !$('phUrlRow').hidden; if (!$('phUrlRow').hidden) $('phUrl').focus(); };
     $('phUrlOk').onclick = async () => {
       const u = safeImg($('phUrl').value);
@@ -825,8 +796,8 @@
       await savePhoto({ foto_url: u, foto_kaldir: false, foto_kapak: true }, 'Fotoğraf eklendi ve kaydedildi.');
     };
     $('phDel').onclick = async () => {
-      if (!(await App.confirm(S.cur.kind === 'blog' ? 'Kapak fotoğrafı kaldırılsın mı?' : 'Sayfa fotoğrafı silinsin mi? Sayfanın üst kısmında ve paylaşımlarda fotoğraf görünmez.', 'Fotoğrafı sil'))) return;
-      await savePhoto(S.cur.kind === 'blog' ? { foto_url: null } : { foto_url: null, foto_kaldir: true }, 'Fotoğraf silindi.');
+      if (!(await App.confirm(S.cur.kind === 'blog' ? 'Kapak fotoğrafı kaldırılsın mı?' : 'Sayfa fotoğrafı kaldırılsın mı? Sayfanın üst kısmında ve paylaşımlarda fotoğraf görünmez. (Dosya Görsel Deposu\'nda kalır.)', 'Fotoğrafı kaldır'))) return;
+      await savePhoto(S.cur.kind === 'blog' ? { foto_url: null } : { foto_url: null, foto_kaldir: true }, 'Fotoğraf kaldırıldı.');
     };
     $('phReset').onclick = async () => {
       if (!(await App.confirm('Sayfanın varsayılan fotoğraf ayarına dönülsün mü?', 'Varsayılan fotoğraf'))) return;

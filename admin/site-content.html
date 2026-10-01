@@ -9,82 +9,102 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    .lang-tabs { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 2px solid var(--border); }
-    .lang-tab { padding: 8px 16px; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; font-weight: 600; color: var(--text-muted); }
-    .lang-tab.active { color: var(--accent-dark); border-color: var(--accent); }
-    .lang-content { display: none; }
-    .lang-content.active { display: block; }
-  </style>
 </head>
 <body>
   <div class="admin-layout">
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
       <header class="topbar">
-        <h1 class="page-title">🎨 Site İçeriği</h1>
+        <h1 class="page-title">Site İçeriği</h1>
         <div class="topbar-actions">
-          <a href="/" target="_blank" rel="noopener" class="btn btn-outline btn-sm">🌐 Siteyi Aç</a>
+          <a href="/" target="_blank" rel="noopener" class="btn btn-outline btn-sm"><i class="ic ic-external" aria-hidden="true"></i> Siteyi Aç</a>
           <div class="user-menu" id="userMenu"></div>
         </div>
       </header>
       <div class="page-content">
-        <div class="sc-tabs" role="tablist">
-          <button type="button" class="sc-tab on" data-tab="texts" role="tab">📄 Sayfa Yazıları & Görseller</button>
-          <button type="button" class="sc-tab" data-tab="brand" role="tab">🏷️ Logo & Favicon</button>
+        <div id="setupAlert" class="alert alert-warning" hidden>
+          <b>Veritabanı güncellemesi gerekli.</b> Fotoğraf alt metinlerini kaydedebilmek için Supabase'de
+          <b>supabase-medya-2026-10-01.sql</b> dosyasını bir kez çalıştırın. Yazı ve fotoğraf değiştirme şimdiden çalışır.
+        </div>
+        <div class="sc-tabs" role="tablist" aria-label="Bölüm">
+          <button type="button" class="sc-tab on" data-tab="texts" role="tab" aria-selected="true"><i class="ic ic-layout" aria-hidden="true"></i> Sayfa yazıları ve fotoğrafları</button>
+          <button type="button" class="sc-tab" data-tab="brand" role="tab" aria-selected="false"><i class="ic ic-tag" aria-hidden="true"></i> Logo ve favicon</button>
         </div>
 
         <!-- METİNLER -->
         <section id="tab-texts">
           <div class="card sc-top">
-            <div class="form-group" style="margin:0;flex:1;min-width:220px;">
+            <div class="form-group sc-pagepick">
               <label class="form-label" for="pageSel">Düzenlenecek sayfa</label>
               <select id="pageSel" class="form-select"></select>
             </div>
-            <div class="sc-hint">👉 Önizlemede değiştirmek istediğiniz <b>yazıya veya fotoğrafa tıklayın</b> ya da sağdaki <b>📷 Fotoğraflar</b> sekmesinden seçin. Sağda düzenleme kutusu açılır. Sadece Türkçe yazın, diğer diller otomatik çevrilir. <span class="sc-legend"><i class="lg-e"></i>Değiştirilmiş</span></div>
+            <div class="sc-hint"><i class="ic ic-info" aria-hidden="true"></i><span>Önizlemede bir <b>yazıya veya fotoğrafa tıklayın</b>, ya da listeden seçin. Fotoğraf kartlarına tıklayınca <b>fotoğrafı hemen değiştirebilirsiniz</b>. Sadece Türkçe yazın; diğer diller otomatik çevrilir. <span class="sc-legend"><i></i>Değiştirilmiş</span></span></div>
           </div>
           <div class="sc-split">
             <div class="sc-preview card">
-              <div class="sc-prevbar"><span id="prevUrl">/</span><div><button type="button" class="btn btn-outline btn-sm" id="devDesk" title="Masaüstü">🖥️</button> <button type="button" class="btn btn-outline btn-sm" id="devMob" title="Mobil">📱</button> <button type="button" class="btn btn-outline btn-sm" id="reloadBtn">↻ Yenile</button></div></div>
+              <div class="sc-prevbar">
+                <span id="prevUrl" class="sc-url">/</span>
+                <div class="sc-prevbtns">
+                  <button type="button" class="sc-ib on" id="devDesk" title="Masaüstü görünümü" aria-label="Masaüstü görünümü" aria-pressed="true"><i class="ic ic-monitor" aria-hidden="true"></i></button>
+                  <button type="button" class="sc-ib" id="devMob" title="Mobil görünüm" aria-label="Mobil görünüm" aria-pressed="false"><i class="ic ic-smartphone" aria-hidden="true"></i></button>
+                  <button type="button" class="sc-ib" id="reloadBtn" title="Önizlemeyi yenile" aria-label="Önizlemeyi yenile"><i class="ic ic-refresh" aria-hidden="true"></i></button>
+                </div>
+              </div>
               <div class="sc-frame-wrap"><iframe id="frame" title="Sayfa önizleme"></iframe></div>
             </div>
+
             <div class="sc-side">
-              <div class="card" id="editCard">
-                <div id="editEmpty" class="sc-empty">Önizlemeden bir yazı veya fotoğraf seçin — ya da aşağıdaki listeden.</div>
-                <div id="editText" style="display:none;">
-                  <div class="sc-edit-head"><span id="etTag" class="badge badge-info"></span><span id="etScope" class="badge badge-gray" style="display:none;">Tüm sayfalarda (alt bilgi)</span></div>
-                  <div class="form-label" style="margin-top:10px;">Yeni metin</div>
+              <div class="card sc-ed" id="editCard" aria-live="polite">
+                <div id="editEmpty" class="sc-empty">
+                  <span class="sc-empty-ic"><i class="ic ic-layout" aria-hidden="true"></i></span>
+                  <b>Düzenlemek için bir şey seçin</b>
+                  <span>Önizlemede bir yazıya veya fotoğrafa tıklayın ya da aşağıdaki listeden seçin.</span>
+                </div>
+
+                <div id="editText" hidden>
+                  <div class="sc-ehead"><span class="sc-eyebrow">Yazı</span><b id="etTag"></b><span id="etScope" class="sc-chip" hidden>Tüm sayfalarda</span><span id="etState" class="sc-chip"></span></div>
                   <div id="etHost"></div>
                   <details class="sc-orig"><summary>Orijinal metin</summary><div id="etOrig"></div></details>
-                  <div class="sc-actions">
-                    <button type="button" class="btn btn-outline btn-sm" id="etRevert">↺ Orijinale dön</button>
-                    <button type="button" class="btn btn-primary" id="etSave">💾 Kaydet</button>
+                  <div class="sc-efoot">
+                    <button type="button" class="btn btn-outline btn-sm" id="etRevert"><i class="ic ic-undo" aria-hidden="true"></i> Orijinale dön</button>
+                    <button type="button" class="btn btn-primary sc-save" id="etSave"><i class="ic ic-save" aria-hidden="true"></i> Kaydet</button>
                   </div>
                 </div>
-                <div id="editImg" style="display:none;">
-                  <div class="sc-edit-head"><span class="badge badge-info">Fotoğraf</span><b id="eiLabel" style="font-size:13px;color:#0A2A5E;align-self:center;"></b><span id="eiScope" class="badge badge-gray" style="display:none;">Tüm sayfalarda</span></div>
-                  <img id="eiPrev" alt="" class="sc-imgprev">
-                  <div class="form-group"><label class="form-label" for="eiUrl">Fotoğraf adresi</label><input id="eiUrl" type="url" class="form-input" placeholder="https://…"></div>
-                  <div class="form-help" style="margin:-4px 0 8px;">Yatay fotoğraf önerilir (en az 1200×800). JPG, PNG veya WEBP, en fazla 5MB.</div>
-                  <label class="btn btn-outline btn-sm" style="cursor:pointer;">📷 Bilgisayardan yükle<input type="file" id="eiFile" accept="image/jpeg,image/png,image/webp" hidden></label>
-                  <div class="sc-actions">
-                    <button type="button" class="btn btn-outline btn-sm" id="eiRevert">↺ Orijinale dön</button>
-                    <button type="button" class="btn btn-primary" id="eiSave">💾 Kaydet</button>
+
+                <div id="editImg" hidden>
+                  <div class="sc-ehead"><span class="sc-eyebrow">Fotoğraf</span><b id="eiLabel"></b><span id="eiScope" class="sc-chip" hidden>Tüm sayfalarda</span><span id="eiState" class="sc-chip"></span></div>
+                  <button type="button" class="sc-bigphoto" id="eiPhoto" aria-label="Fotoğrafı değiştir">
+                    <img id="eiPrev" alt="">
+                    <span class="sc-bigov"><span><i class="ic ic-camera" aria-hidden="true"></i> Fotoğrafı değiştir</span></span>
+                  </button>
+                  <div class="sc-fileline"><span id="eiInfo"></span><a id="eiLib" href="/admin/medya.html" hidden><i class="ic ic-images" aria-hidden="true"></i> Görsel deposunda aç</a></div>
+                  <div class="sc-field">
+                    <label class="form-label" for="eiName">Dosya adı</label>
+                    <div class="mp-namerow"><input id="eiName" class="form-input" maxlength="60" autocomplete="off" spellcheck="false"><span class="mp-ext" id="eiExt">.jpg</span></div>
+                    <div class="sc-help" id="eiNameHelp"></div>
+                  </div>
+                  <div class="sc-field">
+                    <label class="form-label" for="eiAlt">Alt metin <span class="sc-count"><span id="eiAltCount">0</span>/125</span></label>
+                    <textarea id="eiAlt" class="form-input" rows="2" maxlength="250" placeholder="Fotoğrafta ne görünüyor? (ör. Yalova merkezde deniz manzaralı satılık daire)"></textarea>
+                    <div class="sc-help" id="eiAltHelp"></div>
+                  </div>
+                  <div class="sc-efoot">
+                    <button type="button" class="btn btn-outline btn-sm" id="eiRevert"><i class="ic ic-undo" aria-hidden="true"></i> Orijinale dön</button>
+                    <span class="sc-dirty" id="eiDirty" hidden>Kaydedilmedi</span>
+                    <button type="button" class="btn btn-primary sc-save" id="eiSave"><i class="ic ic-save" aria-hidden="true"></i> Kaydet</button>
                   </div>
                 </div>
               </div>
+
               <div class="card sc-listcard">
-                <div class="sc-kind" role="tablist">
-                  <button type="button" class="on" data-kind="all">Tümü</button>
-                  <button type="button" data-kind="t">📝 Yazılar</button>
-                  <button type="button" data-kind="i">📷 Fotoğraflar <span id="imgCount"></span></button>
+                <div class="sc-seg" role="tablist" aria-label="Liste">
+                  <button type="button" class="on" data-kind="i" role="tab" aria-selected="true"><i class="ic ic-image" aria-hidden="true"></i> Fotoğraflar <span class="n" id="imgCount"></span></button>
+                  <button type="button" data-kind="t" role="tab" aria-selected="false"><i class="ic ic-type" aria-hidden="true"></i> Yazılar <span class="n" id="txtCount"></span></button>
                 </div>
-                <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
-                  <input id="search" class="form-input" placeholder="🔍 Sayfada yazı ara…" style="flex:1;">
-                  <label style="font-size:12px;white-space:nowrap;display:flex;gap:4px;align-items:center;"><input type="checkbox" id="onlyChanged"> Değişenler</label>
-                </div>
+                <div class="sc-lsearch"><i class="ic ic-search" aria-hidden="true"></i><input id="search" type="search" class="form-input" placeholder="Bu sayfada ara…" aria-label="Bu sayfada ara" maxlength="80"></div>
+                <label class="sc-onlych"><input type="checkbox" id="onlyChanged"> Sadece değiştirilenler</label>
                 <div id="itemList" class="sc-list"></div>
               </div>
             </div>
@@ -92,24 +112,24 @@
         </section>
 
         <!-- LOGO & FAVICON -->
-        <section id="tab-brand" style="display:none;">
+        <section id="tab-brand" hidden>
           <div class="sc-brand">
             <div class="card">
               <div class="card-title" style="margin-bottom:6px;">Site logosu</div>
               <div class="form-help" style="margin-bottom:14px;">Üst menüde ve alt bilgide görünür. Şeffaf arka planlı, yatay PNG önerilir (örn. 600×160).</div>
               <div class="sc-brandprev" id="logoPrev"></div>
-              <div class="sc-actions" style="justify-content:flex-start;">
-                <label class="btn btn-primary btn-sm" style="cursor:pointer;">📤 Yeni logo yükle<input type="file" id="logoFile" accept="image/png,image/webp,image/jpeg" hidden></label>
-                <button type="button" class="btn btn-outline btn-sm" id="logoReset">↺ Varsayılan logo</button>
+              <div class="sc-efoot" style="justify-content:flex-start;">
+                <label class="btn btn-primary btn-sm sc-save" style="cursor:pointer;"><i class="ic ic-upload" aria-hidden="true"></i> Yeni logo yükle<input type="file" id="logoFile" accept="image/png,image/webp,image/jpeg" hidden></label>
+                <button type="button" class="btn btn-outline btn-sm" id="logoReset"><i class="ic ic-undo" aria-hidden="true"></i> Varsayılan logo</button>
               </div>
             </div>
             <div class="card">
               <div class="card-title" style="margin-bottom:6px;">Favicon (tarayıcı sekmesi ikonu)</div>
               <div class="form-help" style="margin-bottom:14px;">Kare PNG önerilir (en az 192×192).</div>
               <div class="sc-favprev" id="favPrev"></div>
-              <div class="sc-actions" style="justify-content:flex-start;">
-                <label class="btn btn-primary btn-sm" style="cursor:pointer;">📤 Yeni favicon yükle<input type="file" id="favFile" accept="image/png,image/webp" hidden></label>
-                <button type="button" class="btn btn-outline btn-sm" id="favReset">↺ Varsayılan favicon</button>
+              <div class="sc-efoot" style="justify-content:flex-start;">
+                <label class="btn btn-primary btn-sm sc-save" style="cursor:pointer;"><i class="ic ic-upload" aria-hidden="true"></i> Yeni favicon yükle<input type="file" id="favFile" accept="image/png,image/webp" hidden></label>
+                <button type="button" class="btn btn-outline btn-sm" id="favReset"><i class="ic ic-undo" aria-hidden="true"></i> Varsayılan favicon</button>
               </div>
             </div>
           </div>
@@ -119,53 +139,108 @@
   </div>
   <style>
     .sc-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
-    .sc-tab{border:1.5px solid #E2E8F0;background:#fff;border-radius:10px;padding:10px 16px;font-weight:700;color:#334155;cursor:pointer}
+    .sc-tab{display:inline-flex;align-items:center;gap:8px;border:1.5px solid #E2E8F0;background:#fff;border-radius:10px;padding:10px 16px;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;font-size:14px}
     .sc-tab.on{background:#0A2A5E;color:#fff;border-color:#0A2A5E}
     .sc-top{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px}
-    .sc-hint{flex:2;min-width:260px;font-size:13px;color:#1E3A8A;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:10px 14px;line-height:1.5}
-    .sc-legend{display:inline-flex;align-items:center;gap:5px;margin-left:8px;color:#475569}.sc-legend i{width:12px;height:12px;border-radius:3px;background:rgba(37,99,235,.18);border:2px solid #2563EB;display:inline-block}
-    .sc-split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(320px,1fr);gap:16px;align-items:start}
-    @media(max-width:1100px){.sc-split{grid-template-columns:1fr}}
+    .sc-pagepick{margin:0;flex:1;min-width:220px}
+    .sc-hint{flex:2;min-width:260px;display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#1E3A8A;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:10px 14px;line-height:1.55}
+    .sc-hint>.ic{margin-top:2px;color:#1E3A8A}
+    .sc-legend{display:inline-flex;align-items:center;gap:5px;margin-left:8px;color:#475569;white-space:nowrap}.sc-legend i{width:12px;height:12px;border-radius:3px;background:rgba(37,99,235,.18);border:2px solid #2563EB;display:inline-block}
+    .sc-split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(340px,1fr);gap:16px;align-items:start}
+    @media(max-width:1100px){.sc-split{grid-template-columns:minmax(0,1fr)}}
     .sc-preview{padding:0;overflow:hidden}
-    .sc-prevbar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #E2E8F0;background:#F8FAFC;font-size:12px;color:#64748B}
+    .sc-prevbar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px 8px 14px;border-bottom:1px solid #E2E8F0;background:#F8FAFC}
+    .sc-url{font-size:12.5px;color:#475569;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .sc-prevbtns{display:flex;gap:4px}
+    .sc-ib{width:34px;height:32px;border-radius:8px;border:1.5px solid #E2E8F0;background:#fff;color:#334155;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+    .sc-ib:hover{border-color:#93C5FD}.sc-ib.on{background:#0A2A5E;border-color:#0A2A5E;color:#fff}
     .sc-frame-wrap{background:#E2E8F0;display:flex;justify-content:center}
     #frame{width:100%;height:78vh;border:0;background:#fff;transition:width .2s}
-    #frame.mob{width:390px}
+    #frame.mob{width:390px;max-width:100%}
+    @media(max-width:1100px){#frame{height:62vh}}
     .sc-side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
-    .sc-empty{color:#64748B;font-size:14px;text-align:center;padding:24px 8px}
-    .sc-edit-head{display:flex;gap:6px;flex-wrap:wrap}
-    .sc-orig{margin-top:10px;font-size:13px;color:#475569}.sc-orig div{background:#F8FAFC;border-radius:8px;padding:8px 10px;margin-top:6px}
-    .sc-actions{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:12px;flex-wrap:wrap}
-    .sc-imgprev{width:100%;max-height:200px;object-fit:cover;border-radius:10px;background:#E2E8F0;margin:10px 0}
-    .sc-list{max-height:40vh;overflow:auto;display:flex;flex-direction:column;gap:4px}
-    .sc-item{display:flex;gap:8px;align-items:flex-start;text-align:left;border:1px solid #E2E8F0;background:#fff;border-radius:8px;padding:7px 9px;font-size:13px;color:#1E293B;cursor:pointer;width:100%}
+    @media(max-width:1100px){.sc-side{position:static}}
+    .sc-side .card{margin:0}
+    .sc-ed{padding:18px}
+    .sc-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;color:#64748B;font-size:13.5px;padding:18px 8px;line-height:1.5}
+    .sc-empty b{color:#0F172A;font-size:14.5px}
+    .sc-empty-ic{width:44px;height:44px;border-radius:12px;background:#F1F5F9;color:#64748B;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:4px}
+    .sc-ehead{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+    .sc-ehead b{font-size:14px;color:#0A2A5E;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+    .sc-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#64748B;background:#F1F5F9;border-radius:5px;padding:3px 7px}
+    .sc-chip{font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;background:#F1F5F9;color:#475569}
+    .sc-chip.ch{background:#DBEAFE;color:#1D4ED8}
+    .sc-chip:empty{display:none}
+    .sc-bigphoto{position:relative;display:block;width:100%;padding:0;border:0;border-radius:12px;overflow:hidden;background:#E2E8F0;cursor:pointer;aspect-ratio:16/10}
+    .sc-bigphoto img{width:100%;height:100%;object-fit:cover;display:block}
+    .sc-bigov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,0);transition:background .15s}
+    .sc-bigov>span{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.95);color:#0A2A5E;font-weight:700;font-size:13.5px;border-radius:999px;padding:9px 16px;box-shadow:0 6px 18px rgba(15,23,42,.18);transform:translateY(4px);opacity:.92;transition:transform .15s,opacity .15s}
+    .sc-bigphoto:hover .sc-bigov,.sc-bigphoto:focus-visible .sc-bigov{background:rgba(15,23,42,.35)}
+    .sc-bigphoto:hover .sc-bigov>span,.sc-bigphoto:focus-visible .sc-bigov>span{transform:none;opacity:1}
+    .sc-bigphoto:focus-visible{outline:3px solid rgba(37,99,235,.45);outline-offset:2px}
+    .sc-fileline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:#64748B}
+    .sc-fileline a{display:inline-flex;align-items:center;gap:5px;color:#1D4ED8;font-weight:600;text-decoration:none}
+    .sc-fileline a:hover{text-decoration:underline}
+    .sc-field{margin-top:14px}
+    .sc-field .form-label{display:flex;justify-content:space-between;align-items:baseline}
+    .sc-count{font-size:11.5px;font-weight:600;color:#94A3B8}
+    .sc-help{font-size:12px;color:#64748B;margin-top:6px;line-height:1.5}
+    #eiAlt{resize:vertical;min-height:62px;line-height:1.5}
+    .sc-efoot{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap}
+    .sc-dirty{font-size:12px;font-weight:700;color:#B45309;margin-left:auto}
+    .btn.sc-save{width:auto}
+    .sc-orig{margin-top:10px;font-size:13px;color:#475569}.sc-orig summary{cursor:pointer;font-weight:600;color:#334155}.sc-orig div{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:8px 10px;margin-top:6px;word-break:break-word}
+    .sc-listcard{padding:16px}
+    .sc-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#F1F5F9;border-radius:10px;padding:4px;margin-bottom:12px}
+    .sc-seg button{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;background:none;border-radius:8px;padding:8px 10px;font-size:13px;font-weight:700;color:#475569;cursor:pointer;font-family:inherit}
+    .sc-seg button .n{font-weight:600;color:#94A3B8;font-size:12px}
+    .sc-seg button.on{background:#fff;color:#0A2A5E;box-shadow:0 1px 3px rgba(15,23,42,.12)}
+    .sc-lsearch{position:relative}
+    .sc-lsearch .ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94A3B8}
+    .sc-lsearch .form-input{padding-left:36px}
+    .sc-onlych{display:inline-flex;gap:7px;align-items:center;font-size:12.5px;color:#334155;margin:10px 2px 10px;cursor:pointer}
+    .sc-onlych input{width:15px;height:15px;accent-color:#2563EB}
+    .sc-list{max-height:52vh;overflow:auto;display:flex;flex-direction:column;gap:6px;padding:2px}
+    .sc-note{font-size:13px;color:#64748B;padding:14px 4px;text-align:center}
+    .sc-pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .sc-pcard{border:1.5px solid #E2E8F0;border-radius:12px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+    .sc-pcard.sel{border-color:#2563EB;box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+    .sc-pthumb{position:relative;display:block;width:100%;aspect-ratio:4/3;padding:0;border:0;background:#E2E8F0;cursor:pointer}
+    .sc-pthumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .sc-pov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,0);transition:background .15s}
+    .sc-pov>span{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.95);color:#0A2A5E;font-weight:700;font-size:12px;border-radius:999px;padding:6px 11px;box-shadow:0 4px 12px rgba(15,23,42,.18);opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s}
+    .sc-pthumb:hover .sc-pov,.sc-pthumb:focus-visible .sc-pov{background:rgba(15,23,42,.35)}
+    .sc-pthumb:hover .sc-pov>span,.sc-pthumb:focus-visible .sc-pov>span{opacity:1;transform:none}
+    .sc-pthumb:focus-visible{outline:3px solid rgba(37,99,235,.45);outline-offset:-3px}
+    .sc-pchg{position:absolute;right:6px;bottom:6px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.95);color:#0A2A5E;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(15,23,42,.2)}
+    .sc-pthumb:hover .sc-pchg{opacity:0}
+    .sc-pbadge{position:absolute;left:6px;top:6px;background:#2563EB;color:#fff;font-size:10px;font-weight:800;border-radius:5px;padding:2px 6px;letter-spacing:.3px}
+    .sc-plabel{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;border:0;background:#fff;padding:7px 9px;cursor:pointer;text-align:left;font-family:inherit}
+    .sc-plabel span{font-size:12px;font-weight:600;color:#0F172A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sc-plabel .ic{color:#94A3B8;flex-shrink:0}
+    .sc-plabel:hover .ic{color:#0F172A}
+    .sc-plabel:focus-visible{outline:2px solid #2563EB;outline-offset:-2px}
+    .sc-item{display:flex;gap:9px;align-items:flex-start;text-align:left;border:1.5px solid #E2E8F0;background:#fff;border-radius:10px;padding:8px 10px;font-size:13px;color:#1E293B;cursor:pointer;width:100%;font-family:inherit}
     .sc-item:hover{border-color:#93C5FD}.sc-item.sel{border-color:#2563EB;background:#EFF6FF}
-    .sc-item .t{flex-shrink:0;font-size:10px;font-weight:800;color:#2563EB;background:#DBEAFE;border-radius:4px;padding:2px 5px;margin-top:1px}
-    .sc-item .x{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+    .sc-item:focus-visible{outline:2px solid #2563EB;outline-offset:1px}
+    .sc-item .t{flex-shrink:0;font-size:10px;font-weight:800;color:#475569;background:#F1F5F9;border-radius:4px;padding:2px 6px;margin-top:1px;letter-spacing:.3px}
     .sc-item.ch .t{background:#2563EB;color:#fff}
-    .sc-kind{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-    .sc-kind button{border:1.5px solid #E2E8F0;background:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;color:#334155;cursor:pointer}
-    .sc-kind button.on{background:#2563EB;border-color:#2563EB;color:#fff}
-    .sc-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-    .sc-photo{border:1.5px solid #E2E8F0;border-radius:10px;overflow:hidden;background:#fff;cursor:pointer;text-align:left;padding:0}
-    .sc-photo:hover{border-color:#93C5FD}.sc-photo.sel{border-color:#2563EB;box-shadow:0 0 0 2px rgba(37,99,235,.2)}
-    .sc-photo .th{height:90px;background:#E2E8F0 center/cover no-repeat;position:relative}
-    .sc-photo .ch{position:absolute;top:6px;left:6px;background:#2563EB;color:#fff;font-size:10px;font-weight:800;border-radius:4px;padding:2px 6px}
-    .sc-photo .lb{padding:6px 8px;font-size:12px;font-weight:600;color:#1E293B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .sc-photo .ed{display:block;padding:0 8px 8px;font-size:11px;color:#2563EB;font-weight:700}
-    .sc-brand{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+    .sc-item .x{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.45}
+    .sc-brand{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:16px}
     .sc-brandprev{background:#fff;border:1.5px dashed #CBD5E1;border-radius:12px;padding:18px;display:flex;align-items:center;justify-content:center;min-height:100px}
     .sc-brandprev img{max-height:70px;max-width:100%}
-    .sc-favprev{display:flex;gap:14px;align-items:center;background:#F8FAFC;border-radius:12px;padding:16px}
+    .sc-favprev{display:flex;gap:14px;align-items:center;background:#F8FAFC;border-radius:12px;padding:16px;flex-wrap:wrap}
     .sc-favprev img{border-radius:6px}
+    @media(max-width:640px){.sc-ed,.sc-listcard{padding:14px}.sc-efoot .btn{flex:1}.sc-dirty{flex-basis:100%;order:-1;margin:0}}
   </style>
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
   <script src="/cms-safe.js?v=20260929-of"></script>
-  <script src="/cms-content.js?v=20260929-of" data-cms-noinit></script>
-  <script src="/admin/assets/rich-editor.js?v=20260929-of"></script>
-  <script src="/admin/assets/site-content.js?v=20260929-of"></script>
+  <script src="/cms-content.js?v=20261001-alt" data-cms-noinit></script>
+  <script src="/admin/assets/rich-editor.js?v=20261001-medya"></script>
+  <script src="/admin/assets/medya.js?v=20261001-medya"></script>
+  <script src="/admin/assets/site-content.js?v=20261001-medya"></script>
 </body>
 </html>

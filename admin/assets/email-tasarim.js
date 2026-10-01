@@ -7,16 +7,16 @@
   const $ = (id) => document.getElementById(id);
   const R = window.IUEmailRender;
   const BLOCKS = {
-    header: { icon: '🏷️', name: 'Logo başlığı', def: { style: 'navy', align: 'left' } },
-    heading: { icon: '🔠', name: 'Başlık', def: { text: 'Başlık yazın', size: 26, align: 'left', color: '#0A2A5E' } },
-    text: { icon: '📝', name: 'Metin', def: { html: '<p>Merhaba {{ad}},</p><p>Metninizi buraya yazın.</p>', align: 'left', size: 15 } },
-    image: { icon: '🖼️', name: 'Görsel', def: { src: '', alt: '', href: '', width: 100, align: 'center', radius: 10 } },
-    button: { icon: '🔘', name: 'Buton', def: { text: 'Hemen İncele', href: 'https://ismailunsal.com.tr', align: 'center', bg: '#2563EB', color: '#FFFFFF', radius: 10 } },
-    listings: { icon: '🏠', name: 'İlanlar', def: { ids: [], columns: 1 } },
-    imagetext: { icon: '🧩', name: 'Görsel + metin', def: { src: '', html: '<h3>Başlık</h3><p>Kısa açıklama</p>', side: 'left' } },
-    contact: { icon: '📞', name: 'İletişim kutusu', def: { title: 'Bilgi almak ister misiniz?' } },
-    divider: { icon: '➖', name: 'Ayırıcı çizgi', def: { color: '#E5E7EB' } },
-    spacer: { icon: '↕️', name: 'Boşluk', def: { h: 24 } }
+    header: { icon: 'tag', name: 'Logo başlığı', def: { style: 'navy', align: 'left' } },
+    heading: { icon: 'type', name: 'Başlık', def: { text: 'Başlık yazın', size: 26, align: 'left', color: '#0A2A5E' } },
+    text: { icon: 'file-text', name: 'Metin', def: { html: '<p>Merhaba {{ad}},</p><p>Metninizi buraya yazın.</p>', align: 'left', size: 15 } },
+    image: { icon: 'image', name: 'Görsel', def: { src: '', alt: '', href: '', width: 100, align: 'center', radius: 10 } },
+    button: { icon: 'button', name: 'Buton', def: { text: 'Hemen İncele', href: 'https://ismailunsal.com.tr', align: 'center', bg: '#2563EB', color: '#FFFFFF', radius: 10 } },
+    listings: { icon: 'home', name: 'İlanlar', def: { ids: [], columns: 1 } },
+    imagetext: { icon: 'grid', name: 'Görsel + metin', def: { src: '', html: '<h3>Başlık</h3><p>Kısa açıklama</p>', side: 'left' } },
+    contact: { icon: 'phone', name: 'İletişim kutusu', def: { title: 'Bilgi almak ister misiniz?' } },
+    divider: { icon: 'minus', name: 'Ayırıcı çizgi', def: { color: '#E5E7EB' } },
+    spacer: { icon: 'move-vertical', name: 'Boşluk', def: { h: 24 } }
   };
   let design = { settings: {}, blocks: [] };
   let selIdx = -1;             // -1 = genel ayarlar
@@ -31,7 +31,7 @@
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const safeImg = (u) => /^https:\/\/[^\s"'<>()]+$/i.test(String(u || '').trim()) ? String(u).trim() : '';
 
-  function setDirty(v) { dirty = v; $('saveBtn').textContent = v ? '💾 Kaydet *' : '💾 Kaydet'; }
+  function setDirty(v) { dirty = v; App.iconText($('saveBtn'), 'save', v ? 'Kaydet *' : 'Kaydet'); }
   function preview() {
     clearTimeout(renderTimer);
     renderTimer = setTimeout(() => {
@@ -45,17 +45,17 @@
 
   // ---------- Blok listesi ----------
   function blockLabel(b) {
-    const t = BLOCKS[b.type] || { name: b.type, icon: '•' };
+    const t = BLOCKS[b.type] || { name: b.type, icon: '' };
     let extra = '';
     if (b.type === 'heading' || b.type === 'button') extra = b.text || '';
     if (b.type === 'text') extra = String(b.html || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     if (b.type === 'listings') extra = (b.ids || []).length + ' ilan';
-    return t.icon + ' ' + t.name + (extra ? ' — ' + extra.slice(0, 40) : '');
+    return t.name + (extra ? ' — ' + extra.slice(0, 40) : '');
   }
   function renderBlocks() {
     const box = $('blocks'); box.textContent = '';
     const g = document.createElement('div'); g.className = 'ed-b' + (selIdx === -1 ? ' sel' : '');
-    const gn = document.createElement('span'); gn.className = 'n'; gn.textContent = '🎨 Genel ayarlar (renkler, yazı tipi)';
+    const gn = document.createElement('span'); gn.className = 'n'; App.iconText(gn, 'settings', 'Genel ayarlar (renkler, yazı tipi)');
     g.appendChild(gn); g.onclick = () => { selIdx = -1; renderBlocks(); renderProps(); }; box.appendChild(g);
     design.blocks.forEach((b, i) => {
       const row = document.createElement('div'); row.className = 'ed-b' + (i === selIdx ? ' sel' : ''); row.draggable = true;
@@ -65,7 +65,7 @@
       row.append(h, n,
         mk('▲', 'Yukarı', () => move(i, -1)), mk('▼', 'Aşağı', () => move(i, 1)),
         mk('⧉', 'Kopyala', () => { design.blocks.splice(i + 1, 0, Object.assign(clone(b), { id: uid() })); selIdx = i + 1; renderBlocks(); renderProps(); changed(); }),
-        mk('✕', 'Sil', () => { design.blocks.splice(i, 1); selIdx = Math.min(selIdx, design.blocks.length - 1); renderBlocks(); renderProps(); changed(); }));
+        mk('×', 'Sil', () => { design.blocks.splice(i, 1); selIdx = Math.min(selIdx, design.blocks.length - 1); renderBlocks(); renderProps(); changed(); }));
       row.onclick = () => { selIdx = i; renderBlocks(); renderProps(); };
       row.addEventListener('dragstart', (e) => { row.classList.add('drag'); e.dataTransfer.setData('text/plain', String(i)); });
       row.addEventListener('dragend', () => row.classList.remove('drag'));
@@ -114,7 +114,7 @@
     const pv = document.createElement('img'); pv.style.cssText = 'width:100%;max-height:120px;object-fit:cover;border-radius:8px;background:#E2E8F0;margin-bottom:6px;display:' + (safeImg(b[key]) ? 'block' : 'none');
     if (safeImg(b[key])) pv.src = b[key];
     const url = inp(b[key], v => { b[key] = v; const u = safeImg(v); pv.style.display = u ? 'block' : 'none'; if (u) pv.src = u; changed(); }, { placeholder: 'https://… veya yükleyin' });
-    const up = document.createElement('label'); up.className = 'btn btn-outline btn-sm'; up.style.cssText = 'cursor:pointer;margin-top:6px;'; up.textContent = '📷 Bilgisayardan yükle';
+    const up = document.createElement('label'); up.className = 'btn btn-outline btn-sm'; up.style.cssText = 'cursor:pointer;margin-top:6px;'; App.iconText(up, 'upload', 'Bilgisayardan yükle');
     const f = document.createElement('input'); f.type = 'file'; f.accept = 'image/jpeg,image/png,image/webp,image/gif'; f.hidden = true; up.appendChild(f);
     f.addEventListener('change', async () => {
       const file = f.files[0]; f.value = ''; if (!file) return;
@@ -134,7 +134,7 @@
     const P = $('props'); P.textContent = '';
     const h = document.createElement('h3');
     if (selIdx === -1) {
-      h.textContent = '🎨 Genel ayarlar'; P.appendChild(h);
+      App.iconText(h, 'settings', 'Genel ayarlar'); P.appendChild(h);
       const S = design.settings;
       P.appendChild(field('Arka plan rengi', colorInp(S.bg || '#F1F5F9', v => { S.bg = v; changed(); })));
       P.appendChild(field('İçerik alanı rengi', colorInp(S.content || '#FFFFFF', v => { S.content = v; changed(); })));
@@ -146,7 +146,7 @@
       P.appendChild(tip); return;
     }
     const b = design.blocks[selIdx]; if (!b) return;
-    h.textContent = (BLOCKS[b.type] || {}).icon + ' ' + (BLOCKS[b.type] || {}).name; P.appendChild(h);
+    App.iconText(h, (BLOCKS[b.type] || {}).icon, (BLOCKS[b.type] || {}).name); P.appendChild(h);
     switch (b.type) {
       case 'header':
         P.appendChild(field('Stil', sel(b.style || 'navy', [['navy', 'Lacivert zemin'], ['white', 'Beyaz zemin']], v => { b.style = v; changed(); })));
@@ -180,7 +180,7 @@
         break;
       case 'listings': {
         P.appendChild(field('Düzen', sel(String(b.columns || 1), [['1', 'Alt alta (büyük)'], ['2', 'Yan yana (2 sütun)']], v => { b.columns = +v; changed(); })));
-        const q = inp('', v => draw(v), { placeholder: '🔍 İlan ara…' });
+        const q = inp('', v => draw(v), { placeholder: 'İlan ara…' });
         const box = document.createElement('div'); box.className = 'ed-plist';
         const draw = (v) => {
           box.textContent = ''; const qq = String(v || '').toLocaleLowerCase('tr-TR');
@@ -224,7 +224,7 @@
     const g1 = document.createElement('optgroup'); g1.label = 'Kayıtlı tasarımlarım';
     templates.forEach(t => { const o = document.createElement('option'); o.value = 'id:' + t.id; o.textContent = t.name || 'Adsız'; g1.appendChild(o); });
     const g2 = document.createElement('optgroup'); g2.label = 'Hazır şablonla yeni başla';
-    Object.entries(R.TEMPLATES).forEach(([k, t]) => { const o = document.createElement('option'); o.value = 'new:' + k; o.textContent = '➕ ' + t.name; g2.appendChild(o); });
+    Object.entries(R.TEMPLATES).forEach(([k, t]) => { const o = document.createElement('option'); o.value = 'new:' + k; o.textContent = '+ ' + t.name; g2.appendChild(o); });
     if (templates.length) s.appendChild(g1); s.appendChild(g2);
     s.value = currentId ? 'id:' + currentId : 'new:ilan';
   }
@@ -269,7 +269,7 @@
     if (!(await App.init('email-tasarim'))) return;
     Object.entries(BLOCKS).forEach(([k, v]) => {
       const b = document.createElement('button'); b.type = 'button';
-      const i = document.createElement('b'); i.textContent = v.icon; b.append(i, document.createTextNode(v.name));
+      const i = document.createElement('b'); i.appendChild(App.icon(v.icon)); b.append(i, document.createTextNode(v.name));
       b.onclick = () => addBlock(k); $('palette').appendChild(b);
     });
     try {

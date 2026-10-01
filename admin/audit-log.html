@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .action-badge {
@@ -63,9 +63,9 @@
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
       <header class="topbar">
-        <h1 class="page-title">📜 Değişiklik Geçmişi</h1>
+        <h1 class="page-title">Değişiklik Geçmişi</h1>
         <div class="topbar-actions">
-          <button onclick="loadHistory()" class="btn btn-outline btn-sm">🔄 Yenile</button>
+          <button onclick="loadHistory()" class="btn btn-outline btn-sm"><i class="ic ic-refresh" aria-hidden="true"></i> Yenile</button>
           <div class="user-menu" id="userMenu"></div>
         </div>
       </header>
@@ -124,7 +124,7 @@
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
 
   <script>
     let history = [];
@@ -165,7 +165,7 @@
             container.innerHTML = `
               <div class="card">
                 <div class="empty-state">
-                  <div class="empty-icon">📜</div>
+                  <div class="empty-icon"><i class="ic ic-clock" aria-hidden="true"></i></div>
                   <div>Audit log tablosu henüz oluşturulmamış</div>
                   <div style="color: var(--text-muted); margin-top: 8px; font-size: 13px;">
                     Değişiklikleri takip etmek için SQL migration çalıştırılmalı.<br>
@@ -194,7 +194,7 @@
         container.innerHTML = `
           <div class="card">
             <div class="empty-state">
-              <div class="empty-icon">📜</div>
+              <div class="empty-icon"><i class="ic ic-clock" aria-hidden="true"></i></div>
               <div>Bu kriterlere uygun değişiklik bulunamadı</div>
             </div>
           </div>
@@ -203,11 +203,11 @@
       }
 
       const tableLabels = {
-        properties: '🏡 İlanlar',
-        blog_posts: '📝 Blog',
-        team_members: '👥 Ekip',
-        site_content: '🎨 Site İçeriği',
-        admin_users: '👤 Adminler'
+        properties: 'İlanlar',
+        blog_posts: 'Blog',
+        team_members: 'Ekip',
+        site_content: 'Site İçeriği',
+        admin_users: 'Adminler'
       };
 
       const actionLabels = {

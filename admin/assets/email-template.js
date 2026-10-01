@@ -18,9 +18,9 @@ const EmailTemplate = (() => {
       intro: 'Bu hafta portföyümüze eklediğimiz seçkin gayrimenkulleri sizinle paylaşmak istiyoruz.',
       viewDetails: 'Detayları Gör',
       contact: 'İletişime Geç',
-      contactPhone: '📞 Ara: ',
-      contactWhatsapp: '💬 WhatsApp',
-      contactEmail: '📧 Email',
+      contactPhone: 'Ara: ',
+      contactWhatsapp: 'WhatsApp',
+      contactEmail: 'Email',
       viewAll: 'Tüm İlanları Gör',
       footer: 'Bu emaili, ismailunsal.com.tr sitemize abone olduğunuz için alıyorsunuz.',
       unsubscribe: 'Aboneliği İptal Et',
@@ -38,9 +38,9 @@ const EmailTemplate = (() => {
       intro: 'We\'d like to share the exclusive properties we\'ve added to our portfolio this week.',
       viewDetails: 'View Details',
       contact: 'Contact',
-      contactPhone: '📞 Call: ',
-      contactWhatsapp: '💬 WhatsApp',
-      contactEmail: '📧 Email',
+      contactPhone: 'Call: ',
+      contactWhatsapp: 'WhatsApp',
+      contactEmail: 'Email',
       viewAll: 'View All Listings',
       footer: 'You\'re receiving this email because you subscribed to ismailunsal.com.tr',
       unsubscribe: 'Unsubscribe',
@@ -58,9 +58,9 @@ const EmailTemplate = (() => {
       intro: 'Wir möchten Ihnen die exklusiven Immobilien vorstellen, die wir diese Woche zu unserem Portfolio hinzugefügt haben.',
       viewDetails: 'Details ansehen',
       contact: 'Kontakt',
-      contactPhone: '📞 Anrufen: ',
-      contactWhatsapp: '💬 WhatsApp',
-      contactEmail: '📧 E-Mail',
+      contactPhone: 'Anrufen: ',
+      contactWhatsapp: 'WhatsApp',
+      contactEmail: 'E-Mail',
       viewAll: 'Alle Anzeigen',
       footer: 'Sie erhalten diese E-Mail, weil Sie ismailunsal.com.tr abonniert haben.',
       unsubscribe: 'Abmelden',
@@ -78,9 +78,9 @@ const EmailTemplate = (() => {
       intro: 'Nous aimerions partager les propriétés exclusives que nous avons ajoutées à notre portefeuille cette semaine.',
       viewDetails: 'Voir les détails',
       contact: 'Contact',
-      contactPhone: '📞 Appeler: ',
-      contactWhatsapp: '💬 WhatsApp',
-      contactEmail: '📧 E-mail',
+      contactPhone: 'Appeler: ',
+      contactWhatsapp: 'WhatsApp',
+      contactEmail: 'E-mail',
       viewAll: 'Voir toutes les annonces',
       footer: 'Vous recevez cet e-mail parce que vous êtes abonné à ismailunsal.com.tr',
       unsubscribe: 'Se désabonner',
@@ -98,9 +98,9 @@ const EmailTemplate = (() => {
       intro: 'Мы хотели бы поделиться эксклюзивными объектами, которые мы добавили в наш портфель на этой неделе.',
       viewDetails: 'Подробнее',
       contact: 'Связаться',
-      contactPhone: '📞 Позвонить: ',
-      contactWhatsapp: '💬 WhatsApp',
-      contactEmail: '📧 Email',
+      contactPhone: 'Позвонить: ',
+      contactWhatsapp: 'WhatsApp',
+      contactEmail: 'Email',
       viewAll: 'Все объявления',
       footer: 'Вы получаете это письмо, потому что подписались на ismailunsal.com.tr',
       unsubscribe: 'Отписаться',
@@ -262,7 +262,7 @@ const EmailTemplate = (() => {
           <tr>
             <td style="background: #ffffff; padding: 32px 40px 24px 40px;" class="mobile-padding">
               <h1 style="font-size: 28px; color: #0a1929; margin: 0 0 16px 0; font-weight: 700; line-height: 1.2;">
-                ${escapeHtml(t.greeting)}${recipientName ? ' ' + escapeHtml(recipientName) : ''} 👋
+                ${escapeHtml(t.greeting)}${recipientName ? ' ' + escapeHtml(recipientName) : ''},
               </h1>
               <p style="font-size: 16px; color: #4b5563; margin: 0 0 12px 0; line-height: 1.6;">
                 ${escapeHtml(t.intro)}
@@ -288,7 +288,7 @@ const EmailTemplate = (() => {
           <tr>
             <td style="background: #ffffff; padding: 20px 40px 40px 40px; text-align: center;" class="mobile-padding">
               <a href="${SITE_URL}?utm_source=email&utm_medium=newsletter" style="display: inline-block; background: #0a1929; color: #ffffff; padding: 14px 40px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
-                🔍 ${escapeHtml(t.viewAll)}
+                ${escapeHtml(t.viewAll)}
               </a>
             </td>
           </tr>
@@ -400,7 +400,7 @@ const EmailTemplate = (() => {
         <div style="font-size: 12px; color: white; opacity: 0.8; margin-top: 4px;">GAYRİMENKUL</div>
       </td></tr>
       <tr><td style="padding: 40px;">
-        <h1 style="color: #0a1929; margin: 0 0 16px 0;">${escapeHtml(vt.title)} ✉️</h1>
+        <h1 style="color: #0a1929; margin: 0 0 16px 0;">${escapeHtml(vt.title)}</h1>
         <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">${escapeHtml(vt.text)}</p>
         <table cellpadding="0" cellspacing="0" style="margin: 30px auto;"><tr><td>
           <a href="${verifyUrl}" style="display: inline-block; background: #2563EB; color: white; padding: 16px 40px; border-radius: 8px; text-decoration: none; font-weight: 600;">

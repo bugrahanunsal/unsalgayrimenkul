@@ -50,7 +50,7 @@
     const box = $('blogList'); box.textContent = '';
     if (!posts.length) {
       const c = document.createElement('div'); c.className = 'card';
-      c.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><div>Henüz blog yazısı yok</div></div>';
+      c.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="ic ic-file-text" aria-hidden="true"></i></div><div>Henüz blog yazısı yok</div></div>';
       const b = document.createElement('button'); b.className = 'btn btn-primary btn-sm'; b.style.marginTop = '16px'; b.textContent = 'İlk Yazıyı Yaz';
       b.onclick = () => openEditor(); c.querySelector('.empty-state').appendChild(b);
       box.appendChild(c); return;
@@ -70,13 +70,13 @@
       const t = document.createElement('div'); t.style.cssText = 'font-weight:700;color:#0A2A5E;line-height:1.35;'; t.textContent = p.baslik_tr || '(başlıksız)';
       const d = document.createElement('div'); d.style.cssText = 'font-size:12px;color:#64748B;'; d.textContent = App.formatDate(p.yayin_tarihi || p.created_at);
       const act = document.createElement('div'); act.style.cssText = 'display:flex;gap:8px;margin-top:auto;flex-wrap:wrap;';
-      const e = document.createElement('button'); e.className = 'btn btn-primary btn-sm'; e.textContent = '✏️ Düzenle'; e.onclick = () => openEditor(p);
+      const e = document.createElement('button'); e.className = 'btn btn-primary btn-sm'; App.iconText(e, 'edit', 'Düzenle'); e.onclick = () => openEditor(p);
       act.appendChild(e);
       if (p.durum === 'yayinda' && SLUG_RE.test(p.slug || '')) {
-        const v = document.createElement('a'); v.className = 'btn btn-outline btn-sm'; v.textContent = '🌐 Sitede gör';
+        const v = document.createElement('a'); v.className = 'btn btn-outline btn-sm'; App.iconText(v, 'external', 'Sitede gör');
         v.href = '/blog/' + p.slug; v.target = '_blank'; v.rel = 'noopener'; act.appendChild(v);
       }
-      const del = document.createElement('button'); del.className = 'btn btn-danger btn-sm'; del.textContent = '🗑️'; del.title = 'Sil';
+      const del = document.createElement('button'); del.className = 'btn btn-danger btn-sm'; App.iconText(del, 'trash'); del.title = 'Sil'; del.setAttribute('aria-label', 'Sil');
       del.onclick = () => deletePost(p); act.appendChild(del);
       body.append(top, t, d, act); card.append(img, body); grid.appendChild(card);
     });
@@ -139,7 +139,7 @@
       App.toast(id ? 'Yazı güncellendi' : 'Yazı eklendi', 'success');
       closeEditor(); await loadPosts();
     } catch (err) { App.toast(err.message, 'error'); }
-    finally { btn.disabled = false; btn.textContent = '💾 Kaydet'; }
+    finally { btn.disabled = false; App.iconText(btn, 'save', 'Kaydet'); }
   }
 
   async function deletePost(p) {
@@ -180,7 +180,7 @@
         n++;
       } catch (err) { App.toast('İçe aktarma hatası: ' + err.message, 'error'); }
     }
-    btn.disabled = false; btn.textContent = '📥 Sitedeki yazıları içe aktar';
+    btn.disabled = false; App.iconText(btn, 'download', 'Sitedeki yazıları içe aktar');
     if (n) App.toast(`${n} yazı panele aktarıldı`, 'success');
     loadPosts();
   }

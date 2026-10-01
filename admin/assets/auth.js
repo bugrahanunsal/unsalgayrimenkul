@@ -8,7 +8,7 @@
 const Auth = {
 
   /**
-   * 🔐 Login
+  * Login
    */
   async login(email, password) {
     // Rate limiting
@@ -89,7 +89,7 @@ const Auth = {
   },
 
   /**
-   * 🔓 Logout - Ana siteye yönlendir
+  * Logout - Ana siteye yönlendir
    */
   async logout() {
     try {
@@ -115,7 +115,7 @@ const Auth = {
   },
 
   /**
-   * 👤 Get Current User with Profile
+  * Get Current User with Profile
    */
   async getCurrentUser() {
     try {
@@ -140,7 +140,7 @@ const Auth = {
   },
 
   /**
-   * 🔒 Require Auth (Page Protection)
+  * Require Auth (Page Protection)
    * Session yoksa ana siteye yönlendirir (login modal orada)
    */
   async requireAuth(minRole = 'admin') {
@@ -165,7 +165,7 @@ const Auth = {
   },
 
   /**
-   * 📊 Track Failed Login
+  * Track Failed Login
    */
   async trackFailedLogin(email, reason) {
     try {
@@ -189,7 +189,7 @@ const Auth = {
   },
 
   /**
-   * 📊 Track Successful Login
+  * Track Successful Login
    */
   async trackSuccessfulLogin(userId, email) {
     try {
@@ -227,7 +227,7 @@ const Auth = {
   },
 
   /**
-   * 🔄 Refresh Session
+  * Refresh Session
    */
   async refreshSession() {
     try {
@@ -251,4 +251,4 @@ setInterval(async () => {
   }
 }, 45 * 60 * 1000);
 
-console.log('✅ Auth layer loaded');
+console.log(' Auth layer loaded');

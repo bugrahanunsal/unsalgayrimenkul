@@ -126,7 +126,7 @@
     } catch (e) {
       if (campId) await supabaseClient.from('email_campaigns').update({ status: 'failed' }).eq('id', campId);
       warn(e.message); App.toast(e.message, 'error');
-    } finally { btn.disabled = false; btn.textContent = '📨 Kampanyayı Gönder'; }
+    } finally { btn.disabled = false; App.iconText(btn, 'send', 'Kampanyayı Gönder'); }
   }
 
   async function loadHistory() {

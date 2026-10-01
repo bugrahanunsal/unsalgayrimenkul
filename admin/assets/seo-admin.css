@@ -39,10 +39,9 @@
 .tag.ch{background:#DBEAFE;color:#1D4ED8}.tag.hid{background:#FEE2E2;color:#B91C1C}.tag.st{background:#F1F5F9;color:#475569}
 .seo-empty{background:#fff;border:1px dashed #CBD5E1;border-radius:12px;padding:28px;text-align:center;color:#64748B;font-size:14px}
 
-/* Yüz (skor) simgesi */
-.face{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:#CBD5E1}
-.face svg{width:18px;height:18px}
-.face.good{background:#16A34A}.face.ok{background:#F59E0B}.face.bad{background:#DC2626}
+/* SEO durum ışığı: resimli simge yok, sade nokta (yeşil iyi / turuncu geliştirilebilir / kırmızı sorunlu) */
+.face{width:12px;height:12px;border-radius:50%;display:inline-block;flex-shrink:0;background:#94A3B8;box-shadow:0 0 0 5px #F1F5F9;margin:0 7px}
+.face.good{background:#16A34A;box-shadow:0 0 0 5px #DCFCE7}.face.ok{background:#F59E0B;box-shadow:0 0 0 5px #FEF3C7}.face.bad{background:#DC2626;box-shadow:0 0 0 5px #FEE2E2}
 
 /* ---------- Düzenleyici ---------- */
 .seo-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:1000;display:flex;align-items:flex-start;justify-content:center;padding:18px 14px;overflow:auto}
@@ -158,3 +157,6 @@ label.btn:has(input:disabled),.btn.disabled{opacity:.5;pointer-events:none}
 [hidden]{display:none!important}
 /* Bildirimler düzenleyicinin üst düğmelerini kapatmasın: sağ altta, kaydet çubuğunun üstünde */
 .toast-container{top:auto;bottom:84px;right:20px;max-width:min(420px,calc(100vw - 40px))}
+/* Fotoğraf düğmeleri: tek renk ikonlar; kaldırma düğmesi sade (kırmızı dolgu yok) */
+.ph-btns .btn-primary{width:auto}
+.btn.ph-del{color:#B91C1C}.btn.ph-del:hover:not(:disabled){border-color:#FCA5A5;color:#991B1B}

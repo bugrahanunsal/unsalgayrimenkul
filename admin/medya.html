@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Görsel Deposu - Admin Panel</title>
+  <link rel="icon" type="image/svg+xml" href="/admin/assets/admin-icon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
+  <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
+  <meta name="theme-color" content="#0A2A5E">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">Görsel Deposu</h1>
+        <div class="topbar-actions">
+          <button type="button" class="btn btn-primary btn-sm mp-upbtn" id="upBtn"><i class="ic ic-upload" aria-hidden="true"></i> Fotoğraf yükle</button>
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+      <div class="page-content">
+        <div id="setupAlert" class="alert alert-warning" hidden>
+          <b>Veritabanı güncellemesi gerekli.</b> Dosya adı, alt metin ve "nerede kullanılıyor" bilgileri için Supabase'de
+          <b>supabase-medya-2026-10-01.sql</b> dosyasını bir kez çalıştırın (SQL Editor → New query → yapıştır → RUN).
+        </div>
+
+        <div class="mp-intro">
+          <span class="mp-intro-ic"><i class="ic ic-images" aria-hidden="true"></i></span>
+          <div>Panelden yüklenen <b>tüm fotoğraflar</b> burada: site fotoğrafları, ilan fotoğrafları, blog ve e-posta görselleri.
+          Bir fotoğrafa tıklayarak <b>dosya adını</b> ve <b>alt metnini</b> düzenleyin. Dosya adı değişince sitede kullanıldığı her yer otomatik güncellenir.</div>
+        </div>
+
+        <div class="mp-tools">
+          <div class="mp-chips" id="chips" role="group" aria-label="Filtre"></div>
+          <div class="mp-search"><i class="ic ic-search" aria-hidden="true"></i><input id="q" type="search" class="form-input" placeholder="Dosya adı veya alt metin ara…" aria-label="Fotoğraf ara" maxlength="80"></div>
+        </div>
+        <div class="mp-count" id="count" aria-live="polite"></div>
+        <div id="grid" class="mp-grid"><div class="loading">Yükleniyor…</div></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ============ AYRINTI ============ -->
+  <div id="dr" class="mp-drawer-bd" hidden>
+    <aside class="mp-drawer" role="dialog" aria-modal="true" aria-labelledby="drTitle">
+      <div class="mp-dhead">
+        <h2 id="drTitle" class="mp-dtitle">Fotoğraf</h2>
+        <div class="mp-dnav">
+          <button type="button" class="mp-icbtn" id="drPrev" aria-label="Önceki fotoğraf" title="Önceki"><i class="ic ic-chevron-left" aria-hidden="true"></i></button>
+          <button type="button" class="mp-icbtn" id="drNext" aria-label="Sonraki fotoğraf" title="Sonraki"><i class="ic ic-chevron-right" aria-hidden="true"></i></button>
+          <button type="button" class="mp-icbtn" id="drClose" aria-label="Kapat" title="Kapat (Esc)"><i class="ic ic-x" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <div class="mp-dbody">
+        <div class="mp-dprev" id="drPrevImg" role="img" aria-label="Fotoğraf önizlemesi"></div>
+        <div class="mp-dmeta" id="drMeta"></div>
+        <div id="drArchived" class="mp-note" hidden></div>
+        <div class="mp-dactions">
+          <button type="button" class="btn btn-outline btn-sm" id="drReplace"><i class="ic ic-camera" aria-hidden="true"></i> Fotoğrafı değiştir</button>
+          <button type="button" class="btn btn-outline btn-sm" id="drCopy"><i class="ic ic-copy" aria-hidden="true"></i> Adresi kopyala</button>
+          <a class="btn btn-outline btn-sm" id="drOpen" target="_blank" rel="noopener"><i class="ic ic-external" aria-hidden="true"></i> Aç</a>
+        </div>
+
+        <div class="mp-field">
+          <label class="form-label" for="drName">Dosya adı</label>
+          <div class="mp-namerow"><input id="drName" class="form-input" maxlength="60" autocomplete="off" spellcheck="false"><span class="mp-ext" id="drExt">.jpg</span></div>
+          <div class="mp-help">Kısa, tire ile ayrılmış, Türkçe karaktersiz (ör. <b>yalova-deniz-manzarali-daire</b>). Değişince fotoğrafın adresi de değişir; sitede kullanıldığı her yer otomatik güncellenir.</div>
+        </div>
+        <div class="mp-field">
+          <label class="form-label" for="drAlt">Alt metin</label>
+          <textarea id="drAlt" class="form-input" rows="2" maxlength="250" placeholder="Fotoğrafta ne görünüyor? (ör. Yalova merkezde deniz manzaralı satılık daire)"></textarea>
+          <div class="mp-help"><span id="drAltCount">0</span>/125 · Görme engelliler ve Google için kısa açıklama. Site İçeriği'nde bu fotoğrafı kullanan yerlere de uygulanır.</div>
+        </div>
+
+        <div class="mp-usage">
+          <div class="form-label">Kullanıldığı yerler</div>
+          <ul id="drUsage" class="mp-ulist"></ul>
+        </div>
+
+        <div class="mp-danger" id="drDangerBox">
+          <button type="button" class="btn btn-outline btn-sm mp-del" id="drDelete"><i class="ic ic-trash" aria-hidden="true"></i> Fotoğrafı sil</button>
+          <span class="mp-help" id="drDeleteNote"></span>
+        </div>
+      </div>
+      <div class="mp-dfoot">
+        <span class="mp-dirty" id="drDirty" hidden>Kaydedilmemiş değişiklik</span>
+        <button type="button" class="btn btn-outline" id="drCancel">Kapat</button>
+        <button type="button" class="btn btn-primary mp-save" id="drSave"><i class="ic ic-save" aria-hidden="true"></i> Kaydet</button>
+      </div>
+    </aside>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
+  <script src="/admin/assets/security.js?v=20260929-of"></script>
+  <script src="/admin/assets/auth.js?v=20260929-of"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
+  <script src="/admin/assets/medya.js?v=20261001-medya"></script>
+  <script src="/admin/assets/medya-sayfa.js?v=20261001-medya"></script>
+</body>
+</html>

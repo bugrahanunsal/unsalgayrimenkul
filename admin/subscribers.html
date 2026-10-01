@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260929-alert">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
@@ -27,9 +27,9 @@
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
       <header class="topbar">
-        <h1 class="page-title">📧 Aboneler</h1>
+        <h1 class="page-title">Aboneler</h1>
         <div class="topbar-actions">
-          <button onclick="exportCSV()" class="btn btn-outline btn-sm">📥 CSV İndir</button>
+          <button onclick="exportCSV()" class="btn btn-outline btn-sm"><i class="ic ic-download" aria-hidden="true"></i> CSV İndir</button>
           <div class="user-menu" id="userMenu"></div>
         </div>
       </header>
@@ -43,28 +43,28 @@
         <!-- Filtre Barı -->
         <div class="card" style="margin-bottom: 16px;">
           <div class="filter-bar">
-            <input type="text" id="searchInput" class="form-input" placeholder="🔍 Email veya isim ara...">
+            <input type="text" id="searchInput" class="form-input" placeholder="Email veya isim ara...">
             <select id="statusFilter" class="form-select">
-              <option value="active">✅ Aktif</option>
-              <option value="pending">⏳ Doğrulama Bekliyor</option>
-              <option value="inactive">❌ Pasif/Çıkarılmış</option>
-              <option value="all">📋 Hepsi</option>
+              <option value="active">Aktif</option>
+              <option value="pending">Doğrulama Bekliyor</option>
+              <option value="inactive">Pasif/Çıkarılmış</option>
+              <option value="all">Hepsi</option>
             </select>
             <select id="langFilter" class="form-select">
-              <option value="">🌍 Tüm Diller</option>
-              <option value="tr">🇹🇷 Türkçe</option>
-              <option value="en">🇬🇧 İngilizce</option>
-              <option value="de">🇩🇪 Almanca</option>
-              <option value="fr">🇫🇷 Fransızca</option>
-              <option value="ru">🇷🇺 Rusça</option>
+              <option value="">Tüm Diller</option>
+              <option value="tr">Türkçe</option>
+              <option value="en">İngilizce</option>
+              <option value="de">Almanca</option>
+              <option value="fr">Fransızca</option>
+              <option value="ru">Rusça</option>
             </select>
             <select id="reasonFilter" class="form-select">
-              <option value="">🏷️ Tüm Sebepler</option>
-              <option value="satin_aldi">🏠 Satın Aldı</option>
-              <option value="kiraladi">🔑 Kiraladı</option>
-              <option value="ilgilenmiyor">😐 İlgilenmiyor</option>
-              <option value="kendi_iptal">✋ Kendi İptal Etti</option>
-              <option value="admin_iptal">👤 Admin Çıkardı</option>
+              <option value="">Tüm Sebepler</option>
+              <option value="satin_aldi">Satın Aldı</option>
+              <option value="kiraladi">Kiraladı</option>
+              <option value="ilgilenmiyor">İlgilenmiyor</option>
+              <option value="kendi_iptal">Kendi İptal Etti</option>
+              <option value="admin_iptal">Admin Çıkardı</option>
             </select>
           </div>
         </div>
@@ -88,10 +88,10 @@
           <label class="form-label">Çıkarma Sebebi *</label>
           <select id="removeReason" class="form-select" required>
             <option value="">Sebep seçin...</option>
-            <option value="satin_aldi">🏠 Ev Satın Aldı</option>
-            <option value="kiraladi">🔑 Ev Kiraladı</option>
-            <option value="ilgilenmiyor">😐 Artık İlgilenmiyor</option>
-            <option value="admin_iptal">👤 Diğer</option>
+            <option value="satin_aldi">Ev Satın Aldı</option>
+            <option value="kiraladi">Ev Kiraladı</option>
+            <option value="ilgilenmiyor">Artık İlgilenmiyor</option>
+            <option value="admin_iptal">Diğer</option>
           </select>
         </div>
         <div class="form-group">
@@ -99,11 +99,11 @@
           <textarea id="removeNotes" class="form-textarea" placeholder="Örn: 3+1 daire satın aldı, teşekkür maili göndersin..."></textarea>
         </div>
         <div class="alert alert-info" style="font-size: 12px;">
-          ℹ️ Abone çıkarıldığında artık email listemize alınmaz. İstenirse tekrar aktif edilebilir.
+          <i class="ic ic-info" aria-hidden="true"></i> Abone çıkarıldığında artık email listemize alınmaz. İstenirse tekrar aktif edilebilir.
         </div>
         <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px;">
           <button type="button" onclick="closeRemoveModal()" class="btn btn-outline">İptal</button>
-          <button type="submit" class="btn btn-danger">🗑️ Çıkar</button>
+          <button type="submit" class="btn btn-danger"><i class="ic ic-trash" aria-hidden="true"></i> Çıkar</button>
         </div>
       </form>
     </div>
@@ -123,7 +123,7 @@
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20260930-seo1"></script>
+  <script src="/admin/assets/app.js?v=20261001-medya"></script>
 
   <script>
     let subscribers = [];
@@ -155,22 +155,22 @@
           <div class="stat-card">
             <div class="stat-label">Aktif Aboneler</div>
             <div class="stat-value">${data.active_count.toLocaleString('tr-TR')}</div>
-            <div class="stat-change positive">📧 Email listesinde</div>
+            <div class="stat-change positive"><i class="ic ic-mail" aria-hidden="true"></i> Email listesinde</div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Doğrulama Bekleyen</div>
             <div class="stat-value">${data.pending_verification.toLocaleString('tr-TR')}</div>
-            <div class="stat-change">⏳ Email onayı yok</div>
+            <div class="stat-change"><i class="ic ic-clock" aria-hidden="true"></i> Email onayı yok</div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Bu Hafta</div>
             <div class="stat-value">${data.new_last_week.toLocaleString('tr-TR')}</div>
-            <div class="stat-change positive">🆕 Yeni kayıt</div>
+            <div class="stat-change positive"><i class="ic ic-user-plus" aria-hidden="true"></i> Yeni kayıt</div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Satın Alan / Kiralayan</div>
             <div class="stat-value">${(data.bought + data.rented).toLocaleString('tr-TR')}</div>
-            <div class="stat-change positive">🎉 Kapanan iş</div>
+            <div class="stat-change positive"><i class="ic ic-check-circle" aria-hidden="true"></i> Kapanan iş</div>
           </div>
         `;
       } catch (error) {
@@ -231,7 +231,7 @@
         container.innerHTML = `
           <div class="card">
             <div class="empty-state">
-              <div class="empty-icon">📭</div>
+              <div class="empty-icon"><i class="ic ic-inbox" aria-hidden="true"></i></div>
               <div>Filtreye uyan abone yok</div>
             </div>
           </div>
@@ -240,8 +240,8 @@
       }
 
       const reasonIcons = {
-        satin_aldi: '🏠', kiraladi: '🔑', ilgilenmiyor: '😐',
-        kendi_iptal: '✋', admin_iptal: '👤', bounce: '⚠️', spam_sikayeti: '🚫'
+        satin_aldi: 'home', kiraladi: 'key', ilgilenmiyor: 'minus-circle',
+        kendi_iptal: 'x-circle', admin_iptal: 'user', bounce: 'alert', spam_sikayeti: 'ban'
       };
 
       const reasonLabels = {
@@ -249,8 +249,7 @@
         kendi_iptal: 'Kendi İptal', admin_iptal: 'Admin İptal', bounce: 'Bounce', spam_sikayeti: 'Spam Şikayeti'
       };
 
-      const langFlags = { tr: '🇹🇷', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷', ru: '🇷🇺' };
-
+      
       container.innerHTML = `
         <div class="card" style="padding: 12px 20px; margin-bottom: 12px; background: var(--bg-alt);">
           <strong>${filtered.length}</strong> abone gösteriliyor
@@ -278,9 +277,9 @@
                   <td>
                     <div style="font-weight: 600;">${Security.escapeHtml(s.email)}</div>
                     ${s.full_name ? `<div style="font-size: 12px; color: var(--text-muted);">${Security.escapeHtml(s.full_name)}</div>` : ''}
-                    ${s.phone ? `<div style="font-size: 12px; color: var(--text-muted);">📞 ${Security.escapeHtml(s.phone)}</div>` : ''}
+                    ${s.phone ? `<div style="font-size: 12px; color: var(--text-muted);"><i class="ic ic-phone" aria-hidden="true"></i> ${Security.escapeHtml(s.phone)}</div>` : ''}
                   </td>
-                  <td>${langFlags[s.language] || '🌍'} ${s.language?.toUpperCase() || 'TR'}</td>
+                  <td><span class="badge badge-gray">${Security.escapeHtml((s.language || 'tr').toUpperCase())}</span></td>
                   <td>
                     <div class="prefs-tags">
                       ${prefs.length ? prefs.map(p => `<span class="prefs-tag">${Security.escapeHtml(p)}</span>`).join('') : '<span style="color: var(--text-muted); font-size: 12px;">-</span>'}
@@ -292,15 +291,15 @@
                     <div style="font-size: 11px; color: var(--text-muted);">${App.timeAgo(s.subscribed_at)}</div>
                   </td>
                   <td>
-                    ${!s.email_verified ? `<span class="badge badge-warning">⏳ Doğrulanmadı</span>` :
-                      s.is_active ? `<span class="badge badge-success">✅ Aktif</span>` :
-                      `<span class="badge badge-inactive">${reasonIcons[s.unsubscribe_reason] || '❌'} ${reasonLabels[s.unsubscribe_reason] || 'Pasif'}</span>`}
+                    ${!s.email_verified ? `<span class="badge badge-warning"><i class="ic ic-clock" aria-hidden="true"></i> Doğrulanmadı</span>` :
+                      s.is_active ? `<span class="badge badge-success"><i class="ic ic-check" aria-hidden="true"></i> Aktif</span>` :
+                      `<span class="badge badge-inactive">${App.iconHtml(reasonIcons[s.unsubscribe_reason] || 'x-circle')} ${reasonLabels[s.unsubscribe_reason] || 'Pasif'}</span>`}
                   </td>
                   <td>
-                    <button onclick="showDetail('${s.id}')" class="btn btn-outline btn-sm">👁️</button>
+                    <button onclick="showDetail('${s.id}')" class="btn btn-outline btn-sm" title="Detay" aria-label="Detay"><i class="ic ic-eye" aria-hidden="true"></i></button>
                     ${s.is_active ?
-                      `<button onclick="openRemoveModal('${s.id}')" class="btn btn-danger btn-sm">🗑️</button>` :
-                      `<button onclick="reactivate('${s.id}')" class="btn btn-primary btn-sm">↺</button>`}
+                      `<button onclick="openRemoveModal('${s.id}')" class="btn btn-danger btn-sm" title="Çıkar" aria-label="Çıkar"><i class="ic ic-trash" aria-hidden="true"></i></button>` :
+                      `<button onclick="reactivate('${s.id}')" class="btn btn-primary btn-sm" title="Tekrar aktif et" aria-label="Tekrar aktif et"><i class="ic ic-undo" aria-hidden="true"></i></button>`}
                   </td>
                 </tr>
               `;}).join('')}
@@ -381,8 +380,7 @@
       const s = subscribers.find(x => x.id === id);
       if (!s) return;
 
-      const langFlags = { tr: '🇹🇷', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷', ru: '🇷🇺' };
-
+      
       document.getElementById('detailContent').innerHTML = `
         <div style="display: grid; gap: 16px;">
           <div>
@@ -399,7 +397,7 @@
           </div>
           <div>
             <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Dil</div>
-            <div>${langFlags[s.language] || '🌍'} ${s.language?.toUpperCase() || 'TR'}</div>
+            <div>${Security.escapeHtml((s.language || 'tr').toUpperCase())}</div>
           </div>
           <div>
             <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">İlgi Kategorileri</div>

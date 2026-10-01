@@ -102,10 +102,16 @@
     });
     found.imgs.forEach(im => {
       const r = get(im.scope, im.key);
-      const u = r && r.aktif !== false && /^https:\/\/[^\s"'<>()]+$/i.test(r.foto_url || '') ? r.foto_url : '';
-      if (!u) return;
-      if (im.kind === 'img') { im.el.setAttribute('src', u); im.el.removeAttribute('srcset'); }
-      else im.el.style.backgroundImage = 'url("' + u.replace(/["\\]/g, '') + '")';
+      if (!r || r.aktif === false) return;
+      const u = /^https:\/\/[^\s"'<>()]+$/i.test(r.foto_url || '') ? r.foto_url : '';
+      if (u) {
+        if (im.kind === 'img') { im.el.setAttribute('src', u); im.el.removeAttribute('srcset'); }
+        else im.el.style.backgroundImage = 'url("' + u.replace(/["\\]/g, '') + '")';
+      }
+      // Alt metin (panelde Site İçeriği → fotoğraf → Alt metin); düz metin olarak, en fazla 250 karakter
+      if (im.kind === 'img' && typeof r.foto_alt === 'string') {
+        im.el.setAttribute('alt', r.foto_alt.replace(/\p{Cc}+/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 250));
+      }
     });
     // Genel: logo & favicon
     const logo = map.get('genel|logo_url'), fav = map.get('genel|favicon_url');
@@ -138,9 +144,10 @@
     if (!(root.supabase && root.supabase.createClient)) return;
     try {
       const c = root.supabase.createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
-      const { data, error } = await c.from('site_content').select('sayfa,bolum_key,icerik_tr,foto_url,aktif').in('sayfa', [found.page, 'genel']).limit(2000);
-      if (error) return;
-      const rows = data || [];
+      let res = await c.from('site_content').select('sayfa,bolum_key,icerik_tr,foto_url,foto_alt,aktif').in('sayfa', [found.page, 'genel']).limit(2000);
+      if (res.error) res = await c.from('site_content').select('sayfa,bolum_key,icerik_tr,foto_url,aktif').in('sayfa', [found.page, 'genel']).limit(2000);   // alt metin sütunu henüz yoksa
+      if (res.error) return;
+      const rows = res.data || [];
       try { localStorage.setItem(CACHE_KEY + found.page, JSON.stringify({ t: Date.now(), rows })); } catch (_) {}
       applyRows(rows, found);
     } catch (_) {}

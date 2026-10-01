@@ -139,8 +139,8 @@ export function renderEmail(d, prop, now = new Date()) {
   const wa = waNumber(d.telefon);
   const title = isIlan ? oneLine(prop.baslik_tr || 'İlan', 120) : '';
   const subject = isIlan
-    ? `🏡 Yeni talep: ${title} — ${d.isim}`
-    : `✉️ Yeni mesaj: ${KONULAR[d.konu]} — ${d.isim}`;
+    ? `Yeni talep: ${title} — ${d.isim}`
+    : `Yeni mesaj: ${KONULAR[d.konu]} — ${d.isim}`;
   const waText = encodeURIComponent(`Merhaba ${d.isim}, ${isIlan ? `"${title}" ilanı için` : 'web sitemiz üzerinden'} bize ulaştınız. TURYAP İsmail Ünsal olarak size yardımcı olmak isteriz.`);
 
   const btn = (href, label, bg, fg) => `<a href="${esc(href)}" style="display:inline-block;margin:0 8px 8px 0;background:${bg};color:${fg};text-decoration:none;font-weight:700;font-size:14px;padding:10px 16px;border-radius:8px;border:2px solid ${bg === '#FFFFFF' ? fg : bg};font-family:Arial,Helvetica,sans-serif;white-space:nowrap">${label}</a>`;
@@ -158,7 +158,7 @@ export function renderEmail(d, prop, now = new Date()) {
           ${img ? `<tr><td><a href="${esc(listingUrl(prop))}"><img src="${esc(img)}" width="544" alt="${esc(title)}" style="display:block;width:100%;max-width:544px;height:auto;border:0"></a></td></tr>` : ''}
           <tr><td style="padding:16px 18px;font-family:Arial,Helvetica,sans-serif">
             <div style="font-size:17px;font-weight:800;color:#0A2A5E;margin-bottom:4px">${esc(title)}</div>
-            <div style="font-size:13px;color:#6B7280;margin-bottom:10px">📍 ${esc(loc)}${facts ? ' &nbsp;•&nbsp; ' + esc(facts) : ''}</div>
+            <div style="font-size:13px;color:#6B7280;margin-bottom:10px">${esc(loc)}${facts ? ' &nbsp;•&nbsp; ' + esc(facts) : ''}</div>
             <div style="font-size:22px;font-weight:800;color:#0A2A5E;margin-bottom:12px">${esc(fmtPrice(prop.fiyat, prop.para_birimi))}</div>
             <a href="${esc(listingUrl(prop))}" style="display:inline-block;color:#0A2A5E;background:#EFF6FF;border:1px solid #2563EB;text-decoration:none;font-weight:700;font-size:13px;padding:9px 14px;border-radius:8px">İlanı sitede aç →</a>
           </td></tr>
@@ -193,7 +193,7 @@ export function renderEmail(d, prop, now = new Date()) {
     <div style="font-size:15px;color:#374151"><strong style="color:#0A2A5E">${esc(d.isim)}</strong> ${isIlan ? 'bu ilan hakkında bilgi istiyor.' : 'size web sitesinden mesaj gönderdi.'}</div>
   </td></tr>
   <tr><td style="padding:16px 28px 4px">
-      ${btn('tel:+' + wa, '📞 Hemen Ara', '#0A2A5E', '#FFFFFF')}${btn('https://wa.me/' + wa + '?text=' + waText, '💬 WhatsApp', '#25D366', '#FFFFFF')}${d.email ? btn('mailto:' + d.email, '✉️ E-posta', '#FFFFFF', '#0A2A5E') : ''}
+      ${btn('tel:+' + wa, 'Hemen Ara', '#0A2A5E', '#FFFFFF')}${btn('https://wa.me/' + wa + '?text=' + waText, 'WhatsApp', '#25D366', '#FFFFFF')}${d.email ? btn('mailto:' + d.email, 'E-posta', '#FFFFFF', '#0A2A5E') : ''}
   </td></tr>
   <tr><td style="padding:14px 28px 6px;font-family:Arial,Helvetica,sans-serif">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">

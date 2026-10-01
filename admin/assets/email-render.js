@@ -87,7 +87,7 @@
             ${u ? `<tr><td><a href="${esc(url)}" target="_blank"><img src="${esc(u)}" alt="" width="${two ? 262 : 544}" style="display:block;width:100%;height:auto;max-height:${two ? 170 : 260}px;object-fit:cover;border:0;"></a></td></tr>` : ''}
             <tr><td style="padding:14px 16px 16px;font-family:${F};">
               <div style="font-size:${two ? 15 : 17}px;font-weight:700;color:#0A2A5E;line-height:1.35;">${esc(p.baslik_tr || 'İlan')}</div>
-              ${loc ? `<div style="font-size:12px;color:#6B7280;margin-top:4px;">📍 ${esc(loc)}</div>` : ''}
+              ${loc ? `<div style="font-size:12px;color:#6B7280;margin-top:4px;">${esc(loc)}</div>` : ''}
               ${facts ? `<div style="font-size:12px;color:#374151;margin-top:4px;">${esc(facts)}</div>` : ''}
               <div style="font-size:${two ? 16 : 19}px;font-weight:800;color:#0A2A5E;margin:10px 0 12px;">${esc(fmtPrice(p.fiyat, p.para_birimi))}</div>
               <a href="${esc(url)}" target="_blank" style="display:inline-block;background:${S.accent};color:#FFFFFF;text-decoration:none;font-weight:700;font-size:13px;padding:9px 16px;border-radius:8px;">İlanı İncele →</a>
@@ -105,7 +105,7 @@
       case 'contact':
         return `<tr><td style="padding:14px 28px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EFF6FF;border-radius:12px;"><tr><td style="padding:16px 18px;font-family:${F};">
           <div style="font-size:15px;font-weight:700;color:#0A2A5E;margin-bottom:6px;">${esc(b.title || 'Bilgi almak ister misiniz?')}</div>
-          <div style="font-size:14px;color:#374151;line-height:1.7;">📞 <a href="tel:+905075188482" style="color:#1D4ED8;text-decoration:none;font-weight:700;">+90 507 518 84 82</a> &nbsp;·&nbsp; 💬 <a href="https://wa.me/905075188482" style="color:#1D4ED8;text-decoration:none;font-weight:700;">WhatsApp</a><br>🌐 <a href="${SITE}" style="color:#1D4ED8;text-decoration:none;">ismailunsal.com.tr</a></div>
+          <div style="font-size:14px;color:#374151;line-height:1.7;">Tel: <a href="tel:+905075188482" style="color:#1D4ED8;text-decoration:none;font-weight:700;">+90 507 518 84 82</a> &nbsp;·&nbsp; WhatsApp: <a href="https://wa.me/905075188482" style="color:#1D4ED8;text-decoration:none;font-weight:700;">WhatsApp</a><br><a href="${SITE}" style="color:#1D4ED8;text-decoration:none;">ismailunsal.com.tr</a></div>
         </td></tr></table></td></tr>`;
       default: return '';
     }

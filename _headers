@@ -20,3 +20,14 @@
   Cache-Control: public, max-age=604800, immutable
 /*.svg
   Cache-Control: public, max-age=604800, immutable
+
+# Yönetim paneli (/admin/*): Pages Functions bu yolda çalışmaz (_routes.json), başlıklar buradan verilir.
+# Başka sitelerin paneli görünmez çerçeve içine alıp tıklatmasını engeller (clickjacking), dosya türü
+# tahminini kapatır, panel adreslerini dış sitelere sızdırmaz, arama motorlarına kapalı tutar.
+/admin/*
+  X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: frame-ancestors 'self'; base-uri 'self'; object-src 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: same-origin
+  X-Robots-Tag: noindex, nofollow
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
