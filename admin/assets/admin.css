@@ -1199,7 +1199,6 @@ body {
    MESAJLAR (leads): orantılı kart ve işlem satırı
    ============================================ */
 .lead-card { margin-bottom: 12px; padding: 20px 22px; }
-.lead-card.is-new { border-left: 4px solid var(--warning); }
 .lead-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
 .lead-who { min-width: 0; }
 .lead-name { font-size: 16px; font-weight: 700; color: var(--text-primary); overflow-wrap: anywhere; }
@@ -1249,3 +1248,59 @@ a.lead-v:hover { text-decoration: underline; }
   .table th, .table td { padding-left: 12px; padding-right: 12px; }
 }
 .table td:has(> .row-actions) { width: 1%; white-space: nowrap; }
+
+/* ============================================
+   MESAJ DURUM RENKLERİ (Mesajlar sayfası + Dashboard)
+   Yeni: amber · Arandı: mavi · Görüşme: mor · Takip: turkuaz · Satıldı: yeşil · Spam: kırmızı · Kapalı: gri
+   ============================================ */
+.st-yeni    { --st-dot: #F59E0B; --st-bg: #FEF3C7; --st-bd: #FCD34D; --st-fg: #92400E; }
+.st-aranildi{ --st-dot: #0EA5E9; --st-bg: #E0F2FE; --st-bd: #7DD3FC; --st-fg: #075985; }
+.st-gorusme { --st-dot: #8B5CF6; --st-bg: #EDE9FE; --st-bd: #C4B5FD; --st-fg: #5B21B6; }
+.st-takip   { --st-dot: #14B8A6; --st-bg: #CCFBF1; --st-bd: #5EEAD4; --st-fg: #115E59; }
+.st-satildi { --st-dot: #22C55E; --st-bg: #DCFCE7; --st-bd: #86EFAC; --st-fg: #166534; }
+.st-spam    { --st-dot: #EF4444; --st-bg: #FEE2E2; --st-bd: #FCA5A5; --st-fg: #991B1B; }
+.st-kapali  { --st-dot: #94A3B8; --st-bg: #F1F5F9; --st-bd: #CBD5E1; --st-fg: #475569; }
+
+/* durum seçimi: renkli hap (sol başta renkli nokta) */
+.st-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
+.st-wrap::before { content: ''; position: absolute; left: 11px; top: 50%; width: 9px; height: 9px; margin-top: -4.5px; border-radius: 50%;
+  background: var(--st-dot, #94A3B8); pointer-events: none; }
+.st-select { -webkit-appearance: none; appearance: none; width: auto; min-height: 34px; padding: 6px 32px 6px 27px; font-size: 13px; font-weight: 700;
+  color: var(--st-fg, var(--text-primary)); background-color: var(--st-bg, #fff); border: 1.5px solid var(--st-bd, var(--border)); border-radius: 999px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center; background-size: 14px 14px; cursor: pointer; }
+.st-select:focus { outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18); }
+.st-select:disabled { cursor: not-allowed; opacity: .7; }
+
+/* açılan listede her durum kendi renginde (Windows/Android Chrome, Edge, Firefox) */
+.st-select option, .st-opts option { background: #fff; color: #0F172A; font-weight: 600; }
+.st-select option[value="yeni"],     .st-opts option[value="yeni"]     { color: #B45309; }
+.st-select option[value="aranildi"], .st-opts option[value="aranildi"] { color: #0369A1; }
+.st-select option[value="gorusme"],  .st-opts option[value="gorusme"]  { color: #6D28D9; }
+.st-select option[value="takip"],    .st-opts option[value="takip"]    { color: #0F766E; }
+.st-select option[value="satildi"],  .st-opts option[value="satildi"]  { color: #15803D; }
+.st-select option[value="spam"],     .st-opts option[value="spam"]     { color: #B91C1C; }
+.st-select option[value="kapali"],   .st-opts option[value="kapali"]   { color: #475569; }
+
+@media (max-width: 640px) { .st-select { min-width: 0 !important; } }
+
+/* kart ve listelerde durum rengi: sol kenar şeridi ve rozet */
+.lead-card.st { border-left: 4px solid var(--st-dot); }
+.st-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--st-bg); color: var(--st-fg); border-radius: 999px; padding: 3px 10px;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; white-space: nowrap; }
+.st-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--st-dot); }
+
+/* Yeni tarayıcılarda (Chrome/Edge 135+) açılan liste de tasarlanabiliyor: her durum renkli noktasıyla, yuvarlak köşeli
+   bir panelde açılır. Desteklemeyen tarayıcılarda yukarıdaki renkli yazılı standart liste kullanılır. */
+@supports (appearance: base-select) {
+  .st-select, .st-select::picker(select) { appearance: base-select; }
+  .st-select { min-width: 178px; }
+  .st-select::picker-icon { display: none; }
+  .st-select::picker(select) { margin-top: 6px; padding: 6px; background: #fff; border: 1px solid #E2E8F0; border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16); }
+  .st-select option { display: flex; align-items: center; gap: 9px; padding: 8px 12px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+  .st-select option::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .st-select option::checkmark { order: 2; margin-left: auto; color: #94A3B8; }
+  .st-select option:hover, .st-select option:focus-visible { background: #F1F5F9; outline: none; }
+  .st-select option:checked { background: #F8FAFC; }
+}

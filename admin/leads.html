@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-btn">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-durum">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -29,7 +29,7 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Durum</label>
-              <select id="filterDurum" class="form-select">
+              <select id="filterDurum" class="form-select st-opts">
                 <option value="">Tümü</option>
                 <option value="yeni">Yeni</option>
                 <option value="aranildi">Arandı</option>
@@ -118,7 +118,8 @@
     }
 
     function leadCard(l) {
-      const card = el('article', 'card lead-card' + (l.durum === 'yeni' ? ' is-new' : ''));
+      const stKey = DURUM[l.durum] ? l.durum : 'kapali';
+      const card = el('article', 'card lead-card st st-' + stKey);
       card.dataset.id = String(l.id);
 
       // Başlık: isim + zaman | durum
@@ -130,12 +131,15 @@
       when.appendChild(el('span', null, App.timeAgo(l.created_at) + ' · ' + App.formatDate(l.created_at, true)));
       who.appendChild(when);
       head.appendChild(who);
-      const sel = el('select', 'form-select form-select-sm lead-status');
+      // Durum: renkli hap; her durumun kendi rengi (liste açılınca da renkli)
+      const wrap = el('span', 'st-wrap lead-status st-' + stKey);
+      const sel = el('select', 'st-select');
       sel.dataset.act = 'status';
       sel.setAttribute('aria-label', 'Durum');
       Object.keys(DURUM).forEach(k => { const o = el('option', null, DURUM[k]); o.value = k; if (l.durum === k) o.selected = true; sel.appendChild(o); });
       if (l.durum && !DURUM[l.durum]) { const o = el('option', null, l.durum); o.value = l.durum; o.selected = true; sel.appendChild(o); }
-      head.appendChild(sel);
+      wrap.appendChild(sel);
+      head.appendChild(wrap);
       card.appendChild(head);
 
       // Bilgiler
@@ -207,6 +211,7 @@
       } catch (error) {
         console.error(error);
         App.toast(error.message, 'error');
+        await loadLeads();   // kaydedilemediyse kart gerçek durumuna (ve rengine) döner
       }
     }
 
@@ -234,7 +239,11 @@
     listEl.addEventListener('change', (e) => {
       const sel = e.target.closest('select[data-act="status"]');
       const card = sel && sel.closest('.lead-card');
-      if (card) updateStatus(card.dataset.id, sel.value);
+      if (!card || !Object.prototype.hasOwnProperty.call(DURUM, sel.value)) return;
+      const cls = 'st-' + sel.value;
+      card.className = 'card lead-card st ' + cls;
+      sel.parentElement.className = 'st-wrap lead-status ' + cls;
+      updateStatus(card.dataset.id, sel.value);
     });
     listEl.addEventListener('click', (e) => {
       const btn = e.target.closest('button[data-act="delete"]');

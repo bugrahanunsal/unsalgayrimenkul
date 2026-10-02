@@ -10,7 +10,7 @@
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
 
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-btn">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-durum">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .welcome-banner {
@@ -199,10 +199,9 @@
     .property-item:last-child, .lead-item:last-child { border-bottom: none; }
     .property-item:hover, .lead-item:hover { background: var(--bg-hover); }
 
-    .lead-item.new {
-      background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), transparent);
-      border-left: 3px solid var(--accent);
-    }
+    /* son mesajlar: soldaki şerit mesajın durum renginde (Mesajlar sayfasıyla aynı renkler) */
+    .lead-item.st { border-left: 3px solid var(--st-dot); }
+    .lead-item.st-yeni { background: linear-gradient(90deg, rgba(245, 158, 11, 0.07), transparent); }
 
     .badge {
       display: inline-block;
@@ -525,10 +524,10 @@
         }
 
         container.innerHTML = data.map(l => `
-          <div class="lead-item ${l.durum === 'yeni' ? 'new' : ''}" onclick="window.location.href='/admin/leads.html#${l.id}'">
+          <div class="lead-item st st-${['yeni','aranildi','gorusme','takip','satildi','spam','kapali'].includes(l.durum) ? l.durum : 'kapali'}" onclick="window.location.href='/admin/leads.html#${l.id}'">
             <div style="display:flex; justify-content:space-between; align-items:start; gap: 8px; margin-bottom:4px;">
               <div style="font-weight: 600;">${Security.escapeHtml(l.isim || 'İsimsiz')}</div>
-              <span class="badge badge-${l.durum === 'yeni' ? 'info' : 'gray'}">${Security.escapeHtml(({ yeni: 'Yeni', aranildi: 'Arandı', gorusme: 'Görüşme', satildi: 'Satıldı', takip: 'Takip', spam: 'Spam', kapali: 'Kapalı' })[l.durum] || l.durum || '')}</span>
+              <span class="st-badge">${Security.escapeHtml(({ yeni: 'Yeni', aranildi: 'Arandı', gorusme: 'Görüşme', satildi: 'Satıldı', takip: 'Takip', spam: 'Spam', kapali: 'Kapalı' })[l.durum] || l.durum || '')}</span>
             </div>
             <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">
               ${Security.escapeHtml(l.telefon || '-')} • ${App.timeAgo(l.created_at)}
