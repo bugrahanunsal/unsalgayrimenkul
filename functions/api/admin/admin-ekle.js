@@ -45,8 +45,10 @@ async function verifySuperAdmin(token) {
 }
 
 function svc(env) {
-  const k = env.SUPABASE_SERVICE_ROLE_KEY;
-  return { apikey: k, Authorization: `Bearer ${k}`, 'Content-Type': 'application/json' };
+  const k = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_SECRET_KEY || '';
+  const h = { apikey: k, 'Content-Type': 'application/json' };
+  if (/^eyJ/.test(k)) h.Authorization = `Bearer ${k}`;   // eski JWT anahtar; yeni sb_secret_ anahtarlar yalnızca apikey başlığında
+  return h;
 }
 
 export async function onRequest({ request, env }) {
@@ -63,7 +65,7 @@ export async function onRequest({ request, env }) {
   const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
   let me = null; try { me = await verifySuperAdmin(token); } catch (_) {}
   if (!me) return json({ ok: false, error: 'unauthorized', message: 'Bu işlem için Süper Admin yetkisi gerekir.' }, 401);
-  if (!env.SUPABASE_SERVICE_ROLE_KEY) return json({ ok: false, error: 'not_configured', message: 'Kurulum eksik: Cloudflare\'e SUPABASE_SERVICE_ROLE_KEY eklenmeli.' }, 503);
+  if (!(env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_SECRET_KEY)) return json({ ok: false, error: 'not_configured', message: 'Kurulum eksik: Cloudflare\'e SUPABASE_SERVICE_ROLE_KEY eklenmeli.' }, 503);
   if (rateLimited('u:' + me.id, 10, 60 * 60 * 1000)) return json({ ok: false, error: 'rate_limited', message: 'Saatte en fazla 10 davet gönderilebilir.' }, 429);
 
   let b; try { b = JSON.parse((await request.text()).slice(0, 4000)); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
