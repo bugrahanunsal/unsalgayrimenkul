@@ -165,11 +165,14 @@
   }
 
   // ---------------- GALERİ ----------------
+  // Fotoğraf alt metinleri (panel → Görsel Deposu → Alt metin); boşsa ilan başlığı
+  const ALTS = new Map();
+  const altFor = (u, t) => ALTS.get(u) || t;
   function buildGallery(p, images) {
     const t = title(p);
     let idx = 0;
     const main = el('div', { class: 'ild-gal-main' });
-    const img = el('img', { src: images[0], alt: t, loading: 'eager', fetchpriority: 'high' });
+    const img = el('img', { src: images[0], alt: altFor(images[0], t), loading: 'eager', fetchpriority: 'high' });
     const counter = el('span', { class: 'ild-gal-count' });
     const prev = el('button', { class: 'ild-gal-nav prev', type: 'button', 'aria-label': 'Önceki fotoğraf' }, [icon('fa-solid fa-chevron-left')]);
     const next = el('button', { class: 'ild-gal-nav next', type: 'button', 'aria-label': 'Sonraki fotoğraf' }, [icon('fa-solid fa-chevron-right')]);
@@ -195,7 +198,7 @@
 
     function show(i) {
       idx = (i + images.length) % images.length;
-      img.src = images[idx];
+      img.src = images[idx]; img.alt = altFor(images[idx], t);
       counter.textContent = (idx + 1) + ' / ' + images.length;
       thumbs.querySelectorAll('.ild-thumb').forEach((t, j) => t.classList.toggle('active', j === idx));
       const at = thumbs.children[idx];
@@ -216,11 +219,11 @@
     // tam ekran
     function openLightbox() {
       const lb = el('div', { class: 'ild-lb', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Fotoğraflar' });
-      const lbImg = el('img', { src: images[idx], alt: t });
+      const lbImg = el('img', { src: images[idx], alt: altFor(images[idx], t) });
       const close = el('button', { class: 'ild-lb-close', type: 'button', 'aria-label': 'Kapat' }, [icon('fa-solid fa-xmark')]);
       const lbCount = el('span', { class: 'ild-lb-count', text: (idx + 1) + ' / ' + images.length });
       lb.append(lbImg, close, lbCount);
-      const go = (d) => { show(idx + d); lbImg.src = images[idx]; lbCount.textContent = (idx + 1) + ' / ' + images.length; };
+      const go = (d) => { show(idx + d); lbImg.src = images[idx]; lbImg.alt = altFor(images[idx], t); lbCount.textContent = (idx + 1) + ' / ' + images.length; };
       if (images.length > 1) {
         const lp_ = el('button', { class: 'ild-lb-nav prev', type: 'button', 'aria-label': 'Önceki' }, [icon('fa-solid fa-chevron-left')]);
         const ln_ = el('button', { class: 'ild-lb-nav next', type: 'button', 'aria-label': 'Sonraki' }, [icon('fa-solid fa-chevron-right')]);
@@ -470,7 +473,7 @@
     const sb = F.client();
     let p = null;
     try {
-      let q = sb.from('properties').select('*, property_images(url, ana_foto, sira)').eq('durum', 'aktif');
+      let q = sb.from('properties').select('*, property_images(*)').eq('durum', 'aktif');
       q = key.slug ? q.eq('slug', key.slug) : q.eq('id', key.id);
       const { data, error } = await q.limit(1);
       if (error) throw error;
@@ -486,7 +489,10 @@
     // Fotoğraflar: ana foto önce, sonra sıra
     let images = (p.property_images || []).filter(i => i && i.url && /^https:\/\//i.test(i.url))
       .sort((a, b) => (b.ana_foto === true) - (a.ana_foto === true) || (a.sira || 0) - (b.sira || 0))
-      .map(i => i.url);
+      .map(i => {
+        if (typeof i.alt_metin === 'string' && i.alt_metin.trim()) ALTS.set(i.url, i.alt_metin.replace(/\p{Cc}+/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 250));
+        return i.url;
+      });
     if (!images.length) images = [F.getMainImage(p)];
 
     applySEO(p, images);

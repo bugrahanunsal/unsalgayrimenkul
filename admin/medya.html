@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-spam">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-150kb">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -26,13 +26,43 @@
       <div class="page-content">
         <div id="setupAlert" class="alert alert-warning" hidden>
           <b>Veritabanı güncellemesi gerekli.</b> Dosya adı, alt metin ve "nerede kullanılıyor" bilgileri için Supabase'de
-          <b>supabase-medya-2026-10-01.sql</b> dosyasını bir kez çalıştırın (SQL Editor → New query → yapıştır → RUN).
+          <b>supabase-gorsel-deposu-2026-10-02.sql</b> dosyasını bir kez çalıştırın (SQL Editor → New query → yapıştır → RUN).
         </div>
 
         <div class="mp-intro">
           <span class="mp-intro-ic"><i class="ic ic-images" aria-hidden="true"></i></span>
-          <div>Panelden yüklenen <b>tüm fotoğraflar</b> burada: site fotoğrafları, ilan fotoğrafları, blog ve e-posta görselleri.
-          Bir fotoğrafa tıklayarak <b>dosya adını</b> ve <b>alt metnini</b> düzenleyin. Dosya adı değişince sitede kullanıldığı her yer otomatik güncellenir.</div>
+          <div>Sitedeki <b>tüm fotoğraflar</b> burada: site, ilan, blog, SEO, e-posta ve ekip fotoğrafları ile sitenin sayfalarındaki hazır fotoğraflar.
+          Bir fotoğrafa tıklayarak <b>dosya adını</b> ve <b>alt metnini</b> görün ve düzenleyin; sitede kullanıldığı her yer otomatik güncellenir.
+          Panelin neresinden yüklenirse yüklensin her fotoğraf <b>en fazla 150 KB</b>'a küçültülür.</div>
+        </div>
+
+        <section class="card mp-upcard" aria-labelledby="upTitle">
+          <h2 class="mp-uptitle" id="upTitle">Fotoğraf yükle</h2>
+          <div class="mp-up">
+            <label class="mp-drop" id="upDrop" tabindex="0">
+              <input type="file" id="upInput" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
+              <span class="mp-drop-ic"><i class="ic ic-upload" aria-hidden="true"></i></span>
+              <b>Fotoğrafları buraya sürükleyin veya tıklayıp seçin</b>
+              <small>Birden fazla seçebilirsiniz · JPG, PNG, WEBP · her fotoğraf yüklenirken otomatik olarak en fazla 150 KB'a küçültülür</small>
+            </label>
+            <div class="mp-upside">
+              <label class="form-label" for="upFolder">Ne için?</label>
+              <select id="upFolder" class="form-select">
+                <option value="site">Site fotoğrafı</option>
+                <option value="blog">Blog görseli</option>
+                <option value="email">E-posta görseli</option>
+                <option value="ekip">Ekip fotoğrafı</option>
+              </select>
+              <div class="mp-help">Yüklenen fotoğraf aşağıda listelenir; tıklayıp dosya adını ve alt metnini yazabilirsiniz. İlan fotoğrafları ilanın kendi sayfasından yüklenir (onlar da 150 KB'a küçültülür).</div>
+            </div>
+          </div>
+          <ul class="mp-uplist" id="upList" aria-live="polite" hidden></ul>
+        </section>
+
+        <div class="mp-bigbar" id="bigBar" hidden>
+          <span class="mp-bigbar-txt" id="bigText"></span>
+          <span class="mp-help" id="bigNote" hidden>Önce veritabanı güncellemesini yapın.</span>
+          <button type="button" class="btn btn-outline btn-sm" id="bigBtn"><i class="ic ic-refresh" aria-hidden="true"></i> Hepsini küçült</button>
         </div>
 
         <div class="mp-tools">
@@ -62,6 +92,7 @@
         <div id="drArchived" class="mp-note" hidden></div>
         <div class="mp-dactions">
           <button type="button" class="btn btn-outline btn-sm" id="drReplace"><i class="ic ic-camera" aria-hidden="true"></i> Fotoğrafı değiştir</button>
+          <button type="button" class="btn btn-outline btn-sm mp-shrink" id="drShrink" hidden><i class="ic ic-refresh" aria-hidden="true"></i> 150 KB'a küçült</button>
           <button type="button" class="btn btn-outline btn-sm" id="drCopy"><i class="ic ic-copy" aria-hidden="true"></i> Adresi kopyala</button>
           <a class="btn btn-outline btn-sm" id="drOpen" target="_blank" rel="noopener"><i class="ic ic-external" aria-hidden="true"></i> Aç</a>
         </div>
@@ -69,12 +100,12 @@
         <div class="mp-field">
           <label class="form-label" for="drName">Dosya adı</label>
           <div class="mp-namerow"><input id="drName" class="form-input" maxlength="60" autocomplete="off" spellcheck="false"><span class="mp-ext" id="drExt">.jpg</span></div>
-          <div class="mp-help">Kısa, tire ile ayrılmış, Türkçe karaktersiz (ör. <b>yalova-deniz-manzarali-daire</b>). Değişince fotoğrafın adresi de değişir; sitede kullanıldığı her yer otomatik güncellenir.</div>
+          <div class="mp-help" id="drNameHelp"></div>
         </div>
         <div class="mp-field">
           <label class="form-label" for="drAlt">Alt metin</label>
           <textarea id="drAlt" class="form-input" rows="2" maxlength="250" placeholder="Fotoğrafta ne görünüyor? (ör. Yalova merkezde deniz manzaralı satılık daire)"></textarea>
-          <div class="mp-help"><span id="drAltCount">0</span>/125 · Görme engelliler ve Google için kısa açıklama. Site İçeriği'nde bu fotoğrafı kullanan yerlere de uygulanır.</div>
+          <div class="mp-help"><span id="drAltCount">0</span>/125 · <span id="drAltHelp"></span></div>
         </div>
 
         <div class="mp-usage">
@@ -99,7 +130,8 @@
   <script src="/admin/assets/security.js?v=20261002-spam"></script>
   <script src="/admin/assets/auth.js?v=20261002-spam"></script>
   <script src="/admin/assets/app.js?v=20261002-spam"></script>
-  <script src="/admin/assets/medya.js?v=20261001-medya"></script>
-  <script src="/admin/assets/medya-sayfa.js?v=20261001-medya"></script>
+  <script src="/cms-content.js?v=20261001-alt" data-cms-noinit></script>
+  <script src="/admin/assets/medya.js?v=20261002-150kb"></script>
+  <script src="/admin/assets/medya-sayfa.js?v=20261002-150kb"></script>
 </body>
 </html>

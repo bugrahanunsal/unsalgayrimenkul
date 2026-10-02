@@ -397,14 +397,12 @@
   }
 
   // ---------- Logo & favicon ----------
+  /** Logo / favicon: en fazla 150 KB (şeffaf PNG şeffaf kalır), Görsel Deposu'nda görünür */
   async function uploadBrandImage(file, prefix) {
-    const ext = (file.name.split('.').pop() || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (!/^(jpe?g|png|webp)$/.test(ext)) throw new Error('Sadece JPG, PNG veya WEBP yükleyebilirsiniz');
-    if (file.size > 5 * 1024 * 1024) throw new Error('Dosya 5MB\'dan küçük olmalı');
-    const name = `site/${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
-    const { error } = await supabaseClient.storage.from('property-photos').upload(name, file, { cacheControl: '31536000', upsert: false });
-    if (error) throw error;
-    return supabaseClient.storage.from('property-photos').getPublicUrl(name).data.publicUrl;
+    try {
+      const r = await Medya.uploadTo('property-photos', 'site/', prefix === 'favicon' ? 'site-favicon' : 'site-logo', file, { maxSide: prefix === 'favicon' ? 512 : 1000 });
+      return r.url;
+    } catch (e) { throw new Error(e && e.user ? e.message : Medya.friendly(e)); }
   }
   async function loadBrand() {
     const { data } = await supabaseClient.from('site_content').select('id,bolum_key,foto_url').eq('sayfa', 'genel').in('bolum_key', ['logo_url', 'favicon_url']);

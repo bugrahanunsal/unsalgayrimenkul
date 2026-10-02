@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-spam">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-150kb">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .photo-uploader { border: 2px dashed var(--border); border-radius: var(--radius); padding: 30px; text-align: center; cursor: pointer; transition: var(--transition); }
@@ -51,7 +51,8 @@
             <div class="photo-uploader" onclick="document.getElementById('photoInput').click()">
               <div style="font-size: 40px; color: var(--text-muted);"><i class="ic ic-upload" aria-hidden="true"></i></div>
               <div style="font-weight: 600; margin-top: 8px;">Fotoğraf ekle</div>
-              <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
+              <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" multiple style="display: none;">
+              <div style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">Her fotoğraf yüklenirken otomatik olarak en fazla 150 KB'a küçültülür</div>
             </div>
 
             <div class="photo-preview-grid" id="photoPreviewGrid"></div>
@@ -238,6 +239,7 @@
   <script src="/admin/assets/security.js?v=20261002-spam"></script>
   <script src="/admin/assets/auth.js?v=20261002-spam"></script>
   <script src="/admin/assets/app.js?v=20261002-spam"></script>
+  <script src="/admin/assets/medya.js?v=20261002-150kb"></script>
 
   <script>
     let property = null;
@@ -333,9 +335,9 @@
       document.getElementById('photoInput').addEventListener('change', (e) => {
         const files = Array.from(e.target.files);
         files.forEach(file => {
-          if (!file.type.startsWith('image/')) return;
-          if (file.size > 5 * 1024 * 1024) {
-            App.toast(`${file.name} 5MB'dan büyük`, 'error');
+          if (!file.type.startsWith('image/') || /svg/i.test(file.type)) return;
+          if (file.size > 40 * 1024 * 1024) {
+            App.toast(`${file.name} çok büyük (en fazla 40 MB)`, 'error');
             return;
           }
 
@@ -461,29 +463,28 @@
 
           // Yeni fotoğrafları yükle
           if (newPhotos.length > 0) {
-            btn.textContent = `Fotoğraflar yükleniyor...`;
+            btn.textContent = `Fotoğraflar küçültülüp yükleniyor...`;
             const startOrder = images.length;
+            // Dosya adı ilan başlığından; her fotoğraf en fazla 150 KB (Görsel Deposu'nda "İlanlar" altında görünür)
+            const photoBase = Medya.slug(data.baslik_tr || property.baslik_tr || 'ilan', 50) || 'ilan-fotografi';
+            let failed = 0;
 
             for (let i = 0; i < newPhotos.length; i++) {
               const photo = newPhotos[i];
-              const ext = photo.file.name.split('.').pop();
-              const filename = `${property.id}/${Date.now()}-${i}.${ext}`;
-
-              const { error: uploadErr } = await supabaseClient
-                .storage.from('property-photos').upload(filename, photo.file);
-
-              if (uploadErr) continue;
-
-              const { data: urlData } = supabaseClient
-                .storage.from('property-photos').getPublicUrl(filename);
+              let up;
+              try {
+                up = await Medya.uploadTo('property-photos', property.id + '/', photoBase + '-' + (startOrder + i + 1), photo.file, { alt: '' });
+              } catch (uploadErr) { console.error('Upload error:', uploadErr); failed++; continue; }
 
               await supabaseClient.from('property_images').insert({
                 property_id: property.id,
-                url: urlData.publicUrl,
+                url: up.url,
                 sira: startOrder + i,
                 ana_foto: images.length === 0 && i === 0
               });
+              btn.textContent = `Fotoğraflar küçültülüp yükleniyor (${i + 1}/${newPhotos.length})...`;
             }
+            if (failed) App.toast(failed + ' fotoğraf yüklenemedi; tekrar ekleyebilirsiniz.', 'warning');
           }
 
           App.toast('İlan güncellendi', 'success');

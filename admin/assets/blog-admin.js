@@ -20,13 +20,13 @@
     .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 100);
   const safeImg = (u) => /^https:\/\/[^\s"'<>()]+$/i.test(String(u || '').trim()) ? String(u).trim() : '';
 
+  /** Blog görseli: en fazla 150 KB'a küçültülür, yazı başlığından dosya adı alır, Görsel Deposu'nda "Blog" altında görünür */
   async function uploadImage(file) {
-    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'jpg';
-    if (!/^(jpe?g|png|webp)$/.test(ext)) throw new Error('Sadece JPG, PNG veya WEBP');
-    const name = `blog/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const { error } = await supabaseClient.storage.from('blog-photos').upload(name, file, { cacheControl: '31536000', upsert: false });
-    if (error) throw error;
-    return supabaseClient.storage.from('blog-photos').getPublicUrl(name).data.publicUrl;
+    const title = ($('fTitle') && $('fTitle').value) || '';
+    try {
+      const r = await Medya.upload(file, { folder: 'blog', name: slugify(title).slice(0, 50) || Medya.splitExt(file.name).base });
+      return r.url;
+    } catch (e) { throw new Error(e && e.user ? e.message : Medya.friendly(e)); }
   }
 
   async function loadPosts() {

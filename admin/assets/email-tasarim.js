@@ -100,14 +100,10 @@
     w.append(c, t); return w;
   }
   const ALIGN = [['left', 'Sola'], ['center', 'Ortaya'], ['right', 'Sağa']];
+  /** E-posta görseli: en fazla 150 KB'a küçültülür, Görsel Deposu'nda "E-posta" altında görünür */
   async function upload(file) {
-    const ext = (file.name.split('.').pop() || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (!/^(jpe?g|png|webp|gif)$/.test(ext)) throw new Error('Sadece JPG, PNG, WEBP veya GIF');
-    if (file.size > 5 * 1024 * 1024) throw new Error('Görsel 5MB\'dan küçük olmalı');
-    const name = `email/${Date.now()}-${uid()}.${ext}`;
-    const { error } = await supabaseClient.storage.from('blog-photos').upload(name, file, { cacheControl: '31536000', upsert: false });
-    if (error) throw error;
-    return supabaseClient.storage.from('blog-photos').getPublicUrl(name).data.publicUrl;
+    try { return (await Medya.upload(file, { folder: 'email', name: Medya.splitExt(file.name).base })).url; }
+    catch (e) { throw new Error(e && e.user ? e.message : Medya.friendly(e)); }
   }
   function imageField(b, key) {
     const w = document.createElement('div');

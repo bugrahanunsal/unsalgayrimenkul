@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-spam">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-150kb">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .photo-uploader {
@@ -95,8 +95,8 @@
             <div class="photo-uploader" id="photoUploader" onclick="document.getElementById('photoInput').click()">
               <div style="font-size: 48px; margin-bottom: 8px; color: var(--text-muted);"><i class="ic ic-upload" aria-hidden="true"></i></div>
               <div style="font-weight: 600; margin-bottom: 4px;">Fotoğraf yüklemek için tıklayın veya sürükleyip bırakın</div>
-              <div style="color: var(--text-muted); font-size: 13px;">JPG, PNG, WEBP • Max 5MB per foto • İlk foto ana foto olur</div>
-              <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
+              <div style="color: var(--text-muted); font-size: 13px;">JPG, PNG, WEBP • Her fotoğraf yüklenirken otomatik olarak en fazla 150 KB'a küçültülür • İlk foto ana foto olur</div>
+              <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" multiple style="display: none;">
             </div>
 
             <div class="photo-preview-grid" id="photoPreviewGrid"></div>
@@ -352,6 +352,7 @@
   <script src="/admin/assets/security.js?v=20261002-spam"></script>
   <script src="/admin/assets/auth.js?v=20261002-spam"></script>
   <script src="/admin/assets/app.js?v=20261002-spam"></script>
+  <script src="/admin/assets/medya.js?v=20261002-150kb"></script>
 
   <script>
     let uploadedPhotos = []; // {file, url, name}
@@ -396,12 +397,12 @@
 
     function handleFiles(files) {
       const validFiles = files.filter(f => {
-        if (!f.type.startsWith('image/')) {
-          App.toast('Sadece resim dosyaları yüklenebilir', 'error');
+        if (!f.type.startsWith('image/') || /svg/i.test(f.type)) {
+          App.toast('Sadece fotoğraf yüklenebilir (JPG, PNG, WEBP)', 'error');
           return false;
         }
-        if (f.size > 5 * 1024 * 1024) {
-          App.toast(`${f.name} 5MB'dan büyük`, 'error');
+        if (f.size > 40 * 1024 * 1024) {
+          App.toast(`${f.name} çok büyük (en fazla 40 MB)`, 'error');
           return false;
         }
         return true;
@@ -513,43 +514,33 @@
 
           // Fotoğrafları yükle
           if (uploadedPhotos.length > 0) {
-            btnText.textContent = `Fotoğraflar yükleniyor (0/${uploadedPhotos.length})...`;
+            btnText.textContent = `Fotoğraflar küçültülüp yükleniyor (0/${uploadedPhotos.length})...`;
+            // Dosya adı ilan başlığından (ör. yalova-cinarcik-satilik-daire-1.jpg); her fotoğraf en fazla 150 KB
+            const photoBase = Medya.slug(propertyData.baslik_tr || 'ilan', 50) || 'ilan-fotografi';
+            let failed = 0;
 
             for (let i = 0; i < uploadedPhotos.length; i++) {
               const photo = uploadedPhotos[i];
-              const ext = photo.file.name.split('.').pop();
-              const filename = `${newProperty.id}/${Date.now()}-${i}.${ext}`;
-
-              // Storage'a yükle
-              const { error: uploadError } = await supabaseClient
-                .storage
-                .from('property-photos')
-                .upload(filename, photo.file, {
-                  cacheControl: '3600',
-                  upsert: false
-                });
-
-              if (uploadError) {
+              let up;
+              try {
+                up = await Medya.uploadTo('property-photos', newProperty.id + '/', photoBase + '-' + (i + 1), photo.file, { alt: '' });
+              } catch (uploadError) {
                 console.error('Upload error:', uploadError);
+                failed++;
                 continue;
               }
-
-              // Public URL al
-              const { data: urlData } = supabaseClient
-                .storage
-                .from('property-photos')
-                .getPublicUrl(filename);
 
               // Database'e kaydet
               await supabaseClient.from('property_images').insert({
                 property_id: newProperty.id,
-                url: urlData.publicUrl,
+                url: up.url,
                 sira: i,
                 ana_foto: i === 0
               });
 
-              btnText.textContent = `Fotoğraflar yükleniyor (${i + 1}/${uploadedPhotos.length})...`;
+              btnText.textContent = `Fotoğraflar küçültülüp yükleniyor (${i + 1}/${uploadedPhotos.length})...`;
             }
+            if (failed) App.toast(failed + ' fotoğraf yüklenemedi. İlanı düzenleyip tekrar ekleyebilirsiniz.', 'warning');
           }
 
           App.toast('İlan başarıyla kaydedildi!', 'success', 'Başarılı');

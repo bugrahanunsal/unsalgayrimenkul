@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-spam">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-150kb">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -46,7 +46,8 @@
 
         <div class="form-group">
           <label class="form-label">Fotoğraf</label>
-          <input type="file" id="photoFile" accept="image/*" class="form-input">
+          <input type="file" id="photoFile" accept="image/jpeg,image/png,image/webp" class="form-input">
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Fotoğraf yüklenirken otomatik olarak en fazla 150 KB'a küçültülür.</div>
           <div id="photoPreview" style="margin-top: 8px;"></div>
           <input type="hidden" name="fotograf_url" id="photoUrl">
         </div>
@@ -119,6 +120,7 @@
   <script src="/admin/assets/security.js?v=20261002-spam"></script>
   <script src="/admin/assets/auth.js?v=20261002-spam"></script>
   <script src="/admin/assets/app.js?v=20261002-spam"></script>
+  <script src="/admin/assets/medya.js?v=20261002-150kb"></script>
 
   <script>
     let members = [];
@@ -220,8 +222,7 @@
 
       document.getElementById('photoUrl').value = m.fotograf_url || '';
       if (m.fotograf_url) {
-        document.getElementById('photoPreview').innerHTML =
-          `<img src="${Security.escapeHtml(m.fotograf_url)}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">`;
+        showTeamPhoto(m.fotograf_url);
       }
 
       document.getElementById('memberModal').style.display = 'flex';
@@ -253,39 +254,30 @@
     }
     window.deleteMember = deleteMember;
 
-    // Photo upload
+    // Ekip fotoğrafı önizleme (adres yalnızca https; DOM ile kurulur)
+    function showTeamPhoto(url) {
+      const box = document.getElementById('photoPreview'); box.textContent = '';
+      if (!Medya.safeUrl(url)) return;
+      const img = document.createElement('img'); img.src = url; img.alt = '';
+      img.style.cssText = 'width:100px;height:100px;border-radius:50%;object-fit:cover;';
+      box.appendChild(img);
+    }
+
+    // Fotoğraf yükleme: en fazla 150 KB'a küçültülür, Görsel Deposu'nda "Ekip" altında görünür
     document.getElementById('photoFile').addEventListener('change', async (e) => {
       const file = e.target.files[0];
+      e.target.value = '';
       if (!file) return;
-
-      if (file.size > 5 * 1024 * 1024) {
-        App.toast('Foto 5MB\'dan büyük', 'error');
-        return;
-      }
-
+      const nameInput = document.querySelector('#memberForm [name="isim"]') || document.querySelector('[name="isim"]');
       try {
-        const ext = file.name.split('.').pop();
-        const filename = `team/${Date.now()}.${ext}`;
-
-        const { error: uploadError } = await supabaseClient
-          .storage
-          .from('team-photos')
-          .upload(filename, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabaseClient
-          .storage
-          .from('team-photos')
-          .getPublicUrl(filename);
-
-        document.getElementById('photoUrl').value = urlData.publicUrl;
-        document.getElementById('photoPreview').innerHTML =
-          `<img src="${urlData.publicUrl}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">`;
-
-        App.toast('Foto yüklendi', 'success');
+        App.toast('Fotoğraf küçültülüp yükleniyor…', 'info');
+        const r = await Medya.uploadTo('team-photos', 'team/', Medya.slug((nameInput && nameInput.value) || 'ekip-uyesi', 50) || 'ekip-uyesi', file,
+          { maxSide: 1000, alt: (nameInput && nameInput.value) || '' });
+        document.getElementById('photoUrl').value = r.url;
+        showTeamPhoto(r.url);
+        App.toast('Foto yüklendi (' + Medya.fmtSize(r.after) + ')', 'success');
       } catch (error) {
-        App.toast(error.message, 'error');
+        App.toast(error && error.user ? error.message : Medya.friendly(error), 'error');
       }
     });
 
