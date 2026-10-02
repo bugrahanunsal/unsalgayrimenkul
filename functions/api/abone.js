@@ -9,6 +9,7 @@
  * Cloudflare Secrets: SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, LEAD_FROM_EMAIL (opsiyonel).
  */
 import { checkSpam, REJECT_MESSAGE, SUPABASE_URL, sbHeaders, serviceKey } from '../_lib/spam.js';
+import { readText } from '../_lib/body.js';
 
 const SITE = 'https://ismailunsal.com.tr';
 const DEFAULT_FROM = 'TURYAP İsmail Ünsal <onboarding@resend.dev>';
@@ -70,7 +71,8 @@ export async function onRequest(context) {
   if (!sameOrigin(request)) return json({ ok: false, error: 'forbidden' }, 403);
   if (!(request.headers.get('Content-Type') || '').includes('application/json')) return json({ ok: false, error: 'bad_request' }, 415);
   if ((+request.headers.get('Content-Length') || 0) > 6000) return json({ ok: false, error: 'too_large' }, 413);
-  let b; try { b = JSON.parse((await request.text()).slice(0, 6000)); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
+  const raw = await readText(request, 6000); if (raw == null) return json({ ok: false, error: 'too_large' }, 413);
+  let b; try { b = JSON.parse(raw); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
   if (!b || typeof b !== 'object' || Array.isArray(b)) return json({ ok: false, error: 'bad_json' }, 400);
 
   const ip = request.headers.get('CF-Connecting-IP') || 'x';

@@ -21,6 +21,7 @@
  * Hiçbir gizli anahtar bu dosyada YOKTUR.
  */
 import { checkSpam, REJECT_MESSAGE, sbHeaders, serviceKey } from '../_lib/spam.js';
+import { readText } from '../_lib/body.js';
 
 const SUPABASE_URL = 'https://gosmkthmamloafgtvhpj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4'; // public (zaten sitede)
@@ -270,7 +271,8 @@ async function handlePost(context) {
   if (len > 8000) return json({ ok: false, error: 'too_large' }, 413);
 
   let b;
-  try { b = JSON.parse((await request.text()).slice(0, 8000)); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
+  const raw = await readText(request, 8000); if (raw == null) return json({ ok: false, error: 'too_large' }, 413);
+  try { b = JSON.parse(raw); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
   if (!b || typeof b !== 'object') return json({ ok: false, error: 'bad_json' }, 400);
 
   // 2) Bot filtreleri — botlara başarılı gibi görün, hiçbir şey yapma

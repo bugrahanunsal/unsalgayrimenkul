@@ -25,6 +25,7 @@
  *      Resend'de doğrulanmalı ve LEAD_FROM_EMAIL = "TURYAP İsmail Ünsal <ilan@ismailunsal.com.tr>" yapılmalı.
  */
 
+import { readText } from '../../_lib/body.js';
 const SUPABASE_URL = 'https://gosmkthmamloafgtvhpj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4'; // public (zaten sitede)
 const SITE = 'https://ismailunsal.com.tr';
@@ -332,7 +333,8 @@ export async function onRequest(context) {
   try { admin = await verifyAdmin(token); } catch (_) { admin = null; }
   if (!admin) return json({ ok: false, error: 'unauthorized', message: 'Oturum geçersiz. Lütfen tekrar giriş yapın.' }, 401);
   let b;
-  try { b = JSON.parse((await request.text()).slice(0, 16000)); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
+  const raw = await readText(request, 16000); if (raw == null) return json({ ok: false, error: 'too_large' }, 413);
+  try { b = JSON.parse(raw); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
   if (!b || typeof b !== 'object') return json({ ok: false, error: 'bad_json' }, 400);
   if (!env.RESEND_API_KEY && !b.preview && !b.dry_run) return json({ ok: false, error: 'no_email_key', message: 'E-posta servisi yapılandırılmamış.' }, 500);
 

@@ -17,6 +17,7 @@
  *  - HTML'den script/iframe/olay öznitelikleri ayıklanır; boyut ve alıcı sayısı sınırlıdır.
  *  - Her alıcıya kişisel "abonelikten çık" bağlantısı + List-Unsubscribe başlığı eklenir.
  */
+import { readText } from '../../_lib/body.js';
 const SUPABASE_URL = 'https://gosmkthmamloafgtvhpj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4';
 const SITE = 'https://ismailunsal.com.tr';
@@ -151,7 +152,8 @@ export async function onRequest({ request, env }) {
   let me = null; try { me = await verifyAdmin(token); } catch (_) {}
   if (!me) return json({ ok: false, error: 'unauthorized', message: 'Oturum geçersiz veya yetkiniz yok.' }, 401);
 
-  let b; try { b = JSON.parse((await request.text()).slice(0, MAX_HTML + 20000)); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
+  const raw = await readText(request, MAX_HTML + 20000); if (raw == null) return json({ ok: false, error: 'too_large', message: 'Tasarım çok büyük.' }, 413);
+  let b; try { b = JSON.parse(raw); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
   if (!b || typeof b !== 'object') return json({ ok: false, error: 'bad_json' }, 400);
 
   try {

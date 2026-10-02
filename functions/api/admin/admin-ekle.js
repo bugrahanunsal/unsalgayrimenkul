@@ -15,6 +15,7 @@
  *  - Bu uç noktadan "super_admin" oluşturulamaz (yetki yükseltme engeli).
  *  - Origin kontrolü, JSON/boyut sınırı, hız sınırı, girdi doğrulama.
  */
+import { readText } from '../../_lib/body.js';
 const SUPABASE_URL = 'https://gosmkthmamloafgtvhpj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4';
 const SITE = 'https://ismailunsal.com.tr';
@@ -68,7 +69,8 @@ export async function onRequest({ request, env }) {
   if (!(env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_SECRET_KEY)) return json({ ok: false, error: 'not_configured', message: 'Kurulum eksik: Cloudflare\'e SUPABASE_SERVICE_ROLE_KEY eklenmeli.' }, 503);
   if (rateLimited('u:' + me.id, 10, 60 * 60 * 1000)) return json({ ok: false, error: 'rate_limited', message: 'Saatte en fazla 10 davet gönderilebilir.' }, 429);
 
-  let b; try { b = JSON.parse((await request.text()).slice(0, 4000)); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
+  const raw = await readText(request, 4000); if (raw == null) return json({ ok: false, error: 'too_large' }, 413);
+  let b; try { b = JSON.parse(raw); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
   const email = oneLine(b && b.email, 254).toLowerCase();
   const name = oneLine(b && b.full_name, 100);
   const role = String(b && b.role || '');

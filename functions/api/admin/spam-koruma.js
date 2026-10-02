@@ -13,6 +13,7 @@
  *  - Gizli anahtar yalnızca bu sunucuda okunur, hiçbir yanıtta geri gönderilmez.
  */
 import { ALLOWED_HOSTS, FORMS, KEY_RE, SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL, _resetCache, hostAllowed, loadConfig, logResult, sbHeaders, serviceKey, verifyToken } from '../../_lib/spam.js';
+import { readText } from '../../_lib/body.js';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const hits = new Map();
@@ -80,7 +81,8 @@ export async function onRequest(context) {
   let me = null; try { me = await verifyAdmin(token, env); } catch (_) {}
   if (!me) return json({ ok: false, error: 'unauthorized', message: 'Oturum geçersiz veya yetkiniz yok.' }, 401);
 
-  let b; try { b = JSON.parse((await request.text()).slice(0, 8000)); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
+  const raw = await readText(request, 8000); if (raw == null) return json({ ok: false, error: 'too_large' }, 413);
+  let b; try { b = JSON.parse(raw); } catch (_) { return json({ ok: false, error: 'bad_json' }, 400); }
   if (!b || typeof b !== 'object' || Array.isArray(b)) return json({ ok: false, error: 'bad_json' }, 400);
 
   const sunucu = { service_key: !!serviceKey(env), resend: !!env.RESEND_API_KEY };
