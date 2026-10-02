@@ -108,8 +108,10 @@
   }
   function closeEditor() { $('editorModal').style.display = 'none'; }
 
+  let coverUploading = false;
   async function save(e) {
     e.preventDefault();
+    if (coverUploading) { App.toast('Kapak fotoğrafı hâlâ yükleniyor, birkaç saniye bekleyin.', 'warning'); return; }
     const title = $('fTitle').value.trim().slice(0, 200);
     const html = editor.getHTML();
     if (!title) { App.toast('Başlık gerekli', 'warning'); return; }
@@ -196,10 +198,12 @@
     $('fSlug').addEventListener('input', () => { editingSlugLocked = true; });
     $('fCover').addEventListener('input', setCoverPreview);
     $('coverFile').addEventListener('change', async (e) => {
-      const f = e.target.files[0]; if (!f) return;
-      if (f.size > 5 * 1024 * 1024) { App.toast('Foto 5MB\'dan küçük olmalı', 'error'); return; }
+      const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+      // Boyut sınırı yok: 5 MB'lık fotoğraf da yüklenirken en fazla 150 KB'a küçültülür (Medya.upload)
+      coverUploading = true; App.toast('Kapak yükleniyor…', 'info');
       try { $('fCover').value = await uploadImage(f); setCoverPreview(); App.toast('Kapak yüklendi', 'success'); }
       catch (err) { App.toast(err.message, 'error'); }
+      finally { coverUploading = false; }
     });
     loadPosts();
   });

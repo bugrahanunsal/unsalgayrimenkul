@@ -67,7 +67,8 @@
       const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/jpeg,image/png,image/webp';
       inp.onchange = async () => {
         const f = inp.files[0]; if (!f) return;
-        if (f.size > 5 * 1024 * 1024) { alert('Görsel 5MB\'dan küçük olmalı'); return; }
+        // Büyük fotoğraflar da kabul edilir: yüklenirken en fazla 150 KB'a küçültülür (Medya)
+        if (f.size > 40 * 1024 * 1024) { alert('Görsel çok büyük (en fazla 40 MB).'); return; }
         try { const url = await opts.uploadImage(f); if (url) { area.focus(); exec('insertHTML', `<img src="${String(url).replace(/"/g, '')}" alt="">`); } }
         catch (e) { alert('Yükleme hatası: ' + e.message); }
       };
