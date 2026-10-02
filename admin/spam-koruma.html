@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Spam Koruması - Admin Panel</title>
+  <link rel="icon" type="image/svg+xml" href="/admin/assets/admin-icon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
+  <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
+  <meta name="theme-color" content="#0A2A5E">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-spam">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .sk-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+    @media(max-width:1150px){.sk-grid{grid-template-columns:minmax(0,1fr)}}
+    .sk-col{display:grid;gap:18px;min-width:0}
+    .sk-col>.card{min-width:0}
+    @media(max-width:1150px){.sk-col{display:contents}.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}}
+    .sk-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .sk-state{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px;border:1.5px solid}
+    .sk-state::before{content:'';width:9px;height:9px;border-radius:50%;background:currentColor}
+    .sk-state.on{background:#DCFCE7;border-color:#86EFAC;color:#166534}
+    .sk-state.off{background:#F1F5F9;border-color:#CBD5E1;color:#475569}
+    .sk-state.wait{background:#FEF3C7;border-color:#FCD34D;color:#92400E}
+    .sk-checks{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px}
+    .sk-checks li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#334155;line-height:1.45}
+    .sk-dot{flex:0 0 20px;height:20px;border-radius:50%;border:2px solid #CBD5E1;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;margin-top:1px}
+    .sk-checks li.ok .sk-dot{background:#16A34A;border-color:#16A34A}
+    .sk-checks li.bad .sk-dot{border-color:#F59E0B}
+    .sk-checks small{display:block;color:#64748B;font-size:12.5px;margin-top:2px}
+    .sk-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .sk-forms{display:grid;gap:8px;margin-bottom:16px}
+    .sk-forms label{display:flex;gap:10px;align-items:flex-start;border:1.5px solid #E2E8F0;border-radius:10px;padding:10px 12px;cursor:pointer;font-weight:600;color:#0A2A5E}
+    .sk-forms input{width:18px;height:18px;accent-color:#2563EB;margin-top:1px;flex-shrink:0}
+    .sk-forms small{display:block;font-weight:500;color:#64748B;font-size:12.5px;margin-top:2px}
+    .sk-seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:8px}
+    .sk-seg label{position:relative;cursor:pointer}
+    .sk-seg input{position:absolute;opacity:0;pointer-events:none}
+    .sk-seg span{display:block;border:1.5px solid #E2E8F0;border-radius:10px;padding:10px 8px;text-align:center;font-weight:700;color:#334155;font-size:13.5px;min-height:56px}
+    .sk-seg span small{display:block;font-weight:500;color:#64748B;font-size:12px;margin-top:2px}
+    .sk-seg input:checked+span{border-color:#0A2A5E;background:#0A2A5E;color:#fff}
+    .sk-seg input:checked+span small{color:#CBD5E1}
+    .sk-seg input:focus-visible+span{outline:3px solid #93C5FD;outline-offset:2px}
+    .sk-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:14px}
+    .sk-stat{border:1px solid #E2E8F0;border-radius:10px;padding:12px}
+    .sk-stat b{display:block;font-size:22px;color:#0A2A5E}
+    .sk-stat span{font-size:12.5px;color:#64748B}
+    .sk-stat.spam b{color:#B45309}.sk-stat.bot b{color:#B91C1C}
+    .sk-log{width:100%;border-collapse:collapse;font-size:13px}
+    .sk-log th{text-align:left;color:#64748B;font-weight:700;padding:7px 6px;border-bottom:1px solid #E2E8F0}
+    .sk-log td{padding:7px 6px;border-bottom:1px solid #F1F5F9;vertical-align:top}
+    .sk-key{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+    .sk-pass{position:relative}
+    .sk-pass .form-input{padding-right:84px}
+    .sk-pass button{position:absolute;right:6px;top:50%;transform:translateY(-50%)}
+    .sk-msg{border-radius:10px;padding:10px 14px;font-size:13.5px;margin-top:12px;line-height:1.5}
+    .sk-msg.ok{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534}
+    .sk-msg.err{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+    .sk-msg.info{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E3A8A}
+    .sk-steps{margin:0;padding-left:20px;display:grid;gap:9px;font-size:14px;color:#334155;line-height:1.55}
+    .sk-steps b{color:#0A2A5E}
+    .sk-note{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:10px 12px;font-size:13px;color:#475569;margin-top:12px;line-height:1.55}
+    .sk-badge-note{font-size:12px;color:#64748B;margin-top:10px}
+    .grecaptcha-badge{visibility:hidden!important}
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">Spam Koruması</h1>
+        <div class="topbar-actions"><div class="user-menu" id="userMenu"></div></div>
+      </header>
+      <div class="page-content">
+        <div class="alert alert-warning" id="noServer" hidden>
+          <span><b>Sunucu ayarı eksik.</b> Cloudflare Pages → <b>Settings → Variables and Secrets</b> bölümüne <b>SUPABASE_SERVICE_ROLE_KEY</b> (tür: Secret) ekleyin, ardından siteyi yeniden yayınlayın. Spam koruması bu anahtar olmadan çalışamaz.</span>
+        </div>
+        <div class="sk-grid">
+          <div class="sk-col">
+            <section class="card o1" aria-labelledby="t1">
+              <div class="sk-head"><h2 class="card-title" id="t1">Durum</h2><span class="sk-state off" id="state">Kapalı</span></div>
+              <ul class="sk-checks" id="checks"></ul>
+              <div class="sk-actions">
+                <button type="button" class="btn btn-primary" id="onBtn" disabled>Korumayı aç</button>
+                <button type="button" class="btn btn-outline-danger" id="offBtn" hidden>Korumayı kapat</button>
+              </div>
+              <div id="stateMsg"></div>
+            </section>
+
+            <section class="card o4" aria-labelledby="t2">
+              <h2 class="card-title" id="t2" style="margin-bottom:12px;">Korunan formlar</h2>
+              <div class="sk-forms" id="forms">
+                <label><input type="checkbox" name="form" value="iletisim"><span>İletişim formu<small>İletişim sayfasındaki mesaj formu</small></span></label>
+                <label><input type="checkbox" name="form" value="ilan"><span>İlan bilgi talebi<small>Her ilan sayfasındaki "Bilgi al" formu</small></span></label>
+                <label><input type="checkbox" name="form" value="abone"><span>Bülten aboneliği<small>"Bültene kayıt ol" formları (açılır pencere ve sayfa altı)</small></span></label>
+              </div>
+              <div class="form-label">Hassasiyet</div>
+              <div class="sk-seg" role="radiogroup" aria-label="Hassasiyet">
+                <label><input type="radio" name="skor" value="0.3"><span>Esnek<small>Puan 0.3 altı spam</small></span></label>
+                <label><input type="radio" name="skor" value="0.5"><span>Önerilen<small>Puan 0.5 altı spam</small></span></label>
+                <label><input type="radio" name="skor" value="0.7"><span>Sıkı<small>Puan 0.7 altı spam</small></span></label>
+              </div>
+              <div class="form-help">Google her gönderime 0.0 (bot) ile 1.0 (insan) arasında puan verir. Eşiğin altındaki mesajlar silinmez: Mesajlar sayfasında <b>Spam</b> durumuyla durur, size e-posta bildirimi gitmez. Bülten kayıtlarında ise kayıt yapılmaz.</div>
+              <div style="display:flex;justify-content:flex-end;margin-top:14px;"><button type="button" class="btn btn-outline" id="saveSettings">Ayarları kaydet</button></div>
+            </section>
+
+            <section class="card o5" aria-labelledby="t3">
+              <h2 class="card-title" id="t3" style="margin-bottom:12px;">Son 30 gün</h2>
+              <div class="sk-stats" id="stats"></div>
+              <div style="overflow:auto;"><table class="sk-log"><thead><tr><th>Tarih</th><th>Form</th><th>Sonuç</th><th>Puan</th><th>Ayrıntı</th></tr></thead><tbody id="log"></tbody></table></div>
+            </section>
+          </div>
+
+          <div class="sk-col">
+            <section class="card o2" aria-labelledby="t4">
+              <h2 class="card-title" id="t4" style="margin-bottom:4px;">Google reCAPTCHA anahtarları</h2>
+              <div class="card-subtitle" style="margin-bottom:14px;">Anahtarları Google'dan alıp buraya yapıştırın. Gizli anahtar yalnızca sunucuda saklanır; bu sayfada bile geri gösterilmez.</div>
+              <div class="form-group">
+                <label class="form-label" for="siteKey">Site anahtarı (Key ID)</label>
+                <input id="siteKey" class="form-input sk-key" maxlength="100" autocomplete="off" spellcheck="false" placeholder="6Lc…">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="secret">Gizli anahtar (Secret key)</label>
+                <div class="sk-pass">
+                  <input id="secret" type="password" class="form-input sk-key" maxlength="100" autocomplete="new-password" spellcheck="false" placeholder="6Lc…">
+                  <button type="button" class="btn btn-outline btn-sm" id="showSecret" aria-pressed="false">Göster</button>
+                </div>
+                <div class="form-help" id="secretHelp"></div>
+              </div>
+              <div class="sk-actions">
+                <button type="button" class="btn btn-primary" id="saveKeys">Kaydet</button>
+                <button type="button" class="btn btn-outline" id="testBtn" disabled>Test et</button>
+                <button type="button" class="btn btn-outline-danger btn-sm" id="removeKeys" hidden style="margin-left:auto;">Anahtarları kaldır</button>
+              </div>
+              <div id="keyMsg"></div>
+              <div class="sk-badge-note">Test sırasında bu sayfa Google reCAPTCHA'yı yükler.</div>
+            </section>
+
+            <section class="card o3" aria-labelledby="t5">
+              <h2 class="card-title" id="t5" style="margin-bottom:12px;">Anahtarlar nasıl alınır? (5 dakika)</h2>
+              <ol class="sk-steps">
+                <li>Google hesabınızla <a href="https://console.cloud.google.com/security/recaptcha" target="_blank" rel="noopener noreferrer"><b>Google Cloud → reCAPTCHA</b></a> sayfasını açın. İlk kez giriyorsanız bir proje oluşturmanız istenir (ör. <i>ismailunsal-web</i>).</li>
+                <li><b>Anahtar oluştur</b> (Create key) düğmesine basın. Görünen ad: <i>ismailunsal.com.tr</i>, uygulama türü: <b>Web</b>.</li>
+                <li>Alan adı listesine <b>ismailunsal.com.tr</b> ve <b>www.ismailunsal.com.tr</b> ekleyin.</li>
+                <li><b>Onay kutusu (checkbox) kullan</b> seçeneğini <b>kapalı</b> bırakın — böylece ziyaretçiye hiçbir şey sorulmayan, puan tabanlı (v3) anahtar oluşur. <b>Anahtar oluştur</b>'a basın.</li>
+                <li>Çıkan <b>Anahtar kimliği</b> (Key ID) sizin <b>site anahtarınızdır</b> → soldaki ilk kutuya yapıştırın.</li>
+                <li>Aynı anahtarın sayfasında <b>Entegrasyon</b> (Integration) sekmesi → <b>Eski anahtarı kullan</b> (Use legacy key) → açılan pencerede görünen <b>gizli anahtarı</b> ikinci kutuya yapıştırın.</li>
+                <li><b>Kaydet</b> → <b>Test et</b> → test başarılıysa <b>Korumayı aç</b>.</li>
+              </ol>
+              <div class="sk-note">Google ayda <b>10.000 doğrulamaya kadar ücretsizdir</b>. Kota aşılırsa Google doğrulamaları otomatik "geçti" sayar; site ve formlar çalışmaya devam eder.<br>Koruma açıkken formların altında Google'ın istediği "Bu form reCAPTCHA ile korunmaktadır" notu görünür, sayfa köşesindeki rozet gizlenir.<br>Üyelik (hesap açma) formu Supabase'in kendi korumasıyla çalışır; reCAPTCHA orada kullanılmaz.</div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
+  <script src="/admin/assets/security.js?v=20261002-spam"></script>
+  <script src="/admin/assets/auth.js?v=20261002-spam"></script>
+  <script src="/admin/assets/app.js?v=20261002-spam"></script>
+  <script src="/admin/assets/spam-koruma.js?v=20261002-spam"></script>
+</body>
+</html>

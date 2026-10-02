@@ -476,6 +476,7 @@
         <li><strong>Cloudflare Inc. (ABD):</strong> Web sitesi barındırma, CDN ve güvenlik. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">cloudflare.com/privacypolicy</a></li>
         <li><strong>Google Translate (Google LLC):</strong> Sayfa içi otomatik çeviri servisi. Sadece görünen metin işlenir; kişisel veri gönderilmez.</li>
         <li><strong>MyMemory (Translated Srl, İtalya):</strong> Google Translate fallback'i.</li>
+        <li><strong>Google reCAPTCHA (Google LLC):</strong> İletişim, ilan bilgi talebi ve bülten formlarını otomatik (bot) gönderimlere karşı korumak için kullanılabilir. Yalnızca bu formlar kullanıldığında devreye girer; Google, cihaz ve tarayıcı bilgileri ile sayfadaki etkileşimleri değerlendirerek bir güven puanı üretir. Bu işleme, sitenin ve sizin güvenliğiniz için meşru menfaatimize dayanır. Google <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Gizlilik Politikası</a> ve <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Hizmet Şartları</a> geçerlidir. Biz yalnızca formun geçip geçmediğini ve puanı kaydederiz; IP adresiniz bu amaçla saklanmaz.</li>
       </ul>
       <p>Bu servisler kendi gizlilik politikalarına tabidir ve TURYAP İsmail Ünsal, üçüncü tarafların uygulamalarından sorumlu değildir.</p>
     </section>
@@ -506,6 +507,7 @@
         <li>Şifreler <strong>bcrypt/argon2</strong> ile hash'lenir; asla düz metin saklanmaz</li>
         <li>Yönetici erişimi <strong>multi-factor authentication (MFA)</strong> ile korunur</li>
         <li>Servis rolü anahtarları (service_role) yalnızca sunucu tarafında bulunur; tarayıcıda ifşa edilmez</li>
+        <li>Formlar spam ve otomatik saldırılara karşı sunucu tarafında doğrulanır (hız sınırı, bot tuzağı ve isteğe bağlı Google reCAPTCHA)</li>
         <li>Düzenli güvenlik denetimleri ve güncellemeler</li>
         <li>Yedekler şifrelenerek farklı coğrafyada saklanır</li>
       </ul>

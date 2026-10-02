@@ -12,28 +12,50 @@ const App = {
    * Sayfayı başlat
    */
   async init(pageName) {
+    // Menü ve üst çubuk ANINDA çizilir (son girişteki rol/isimle): oturum kontrolü birkaç saniye
+    // sürse de yan menü boş kalmaz. Yetki her zaman aşağıda (ve sunucuda/RLS'de) doğrulanır;
+    // önbellekteki bilgi yalnızca hangi bağlantıların önce görüneceğini belirler.
+    this.renderLayout(pageName, this.cachedUser());
+
     // Auth kontrol
     const isAuthed = await Auth.requireAuth('admin');
     if (!isAuthed) return false;
 
     // Kullanıcı bilgisini al
     this.currentUser = await Auth.getCurrentUser();
+    this.cacheUser(this.currentUser);
 
-    // Layout render
+    // Layout render (gerçek rol ve isimle)
     this.renderLayout(pageName);
+    this.updateLeadsBadge();
 
     return true;
+  },
+
+  UI_KEY: 'iu_admin_ui',
+  /** Son girişte kaydedilen menü bilgisi (yalnızca görünüm için; yetki DEĞİLDİR) */
+  cachedUser() {
+    let c = null;
+    try { c = JSON.parse(localStorage.getItem(this.UI_KEY) || 'null'); } catch (_) { c = null; }
+    const role = c && ['super_admin', 'admin', 'editor', 'viewer'].includes(c.role) ? c.role : 'admin';
+    return { email: c && typeof c.email === 'string' ? c.email.slice(0, 254) : '', provisional: true,
+      profile: { role, full_name: c && typeof c.name === 'string' ? c.name.slice(0, 100) : '' } };
+  },
+  cacheUser(u) {
+    try {
+      if (u && u.profile) localStorage.setItem(this.UI_KEY, JSON.stringify({ role: u.profile.role, name: u.profile.full_name || '', email: u.email || '' }));
+    } catch (_) {}
   },
 
   /**
    * Layout HTML'ini oluştur
    */
-  renderLayout(activePage) {
-    const user = this.currentUser;
+  renderLayout(activePage, userOverride) {
+    const user = userOverride || this.currentUser;
     const role = user?.profile?.role || 'admin';
     const roleLabel = role === 'super_admin' ? 'Super Admin' : 'Admin';
-    const initial = (user?.profile?.full_name || user?.email || 'A').charAt(0).toUpperCase();
-    const name = user?.profile?.full_name || user?.email || 'Admin';
+    const initial = (user?.profile?.full_name || user?.email || (user?.provisional ? ' ' : 'A')).charAt(0).toUpperCase();
+    const name = user?.profile?.full_name || user?.email || (user?.provisional ? 'Yönetim Paneli' : 'Admin');
 
     // SVG Icons
     const icons = {
@@ -133,15 +155,19 @@ const App = {
               <span class="nav-icon">${icons.design}</span>
               <span>E-posta Tasarımları</span>
             </a>
-            <a href="/admin/kisiler.html" class="nav-item ${activePage === 'kisiler' ? 'active' : ''}">
+            <a href="/admin/gruplar.html" class="nav-item ${activePage === 'gruplar' ? 'active' : ''}">
               <span class="nav-icon">${icons.contacts}</span>
-              <span>Kişi Listeleri</span>
+              <span>Müşteri Grupları</span>
             </a>
           </div>
 
-          ${role === 'super_admin' ? `
           <div class="nav-section">
             <div class="nav-section-title">Sistem</div>
+            <a href="/admin/spam-koruma.html" class="nav-item ${activePage === 'spam' ? 'active' : ''}">
+              <span class="nav-icon">${icons.security}</span>
+              <span>Spam Koruması</span>
+            </a>
+          ${role === 'super_admin' ? `
             <a href="/admin/security-logs.html" class="nav-item ${activePage === 'security' ? 'active' : ''}">
               <span class="nav-icon">${icons.security}</span>
               <span>Güvenlik Logları</span>
@@ -154,8 +180,8 @@ const App = {
               <span class="nav-icon">${icons.admins}</span>
               <span>Adminler</span>
             </a>
-          </div>
           ` : ''}
+          </div>
 
           <div class="nav-section">
             <div class="nav-section-title">Hesap</div>
@@ -188,9 +214,6 @@ const App = {
     this.renderSiteLink();
     // Telefonda menü butonu (yan menü ekran dışında kalıyordu; sayfalar arası geçiş için)
     this.renderMobileMenu();
-
-    // Bekleyen mesaj sayısı
-    this.updateLeadsBadge();
   },
 
   renderMobileMenu() {
@@ -334,13 +357,16 @@ const App = {
     try {
       const dry = await call({ action: 'duyuru', property_id: propertyId, dry_run: true });
       if (!dry.matched) {
-        this.toast('Bu ilanın kriterlerine uyan doğrulanmış abone yok; e-posta gönderilmedi.', 'info', 'Duyuru');
+        this.toast('Bu ilanın kriterlerine uyan doğrulanmış abone veya arama alarmı yok; e-posta gönderilmedi.', 'info', 'Duyuru');
         return { sent: 0 };
       }
-      const ok = await this.confirm(`Bu ilan, ilgi alanı uyan ${dry.matched} aboneye e-posta ile duyurulacak (toplam ${dry.total_subscribers} abone). Gönderilsin mi?`, 'Abonelere Duyur');
+      const subsN = dry.subscribers_matched != null ? dry.subscribers_matched : dry.matched;
+      const alarmN = dry.alarm_matched || 0;
+      const kime = [subsN ? `ilgi alanı uyan ${subsN} aboneye` : '', alarmN ? `arama alarmı uyan ${alarmN} müşteriye` : ''].filter(Boolean).join(' ve ');
+      const ok = await this.confirm(`Bu ilan ${kime} e-posta ile duyurulacak (toplam ${dry.total_subscribers} abone). Gönderilsin mi?`, 'Abonelere Duyur');
       if (!ok) return { sent: 0 };
       const res = await call({ action: 'duyuru', property_id: propertyId });
-      this.toast(`İlan ${res.sent} aboneye gönderildi.`, 'success', 'Duyuru');
+      this.toast(`İlan ${res.sent} kişiye gönderildi.`, 'success', 'Duyuru');
       return res;
     } catch (e) {
       this.toast(e.message, 'error', 'Duyuru');

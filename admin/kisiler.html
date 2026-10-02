@@ -4,81 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Kişi Listeleri - Admin Panel</title>
+  <meta http-equiv="refresh" content="0; url=/admin/gruplar.html">
+  <title>Müşteri Grupları - Admin Panel</title>
   <link rel="icon" type="image/svg+xml" href="/admin/assets/admin-icon.svg?v=2">
-  <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
-  <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
-  <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-durum">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    .kl-grid{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:18px;align-items:start}
-    @media(max-width:1100px){.kl-grid{grid-template-columns:minmax(0,1fr)}}
-    .kl-drop{border:2px dashed #CBD5E1;border-radius:12px;padding:26px 14px;text-align:center;color:#475569;cursor:pointer;background:#F8FAFC}
-    .kl-drop.over{border-color:#2563EB;background:#EFF6FF}
-    .kl-prev{max-height:220px;overflow:auto;border:1px solid #E2E8F0;border-radius:10px;margin-top:10px;font-size:12px}
-    .kl-prev table{width:100%;border-collapse:collapse}.kl-prev td,.kl-prev th{padding:5px 8px;border-bottom:1px solid #F1F5F9;text-align:left;white-space:nowrap}
-    .kl-bad{color:#B91C1C}
-    .kl-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-    .kl-tag{border:1.5px solid #E2E8F0;background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;color:#334155;cursor:pointer}
-    .kl-tag.on{background:#0A2A5E;color:#fff;border-color:#0A2A5E}
-    .kl-tag small{font-weight:600;opacity:.7;margin-left:4px}
-    .kl-table{width:100%;border-collapse:collapse;font-size:13px}
-    .kl-table th{text-align:left;color:#64748B;font-weight:700;padding:8px;border-bottom:1px solid #E2E8F0}
-    .kl-table td{padding:8px;border-bottom:1px solid #F1F5F9;vertical-align:middle}
-    .kl-chip{display:inline-block;background:#EFF6FF;color:#1D4ED8;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:700;margin:1px}
-    .kl-consent{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#334155;background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:10px 12px;margin-top:12px}
-  </style>
 </head>
 <body>
-  <div class="admin-layout">
-    <aside class="sidebar" id="sidebar"></aside>
-    <main class="main-content">
-      <header class="topbar">
-        <h1 class="page-title">Kişi Listeleri</h1>
-        <div class="topbar-actions"><a href="/admin/campaigns.html" class="btn btn-outline btn-sm"><i class="ic ic-send" aria-hidden="true"></i> Kampanyalar</a><div class="user-menu" id="userMenu"></div></div>
-      </header>
-      <div class="page-content">
-        <div class="kl-grid">
-          <div class="card">
-            <div class="card-title" style="margin-bottom:10px;"><i class="ic ic-upload" aria-hidden="true"></i> CSV / Excel listesi içe aktar</div>
-            <div class="form-help" style="margin-bottom:12px;">Excel'de <b>Farklı Kaydet → CSV</b> ile kaydedin. İlk satır başlık olmalı: <b>email</b> (zorunlu), <b>ad</b>, <b>telefon</b>, <b>bolge</b>. Türkçe başlıklar da tanınır (E-posta, Ad Soyad, Telefon…).</div>
-            <div class="kl-drop" id="drop" tabindex="0" role="button" aria-label="CSV dosyası seç"><i class="ic ic-file" aria-hidden="true"></i> CSV dosyasını buraya sürükleyin veya <b>tıklayıp seçin</b><input type="file" id="csvFile" accept=".csv,text/csv,text/plain" hidden></div>
-            <div id="csvInfo" style="margin-top:10px;font-size:13px;"></div>
-            <div class="kl-prev" id="csvPrev" hidden></div>
-            <div class="form-group" style="margin-top:12px;">
-              <label class="form-label" for="listName">Liste adı (etiket)</label>
-              <input id="listName" class="form-input" maxlength="40" list="tagList" placeholder="Örn: Fuar 2026, Eski Müşteriler, Almanya Yatırımcı">
-              <datalist id="tagList"></datalist>
-              <div class="form-help">Kampanya gönderirken bu listeyi seçebileceksiniz. Aynı kişi birden fazla listede olabilir.</div>
-            </div>
-            <label class="kl-consent"><input type="checkbox" id="consent"> <span>Bu listedeki kişilerin bizden <b>e-posta almayı kabul ettiğini</b> onaylıyorum (KVKK / ticari ileti onayı). Onayı olmayan kişilere toplu e-posta göndermeyin.</span></label>
-            <div style="display:flex;justify-content:flex-end;margin-top:12px;"><button type="button" class="btn btn-primary" id="importBtn" disabled><i class="ic ic-plus" aria-hidden="true"></i> Listeye ekle</button></div>
-            <hr style="border:0;border-top:1px solid #E2E8F0;margin:18px 0;">
-            <div class="card-title" style="margin-bottom:8px;"><i class="ic ic-user-plus" aria-hidden="true"></i> Tek kişi ekle</div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:12px;">
-              <input id="oneEmail" class="form-input" type="email" placeholder="E-posta" maxlength="254" aria-label="E-posta">
-              <input id="oneName" class="form-input" placeholder="Ad Soyad" maxlength="80" aria-label="Ad Soyad">
-            </div>
-            <div style="display:flex;justify-content:flex-end;"><button type="button" class="btn btn-outline btn-sm" id="oneBtn"><i class="ic ic-plus" aria-hidden="true"></i> Ekle (yukarıdaki liste adıyla)</button></div>
-          </div>
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
-              <div class="card-title"><i class="ic ic-users" aria-hidden="true"></i> Kişiler <span id="total" style="color:#64748B;font-weight:600;font-size:14px;"></span></div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="search" class="form-input" placeholder="Ara…" style="width:200px;"><button type="button" class="btn btn-outline btn-sm" id="exportBtn"><i class="ic ic-download" aria-hidden="true"></i> CSV indir</button></div>
-            </div>
-            <div class="kl-tags" id="tags"></div>
-            <div style="overflow:auto;"><table class="kl-table"><thead><tr><th>E-posta</th><th>Ad</th><th>Listeler</th><th>Durum</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
-            <div id="more" style="text-align:center;margin-top:10px;"></div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-  <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
-  <script src="/admin/assets/security.js?v=20260929-of"></script>
-  <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20261002-btn"></script>
-  <script src="/admin/assets/kisiler.js?v=20261002-btn"></script>
+  <p style="font-family:system-ui,sans-serif;padding:24px;">Kişi Listeleri artık <a href="/admin/gruplar.html">Müşteri Grupları</a> sayfasında.</p>
 </body>
 </html>

@@ -220,13 +220,16 @@ const Security = {
 
       const { data, error } = await supabaseClient
         .from('admin_users')
-        .select('role, is_active')
+        .select('*')
         .eq('id', user.id)
         .single();
 
       if (error || !data || !data.is_active) {
+        this._authCache = null;
         return { hasRole: false, role: null };
       }
+      // Aynı sayfa açılışında Auth.getCurrentUser() aynı bilgiyi tekrar sormasın (2 ağ isteği daha az → sayfa daha hızlı)
+      this._authCache = { at: Date.now(), user, profile: data };
 
       // Role hiyerarşisi
       const roleHierarchy = {

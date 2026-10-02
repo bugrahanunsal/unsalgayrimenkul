@@ -13,10 +13,14 @@
  *   LEAD_TO_EMAIL             (opsiyonel) varsayılan: ismunsal.59@gmail.com
  *   LEAD_FROM_EMAIL           (opsiyonel) varsayılan: "TURYAP İsmail Ünsal <onboarding@resend.dev>"
  *                             Domain Resend'de doğrulanınca: "TURYAP İsmail Ünsal <bildirim@ismailunsal.com.tr>"
- *   SUPABASE_SERVICE_ROLE_KEY (opsiyonel) leads'e RLS'e takılmadan yazmak için. SADECE burada
- *                             (sunucu) durur, tarayıcıya asla gönderilmez.
+ *   SUPABASE_SERVICE_ROLE_KEY (spam koruması için zorunlu) leads'e yazmak ve reCAPTCHA ayarlarını okumak için.
+ *                             SADECE burada (sunucu) durur, tarayıcıya asla gönderilmez.
+ * Spam koruması (Google reCAPTCHA v3): Panel → Spam Koruması'ndan açılır. Açıkken form bir doğrulama
+ * anahtarı (captcha) göndermek zorundadır; Google'ın "bot" dediği gönderimler reddedilir, düşük puanlılar
+ * "Spam" durumunda kaydedilir ve e-posta bildirimi gönderilmez.
  * Hiçbir gizli anahtar bu dosyada YOKTUR.
  */
+import { checkSpam, REJECT_MESSAGE, sbHeaders, serviceKey } from '../_lib/spam.js';
 
 const SUPABASE_URL = 'https://gosmkthmamloafgtvhpj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4'; // public (zaten sitede)
@@ -105,16 +109,20 @@ async function fetchProperty(id) {
   return Array.isArray(rows) && rows[0] ? rows[0] : null;
 }
 
-async function saveLead(env, d, prop) {
-  const key = env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_PUBLISHABLE_KEY;
+async function saveLead(env, d, prop, durum) {
+  const key = serviceKey(env) || SUPABASE_PUBLISHABLE_KEY;
   const parts = [];
   if (d.kaynak === 'iletisim') parts.push('Konu: ' + KONULAR[d.konu], 'Kaynak: İletişim formu');
   if (d.mesaj) parts.push('', d.mesaj);
   if (prop) parts.push('', 'İlan: ' + listingUrl(prop));
+  const row = { isim: d.isim, telefon: d.telefon, email: d.email || null, mesaj: parts.join('\n').trim() || null, property_id: prop ? prop.id : null };
+  if (durum) row.durum = durum;
   const r = await fetch(`${SUPABASE_URL}/rest/v1/leads`, {
     method: 'POST',
-    headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-    body: JSON.stringify({ isim: d.isim, telefon: d.telefon, email: d.email || null, mesaj: parts.join('\n').trim() || null, property_id: prop ? prop.id : null })
+    headers: key === SUPABASE_PUBLISHABLE_KEY
+      ? { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' }
+      : sbHeaders(key, { Prefer: 'return=minimal' }),
+    body: JSON.stringify(row)
   });
   if (!r.ok) console.warn('[talep] leads insert failed', r.status, (await r.text()).slice(0, 200));
   return r.ok;
@@ -246,7 +254,8 @@ async function sendEmail(env, d, prop) {
 }
 
 // ---------------- handler ----------------
-async function handlePost({ request, env }) {
+async function handlePost(context) {
+  const { request, env } = context;
   // 1) Sadece kendi sitemizden gelen istekler
   const origin = request.headers.get('Origin');
   if (origin) {
@@ -275,10 +284,20 @@ async function handlePost({ request, env }) {
   if (v.error) return json({ ok: false, error: v.error }, 422);
   const d = v.data;
 
+  // 3) Spam koruması (reCAPTCHA) — panelden açıldıysa
+  const spam = await checkSpam(env, { form: d.kaynak, token: b.captcha, ip, host: new URL(request.url).hostname, waitUntil: context.waitUntil && context.waitUntil.bind(context) });
+  if (spam.action === 'reject') return json({ ok: false, error: REJECT_MESSAGE, code: 'captcha' }, 400);
+
   let prop = null;
   if (d.kaynak === 'ilan') {
     try { prop = await fetchProperty(d.property_id); } catch (e) { console.warn('[talep] ilan çekilemedi', e && e.message); }
     if (!prop) d.kaynak = 'iletisim', d.konu = 'diger';   // ilan kaldırılmışsa genel mesaj olarak ilet
+  }
+
+  // Düşük puanlı gönderim: "Spam" olarak sakla (panelde görülebilir), e-posta bildirimi gönderme. Bota başarılı görün.
+  if (spam.action === 'spam') {
+    await saveLead(env, d, prop, 'spam').catch(() => false);
+    return json({ ok: true });
   }
 
   const [saved, emailed] = await Promise.all([

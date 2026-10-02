@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-durum">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-spam">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -56,17 +56,19 @@
   </div>
 
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
-  <script src="/admin/assets/security.js?v=20260929-of"></script>
-  <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20261002-btn"></script>
+  <script src="/admin/assets/security.js?v=20261002-spam"></script>
+  <script src="/admin/assets/auth.js?v=20261002-spam"></script>
+  <script src="/admin/assets/app.js?v=20261002-spam"></script>
 
   <script>
     let allLeads = [];
+    let GROUPS = [];   // Müşteri Grupları (kartta "Gruba ekle")
 
     (async () => {
       const authed = await App.init('leads');
       if (!authed) return;
 
+      try { const { data, error } = await supabaseClient.rpc('iu_grup_ozet'); if (!error && Array.isArray(data)) GROUPS = data; } catch (_) {}
       await loadLeads();
       setupFilters();
     })();
@@ -171,6 +173,13 @@
       if (mailOk) {
         const em = iconText('a', 'btn btn-outline btn-sm', 'mail', 'E-posta'); em.href = 'mailto:' + mail; main.appendChild(em);
         const send = iconText('a', 'btn btn-primary btn-sm', 'send', 'İlan Gönder'); send.href = '/admin/ilan-gonder.html?lead=' + encodeURIComponent(l.id); main.appendChild(send);
+        // Müşteriyi bir gruba ekle (kampanyalarda grup olarak seçilir)
+        const gs = el('select', 'form-select form-select-sm lead-group');
+        gs.dataset.act = 'group'; gs.setAttribute('aria-label', 'Müşteriyi gruba ekle');
+        const o0 = el('option', null, 'Gruba ekle…'); o0.value = ''; gs.appendChild(o0);
+        GROUPS.forEach(g => { const o = el('option', null, g.ad); o.value = g.id; gs.appendChild(o); });
+        const on = el('option', null, '+ Yeni grup oluştur'); on.value = '__new'; gs.appendChild(on);
+        main.appendChild(gs);
       }
       acts.appendChild(main);
       const del = iconText('button', 'btn btn-outline-danger btn-sm lead-del', 'trash', 'Sil');
@@ -236,7 +245,22 @@
 
     // Satır içi onclick/onchange yok: kartlardaki işlemler tek yerden dinlenir
     const listEl = document.getElementById('leadsList');
-    listEl.addEventListener('change', (e) => {
+    listEl.addEventListener('change', async (e) => {
+      const gsel = e.target.closest('select[data-act="group"]');
+      if (gsel) {
+        const card = gsel.closest('.lead-card');
+        const lead = card && allLeads.find(x => String(x.id) === card.dataset.id);
+        const gid = gsel.value; gsel.value = '';
+        if (gid === '__new') { location.href = '/admin/gruplar.html'; return; }
+        const g = GROUPS.find(x => x.id === gid);
+        const mail = lead ? String(lead.email || '').trim().toLowerCase() : '';
+        if (!g || !EMAIL_RE.test(mail)) return;
+        const { error } = await supabaseClient.from('musteri_grup_uyeleri')
+          .upsert([{ grup_id: g.id, email: mail, ad: String(lead.isim || '').slice(0, 100) || null, kaynak: 'musteri' }], { onConflict: 'grup_id,email', ignoreDuplicates: true });
+        if (error) App.toast(/musteri_grup/.test(error.message || '') ? 'Veritabanı kurulumu eksik (spam/gruplar SQL dosyasını çalıştırın).' : error.message, 'error');
+        else App.toast(mail + ' → "' + g.ad + '" grubuna eklendi', 'success');
+        return;
+      }
       const sel = e.target.closest('select[data-act="status"]');
       const card = sel && sel.closest('.lead-card');
       if (!card || !Object.prototype.hasOwnProperty.call(DURUM, sel.value)) return;

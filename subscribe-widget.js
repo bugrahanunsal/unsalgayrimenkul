@@ -77,6 +77,9 @@
       "İşyeri": "Commercial",
       "📬 Bültene Kayıt Ol": "📬 Subscribe",
       "Geçerli bir email girin.": "Please enter a valid email.",
+      "Kaydediliyor...": "Saving...",
+      "Güvenlik doğrulaması tamamlanamadı. Sayfayı yenileyip tekrar deneyin.": "Security check could not be completed. Please refresh the page and try again.",
+      "Şu anda kayıt yapılamadı. Lütfen daha sonra tekrar deneyin.": "Sign-up is not possible right now. Please try again later.",
       "Çok fazla deneme. 1 saat sonra deneyin.": "Too many attempts. Please try again in 1 hour.",
       "Çok fazla deneme. 1 saat sonra tekrar deneyin.": "Too many attempts. Please try again in 1 hour.",
       "Çok fazla deneme. 1 dakika bekleyin.": "Too many attempts. Please wait 1 minute.",
@@ -125,6 +128,9 @@
       "İşyeri": "Local commercial",
       "📬 Bültene Kayıt Ol": "📬 S'abonner",
       "Geçerli bir email girin.": "Veuillez saisir un e-mail valide.",
+      "Kaydediliyor...": "Enregistrement...",
+      "Güvenlik doğrulaması tamamlanamadı. Sayfayı yenileyip tekrar deneyin.": "La vérification de sécurité a échoué. Actualisez la page et réessayez.",
+      "Şu anda kayıt yapılamadı. Lütfen daha sonra tekrar deneyin.": "Inscription impossible pour le moment. Veuillez réessayer plus tard.",
       "Çok fazla deneme. 1 saat sonra deneyin.": "Trop de tentatives. Réessayez dans 1 heure.",
       "Çok fazla deneme. 1 saat sonra tekrar deneyin.": "Trop de tentatives. Réessayez dans 1 heure.",
       "Çok fazla deneme. 1 dakika bekleyin.": "Trop de tentatives. Patientez 1 minute.",
@@ -173,6 +179,9 @@
       "İşyeri": "Gewerbe",
       "📬 Bültene Kayıt Ol": "📬 Abonnieren",
       "Geçerli bir email girin.": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      "Kaydediliyor...": "Wird gespeichert...",
+      "Güvenlik doğrulaması tamamlanamadı. Sayfayı yenileyip tekrar deneyin.": "Die Sicherheitsprüfung konnte nicht abgeschlossen werden. Bitte laden Sie die Seite neu und versuchen Sie es erneut.",
+      "Şu anda kayıt yapılamadı. Lütfen daha sonra tekrar deneyin.": "Die Anmeldung ist derzeit nicht möglich. Bitte versuchen Sie es später erneut.",
       "Çok fazla deneme. 1 saat sonra deneyin.": "Zu viele Versuche. Bitte in 1 Stunde erneut versuchen.",
       "Çok fazla deneme. 1 saat sonra tekrar deneyin.": "Zu viele Versuche. Bitte in 1 Stunde erneut versuchen.",
       "Çok fazla deneme. 1 dakika bekleyin.": "Zu viele Versuche. Bitte 1 Minute warten.",
@@ -221,6 +230,9 @@
       "İşyeri": "Коммерческая",
       "📬 Bültene Kayıt Ol": "📬 Подписаться",
       "Geçerli bir email girin.": "Введите корректный email.",
+      "Kaydediliyor...": "Сохранение...",
+      "Güvenlik doğrulaması tamamlanamadı. Sayfayı yenileyip tekrar deneyin.": "Не удалось пройти проверку безопасности. Обновите страницу и попробуйте снова.",
+      "Şu anda kayıt yapılamadı. Lütfen daha sonra tekrar deneyin.": "Сейчас подписаться невозможно. Попробуйте позже.",
       "Çok fazla deneme. 1 saat sonra deneyin.": "Слишком много попыток. Попробуйте через час.",
       "Çok fazla deneme. 1 saat sonra tekrar deneyin.": "Слишком много попыток. Попробуйте через час.",
       "Çok fazla deneme. 1 dakika bekleyin.": "Слишком много попыток. Подождите минуту.",
@@ -269,6 +281,9 @@
       "İşyeri": "تجاري",
       "📬 Bültene Kayıt Ol": "📬 اشترك",
       "Geçerli bir email girin.": "يرجى إدخال بريد إلكتروني صالح.",
+      "Kaydediliyor...": "جارٍ الحفظ...",
+      "Güvenlik doğrulaması tamamlanamadı. Sayfayı yenileyip tekrar deneyin.": "تعذّر إكمال التحقق الأمني. حدّث الصفحة وحاول مرة أخرى.",
+      "Şu anda kayıt yapılamadı. Lütfen daha sonra tekrar deneyin.": "التسجيل غير متاح حالياً. يرجى المحاولة لاحقاً.",
       "Çok fazla deneme. 1 saat sonra deneyin.": "محاولات كثيرة. حاول مجدداً بعد ساعة.",
       "Çok fazla deneme. 1 saat sonra tekrar deneyin.": "محاولات كثيرة. حاول مجدداً بعد ساعة.",
       "Çok fazla deneme. 1 dakika bekleyin.": "محاولات كثيرة. انتظر دقيقة واحدة.",
@@ -1064,7 +1079,10 @@
   function setupFormHandlers() {
     document.getElementById('iu-signup-form').addEventListener('submit', handleSignup);
     document.getElementById('iu-login-form').addEventListener('submit', handleLogin);
-    document.getElementById('iu-subscribe-form').addEventListener('submit', handleSubscribe);
+    const sf = document.getElementById('iu-subscribe-form');
+    sf.addEventListener('submit', handleSubscribe);
+    // Spam koruması açıksa: forma dokununca reCAPTCHA önceden yüklenir + Google bilgilendirme notu
+    sf.addEventListener('focusin', () => captchaLib().then(c => { if (c) { c.warm('abone'); c.notice(sf, 'abone'); } }), { once: true });
   }
 
   function showMsg(id, text, type = 'info') {
@@ -1241,76 +1259,76 @@
     }
   }
 
-  // BÜLTEN KAYIT (Hesap gerektirmez)
+  // BÜLTEN KAYIT (Hesap gerektirmez) → sunucu (/api/abone): reCAPTCHA + çift onay (doğrulama e-postası)
+  let captchaP = null;
+  function captchaLib() {
+    if (window.IUCaptcha) return Promise.resolve(window.IUCaptcha);
+    if (!captchaP) captchaP = new Promise((resolve) => {
+      const s = document.createElement('script');
+      s.src = '/spam-koruma.js?v=20261002-spam';
+      s.async = true;
+      s.onload = () => resolve(window.IUCaptcha || null);
+      s.onerror = () => { captchaP = null; resolve(null); };
+      document.head.appendChild(s);
+    });
+    return captchaP;
+  }
+  const subStarted = Date.now();
+  async function postSubscribe(body) {
+    const send = async (captcha) => {
+      try {
+        const r = await fetch('/api/abone', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.assign({ t: Date.now() - subStarted, dil: IU_LANG }, body, captcha ? { captcha } : {})) });
+        let j = {}; try { j = await r.json(); } catch (_) {}
+        return { ok: r.ok && j.ok === true, code: j.code, message: j.message };
+      } catch (_) { return { ok: false, code: 'network' }; }
+    };
+    const c = await captchaLib();
+    const tok = c ? await c.token('abone') : null;
+    if (tok === '') return { ok: false, code: 'captcha_load' };
+    let res = await send(tok);
+    if (!res.ok && res.code === 'captcha' && !tok && c) {      // koruma bu sayfa açıkken açıldı → bir kez daha
+      await c.refresh();
+      const t2 = await c.token('abone');
+      if (t2) res = await send(t2);
+    }
+    return res;
+  }
+  function subscribeError(res) {
+    if (res.code === 'email') return 'Geçerli bir email girin.';
+    if (res.code === 'rate') return 'Çok fazla deneme. 1 saat sonra deneyin.';
+    if (res.code === 'captcha' || res.code === 'captcha_load') return 'Güvenlik doğrulaması tamamlanamadı. Sayfayı yenileyip tekrar deneyin.';
+    return 'Şu anda kayıt yapılamadı. Lütfen daha sonra tekrar deneyin.';
+  }
+
   async function handleSubscribe(e) {
     e.preventDefault();
     const btn = document.getElementById('iu-sub-btn');
     const originalText = btn.innerHTML;
+    const form = e.target;
+    if (form.website.value) return;
 
-    try {
-      const form = e.target;
-      if (form.website.value) return;
+    if (!Security.checkClientRateLimit('subscribe', 5, 3600000)) {
+      showMsg('iu-sub-msg', 'Çok fazla deneme. 1 saat sonra deneyin.', 'error');
+      return;
+    }
+    const email = form.email.value.trim().toLowerCase();
+    if (!Security.isValidEmail(email)) {
+      showMsg('iu-sub-msg', 'Geçerli bir email girin.', 'error');
+      return;
+    }
+    const kategoriler = Array.from(form.querySelectorAll('input[name="kat"]:checked')).map(c => c.value);
 
-      if (!Security.checkClientRateLimit('subscribe', 3, 3600000)) {
-        showMsg('iu-sub-msg', 'Çok fazla deneme. 1 saat sonra deneyin.', 'error');
-        return;
-      }
-
-      const email = form.email.value.trim().toLowerCase();
-      if (!Security.isValidEmail(email)) {
-        showMsg('iu-sub-msg', 'Geçerli bir email girin.', 'error');
-        return;
-      }
-
-      const kategoriler = Array.from(form.querySelectorAll('input[name="kat"]:checked')).map(c => c.value);
-
-      btn.disabled = true;
-      btn.innerHTML = '<span class="iu-spinner"></span>Kaydediliyor...';
-
-      const sb = initSupabase();
-      const { data, error } = await sb.from('subscribers').insert({
-        email,
-        ilgi_kategoriler: kategoriler,
-        language: 'tr',
-        signup_source: 'modal_widget',
-        user_agent: navigator.userAgent.substring(0, 500)
-      }).select('id').single();
-
-      if (error) {
-        if (error.code === '23505') {
-          showMsg('iu-sub-msg', 'Bu email zaten kayıtlı.', 'info');
-        } else {
-          showMsg('iu-sub-msg', 'Hata: ' + error.message, 'error');
-        }
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-        return;
-      }
-
-      // Verification email tetikle
-      fetch(`${CONFIG.SUPABASE_URL}/functions/v1/send-verification`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': CONFIG.SUPABASE_KEY,
-          'Authorization': `Bearer ${CONFIG.SUPABASE_KEY}`
-        },
-        body: JSON.stringify({ subscriberId: data.id })
-      }).catch(() => {});
-
+    btn.disabled = true;
+    btn.innerHTML = '<span class="iu-spinner"></span>' + Security.escapeHtml(tMsg('Kaydediliyor...'));
+    const res = await postSubscribe({ email, kategoriler, kaynak: 'modal_widget', website: form.website.value });
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    if (res.ok) {
       showMsg('iu-sub-msg', '✅ Kayıt başarılı! Email adresinize doğrulama linki gönderdik.', 'success');
       form.reset();
-
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-      }, 3000);
-
-    } catch (err) {
-      console.error('[Subscribe]', err);
-      showMsg('iu-sub-msg', 'Hata: ' + err.message, 'error');
-      btn.disabled = false;
-      btn.innerHTML = originalText;
+    } else {
+      showMsg('iu-sub-msg', subscribeError(res), 'error');
     }
   }
 
@@ -1702,6 +1720,7 @@
   function createFooterWidget() {
     const targets = document.querySelectorAll('#subscribe-form, .subscribe-form-container');
     targets.forEach(target => {
+      target.addEventListener('focusin', () => captchaLib().then(c => { const f = target.querySelector('form'); if (c && f) { c.warm('abone'); c.notice(f, 'abone'); } }), { once: true });
       target.innerHTML = `
         <div class="iu-widget">
           <h3>📬 Fırsatlardan İlk Siz Haberdar Olun</h3>
@@ -1766,6 +1785,10 @@
       document.querySelectorAll('.iu-tab-content').forEach(c => {
         c.classList.toggle('active', c.id === `iu-tab-${tab}`);
       });
+      if (tab === 'subscribe') {
+        const sf = document.getElementById('iu-subscribe-form');
+        if (sf) captchaLib().then(c => { if (c) c.notice(sf, 'abone'); });
+      }
     },
 
     /**
@@ -1821,33 +1844,17 @@
 
     async quickSubscribe(e) {
       e.preventDefault();
-      const email = e.target.querySelector('input').value.trim().toLowerCase();
-      if (!Security.isValidEmail(email)) { alert('Geçerli bir email girin'); return; }
-      if (!Security.checkClientRateLimit('quick_sub', 3, 3600000)) { alert('Çok fazla deneme. 1 saat sonra deneyin.'); return; }
-
-      const sb = initSupabase();
-      const { data, error } = await sb.from('subscribers').insert({
-        email, language: 'tr', signup_source: 'footer_widget',
-        user_agent: navigator.userAgent.substring(0, 500)
-      }).select('id').single();
-
-      if (error) {
-        alert(error.code === '23505' ? 'Bu email zaten kayıtlı!' : 'Hata: ' + error.message);
-        return;
-      }
-
-      fetch(`${CONFIG.SUPABASE_URL}/functions/v1/send-verification`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': CONFIG.SUPABASE_KEY,
-          'Authorization': `Bearer ${CONFIG.SUPABASE_KEY}`
-        },
-        body: JSON.stringify({ subscriberId: data.id })
-      }).catch(() => {});
-
-      e.target.reset();
-      alert('✅ Kayıt başarılı! Email doğrulama linki gönderdik.');
+      const form = e.target;
+      const input = form.querySelector('input[type="email"]');
+      const email = input.value.trim().toLowerCase();
+      if (!Security.isValidEmail(email)) { alert(tMsg('Geçerli bir email girin.')); return; }
+      if (!Security.checkClientRateLimit('quick_sub', 5, 3600000)) { alert(tMsg('Çok fazla deneme. 1 saat sonra deneyin.')); return; }
+      const btn = form.querySelector('button');
+      if (btn) btn.disabled = true;
+      const res = await postSubscribe({ email, kaynak: 'footer_widget' });
+      if (btn) btn.disabled = false;
+      if (res.ok) { form.reset(); alert(tMsg('✅ Kayıt başarılı! Email adresinize doğrulama linki gönderdik.')); }
+      else alert(tMsg(subscribeError(res)));
     },
 
     async toggleFavorite(propertyId) {

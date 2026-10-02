@@ -137,8 +137,38 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const isMarketing = !urlParams.get('token') && !!urlParams.get('m');
-    const token = urlParams.get('token') || urlParams.get('m');
+    const isAlarm = !urlParams.get('token') && !urlParams.get('m') && !!urlParams.get('alarm');
+    const token = urlParams.get('token') || urlParams.get('m') || urlParams.get('alarm');
     const content = document.getElementById('content');
+
+    // Arama alarmı e-postasındaki "Bu alarmı kapat" bağlantısı (Hesabım → Arama Alarmlarım)
+    function showAlarm(t) {
+      content.textContent = '';
+      const h = document.createElement('h1'); h.textContent = 'Arama alarmını kapat';
+      const p = document.createElement('p'); p.textContent = 'Bu arama alarmı için artık e-posta almak istemiyor musunuz? Alarmlarınızı istediğiniz zaman Hesabım sayfasından yeniden açabilirsiniz.';
+      const wrap = document.createElement('div'); wrap.style.marginTop = '24px';
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-danger'; b.textContent = 'Alarmı kapat';
+      const a = document.createElement('a'); a.href = '/hesabim#alarmlar'; a.className = 'btn btn-outline'; a.textContent = 'Hesabıma git';
+      wrap.append(b, ' ', a);
+      content.append(h, p, wrap);
+      b.addEventListener('click', async () => {
+        b.disabled = true;
+        try {
+          const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
+          const { data, error } = await supabase.rpc('iu_alarm_kapat', { p_token: t });
+          if (error) throw error;
+          content.textContent = '';
+          const h2 = document.createElement('h1'); h2.textContent = data && data.success ? 'Alarm kapatıldı' : 'İşlem yapılamadı';
+          const p2 = document.createElement('p');
+          p2.textContent = data && data.success ? '"' + String(data.arama_adi || '') + '" alarmı için artık e-posta gönderilmeyecek.' : String((data && data.message) || 'Bağlantı geçersiz olabilir.');
+          const back = document.createElement('a'); back.href = '/hesabim#alarmlar'; back.className = 'btn btn-primary'; back.textContent = 'Alarmlarımı yönet';
+          content.append(h2, p2, back);
+        } catch (err) {
+          b.disabled = false;
+          p.textContent = 'Şu anda işlem yapılamadı. Lütfen daha sonra tekrar deneyin veya Hesabım sayfasından alarmı kapatın.';
+        }
+      });
+    }
 
     if (!token || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token)) {
       content.innerHTML = `
@@ -147,6 +177,8 @@
         <p>Unsubscribe linki geçersiz. Lütfen emailinizdeki bağlantıya tıkladığınızdan emin olun.</p>
         <a href="https://ismailunsal.com.tr" class="btn btn-outline">Ana Sayfaya Dön</a>
       `;
+    } else if (isAlarm) {
+      showAlarm(token);
     } else {
       showConfirmation(token);
     }

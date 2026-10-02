@@ -6,7 +6,7 @@
  * action "gonder": { audience, subject, html, preheader? } → toplu gönderim
  *
  * audience = {
- *   aboneler: bool, musteriler: bool, listeler: [etiket...], manuel: "a@b.com, c@d.com",
+ *   aboneler: bool, musteriler: bool, gruplar: [grup_id...], listeler: [eski etiket...], manuel: "a@b.com, c@d.com",
  *   filtre: { kategoriler: [...], bolgeler: [...], diller: [...] }   // sadece abonelere uygulanır
  * }
  *
@@ -93,6 +93,12 @@ async function resolveAudience(a, token) {
   if (a.musteriler) {
     const leads = await sbGet('/rest/v1/leads?email=not.is.null&select=email,isim&order=created_at.desc&limit=5000', token);
     leads.forEach(l => add(l.email, l.isim, 'musteri'));
+  }
+  // Müşteri Grupları (panel → Müşteri Grupları)
+  const groups = Array.isArray(a.gruplar) ? [...new Set(a.gruplar.map(String).filter(g => UUID_RE.test(g)))].slice(0, 50) : [];
+  if (groups.length) {
+    const rows = await sbGet(`/rest/v1/musteri_grup_uyeleri?grup_id=in.(${groups.join(',')})&select=email,ad&limit=20000`, token);
+    rows.forEach(r => add(r.email, r.ad, 'grup'));
   }
   const tags = arr(a.listeler, 20);
   if (tags.length) {

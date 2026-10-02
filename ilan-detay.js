@@ -440,6 +440,23 @@
     }
   }
 
+  // Hesabım → "Son baktığınız ilanlar" (yalnızca bu tarayıcıda; sunucuya gönderilmez)
+  function rememberViewed(p, img) {
+    try {
+      const KEY = 'iu_son_bakilan';
+      const item = {
+        id: String(p.id), slug: /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug || '') ? p.slug : '',
+        t: String(title(p)).slice(0, 140), f: Number(p.fiyat) || 0, c: String(p.para_birimi || 'TL').slice(0, 5),
+        l: [p.mahalle, p.ilce].filter(Boolean).join(', ').slice(0, 80),
+        i: typeof img === 'string' && /^https:\/\//i.test(img) ? img.slice(0, 500) : '', at: Date.now()
+      };
+      let arr = JSON.parse(localStorage.getItem(KEY) || '[]');
+      if (!Array.isArray(arr)) arr = [];
+      arr = [item].concat(arr.filter(x => x && x.id !== item.id)).slice(0, 8);
+      localStorage.setItem(KEY, JSON.stringify(arr));
+    } catch (_) {}
+  }
+
   // ---------------- ANA AKIŞ ----------------
   async function main() {
     const key = readKey();
@@ -473,6 +490,7 @@
     if (!images.length) images = [F.getMainImage(p)];
 
     applySEO(p, images);
+    rememberViewed(p, images[0]);
 
     const cp = categoryPage(p);
     const crumbs = el('nav', { class: 'ild-crumbs', 'aria-label': 'Sayfa yolu' }, [

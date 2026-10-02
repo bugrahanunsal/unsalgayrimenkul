@@ -1219,6 +1219,9 @@ a.lead-v:hover { text-decoration: underline; }
   .lead-card { padding: 16px; }
   .lead-actions-main { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
 }
+/* Mesaj kartında "Gruba ekle" (Müşteri Grupları) */
+.lead-actions-main .lead-group { width: auto; min-width: 150px; max-width: 220px; }
+@media (max-width: 640px) { .lead-actions-main .lead-group { width: 100%; max-width: none; min-width: 0; } }
 
 /* Tablo satırı işlemleri: tek satırda, eşit kare simge butonları */
 .row-actions { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }

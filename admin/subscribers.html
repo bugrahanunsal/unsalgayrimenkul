@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-durum">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-spam">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
@@ -20,6 +20,13 @@
     .prefs-tags { display: flex; gap: 4px; flex-wrap: wrap; }
     .prefs-tag { background: #f0f9ff; color: #0369a1; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
     .reason-icon { font-size: 18px; }
+    .sub-pick-cell { width: 36px; }
+    .sub-pick-cell input { width: 17px; height: 17px; accent-color: #2563EB; }
+    .grp-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+    .grp-tag { background: #EEF2FF; color: #3730A3; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+    .bulk-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; position: sticky; top: 8px; z-index: 5; margin-bottom: 12px; border: 1.5px solid #0A2A5E; }
+    .bulk-bar b { color: #0A2A5E; }
+    .bulk-bar .form-select, .bulk-bar .form-input { width: auto; min-width: 200px; flex: 1 1 200px; }
   </style>
 </head>
 <body>
@@ -67,6 +74,15 @@
               <option value="admin_iptal">Admin Çıkardı</option>
             </select>
           </div>
+        </div>
+
+        <!-- Seçilenleri gruba ekle -->
+        <div class="card bulk-bar" id="bulkBar" hidden>
+          <span><b id="bulkCount">0</b> abone seçildi</span>
+          <select id="bulkGroup" class="form-select form-select-sm" aria-label="Grup seçin"></select>
+          <input id="bulkNewName" class="form-input" maxlength="60" placeholder="Yeni grup adı" aria-label="Yeni grup adı" hidden>
+          <button type="button" class="btn btn-primary btn-sm" id="bulkAdd">Gruba ekle</button>
+          <button type="button" class="btn btn-outline btn-sm" id="bulkClear">Seçimi temizle</button>
         </div>
 
         <!-- Abone Listesi -->
@@ -121,20 +137,25 @@
   </div>
 
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
-  <script src="/admin/assets/security.js?v=20260929-of"></script>
-  <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20261002-btn"></script>
+  <script src="/admin/assets/security.js?v=20261002-spam"></script>
+  <script src="/admin/assets/auth.js?v=20261002-spam"></script>
+  <script src="/admin/assets/app.js?v=20261002-spam"></script>
 
   <script>
     let subscribers = [];
     let filtered = [];
+    let groups = [];                    // Müşteri Grupları
+    let groupsByEmail = new Map();      // e-posta → [grup adı]
+    const picked = new Set();           // seçili aboneler (e-posta)
 
     (async () => {
       const authed = await App.init('subscribers');
       if (!authed) return;
 
       await loadStats();
+      await loadGroups();
       await loadSubscribers();
+      setupBulk();
 
       document.getElementById('searchInput').addEventListener('input', applyFilters);
       document.getElementById('statusFilter').addEventListener('change', applyFilters);
@@ -194,6 +215,79 @@
       }
     }
 
+    // ---- Müşteri Grupları: seçilen aboneleri bir gruba ekle ----
+    async function loadGroups() {
+      try {
+        const { data, error } = await supabaseClient.rpc('iu_grup_ozet');
+        groups = !error && Array.isArray(data) ? data : [];
+        groupsByEmail = new Map();
+        if (groups.length) {
+          const { data: m } = await supabaseClient.from('musteri_grup_uyeleri').select('email,grup_id').limit(50000);
+          const names = new Map(groups.map(g => [g.id, g.ad]));
+          (m || []).forEach(r => { const n = names.get(r.grup_id); if (!n) return; const a = groupsByEmail.get(r.email) || []; a.push(n); groupsByEmail.set(r.email, a); });
+        }
+      } catch (_) { groups = []; }
+      const sel = document.getElementById('bulkGroup');
+      sel.textContent = '';
+      const o0 = document.createElement('option'); o0.value = ''; o0.textContent = groups.length ? 'Grup seçin…' : 'Henüz grup yok'; sel.appendChild(o0);
+      groups.forEach(g => { const o = document.createElement('option'); o.value = g.id; o.textContent = g.ad + ' (' + g.uye + ')'; sel.appendChild(o); });
+      const on = document.createElement('option'); on.value = '__new'; on.textContent = '+ Yeni grup oluştur'; sel.appendChild(on);
+    }
+    function updateBulk() {
+      document.getElementById('bulkBar').hidden = !picked.size;
+      document.getElementById('bulkCount').textContent = picked.size.toLocaleString('tr-TR');
+      const all = document.getElementById('pickAllSubs');
+      if (all) { const vis = filtered.map(x => String(x.email).toLowerCase()); all.checked = vis.length > 0 && vis.every(e => picked.has(e)); }
+    }
+    function setupBulk() {
+      const list = document.getElementById('subscribersList');
+      list.addEventListener('change', (e) => {
+        const t = e.target;
+        if (t.id === 'pickAllSubs') {
+          filtered.forEach(x => { const em = String(x.email).toLowerCase(); if (t.checked) picked.add(em); else picked.delete(em); });
+          list.querySelectorAll('input.sub-pick').forEach(cb => { cb.checked = t.checked; });
+        } else if (t.classList && t.classList.contains('sub-pick')) {
+          if (t.checked) picked.add(t.dataset.email); else picked.delete(t.dataset.email);
+        } else return;
+        updateBulk();
+      });
+      const sel = document.getElementById('bulkGroup'), nn = document.getElementById('bulkNewName');
+      sel.addEventListener('change', () => { nn.hidden = sel.value !== '__new'; if (!nn.hidden) nn.focus(); });
+      document.getElementById('bulkClear').addEventListener('click', () => { picked.clear(); renderList(); updateBulk(); });
+      document.getElementById('bulkAdd').addEventListener('click', addPickedToGroup);
+    }
+    async function addPickedToGroup() {
+      const sel = document.getElementById('bulkGroup'), nn = document.getElementById('bulkNewName');
+      let gid = sel.value, gname = '';
+      try {
+        if (!picked.size) return;
+        if (gid === '__new') {
+          gname = String(nn.value || '').replace(/[<>"{}\\]/g, '').replace(/\s+/g, ' ').trim().slice(0, 60);
+          if (!gname) { nn.focus(); return; }
+          const { data, error } = await supabaseClient.from('musteri_gruplari').insert({ ad: gname }).select('id').single();
+          if (error) throw error;
+          gid = data.id;
+        } else {
+          const g = groups.find(x => x.id === gid);
+          if (!g) { App.toast('Önce bir grup seçin', 'warning'); sel.focus(); return; }
+          gname = g.ad;
+        }
+        const byEmail = new Map(subscribers.map(x => [String(x.email).toLowerCase(), x]));
+        const rows = [...picked].map(em => ({ grup_id: gid, email: em, ad: ((byEmail.get(em) || {}).full_name || '').slice(0, 100) || null, kaynak: 'abone' }));
+        for (let i = 0; i < rows.length; i += 500) {
+          const { error } = await supabaseClient.from('musteri_grup_uyeleri').upsert(rows.slice(i, i + 500), { onConflict: 'grup_id,email', ignoreDuplicates: true });
+          if (error) throw error;
+        }
+        try { await Security.logSecurityEvent('group_members_added', { grup_id: gid, count: rows.length, kaynak: 'abone' }, 'info'); } catch (_) {}
+        App.toast(rows.length + ' abone "' + gname + '" grubuna eklendi', 'success', 'Müşteri Grupları');
+        picked.clear(); nn.value = ''; nn.hidden = true;
+        await loadGroups(); renderList(); updateBulk();
+      } catch (error) {
+        const m = String(error && error.message || error);
+        App.toast(/musteri_grup|does not exist/.test(m) ? 'Veritabanı kurulumu eksik (spam/gruplar SQL dosyasını çalıştırın).' : /duplicate|23505/.test(m) ? 'Bu adda bir grup zaten var; listeden seçin.' : m, 'error');
+      }
+    }
+
     function applyFilters() {
       const search = document.getElementById('searchInput').value.toLowerCase();
       const status = document.getElementById('statusFilter').value;
@@ -222,6 +316,7 @@
       });
 
       renderList();
+      updateBulk();
     }
 
     function renderList() {
@@ -258,6 +353,7 @@
           <table class="table">
             <thead>
               <tr>
+                <th class="sub-pick-cell"><input type="checkbox" id="pickAllSubs" aria-label="Görünen tüm aboneleri seç"></th>
                 <th>Email / İsim</th>
                 <th>Dil</th>
                 <th>Tercihler</th>
@@ -274,8 +370,10 @@
 
                 return `
                 <tr class="subscriber-row">
+                  <td class="sub-pick-cell"><input type="checkbox" class="sub-pick" data-email="${Security.escapeHtml(String(s.email).toLowerCase())}" ${picked.has(String(s.email).toLowerCase()) ? 'checked' : ''} aria-label="Seç"></td>
                   <td>
                     <div style="font-weight: 600;">${Security.escapeHtml(s.email)}</div>
+                    ${(groupsByEmail.get(String(s.email).toLowerCase()) || []).length ? `<div class="grp-tags">${groupsByEmail.get(String(s.email).toLowerCase()).map(n => `<span class="grp-tag">${Security.escapeHtml(n)}</span>`).join('')}</div>` : ''}
                     ${s.full_name ? `<div style="font-size: 12px; color: var(--text-muted);">${Security.escapeHtml(s.full_name)}</div>` : ''}
                     ${s.phone ? `<div style="font-size: 12px; color: var(--text-muted);"><i class="ic ic-phone" aria-hidden="true"></i> ${Security.escapeHtml(s.phone)}</div>` : ''}
                   </td>

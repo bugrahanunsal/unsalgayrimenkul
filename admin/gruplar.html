@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Müşteri Grupları - Admin Panel</title>
+  <link rel="icon" type="image/svg+xml" href="/admin/assets/admin-icon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
+  <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
+  <meta name="theme-color" content="#0A2A5E">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-spam">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .gr-grid{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:18px;align-items:start}
+    .gr-grid>.card{min-width:0}
+    @media(max-width:1100px){.gr-grid{grid-template-columns:minmax(0,1fr)}}
+    .gr-list{display:grid;gap:6px;margin-top:12px;max-height:62vh;overflow:auto;padding-right:2px}
+    .gr-item{display:block;width:100%;text-align:left;border:1.5px solid #E2E8F0;background:#fff;border-radius:10px;padding:10px 12px;cursor:pointer;font:inherit;color:#0A2A5E}
+    .gr-item:hover{border-color:#93C5FD}
+    .gr-item[aria-current="true"]{border-color:#0A2A5E;background:#0A2A5E;color:#fff}
+    .gr-item b{display:block;font-size:14px;overflow-wrap:anywhere}
+    .gr-item small{display:block;font-size:12px;color:#64748B;margin-top:2px}
+    .gr-item[aria-current="true"] small{color:#CBD5E1}
+    .gr-new{border:1.5px dashed #CBD5E1;border-radius:12px;padding:12px;margin-top:12px;background:#F8FAFC}
+    .gr-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-bottom:14px}
+    .gr-title{font-size:20px;font-weight:800;color:#0A2A5E;overflow-wrap:anywhere}
+    .gr-desc{color:#64748B;font-size:13.5px;margin-top:4px;max-width:60ch}
+    .gr-counts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .gr-counts span{background:#F1F5F9;border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:700;color:#334155}
+    .gr-head-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .gr-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;border-bottom:1px solid #E2E8F0;padding-bottom:10px}
+    .gr-tab{border:1.5px solid #E2E8F0;background:#fff;border-radius:999px;padding:7px 13px;font:inherit;font-size:13px;font-weight:700;color:#334155;cursor:pointer;min-height:36px}
+    .gr-tab[aria-selected="true"]{background:#0A2A5E;border-color:#0A2A5E;color:#fff}
+    .gr-add{border:1px solid #E2E8F0;border-radius:12px;padding:14px;margin-bottom:18px;background:#FCFDFE}
+    .gr-pick{max-height:300px;overflow:auto;border:1px solid #E2E8F0;border-radius:10px;background:#fff}
+    .gr-pick label{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-bottom:1px solid #F1F5F9;cursor:pointer;font-size:13.5px}
+    .gr-pick label:last-child{border-bottom:0}
+    .gr-pick input{width:17px;height:17px;accent-color:#2563EB;margin-top:2px;flex-shrink:0}
+    .gr-pick .who{min-width:0}
+    .gr-pick .who b{display:block;color:#0A2A5E;overflow-wrap:anywhere}
+    .gr-pick .who small{display:block;color:#64748B;font-size:12px;overflow-wrap:anywhere}
+    .gr-pick label.in{opacity:.55;cursor:default}
+    .gr-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+    .gr-tools .form-input{flex:1;min-width:180px}
+    .gr-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+    .gr-table{width:100%;border-collapse:collapse;font-size:13px}
+    .gr-table th{text-align:left;color:#64748B;font-weight:700;padding:8px;border-bottom:1px solid #E2E8F0;white-space:nowrap}
+    .gr-table td{padding:8px;border-bottom:1px solid #F1F5F9;vertical-align:middle}
+    .gr-table td.em{overflow-wrap:anywhere;word-break:break-word;min-width:130px}
+    #detail{container-type:inline-size}
+    .gr-src{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:700;background:#F1F5F9;color:#334155;white-space:nowrap}
+    .gr-empty{color:#64748B;font-size:14px;padding:24px 8px;text-align:center}
+    .gr-drop{border:2px dashed #CBD5E1;border-radius:12px;padding:20px 14px;text-align:center;color:#475569;cursor:pointer;background:#F8FAFC}
+    .gr-drop.over{border-color:#2563EB;background:#EFF6FF}
+    .gr-consent{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#334155;background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:10px 12px;margin-top:10px}
+    .gr-consent input{margin-top:2px;flex-shrink:0}
+    .gr-edit{display:grid;gap:8px;margin-bottom:14px}
+    @container (max-width:720px){.gr-table th:nth-child(5),.gr-table td:nth-child(5){display:none}}
+    @container (max-width:520px){.gr-table th:nth-child(3),.gr-table td:nth-child(3){display:none}}
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">Müşteri Grupları</h1>
+        <div class="topbar-actions"><a href="/admin/campaigns.html" class="btn btn-outline btn-sm"><i class="ic ic-send" aria-hidden="true"></i> Kampanyalar</a><div class="user-menu" id="userMenu"></div></div>
+      </header>
+      <div class="page-content">
+        <div class="gr-grid">
+          <section class="card" aria-labelledby="gt">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <h2 class="card-title" id="gt">Gruplar <span id="gCount" style="color:#64748B;font-weight:600;font-size:14px;"></span></h2>
+              <button type="button" class="btn btn-primary btn-sm" id="newBtn"><i class="ic ic-plus" aria-hidden="true"></i> Yeni grup</button>
+            </div>
+            <form class="gr-new" id="newForm" hidden>
+              <div class="form-group" style="margin-bottom:8px;"><label class="form-label" for="newName">Grup adı</label><input id="newName" class="form-input" maxlength="60" required placeholder="Örn: Sıcak alıcılar, Yatırımcılar, Almanya"></div>
+              <div class="form-group" style="margin-bottom:10px;"><label class="form-label" for="newDesc">Açıklama (isteğe bağlı)</label><input id="newDesc" class="form-input" maxlength="300" placeholder="Bu grubu ne için kullanacaksınız?"></div>
+              <div style="display:flex;gap:8px;justify-content:flex-end;"><button type="button" class="btn btn-outline btn-sm" id="newCancel">Vazgeç</button><button type="submit" class="btn btn-primary btn-sm">Oluştur</button></div>
+            </form>
+            <input id="gSearch" class="form-input" placeholder="Grup ara…" style="margin-top:12px;" aria-label="Grup ara">
+            <div class="gr-list" id="gList"></div>
+          </section>
+
+          <section class="card" id="detail" aria-live="polite">
+            <div class="gr-empty" id="noGroup">Soldan bir grup seçin veya <b>Yeni grup</b> oluşturun.<br><br>Gruplar; abonelerinizi, mesaj bırakan müşterilerinizi ve hesap sahiplerini ihtiyacınıza göre ayırmanızı sağlar. Kampanya gönderirken "Müşteri gruplarım" listesinden seçebilirsiniz.</div>
+            <div id="groupView" hidden>
+              <div class="gr-head">
+                <div style="min-width:0;">
+                  <div class="gr-title" id="gName"></div>
+                  <div class="gr-desc" id="gDesc"></div>
+                  <div class="gr-counts" id="gCounts"></div>
+                </div>
+                <div class="gr-head-actions">
+                  <a class="btn btn-primary btn-sm" id="sendLink" href="/admin/campaigns.html"><i class="ic ic-send" aria-hidden="true"></i> Bu gruba kampanya</a>
+                  <button type="button" class="btn btn-outline btn-sm" id="editBtn"><i class="ic ic-edit" aria-hidden="true"></i> Düzenle</button>
+                  <button type="button" class="btn btn-outline-danger btn-sm btn-icon" id="delBtn" title="Grubu sil" aria-label="Grubu sil"><i class="ic ic-trash" aria-hidden="true"></i></button>
+                </div>
+              </div>
+              <form class="gr-edit" id="editForm" hidden>
+                <input id="editName" class="form-input" maxlength="60" required aria-label="Grup adı">
+                <input id="editDesc" class="form-input" maxlength="300" placeholder="Açıklama" aria-label="Açıklama">
+                <div style="display:flex;gap:8px;justify-content:flex-end;"><button type="button" class="btn btn-outline btn-sm" id="editCancel">Vazgeç</button><button type="submit" class="btn btn-primary btn-sm">Kaydet</button></div>
+              </form>
+
+              <div class="gr-add">
+                <div class="form-label" style="margin-bottom:8px;">Gruba kişi ekle</div>
+                <div class="gr-tabs" role="tablist" id="srcTabs">
+                  <button type="button" class="gr-tab" role="tab" data-src="abone" aria-selected="true">Abonelerden</button>
+                  <button type="button" class="gr-tab" role="tab" data-src="musteri" aria-selected="false">Mesaj bırakanlardan</button>
+                  <button type="button" class="gr-tab" role="tab" data-src="hesap" aria-selected="false">Hesap sahiplerinden</button>
+                  <button type="button" class="gr-tab" role="tab" data-src="manuel" aria-selected="false">E-posta yaz</button>
+                  <button type="button" class="gr-tab" role="tab" data-src="csv" aria-selected="false">CSV yükle</button>
+                </div>
+                <div id="pickPane">
+                  <div class="gr-tools"><input id="pickSearch" class="form-input" placeholder="İsim veya e-posta ara…" aria-label="Kişi ara"><button type="button" class="btn btn-outline btn-sm" id="pickAll">Görünenleri seç</button></div>
+                  <div class="gr-pick" id="pickList"></div>
+                  <div class="gr-foot"><span class="form-help" id="pickNote"></span><button type="button" class="btn btn-primary btn-sm" id="pickAdd" disabled>Seçilenleri ekle</button></div>
+                </div>
+                <div id="manualPane" hidden>
+                  <textarea id="manualEmails" class="form-textarea" rows="4" placeholder="ahmet@gmail.com, ayse@hotmail.com&#10;her satıra veya virgülle ayırarak"></textarea>
+                  <label class="gr-consent"><input type="checkbox" id="manualConsent"> <span>Bu kişilerin bizden e-posta almayı kabul ettiğini onaylıyorum (KVKK / ticari ileti onayı).</span></label>
+                  <div class="gr-foot"><span class="form-help" id="manualNote"></span><button type="button" class="btn btn-primary btn-sm" id="manualAdd" disabled>Ekle</button></div>
+                </div>
+                <div id="csvPane" hidden>
+                  <div class="form-help" style="margin-bottom:10px;">Excel'de <b>Farklı Kaydet → CSV</b>. İlk satır başlık: <b>email</b> (zorunlu), <b>ad</b>, <b>telefon</b>, <b>bolge</b>. Türkçe başlıklar da tanınır.</div>
+                  <div class="gr-drop" id="drop" tabindex="0" role="button" aria-label="CSV dosyası seç">CSV dosyasını buraya sürükleyin veya <b>tıklayıp seçin</b><input type="file" id="csvFile" accept=".csv,text/csv,text/plain" hidden></div>
+                  <div id="csvInfo" style="margin-top:10px;font-size:13px;"></div>
+                  <label class="gr-consent"><input type="checkbox" id="csvConsent"> <span>Bu listedeki kişilerin bizden <b>e-posta almayı kabul ettiğini</b> onaylıyorum (KVKK / ticari ileti onayı).</span></label>
+                  <div class="gr-foot"><span></span><button type="button" class="btn btn-primary btn-sm" id="csvAdd" disabled>Gruba ekle</button></div>
+                </div>
+              </div>
+
+              <div class="gr-tools">
+                <div class="card-title" style="flex:1;min-width:120px;">Gruptakiler <span id="mCount" style="color:#64748B;font-weight:600;font-size:14px;"></span></div>
+                <input id="mSearch" class="form-input" placeholder="Grupta ara…" style="max-width:240px;" aria-label="Grupta ara">
+                <button type="button" class="btn btn-outline btn-sm" id="exportBtn"><i class="ic ic-download" aria-hidden="true"></i> CSV indir</button>
+              </div>
+              <div style="overflow:auto;"><table class="gr-table"><thead><tr><th>E-posta</th><th>Ad</th><th>Kaynak</th><th>Durum</th><th>Eklendi</th><th></th></tr></thead><tbody id="mRows"></tbody></table></div>
+              <div id="mMore" style="text-align:center;margin-top:10px;"></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
+  <script src="/admin/assets/security.js?v=20261002-spam"></script>
+  <script src="/admin/assets/auth.js?v=20261002-spam"></script>
+  <script src="/admin/assets/app.js?v=20261002-spam"></script>
+  <script src="/admin/assets/gruplar.js?v=20261002-spam"></script>
+</body>
+</html>

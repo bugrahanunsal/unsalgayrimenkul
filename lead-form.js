@@ -3,12 +3,31 @@
  * Talep hem admin → Başvurular'a kaydedilir hem ismunsal.59@gmail.com'a e-posta gider.
  *  - IULead.send(payload) → { ok, error }
  *  - IULead.bind(form, { kaynak, extra() }) → form'u otomatik bağlar
+ * Spam koruması (reCAPTCHA) panelden açıldıysa gönderim anında doğrulama anahtarı eklenir (/spam-koruma.js).
  * Tarayıcıda hiçbir gizli anahtar yoktur.
  */
 (function () {
   'use strict';
 
-  async function send(payload) {
+  let captchaP = null;
+  function captchaLib() {
+    if (window.IUCaptcha) return Promise.resolve(window.IUCaptcha);
+    if (!captchaP) captchaP = new Promise((resolve) => {
+      const s = document.createElement('script');
+      s.src = '/spam-koruma.js?v=20261002-spam';
+      s.async = true;
+      s.onload = () => resolve(window.IUCaptcha || null);
+      s.onerror = () => { captchaP = null; resolve(null); };
+      document.head.appendChild(s);
+    });
+    return captchaP;
+  }
+  async function captchaToken(form) {
+    const c = await captchaLib();
+    return c ? c.token(form) : null;
+  }
+
+  async function post(payload) {
     try {
       const r = await fetch('/api/talep', {
         method: 'POST',
@@ -17,10 +36,24 @@
       });
       let j = {};
       try { j = await r.json(); } catch (_) {}
-      return { ok: r.ok && j.ok === true, error: j.error };
+      return { ok: r.ok && j.ok === true, error: j.error, code: j.code };
     } catch (e) {
       return { ok: false, error: null };
     }
+  }
+
+  async function send(payload) {
+    const form = payload && payload.kaynak === 'ilan' ? 'ilan' : 'iletisim';
+    const token = await captchaToken(form);
+    if (token === '') return { ok: false, error: 'Güvenlik doğrulaması yüklenemedi (reklam engelleyici açık olabilir). Sayfayı yenileyip tekrar deneyin.' };
+    let res = await post(Object.assign({}, payload, token ? { captcha: token } : {}));
+    // Koruma bu sayfa açıkken açıldıysa: ayarı yenile, bir kez daha dene
+    if (!res.ok && res.code === 'captcha' && !token && window.IUCaptcha) {
+      await window.IUCaptcha.refresh();
+      const t2 = await window.IUCaptcha.token(form);
+      if (t2) res = await post(Object.assign({}, payload, { captcha: t2 }));
+    }
+    return res;
   }
 
   function waFallback(d) {
@@ -33,6 +66,10 @@
     opts = opts || {};
     const started = Date.now();
     const msgBox = form.querySelector('[data-lead-msg]');
+    const cform = opts.kaynak === 'ilan' ? 'ilan' : 'iletisim';
+    // Koruma açıksa Google'ın istediği bilgilendirme notu; forma dokununca reCAPTCHA önceden yüklenir
+    captchaLib().then(c => { if (c) c.notice(form, cform); });
+    form.addEventListener('focusin', () => { captchaLib().then(c => { if (c) c.warm(cform); }); }, { once: true });
     const say = (t, ok) => { if (!msgBox) return; msgBox.textContent = t; msgBox.className = msgBox.className.replace(/\s*\b(ok|err)\b/g, '') + (ok ? ' ok' : ' err'); };
 
     form.addEventListener('submit', async (e) => {

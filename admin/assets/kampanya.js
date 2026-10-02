@@ -13,6 +13,8 @@
   let props = {};
   let countTimer = null;
   let lastCount = 0;
+  let groups = [];                 // iu_grup_ozet()
+  const selGroups = new Set();     // seçili grup id'leri
 
   function chip(box, name, v, l) {
     const lb = document.createElement('label'); lb.className = 'chip';
@@ -25,10 +27,51 @@
     return {
       aboneler: $('useAbone').checked,
       musteriler: $('useMusteri').checked,
-      listeler: $('useListe').checked ? checked('liste') : [],
+      gruplar: $('useGrup').checked ? [...selGroups] : [],
       manuel: $('useManuel').checked ? $('manuel').value.slice(0, 20000) : '',
       filtre: { kategoriler: checked('kat'), bolgeler: checked('bolge'), diller: checked('dil') }
     };
+  }
+
+  // ---- Müşteri grupları: açılır çoklu seçim ----
+  async function loadGroups() {
+    const { data, error } = await supabaseClient.rpc('iu_grup_ozet');
+    groups = error ? [] : (Array.isArray(data) ? data : []);
+    [...selGroups].forEach(id => { if (!groups.some(g => g.id === id)) selGroups.delete(id); });
+    renderGroupList(); renderGroupChips();
+    return !error;
+  }
+  function renderGroupList() {
+    const box = $('gpList'); box.textContent = '';
+    const q = $('gpSearch').value.trim().toLocaleLowerCase('tr-TR');
+    const list = groups.filter(g => !q || g.ad.toLocaleLowerCase('tr-TR').includes(q));
+    if (!groups.length) { const d = document.createElement('div'); d.className = 'gp-empty'; d.textContent = 'Henüz grup yok. "Yeni grup oluştur" ile başlayın.'; box.appendChild(d); return; }
+    if (!list.length) { const d = document.createElement('div'); d.className = 'gp-empty'; d.textContent = 'Aramaya uyan grup yok.'; box.appendChild(d); return; }
+    list.forEach(g => {
+      const lb = document.createElement('label');
+      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = g.id; cb.checked = selGroups.has(g.id);
+      const t = document.createElement('span'); t.textContent = g.ad;
+      const sm = document.createElement('small');
+      sm.textContent = (g.ulasilabilir != null ? g.ulasilabilir : g.uye).toLocaleString('tr-TR') + ' kişiye ulaşılabilir' + (g.aciklama ? ' · ' + g.aciklama : '');
+      t.appendChild(sm); lb.append(cb, t); box.appendChild(lb);
+    });
+  }
+  function renderGroupChips() {
+    const box = $('gpChips'); box.textContent = '';
+    groups.filter(g => selGroups.has(g.id)).forEach(g => {
+      const c = document.createElement('span'); c.className = 'gp-chip';
+      c.appendChild(document.createTextNode(g.ad + ' (' + (g.ulasilabilir != null ? g.ulasilabilir : g.uye) + ')'));
+      const x = document.createElement('button'); x.type = 'button'; x.textContent = '×'; x.dataset.id = g.id;
+      x.setAttribute('aria-label', g.ad + ' grubunu kaldır');
+      c.appendChild(x); box.appendChild(c);
+    });
+    const n = selGroups.size;
+    $('gpBtn').textContent = n ? (n === 1 ? (groups.find(g => selGroups.has(g.id)) || {}).ad || '1 grup seçildi' : n + ' grup seçildi') : 'Grup seçin';
+  }
+  function openGroups(open) {
+    $('gpPanel').hidden = !open;
+    $('gpBtn').setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) { $('gpSearch').value = ''; renderGroupList(); $('gpSearch').focus(); }
   }
   async function api(body) {
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -39,13 +82,13 @@
     return j;
   }
   function refreshSources() {
-    ['Abone', 'Musteri', 'Liste', 'Manuel'].forEach(k => $('src' + k).classList.toggle('on', $('use' + k).checked));
+    ['Abone', 'Musteri', 'Grup', 'Manuel'].forEach(k => $('src' + k).classList.toggle('on', $('use' + k).checked));
     scheduleCount();
   }
   function scheduleCount() { clearTimeout(countTimer); countTimer = setTimeout(count, 600); }
   async function count() {
     const a = audience();
-    if (!a.aboneler && !a.musteriler && !a.listeler.length && !a.manuel.trim()) { $('cnt').textContent = '0'; $('cntNote').textContent = 'Kaynak seçin'; lastCount = 0; return; }
+    if (!a.aboneler && !a.musteriler && !a.gruplar.length && !a.manuel.trim()) { $('cnt').textContent = '0'; $('cntNote').textContent = $('useGrup').checked && !a.gruplar.length ? 'Grup seçin' : 'Kaynak seçin'; lastCount = 0; return; }
     $('cntNote').textContent = 'Hesaplanıyor…';
     try {
       const j = await api({ action: 'kitle', audience: a });
@@ -150,14 +193,25 @@
     KATS.forEach(([v, l]) => chip($('fKat'), 'kat', v, l));
     (window.ILCELER || []).forEach(v => chip($('fBolge'), 'bolge', v, v));
     DILLER.forEach(([v, l]) => chip($('fDil'), 'dil', v, l));
-    try {
-      const { data } = await supabaseClient.from('marketing_contacts').select('tags').eq('unsubscribed', false).limit(20000);
-      const cnt = new Map(); (data || []).forEach(r => (r.tags || []).forEach(t => cnt.set(t, (cnt.get(t) || 0) + 1)));
-      if (cnt.size) [...cnt.entries()].sort((a, b) => b[1] - a[1]).forEach(([t, n]) => chip($('fListe'), 'liste', t, `${t} (${n})`));
-      else { const m = document.createElement('div'); m.className = 'form-help'; m.textContent = 'Henüz liste yok.'; $('fListe').appendChild(m); }
-    } catch (_) {}
+    // Gruplar (?grup=<id> ile gelindiyse o grup seçili açılır)
+    const qGroup = new URLSearchParams(location.search).get('grup');
+    if (qGroup && /^[0-9a-f-]{36}$/i.test(qGroup)) selGroups.add(qGroup);
+    await loadGroups();
+    if (selGroups.size) { $('useGrup').checked = true; }
+    $('gpBtn').addEventListener('click', () => openGroups($('gpPanel').hidden));
+    $('gpDone').addEventListener('click', () => { openGroups(false); $('gpBtn').focus(); });
+    $('gpSearch').addEventListener('input', renderGroupList);
+    $('gpList').addEventListener('change', (e) => {
+      const cb = e.target; if (!cb || cb.type !== 'checkbox') return;
+      if (cb.checked) selGroups.add(cb.value); else selGroups.delete(cb.value);
+      renderGroupChips(); scheduleCount();
+    });
+    $('gpChips').addEventListener('click', (e) => { const b = e.target.closest('button[data-id]'); if (!b) return; selGroups.delete(b.dataset.id); renderGroupChips(); renderGroupList(); scheduleCount(); });
+    document.addEventListener('click', (e) => { if (!$('gpPanel').hidden && !$('gp').contains(e.target)) openGroups(false); });
+    $('gp').addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('gpPanel').hidden) { openGroups(false); $('gpBtn').focus(); } });
+    window.addEventListener('focus', () => { if (document.visibilityState === 'visible') loadGroups(); });
     $('testTo').value = (App.currentUser && App.currentUser.email) || '';
-    ['useAbone', 'useMusteri', 'useListe', 'useManuel'].forEach(id => $(id).addEventListener('change', refreshSources));
+    ['useAbone', 'useMusteri', 'useGrup', 'useManuel'].forEach(id => $(id).addEventListener('change', refreshSources));
     document.querySelectorAll('.cp-sub').forEach(x => x.addEventListener('change', scheduleCount));
     $('manuel').addEventListener('input', scheduleCount);
     $('cntBtn').onclick = count;
@@ -169,5 +223,6 @@
     window.addEventListener('focus', () => { if (document.visibilityState === 'visible') loadTemplates(true); });
     await loadTemplates(false);
     loadHistory();
+    if (selGroups.size) refreshSources();
   });
 })();

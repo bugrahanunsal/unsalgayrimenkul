@@ -103,6 +103,7 @@ const Auth = {
       // Clear sensitive data
       sessionStorage.clear();
       localStorage.removeItem('lastActivity');
+      localStorage.removeItem('iu_admin_ui');
 
       await supabaseClient.auth.signOut();
 
@@ -119,6 +120,8 @@ const Auth = {
    */
   async getCurrentUser() {
     try {
+      const c = typeof Security !== 'undefined' && Security._authCache;
+      if (c && c.user && c.profile && Date.now() - c.at < 15000) return { ...c.user, profile: c.profile };
       const { data: { user }, error } = await supabaseClient.auth.getUser();
       if (error || !user) return null;
 

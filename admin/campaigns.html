@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-durum">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-spam">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .cp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
@@ -36,6 +36,21 @@
     .cp-hist td,.cp-hist th{padding:9px 10px;border-bottom:1px solid #F1F5F9;text-align:left;font-size:13px}
     .cp-hist th{color:#64748B}
     .form-group{margin-bottom:12px}
+    .gp{position:relative;margin-bottom:8px}
+    .gp-btn{width:100%;text-align:left;cursor:pointer;color:#0A2A5E;font-weight:600;padding-right:40px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 14px center/16px 16px}
+    .gp-btn[aria-expanded="true"]{border-color:#2563EB}
+    .gp-panel{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 6px);background:#fff;border:1.5px solid #CBD5E1;border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.16);padding:10px}
+    .gp-list{max-height:260px;overflow:auto;margin:8px 0;display:grid;gap:4px}
+    .gp-list label{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:600;color:#0A2A5E;font-size:14px}
+    .gp-list label:hover{background:#F1F5F9}
+    .gp-list input{width:17px;height:17px;accent-color:#2563EB;margin-top:2px;flex-shrink:0}
+    .gp-list small{display:block;font-weight:500;color:#64748B;font-size:12px}
+    .gp-empty{color:#64748B;font-size:13px;padding:10px}
+    .gp-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #F1F5F9;padding-top:8px}
+    .gp-foot a{font-size:13px;font-weight:700}
+    .gp-chip{display:inline-flex;align-items:center;gap:6px;background:#0A2A5E;color:#fff;border-radius:999px;padding:5px 6px 5px 12px;font-size:12.5px;font-weight:700}
+    .gp-chip button{border:0;background:rgba(255,255,255,.18);color:#fff;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:13px;line-height:22px;padding:0}
+    .gp-chip button:hover{background:rgba(255,255,255,.32)}
   </style>
 </head>
 <body>
@@ -46,7 +61,7 @@
         <h1 class="page-title">E-posta Kampanyaları</h1>
         <div class="topbar-actions">
           <a href="/admin/email-tasarim.html" class="btn btn-outline btn-sm"><i class="ic ic-pen-tool" aria-hidden="true"></i> Tasarımlar</a>
-          <a href="/admin/kisiler.html" class="btn btn-outline btn-sm"><i class="ic ic-users" aria-hidden="true"></i> Kişi Listeleri</a>
+          <a href="/admin/gruplar.html" class="btn btn-outline btn-sm"><i class="ic ic-users" aria-hidden="true"></i> Müşteri Grupları</a>
           <div class="user-menu" id="userMenu"></div>
         </div>
       </header>
@@ -66,9 +81,19 @@
               <div class="cp-src" id="srcMusteri">
                 <label><input type="checkbox" id="useMusteri"> <span>Mesaj bırakan müşteriler<small>İlan veya iletişim formundan e-postasıyla yazanlar.</small></span></label>
               </div>
-              <div class="cp-src" id="srcListe">
-                <label><input type="checkbox" id="useListe"> <span>Kişi listelerim (CSV)<small>İçe aktardığınız listeler. <a href="/admin/kisiler.html">Liste yükle →</a></small></span></label>
-                <div class="cp-sub"><div class="chips" id="fListe"></div></div>
+              <div class="cp-src" id="srcGrup">
+                <label><input type="checkbox" id="useGrup"> <span>Müşteri gruplarım<small>Kaydettiğiniz gruplardan seçin (ör. Sıcak alıcılar, Yatırımcılar). <a href="/admin/gruplar.html">Grupları yönet →</a></small></span></label>
+                <div class="cp-sub">
+                  <div class="gp" id="gp">
+                    <button type="button" class="gp-btn form-select" id="gpBtn" aria-haspopup="true" aria-expanded="false" aria-controls="gpPanel">Grup seçin</button>
+                    <div class="gp-panel" id="gpPanel" hidden>
+                      <input class="form-input" id="gpSearch" placeholder="Grup ara…" aria-label="Grup ara">
+                      <div class="gp-list" id="gpList"></div>
+                      <div class="gp-foot"><a href="/admin/gruplar.html" target="_blank" rel="noopener">+ Yeni grup oluştur</a><button type="button" class="btn btn-primary btn-sm" id="gpDone">Tamam</button></div>
+                    </div>
+                  </div>
+                  <div class="chips" id="gpChips"></div>
+                </div>
               </div>
               <div class="cp-src" id="srcManuel">
                 <label><input type="checkbox" id="useManuel"> <span>Belirli e-postalar<small>Virgülle veya alt alta yazın.</small></span></label>
@@ -109,11 +134,11 @@
     </main>
   </div>
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
-  <script src="/admin/assets/security.js?v=20260929-of"></script>
-  <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20261002-btn"></script>
+  <script src="/admin/assets/security.js?v=20261002-spam"></script>
+  <script src="/admin/assets/auth.js?v=20261002-spam"></script>
+  <script src="/admin/assets/app.js?v=20261002-spam"></script>
   <script src="/cms-safe.js?v=20260929-of"></script>
   <script src="/admin/assets/email-render.js?v=20261001-medya"></script>
-  <script src="/admin/assets/kampanya.js?v=20261001-medya"></script>
+  <script src="/admin/assets/kampanya.js?v=20261002-grup"></script>
 </body>
 </html>

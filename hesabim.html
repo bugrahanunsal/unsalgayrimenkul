@@ -426,6 +426,116 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; animation: fadeIn 0.3s; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ===== Hesabım v2 (Ekim 2026) ===== */
+    [hidden] { display: none !important; }
+    .tab-content > .card + .card { margin-top: 20px; }
+    .toast-stack { position: fixed; top: 96px; right: 16px; z-index: 999; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; max-width: calc(100vw - 32px); }
+    .toast-stack .toast { position: static; transition: opacity .3s; }
+    .nav-count { margin-left: auto; background: var(--gray-100); color: var(--gray-700); border-radius: 999px; font-size: 11px; font-weight: 700; padding: 1px 8px; min-width: 22px; text-align: center; }
+    .nav-count:empty { display: none; }
+    .nav-item.active .nav-count { background: rgba(255,255,255,0.18); color: #fff; }
+    .nav-item:focus-visible, .ov-tile:focus-visible, .btn:focus-visible, .chip input:focus-visible + span, .seg input:focus-visible + span { outline: 3px solid #93C5FD; outline-offset: 2px; }
+    .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+    .hint { font-size: 12.5px; color: var(--gray-500); margin-top: 6px; }
+    .hint.ok { color: #047857; font-weight: 600; }
+    .hint.warn { color: #B45309; font-weight: 600; }
+    .ov-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    @media (max-width: 700px) { .ov-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .ov-tile { border: 2px solid var(--gray-100); background: var(--gray-50); border-radius: 14px; padding: 16px; text-align: left; cursor: pointer; font-family: inherit; color: var(--navy); transition: border-color .15s, background .15s; }
+    .ov-tile:hover { border-color: var(--orange); background: #fff; }
+    .ov-tile b { display: block; font-size: 26px; line-height: 1.1; }
+    .ov-tile span { font-size: 13px; color: var(--gray-500); font-weight: 600; }
+    .prop-list { display: grid; gap: 12px; }
+    .prop-card { display: grid; grid-template-columns: 132px minmax(0, 1fr) auto; gap: 14px; align-items: center; border: 2px solid var(--gray-100); border-radius: 14px; padding: 12px; }
+    .prop-card:hover { border-color: #BFDBFE; }
+    .prop-img { width: 132px; height: 96px; border-radius: 10px; object-fit: cover; background: var(--gray-100); display: block; }
+    .prop-img.ph { display: flex; align-items: center; justify-content: center; color: var(--gray-500); font-size: 12px; }
+    .prop-t { font-weight: 700; color: var(--navy); text-decoration: none; display: block; overflow-wrap: anywhere; }
+    .prop-t:hover { text-decoration: underline; }
+    .prop-m { font-size: 12.5px; color: var(--gray-500); margin-top: 3px; }
+    .prop-p { color: var(--orange); font-weight: 800; font-size: 17px; margin-top: 6px; }
+    .prop-act { display: flex; flex-direction: column; gap: 6px; }
+    .btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 8px; }
+    .btn-sm:hover { transform: none; }
+    @media (max-width: 600px) {
+      .prop-card { grid-template-columns: 96px minmax(0, 1fr); }
+      .prop-img { width: 96px; height: 76px; }
+      .prop-act { grid-column: 1 / -1; flex-direction: row; }
+      .prop-act .btn { flex: 1; justify-content: center; }
+    }
+    .muted-empty { text-align: center; padding: 28px 12px; color: var(--gray-500); font-size: 14px; }
+    .muted-empty b { display: block; color: var(--navy); font-size: 16px; margin-bottom: 6px; }
+    .contact-card { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .contact-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { position: relative; cursor: pointer; }
+    .chip input { position: absolute; opacity: 0; pointer-events: none; }
+    .chip span { display: inline-block; padding: 8px 14px; border: 2px solid var(--gray-200); border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--gray-700); background: #fff; }
+    .chip input:checked + span { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .seg { display: inline-flex; border: 2px solid var(--gray-200); border-radius: 12px; overflow: hidden; flex-wrap: wrap; }
+    .seg label { position: relative; cursor: pointer; }
+    .seg input { position: absolute; opacity: 0; pointer-events: none; }
+    .seg span { display: block; padding: 9px 16px; font-size: 13px; font-weight: 700; color: var(--gray-700); }
+    .seg input:checked + span { background: var(--navy); color: #fff; }
+    .alarm-form { border: 2px dashed var(--gray-200); border-radius: 16px; padding: 18px; margin-bottom: 18px; background: var(--gray-50); }
+    .form-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+    .alarm { border: 2px solid var(--gray-100); border-radius: 14px; padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 16px; align-items: center; margin-bottom: 10px; }
+    .alarm.off { opacity: .7; }
+    .alarm-t { font-weight: 700; color: var(--navy); overflow-wrap: anywhere; }
+    .alarm-d { font-size: 13px; color: var(--gray-700); margin-top: 3px; }
+    .alarm-s { font-size: 12px; color: var(--gray-500); margin-top: 3px; }
+    .alarm-a { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    @media (max-width: 600px) { .alarm { grid-template-columns: 1fr; } .alarm-a { justify-content: flex-start; } }
+    .switch-row { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; padding: 14px 16px; border: 2px solid var(--gray-100); border-radius: 14px; margin-bottom: 16px; }
+    .switch-row input { position: absolute; opacity: 0; pointer-events: none; }
+    .switch-row small { display: block; color: var(--gray-500); font-size: 12.5px; margin-top: 2px; }
+    .switch { flex: 0 0 44px; height: 26px; border-radius: 999px; background: var(--gray-300); position: relative; transition: background .15s; margin-top: 1px; }
+    .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: left .15s; }
+    .switch-row input:checked + .switch { background: #16A34A; }
+    .switch-row input:checked + .switch::after { left: 21px; }
+    .switch-row input:focus-visible + .switch { outline: 3px solid #93C5FD; outline-offset: 2px; }
+    .switch-row input:disabled + .switch { opacity: .5; }
+    .alarm .switch-row { margin: 0; padding: 6px 10px; border-width: 1.5px; font-size: 13px; font-weight: 600; align-items: center; }
+    .prefs { border: 0; margin: 0 0 8px; padding: 0; min-width: 0; }
+    .prefs:disabled { opacity: .55; }
+    .state { display: flex; gap: 10px; align-items: center; border-radius: 12px; padding: 12px 14px; font-size: 14px; margin-bottom: 16px; }
+    .state::before { content: ''; flex: 0 0 10px; height: 10px; border-radius: 50%; background: currentColor; }
+    .state.on { background: #DCFCE7; color: #166534; }
+    .state.off { background: var(--gray-100); color: var(--gray-700); }
+    .state.wait { background: #FEF3C7; color: #92400E; }
+    .talep { border: 2px solid var(--gray-100); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+    .talep-h { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .talep-d { font-size: 12.5px; color: var(--gray-500); }
+    .talep-l { font-weight: 700; color: var(--navy); text-decoration: none; }
+    .talep-l:hover { text-decoration: underline; }
+    .talep-m { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; color: var(--gray-700); line-height: 1.55; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 700; }
+    .pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .pill.alindi { background: #FEF3C7; color: #92400E; }
+    .pill.donus { background: #E0F2FE; color: #075985; }
+    .pill.tamam { background: #DCFCE7; color: #166534; }
+    .pw-wrap { position: relative; }
+    .pw-wrap .form-input { padding-right: 86px; }
+    .pw-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: 0; background: var(--gray-100); color: var(--navy); font-weight: 700; font-size: 12px; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-family: inherit; }
+    .pw-meter { height: 6px; background: var(--gray-100); border-radius: 999px; overflow: hidden; margin-top: 8px; }
+    .pw-meter span { display: block; height: 100%; width: 0; background: #DC2626; transition: width .2s, background .2s; }
+    .danger-card { border: 2px solid #FEE2E2; }
+    .danger-text { font-size: 13px; color: var(--gray-700); margin-bottom: 16px; line-height: 1.6; }
+    .btn[disabled] { opacity: .5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+    @media (max-width: 900px) {
+      .sidebar { position: static; border-radius: 16px; }
+      .profile-card { display: grid; grid-template-columns: 48px minmax(0, 1fr); column-gap: 12px; text-align: left; padding: 14px 16px; align-items: center; }
+      .profile-card .avatar { width: 48px; height: 48px; font-size: 20px; margin: 0; grid-row: span 3; box-shadow: none; }
+      .profile-email { overflow-wrap: anywhere; }
+      .role-badge { justify-self: start; margin-top: 4px; }
+      .sidebar-nav { display: flex; gap: 6px; overflow-x: auto; padding: 10px; -webkit-overflow-scrolling: touch; }
+      .nav-item { width: auto; flex: 0 0 auto; padding: 9px 12px; margin: 0; font-size: 13px; white-space: nowrap; }
+      .nav-item svg { width: 16px; height: 16px; }
+      .nav-item.logout { margin-top: 0; border-top: 0; padding-top: 9px; border-radius: 10px; }
+      .card { padding: 20px; border-radius: 16px; }
+      .card-title { font-size: 19px; }
+    }
   </style>
 <script src="/translator.js?v=20260929-i18n" defer></script>
 <script src="/translations.js?v=20260929-6dil" defer></script>
@@ -448,66 +558,72 @@
     <div class="hero-inner">
       <div class="hero-eyebrow" id="heroEyebrow">HESABIM</div>
       <h1 id="heroTitle">Hoş Geldiniz</h1>
-      <p id="heroSubtitle">Hesap bilgilerinizi ve tercihlerinizi yönetin</p>
+      <p id="heroSubtitle">Favorileriniz, arama alarmlarınız, mesajlarınız ve bülten tercihleriniz tek yerde.</p>
     </div>
   </section>
 
   <div class="container">
-    <div id="loginRequired" style="display: none;" class="card">
+    <div id="pageLoading" class="card"><div class="loader"><div class="spinner"></div></div></div>
+
+    <div id="loginRequired" hidden class="card">
       <div class="empty">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
         <h3>Giriş yapmanız gerekiyor</h3>
-        <p style="margin-bottom: 24px;">Bu sayfayı görmek için lütfen hesabınıza giriş yapın.</p>
-        <a onclick="if(window.IUAuth) IUAuth.open('login')" class="btn">Giriş Yap</a>
+        <p style="margin-bottom: 24px;">Favorilerinizi, arama alarmlarınızı ve mesajlarınızı görmek için hesabınıza giriş yapın.</p>
+        <button type="button" class="btn" data-open-auth="login">Giriş Yap</button>
+        <button type="button" class="btn btn-outline" data-open-auth="signup" style="margin-left:8px;">Üye Ol</button>
       </div>
     </div>
 
-    <div id="adminRedirect" style="display: none;" class="card">
+    <div id="adminRedirect" hidden class="card">
       <div class="empty">
-        <svg viewBox="0 0 24 24" fill="var(--orange)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-        <h3>Bu bir admin hesabıdır</h3>
-        <p style="margin-bottom: 24px;">Yönetici hesaplarının profil sayfası admin panelinde yer alır. Yönlendiriliyorsunuz...</p>
-        <a href="/admin/index.html" class="btn btn-navy">
-          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-          Admin Panele Git
-        </a>
+        <h3>Bu bir yönetici hesabıdır</h3>
+        <p style="margin-bottom: 24px;">Yönetici hesapları panelden yönetilir. Yönlendiriliyorsunuz…</p>
+        <a href="/admin/index.html" class="btn btn-navy">Yönetim Paneline Git</a>
       </div>
     </div>
 
-    <div id="accountContent" style="display: none;">
+    <div id="accountContent" hidden>
       <div class="layout">
-
         <!-- SIDEBAR -->
         <aside class="sidebar">
           <div class="profile-card">
-            <div class="avatar" id="userAvatar">?</div>
+            <div class="avatar" id="userAvatar" aria-hidden="true">?</div>
             <div class="profile-name" id="userName">-</div>
             <div class="profile-email" id="userEmail">-</div>
-            <div class="role-badge">MÜŞTERİ</div>
+            <div class="role-badge" id="verifyBadge">MÜŞTERİ</div>
           </div>
-          <nav class="sidebar-nav">
-            <button class="nav-item active" onclick="showTab('profile', this)">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <nav class="sidebar-nav" aria-label="Hesabım menüsü" id="accNav">
+            <button type="button" class="nav-item active" data-tab="ozet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+              Özet
+            </button>
+            <button type="button" class="nav-item" data-tab="favoriler">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              Favorilerim <span class="nav-count" id="navFav"></span>
+            </button>
+            <button type="button" class="nav-item" data-tab="alarmlar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              Arama Alarmlarım <span class="nav-count" id="navAlarm"></span>
+            </button>
+            <button type="button" class="nav-item" data-tab="talepler">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Mesajlarım <span class="nav-count" id="navTalep"></span>
+            </button>
+            <button type="button" class="nav-item" data-tab="bulten">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Bülten
+            </button>
+            <button type="button" class="nav-item" data-tab="profil">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               Profilim
             </button>
-            <button class="nav-item" onclick="showTab('favorites', this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              Favorilerim
-            </button>
-            <button class="nav-item" onclick="showTab('searches', this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              Kayıtlı Aramalar
-            </button>
-            <button class="nav-item" onclick="showTab('preferences', this)">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94 0 .31.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-              Bülten Tercihleri
-            </button>
-            <button class="nav-item" onclick="showTab('security', this)">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            <button type="button" class="nav-item" data-tab="guvenlik">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               Güvenlik
             </button>
-            <button class="nav-item logout" onclick="handleLogout()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <button type="button" class="nav-item logout" id="logoutBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               Çıkış Yap
             </button>
           </nav>
@@ -515,513 +631,184 @@
 
         <!-- CONTENT -->
         <main class="content">
-
-          <!-- PROFILE TAB -->
-          <div id="tab-profile" class="tab-content active">
+          <!-- ÖZET -->
+          <section id="tab-ozet" class="tab-content active" aria-labelledby="h-ozet">
             <div class="card">
-              <div class="card-title">
-                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                Profil Bilgileri
+              <h2 class="card-title" id="h-ozet">Hesap özeti</h2>
+              <div class="card-subtitle">Kaydettikleriniz ve son hareketleriniz</div>
+              <div id="verifyNote"></div>
+              <div class="ov-grid">
+                <button type="button" class="ov-tile" data-goto="favoriler"><b id="ovFav">–</b><span>Favori ilan</span></button>
+                <button type="button" class="ov-tile" data-goto="alarmlar"><b id="ovAlarm">–</b><span>Aktif arama alarmı</span></button>
+                <button type="button" class="ov-tile" data-goto="talepler"><b id="ovTalep">–</b><span>Gönderdiğim mesaj</span></button>
+                <button type="button" class="ov-tile" data-goto="bulten"><b id="ovBulten">–</b><span>Bülten</span></button>
               </div>
-              <div class="card-subtitle">Kişisel bilgilerinizi güncelleyin</div>
-              <form id="profileForm">
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="form-label">Ad Soyad</label>
-                    <input type="text" name="full_name" class="form-input" maxlength="100" placeholder="Ahmet Yılmaz">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Telefon</label>
-                    <input type="tel" name="phone" class="form-input" maxlength="20" placeholder="+90 555 000 00 00">
+            </div>
+            <div class="card">
+              <h2 class="card-title">Son baktığınız ilanlar</h2>
+              <div class="card-subtitle">Bu cihazda son incelediğiniz ilanlar</div>
+              <div id="recentList" class="prop-list"></div>
+            </div>
+            <div class="card contact-card">
+              <div>
+                <h2 class="card-title">Danışmanınıza ulaşın</h2>
+                <div class="card-subtitle" style="margin-bottom:0;">Aklınıza takılan bir ilan mı var? Hemen arayın veya WhatsApp'tan yazın.</div>
+              </div>
+              <div class="contact-actions">
+                <a class="btn btn-navy" href="tel:+905075188482">Ara: 0507 518 84 82</a>
+                <a class="btn btn-outline" href="https://wa.me/905075188482" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+              </div>
+            </div>
+          </section>
+
+          <!-- FAVORİLER -->
+          <section id="tab-favoriler" class="tab-content" aria-labelledby="h-fav">
+            <div class="card">
+              <h2 class="card-title" id="h-fav">Favori ilanlarım</h2>
+              <div class="card-subtitle">İlanlardaki kalp simgesiyle kaydettikleriniz</div>
+              <div id="favoritesList" class="prop-list"></div>
+            </div>
+          </section>
+
+          <!-- ARAMA ALARMLARI -->
+          <section id="tab-alarmlar" class="tab-content" aria-labelledby="h-alarm">
+            <div class="card">
+              <div class="card-head">
+                <div>
+                  <h2 class="card-title" id="h-alarm">Arama alarmlarım</h2>
+                  <div class="card-subtitle" style="margin-bottom:0;">Aradığınız özelliklerde yeni bir ilan yayınlandığında size e-posta ile haber verelim.</div>
+                </div>
+                <button type="button" class="btn" id="newAlarmBtn">Yeni alarm</button>
+              </div>
+              <form id="alarmForm" class="alarm-form" hidden novalidate>
+                <div class="form-group">
+                  <span class="form-label">İşlem</span>
+                  <div class="seg" role="radiogroup" aria-label="İşlem">
+                    <label><input type="radio" name="islem" value="satilik" checked><span>Satılık</span></label>
+                    <label><input type="radio" name="islem" value="kiralik"><span>Kiralık</span></label>
+                    <label><input type="radio" name="islem" value="her_ikisi"><span>İkisi de</span></label>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Email (değiştirilemez)</label>
-                  <input type="email" name="email" class="form-input" readonly>
+                  <span class="form-label">Emlak türü (boş = hepsi)</span>
+                  <div class="chips" id="alarmKat"></div>
                 </div>
+                <div class="form-group">
+                  <span class="form-label">Bölge (boş = tüm Yalova)</span>
+                  <div class="chips" id="alarmBolge"></div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group"><label class="form-label" for="aMin">En düşük fiyat (₺)</label><input id="aMin" class="form-input" inputmode="numeric" placeholder="ör. 2.000.000"></div>
+                  <div class="form-group"><label class="form-label" for="aMax">En yüksek fiyat (₺)</label><input id="aMax" class="form-input" inputmode="numeric" placeholder="Sınır yok"></div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group"><label class="form-label" for="aOda">Oda sayısı</label>
+                    <select id="aOda" class="form-select"><option value="">Farketmez</option><option value="1">1+ oda</option><option value="2">2+ oda</option><option value="3">3+ oda</option><option value="4">4+ oda</option></select></div>
+                  <div class="form-group"><label class="form-label" for="aName">Alarm adı</label><input id="aName" class="form-input" maxlength="60" placeholder="Otomatik oluşturulur"></div>
+                </div>
+                <div id="alarmMsg"></div>
+                <div class="form-actions"><button type="button" class="btn btn-outline" id="alarmCancel">Vazgeç</button><button type="submit" class="btn">Alarmı kaydet</button></div>
+              </form>
+              <div id="alarmList"></div>
+            </div>
+          </section>
+
+          <!-- MESAJLARIM -->
+          <section id="tab-talepler" class="tab-content" aria-labelledby="h-talep">
+            <div class="card">
+              <h2 class="card-title" id="h-talep">Mesajlarım</h2>
+              <div class="card-subtitle">Sitedeki formlardan bu e-posta adresiyle gönderdiğiniz mesajlar</div>
+              <div id="talepList"></div>
+            </div>
+          </section>
+
+          <!-- BÜLTEN -->
+          <section id="tab-bulten" class="tab-content" aria-labelledby="h-bulten">
+            <div class="card">
+              <h2 class="card-title" id="h-bulten">Bülten ve bildirimler</h2>
+              <div class="card-subtitle">Yeni ilan duyuruları ve fırsatlar e-posta kutunuza gelsin</div>
+              <div id="bultenState"></div>
+              <form id="bultenForm" novalidate>
+                <label class="switch-row">
+                  <input type="checkbox" id="bAbone" role="switch">
+                  <span class="switch" aria-hidden="true"></span>
+                  <span><b>Bülten e-postaları almak istiyorum</b><small>İstediğiniz zaman buradan veya e-postalardaki bağlantıdan kapatabilirsiniz.</small></span>
+                </label>
+                <fieldset id="bultenPrefs" class="prefs">
+                  <div class="form-group"><span class="form-label">İlgilendiğim emlak türleri (boş = hepsi)</span><div class="chips" id="bKat"></div></div>
+                  <div class="form-group"><span class="form-label">İlgilendiğim bölgeler (boş = tüm Yalova)</span><div class="chips" id="bBolge"></div></div>
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label" for="bIslem">İşlem</label>
+                      <select id="bIslem" class="form-select"><option value="her_ikisi">Satılık ve kiralık</option><option value="satilik">Sadece satılık</option><option value="kiralik">Sadece kiralık</option></select></div>
+                    <div class="form-group"><label class="form-label" for="bDil">E-posta dili</label>
+                      <select id="bDil" class="form-select"><option value="tr">Türkçe</option><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="ru">Русский</option></select></div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label" for="bMin">En düşük fiyat (₺)</label><input id="bMin" class="form-input" inputmode="numeric" placeholder="0"></div>
+                    <div class="form-group"><label class="form-label" for="bMax">En yüksek fiyat (₺)</label><input id="bMax" class="form-input" inputmode="numeric" placeholder="Sınır yok"></div>
+                  </div>
+                </fieldset>
+                <div id="bultenMsg"></div>
+                <button type="submit" class="btn" id="bultenSave">Tercihleri kaydet</button>
+              </form>
+            </div>
+          </section>
+
+          <!-- PROFİL -->
+          <section id="tab-profil" class="tab-content" aria-labelledby="h-profil">
+            <div class="card">
+              <h2 class="card-title" id="h-profil">Profil bilgileri</h2>
+              <div class="card-subtitle">Size doğru ve hızlı dönüş yapabilmemiz için</div>
+              <form id="profileForm" novalidate>
+                <div class="form-row">
+                  <div class="form-group"><label class="form-label" for="pName">Ad Soyad</label><input id="pName" class="form-input" maxlength="100" autocomplete="name" placeholder="Ahmet Yılmaz"></div>
+                  <div class="form-group"><label class="form-label" for="pPhone">Telefon</label><input id="pPhone" type="tel" class="form-input" maxlength="20" autocomplete="tel" placeholder="+90 555 000 00 00"></div>
+                </div>
+                <div class="form-group"><label class="form-label" for="pEmail">E-posta</label><input id="pEmail" type="email" class="form-input" readonly><div class="hint" id="pEmailHint"></div></div>
                 <div id="profileMsg"></div>
-                <button type="submit" class="btn">
-                  <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
-                  Profili Kaydet
-                </button>
+                <button type="submit" class="btn">Profili kaydet</button>
               </form>
             </div>
-          </div>
+          </section>
 
-          <!-- FAVORITES TAB -->
-          <div id="tab-favorites" class="tab-content">
+          <!-- GÜVENLİK -->
+          <section id="tab-guvenlik" class="tab-content" aria-labelledby="h-guv">
             <div class="card">
-              <div class="card-title">
-                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                Favori İlanlarım
-              </div>
-              <div class="card-subtitle">Kaydettiğiniz ilanlar burada listelenir</div>
-              <div id="favoritesList"><div class="loader"><div class="spinner"></div></div></div>
-            </div>
-          </div>
-
-          <!-- SEARCHES TAB -->
-          <div id="tab-searches" class="tab-content">
-            <div class="card">
-              <div class="card-title">
-                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg>
-                Kayıtlı Aramalarım
-              </div>
-              <div class="card-subtitle">Kriterlerinize uyan yeni ilanlarda otomatik bildirim alın</div>
-              <div id="searchesList"><div class="loader"><div class="spinner"></div></div></div>
-            </div>
-          </div>
-
-          <!-- PREFERENCES TAB -->
-          <div id="tab-preferences" class="tab-content">
-            <div class="card">
-              <div class="card-title">
-                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94 0 .31.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                Bülten & Bildirim Tercihleri
-              </div>
-              <div class="card-subtitle">Hangi ilanlar ilginizi çekiyor?</div>
-              <form id="prefsForm">
-                <div class="form-group">
-                  <label class="form-label">İlgi Kategorileri</label>
-                  <div class="checkboxes">
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="arsa"> <span>Arsa</span></label>
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="daire"> <span>Daire</span></label>
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="villa"> <span>Villa</span></label>
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="isyeri"> <span>İşyeri</span></label>
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="mustakil"> <span>Müstakil</span></label>
-                    <label class="checkbox-label"><input type="checkbox" name="kat" value="dukkan"> <span>Dükkan</span></label>
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="form-label">İşlem Tipi</label>
-                    <select name="islem_tipi" class="form-select">
-                      <option value="her_ikisi">Satılık ve Kiralık</option>
-                      <option value="satilik">Sadece Satılık</option>
-                      <option value="kiralik">Sadece Kiralık</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Email Dili</label>
-                    <select name="language" class="form-select">
-                      <option value="tr">Türkçe</option>
-                      <option value="en">English</option>
-                      <option value="de">Deutsch</option>
-                      <option value="fr">Français</option>
-                      <option value="ru">Русский</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="form-label">Min. Fiyat (₺)</label>
-                    <input type="number" name="min_fiyat" class="form-input" min="0" placeholder="0">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Max. Fiyat (₺)</label>
-                    <input type="number" name="max_fiyat" class="form-input" min="0" placeholder="Sınırsız">
-                  </div>
-                </div>
-                <div class="form-group" style="border-top: 2px solid var(--gray-100); padding-top: 20px; margin-top: 24px;">
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="bulten_abone" checked>
-                    <span>Haftalık bülten emaili almak istiyorum</span>
-                  </label>
-                </div>
-                <div id="prefsMsg"></div>
-                <button type="submit" class="btn">
-                  <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
-                  Tercihleri Kaydet
-                </button>
-              </form>
-            </div>
-          </div>
-
-          <!-- SECURITY TAB -->
-          <div id="tab-security" class="tab-content">
-            <div class="card">
-              <div class="card-title">
-                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                Şifre Değiştir
-              </div>
-              <div class="card-subtitle">Güçlü bir şifre kullanmanızı öneririz</div>
-              <form id="passwordForm">
-                <div class="form-group">
-                  <label class="form-label">Yeni Şifre</label>
-                  <input type="password" name="new_password" class="form-input" required minlength="8" placeholder="En az 8 karakter">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Yeni Şifre (Tekrar)</label>
-                  <input type="password" name="confirm_password" class="form-input" required minlength="8">
-                </div>
+              <h2 class="card-title" id="h-guv">Şifre değiştir</h2>
+              <div class="card-subtitle">En az 8 karakter; büyük-küçük harf ve rakam kullanın</div>
+              <form id="passwordForm" novalidate>
+                <div class="form-group"><label class="form-label" for="pw1">Yeni şifre</label>
+                  <div class="pw-wrap"><input id="pw1" type="password" class="form-input" minlength="8" maxlength="72" autocomplete="new-password"><button type="button" class="pw-toggle" data-for="pw1" aria-label="Şifreyi göster" aria-pressed="false">Göster</button></div>
+                  <div class="pw-meter" aria-hidden="true"><span id="pwBar"></span></div><div class="hint" id="pwHint"></div></div>
+                <div class="form-group"><label class="form-label" for="pw2">Yeni şifre (tekrar)</label>
+                  <div class="pw-wrap"><input id="pw2" type="password" class="form-input" minlength="8" maxlength="72" autocomplete="new-password"><button type="button" class="pw-toggle" data-for="pw2" aria-label="Şifreyi göster" aria-pressed="false">Göster</button></div></div>
                 <div id="passwordMsg"></div>
-                <button type="submit" class="btn btn-navy">Şifreyi Değiştir</button>
+                <button type="submit" class="btn btn-navy">Şifreyi değiştir</button>
               </form>
             </div>
-
-            <div class="card" style="border: 2px solid #fee2e2;">
-              <div class="card-title" style="color: var(--danger);">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                Tehlikeli Bölge
-              </div>
-              <div class="card-subtitle">Hesabınızı silmek geri alınamaz</div>
-              <p style="font-size: 13px; color: var(--gray-700); margin-bottom: 20px; line-height: 1.6;">
-                Hesabınızı silerseniz tüm favorileriniz, kayıtlı aramalarınız ve tercihleriniz kalıcı olarak silinecektir. Bu işlem geri alınamaz.
-              </p>
-              <button onclick="deleteAccount()" class="btn btn-danger">Hesabımı Sil</button>
+            <div class="card">
+              <h2 class="card-title">Verilerim</h2>
+              <div class="card-subtitle">KVKK kapsamında hakkınızdaki bilgilerin bir kopyasını indirebilirsiniz</div>
+              <button type="button" class="btn btn-outline" id="exportBtn">Verilerimi indir (JSON)</button>
             </div>
-          </div>
-
+            <div class="card danger-card">
+              <h2 class="card-title" style="color: var(--danger);">Hesabı sil</h2>
+              <div class="card-subtitle">Bu işlem geri alınamaz</div>
+              <p class="danger-text">Hesabınız, favorileriniz, arama alarmlarınız ve bülten aboneliğiniz kalıcı olarak silinir. Size bir daha e-posta gönderilmemesi için yalnızca e-posta adresiniz "gönderme" listesinde tutulur. Sitedeki formlardan bize gönderdiğiniz mesajlar yasal süre boyunca saklanır.</p>
+              <div class="form-group" style="max-width:340px;"><label class="form-label" for="delConfirm">Onay için SİL yazın</label><input id="delConfirm" class="form-input" autocomplete="off" maxlength="10"></div>
+              <div id="deleteMsg"></div>
+              <button type="button" class="btn btn-danger" id="deleteBtn" disabled>Hesabımı kalıcı olarak sil</button>
+            </div>
+          </section>
         </main>
       </div>
     </div>
   </div>
 
-  <script src="/subscribe-widget.js?v=20260929-admin"></script>
-  <script>
-    const SUPABASE_URL = 'https://gosmkthmamloafgtvhpj.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4';
+  <script src="/subscribe-widget.js?v=20261002-spam"></script>
+  <script src="/hesabim.js?v=20261002-hesap"></script>
 
-    let sbClient;
-    let currentUser;
-    let currentProfile;
-
-    function esc(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
-
-    function toast(msg, type = 'success') {
-      const t = document.createElement('div');
-      t.className = `toast toast-${type}`;
-      t.textContent = msg;
-      document.body.appendChild(t);
-      setTimeout(() => {
-        t.style.opacity = '0';
-        setTimeout(() => t.remove(), 300);
-      }, 3000);
-    }
-
-    function showMsg(id, text, type = 'success') {
-      const el = document.getElementById(id);
-      el.innerHTML = `<div class="alert alert-${type}">${esc(text)}</div>`;
-      setTimeout(() => el.innerHTML = '', 4000);
-    }
-
-    async function init() {
-      console.log('[Hesabim] Init started');
-      try {
-        sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-          auth: {
-            persistSession: true,
-            storageKey: 'ismailunsal-customer-session'
-          }
-        });
-
-        const { data: userData, error: userErr } = await sbClient.auth.getUser();
-        console.log('[Hesabim] getUser result:', userData, userErr);
-
-        const user = userData?.user;
-
-        if (!user) {
-          console.log('[Hesabim] No user, showing login required');
-          document.getElementById('heroTitle').textContent = 'Hesap Bilgileri';
-          document.getElementById('loginRequired').style.display = 'block';
-          return;
-        }
-
-        currentUser = user;
-        console.log('[Hesabim] User found:', user.email);
-
-        // Admin kontrolü (opsiyonel - hata verirse devam et)
-        let isAdmin = false;
-        try {
-          const { data: adminCheck } = await sbClient
-            .from('admin_users')
-            .select('role')
-            .eq('id', user.id)
-            .maybeSingle();
-          isAdmin = !!adminCheck;
-          console.log('[Hesabim] Admin check:', isAdmin);
-        } catch (e) {
-          console.log('[Hesabim] Admin check failed (probably RLS), continuing:', e.message);
-        }
-
-        if (isAdmin) {
-          // Admin ise beklemeden hemen admin panele yönlendir
-          window.location.replace('/admin/index.html');
-          return;
-        }
-
-        // Profile yükle veya oluştur
-        try {
-          const { data: profile } = await sbClient
-            .from('customer_profiles')
-            .select('*')
-            .eq('id', user.id)
-            .maybeSingle();
-
-          if (!profile) {
-            console.log('[Hesabim] No profile, creating...');
-            const { data: newProfile, error: createErr } = await sbClient
-              .from('customer_profiles')
-              .insert({
-                id: user.id,
-                email: user.email,
-                full_name: user.user_metadata?.full_name || '',
-                language: user.user_metadata?.language || 'tr'
-              })
-              .select()
-              .maybeSingle();
-
-            if (createErr) {
-              console.warn('[Hesabim] Profile create failed:', createErr.message);
-              // Yine de sayfa gösterilsin
-            }
-            currentProfile = newProfile || { email: user.email, full_name: user.user_metadata?.full_name || '' };
-          } else {
-            currentProfile = profile;
-          }
-        } catch (e) {
-          console.warn('[Hesabim] Profile load failed:', e.message);
-          currentProfile = { email: user.email, full_name: user.user_metadata?.full_name || '' };
-        }
-
-        console.log('[Hesabim] Rendering profile...');
-        renderProfile();
-        document.getElementById('accountContent').style.display = 'block';
-        console.log('[Hesabim] Content shown ✓');
-
-      } catch (err) {
-        console.error('[Hesabim] Init error:', err);
-        document.getElementById('heroTitle').textContent = 'Bir Hata Oluştu';
-        document.getElementById('loginRequired').innerHTML = `
-          <div class="empty">
-            <h3>Bir hata oluştu</h3>
-            <p>${esc(err.message)}</p>
-            <p style="margin-top:12px;font-size:12px;color:#9ca3af;">Detay için tarayıcı console'unu (F12) kontrol edin.</p>
-            <a href="/" class="btn" style="margin-top:20px;">Ana Sayfaya Dön</a>
-          </div>
-        `;
-        document.getElementById('loginRequired').style.display = 'block';
-      }
-    }
-
-    function renderProfile() {
-      const p = currentProfile || {};
-      const name = p.full_name || currentUser.email.split('@')[0];
-      const initial = name.charAt(0).toUpperCase();
-
-      document.getElementById('userAvatar').textContent = initial;
-      document.getElementById('userName').textContent = name;
-      document.getElementById('userEmail').textContent = currentUser.email;
-      document.getElementById('heroTitle').textContent = `Merhaba, ${name}!`;
-
-      const pf = document.getElementById('profileForm');
-      pf.full_name.value = p.full_name || '';
-      pf.phone.value = p.phone || '';
-      pf.email.value = currentUser.email;
-
-      const prf = document.getElementById('prefsForm');
-      const kats = p.ilgi_kategoriler || [];
-      prf.querySelectorAll('input[name="kat"]').forEach(cb => {
-        cb.checked = kats.includes(cb.value);
-      });
-      prf.islem_tipi.value = p.islem_tipi || 'her_ikisi';
-      prf.language.value = p.language || 'tr';
-      prf.min_fiyat.value = p.min_fiyat || '';
-      prf.max_fiyat.value = p.max_fiyat || '';
-      prf.bulten_abone.checked = p.bulten_abone !== false;
-    }
-
-    window.showTab = function(tab, el) {
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-      document.getElementById(`tab-${tab}`).classList.add('active');
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      if (el) el.classList.add('active');
-
-      if (tab === 'favorites') loadFavorites();
-      if (tab === 'searches') loadSearches();
-    };
-
-    async function loadFavorites() {
-      const container = document.getElementById('favoritesList');
-      container.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
-
-      try {
-        const { data, error } = await sbClient
-          .from('favorites')
-          .select('*, properties(id, baslik_tr, fiyat, kategori, tip, property_images(url, is_main))')
-          .eq('customer_id', currentUser.id)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        if (!data?.length) {
-          container.innerHTML = `
-            <div class="empty">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-              <h3>Henüz favori ilanınız yok</h3>
-              <p style="margin-bottom: 24px;">İlanlarda kalp ikonuna tıklayarak favorilerinize ekleyebilirsiniz.</p>
-              <a href="/" class="btn">İlanları İncele</a>
-            </div>
-          `;
-          return;
-        }
-
-        container.innerHTML = data.map(f => {
-          const p = f.properties;
-          if (!p) return '';
-          const img = p.property_images?.find(i => i.is_main)?.url || p.property_images?.[0]?.url || '';
-          return `
-            <div style="display:flex;gap:16px;padding:16px;border:2px solid var(--gray-100);border-radius:14px;margin-bottom:12px;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--gray-100)'">
-              ${img ? `<img src="${esc(img)}" style="width:120px;height:90px;object-fit:cover;border-radius:10px;">` : ''}
-              <div style="flex:1;">
-                <div style="font-weight:700;color:var(--navy);margin-bottom:4px;">${esc(p.baslik_tr)}</div>
-                <div style="font-size:12px;color:var(--gray-500);">${esc(p.kategori)} • ${esc(p.tip)}</div>
-                <div style="color:var(--orange);font-weight:800;font-size:18px;margin-top:8px;">${new Intl.NumberFormat('tr-TR').format(p.fiyat)} ₺</div>
-              </div>
-              <button onclick="removeFavorite('${p.id}')" class="btn btn-outline" style="align-self:flex-start;padding:8px 14px;">Kaldır</button>
-            </div>
-          `;
-        }).join('');
-      } catch (err) {
-        container.innerHTML = `<div class="alert alert-error">Hata: ${esc(err.message)}</div>`;
-      }
-    }
-
-    window.removeFavorite = async function(propId) {
-      await sbClient.from('favorites').delete().eq('customer_id', currentUser.id).eq('property_id', propId);
-      toast('Favori kaldırıldı');
-      loadFavorites();
-    };
-
-    async function loadSearches() {
-      const container = document.getElementById('searchesList');
-      container.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
-
-      try {
-        const { data, error } = await sbClient
-          .from('saved_searches')
-          .select('*')
-          .eq('customer_id', currentUser.id)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        if (!data?.length) {
-          container.innerHTML = `
-            <div class="empty">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg>
-              <h3>Henüz kayıtlı aramanız yok</h3>
-              <p>Ana sayfada arama yaparken "Bu aramayı kaydet" seçeneğini kullanın.</p>
-            </div>
-          `;
-          return;
-        }
-
-        container.innerHTML = data.map(s => `
-          <div style="display:flex;gap:16px;padding:16px;border:2px solid var(--gray-100);border-radius:14px;margin-bottom:12px;">
-            <div style="flex:1;">
-              <div style="font-weight:700;color:var(--navy);">${esc(s.arama_adi)}</div>
-              <div style="font-size:12px;color:var(--gray-500);margin-top:4px;">
-                ${(s.kategoriler || []).join(', ') || 'Tüm kategoriler'} •
-                ${s.min_fiyat ? new Intl.NumberFormat('tr-TR').format(s.min_fiyat) : '0'} - ${s.max_fiyat ? new Intl.NumberFormat('tr-TR').format(s.max_fiyat) : '∞'} ₺
-              </div>
-              <div style="font-size:12px;color:var(--gray-500);margin-top:4px;">
-                Bildirim: <strong>${esc(s.bildirim_sikligi)}</strong> ${s.bildirim_aktif ? '✓ Aktif' : '✗ Pasif'}
-              </div>
-            </div>
-            <button onclick="deleteSearch('${s.id}')" class="btn btn-outline" style="align-self:flex-start;">Sil</button>
-          </div>
-        `).join('');
-      } catch (err) {
-        container.innerHTML = `<div class="alert alert-error">Hata: ${esc(err.message)}</div>`;
-      }
-    }
-
-    window.deleteSearch = async function(id) {
-      if (!confirm('Bu aramayı silmek istediğinize emin misiniz?')) return;
-      await sbClient.from('saved_searches').delete().eq('id', id);
-      toast('Arama silindi');
-      loadSearches();
-    };
-
-    // Profile form
-    document.getElementById('profileForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const { error } = await sbClient.from('customer_profiles').update({
-        full_name: fd.get('full_name')?.trim().substring(0, 100),
-        phone: fd.get('phone')?.trim() || null
-      }).eq('id', currentUser.id);
-
-      if (error) showMsg('profileMsg', 'Hata: ' + error.message, 'error');
-      else {
-        showMsg('profileMsg', 'Profil güncellendi ✓', 'success');
-        toast('Profil güncellendi');
-      }
-    });
-
-    // Preferences form
-    document.getElementById('prefsForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const kats = Array.from(e.target.querySelectorAll('input[name="kat"]:checked')).map(c => c.value);
-
-      const { error } = await sbClient.from('customer_profiles').update({
-        ilgi_kategoriler: kats,
-        islem_tipi: fd.get('islem_tipi'),
-        language: fd.get('language'),
-        min_fiyat: fd.get('min_fiyat') || null,
-        max_fiyat: fd.get('max_fiyat') || null,
-        bulten_abone: fd.get('bulten_abone') === 'on'
-      }).eq('id', currentUser.id);
-
-      if (error) showMsg('prefsMsg', 'Hata: ' + error.message, 'error');
-      else {
-        showMsg('prefsMsg', 'Tercihler güncellendi ✓', 'success');
-        toast('Tercihler güncellendi');
-      }
-    });
-
-    // Password form
-    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const newPass = fd.get('new_password');
-      const confirmPass = fd.get('confirm_password');
-
-      if (newPass !== confirmPass) return showMsg('passwordMsg', 'Şifreler eşleşmiyor', 'error');
-      if (newPass.length < 8) return showMsg('passwordMsg', 'Şifre en az 8 karakter olmalı', 'error');
-
-      const { error } = await sbClient.auth.updateUser({ password: newPass });
-      if (error) showMsg('passwordMsg', 'Hata: ' + error.message, 'error');
-      else {
-        showMsg('passwordMsg', 'Şifre güncellendi ✓', 'success');
-        e.target.reset();
-      }
-    });
-
-    window.handleLogout = async function() {
-      if (!confirm('Çıkış yapmak istediğinize emin misiniz?')) return;
-      await sbClient.auth.signOut();
-      window.location.href = '/';
-    };
-
-    window.deleteAccount = async function() {
-      if (!confirm('Hesabınızı silmek istediğinize EMİN misiniz? Bu işlem GERİ ALINAMAZ!')) return;
-      if (!confirm('Son onay: Tüm favorileriniz, aramalarınız silinecek. Devam edilsin mi?')) return;
-
-      const { error } = await sbClient.from('customer_profiles').delete().eq('id', currentUser.id);
-      if (error) return alert('Hata: ' + error.message);
-
-      await sbClient.auth.signOut();
-      alert('Hesabınız silindi. Ana sayfaya yönlendiriliyorsunuz.');
-      window.location.href = '/';
-    };
-
-    // Init
-    init();
-  </script>
-  <script src="/script.js?v=20260930-seo"></script>
+  <script src="/script.js?v=20261002-spam"></script>
 <script src="/cms-safe.js?v=20260929-cms"></script>
 <script src="/cms-content.js?v=20261001-alt"></script>
 </body>

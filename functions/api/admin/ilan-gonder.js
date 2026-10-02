@@ -114,7 +114,8 @@ function card(p) {
   </td></tr>`;
 }
 
-export function renderListingsEmail({ name, message, properties, intro, unsubscribeUrl, footerNote }) {
+export function renderListingsEmail({ name, message, properties, intro, unsubscribeUrl, footerNote, unsubscribeLabel }) {
+  const offLabel = unsubscribeLabel || 'Abonelikten çık';
   const hello = name ? `Merhaba ${esc(oneLine(name, 60))},` : 'Merhaba,';
   const msgHtml = message ? `<div style="background:#F8FAFC;border-left:4px solid #2563EB;border-radius:6px;padding:14px 16px;margin:0 0 20px;font-size:14px;line-height:1.6;color:#1F2937;white-space:pre-line;">${esc(message)}</div>` : '';
   const html = `<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>İlanlar</title></head>
@@ -142,12 +143,12 @@ export function renderListingsEmail({ name, message, properties, intro, unsubscr
   <tr><td style="background:#0A2A5E;border-radius:0 0 14px 14px;padding:16px 22px;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:rgba(255,255,255,.7);text-align:center;">
     TURYAP İsmail Ünsal Real Estate · Yalova · <a href="${SITE}" style="color:#93C5FD;text-decoration:none;">ismailunsal.com.tr</a>
     ${footerNote ? `<br>${esc(footerNote)}` : ''}
-    ${unsubscribeUrl ? `<br><a href="${esc(unsubscribeUrl)}" style="color:#93C5FD;">Abonelikten çık</a>` : ''}
+    ${unsubscribeUrl ? `<br><a href="${esc(unsubscribeUrl)}" style="color:#93C5FD;">${esc(offLabel)}</a>` : ''}
   </td></tr>
 </table></td></tr></table></body></html>`;
   const text = [hello.replace(/&[^;]+;/g, ''), '', intro, message ? '\n' + message + '\n' : '',
     ...properties.map(p => `• ${p.baslik_tr} — ${fmtPrice(p.fiyat, p.para_birimi)}\n  ${listingUrl(p)}`),
-    '', `Telefon: ${PHONE} · WhatsApp: ${WA}`, unsubscribeUrl ? `Abonelikten çık: ${unsubscribeUrl}` : ''].join('\n');
+    '', `Telefon: ${PHONE} · WhatsApp: ${WA}`, unsubscribeUrl ? `${offLabel}: ${unsubscribeUrl}` : ''].join('\n');
   return { html, text };
 }
 
@@ -174,6 +175,19 @@ async function sb(path, token) {
   });
   if (!r.ok) throw new Error('db_' + r.status);
   return r.json();
+}
+async function rpc(name, args, token) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
+    method: 'POST',
+    headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(args || {})
+  });
+  if (!r.ok) throw new Error('rpc_' + r.status);
+  return r.status === 204 ? null : r.json();
+}
+async function alarmMatches(propertyId, token) {
+  try { const rows = await rpc('iu_ilan_alarm_eslesmeleri', { p_property_id: propertyId }, token); return Array.isArray(rows) ? rows : []; }
+  catch (_) { return []; }          // SQL henüz çalıştırılmadıysa duyuru yine abonelere gider
 }
 async function verifyAdmin(token) {
   if (!token || token.length > 4096 || !/^[A-Za-z0-9\-_=.]+$/.test(token)) return null;
@@ -243,8 +257,19 @@ async function announce(b, env, token, admin) {
 
   const subs = await sb(`/rest/v1/subscribers?is_active=eq.true&email_verified=eq.true&select=*&limit=${MAX_BROADCAST}`, token);
   const targets = subs.filter(s => s && EMAIL_RE.test(String(s.email || '')) && subscriberMatches(s, p));
-  if (b.dry_run) return json({ ok: true, dry_run: true, total_subscribers: subs.length, matched: targets.length });
-  if (!targets.length) return json({ ok: true, sent: 0, matched: 0 });
+  // Müşterilerin Hesabım'da kurduğu arama alarmları (aboneyse tek e-posta gider)
+  const subEmails = new Set(targets.map(s => String(s.email).toLowerCase()));
+  const byEmail = new Map();
+  (await alarmMatches(id, token)).forEach(a => {
+    const e = String(a && a.email || '').toLowerCase();
+    if (!EMAIL_RE.test(e) || subEmails.has(e)) return;
+    const cur = byEmail.get(e);
+    if (cur) cur.ids.push(a.alarm_id); else byEmail.set(e, { ...a, email: e, ids: [a.alarm_id] });
+  });
+  const alarmTargets = [...byEmail.values()].slice(0, MAX_BROADCAST);
+  const matched = targets.length + alarmTargets.length;
+  if (b.dry_run) return json({ ok: true, dry_run: true, total_subscribers: subs.length, matched, subscribers_matched: targets.length, alarm_matched: alarmTargets.length });
+  if (!matched) return json({ ok: true, sent: 0, matched: 0 });
   if (rateLimited('a:' + admin.id, 10, 60 * 60 * 1000)) return json({ ok: false, error: 'rate_limited', message: 'Çok fazla duyuru. Biraz sonra tekrar deneyin.' }, 429);
 
   const from = env.LEAD_FROM_EMAIL || DEFAULT_FROM;
@@ -262,6 +287,16 @@ async function announce(b, env, token, admin) {
     if (unsubscribeUrl) e.headers = { 'List-Unsubscribe': `<${unsubscribeUrl}>` };
     return e;
   });
+  alarmTargets.forEach(a => {
+    const off = UUID_RE.test(String(a.iptal_token || '')) ? `${SITE}/unsubscribe?alarm=${a.iptal_token}` : `${SITE}/hesabim`;
+    const { html, text } = renderListingsEmail({
+      name: a.ad, properties: [p],
+      intro: `"${oneLine(a.arama_adi, 60)}" arama alarmınıza uyan yeni bir ilan yayınladık:`,
+      unsubscribeUrl: off, unsubscribeLabel: 'Bu alarmı kapat',
+      footerNote: 'Bu e-postayı sitemizde kurduğunuz arama alarmı nedeniyle aldınız. Alarmlarınızı Hesabım sayfasından yönetebilirsiniz.'
+    });
+    emails.push({ from, to: [a.email], reply_to: env.LEAD_TO_EMAIL || DEFAULT_REPLY, subject, html, text, headers: { 'List-Unsubscribe': `<${off}>` } });
+  });
   let sent = 0; let lastErr = null;
   for (let i = 0; i < emails.length; i += 100) {
     const res = await resend(env, emails.slice(i, i + 100), true);
@@ -269,7 +304,10 @@ async function announce(b, env, token, admin) {
     else { lastErr = res; console.warn('[ilan-gonder] batch', res.status, res.body); break; }
   }
   if (!sent && lastErr) return json({ ok: false, ...resendError(lastErr) }, 502);
-  return json({ ok: true, sent, matched: targets.length });
+  // Gönderilen alarmları işaretle (Hesabım'da "son bildirim" görünür)
+  const alarmSent = alarmTargets.slice(0, Math.max(0, sent - targets.length)).flatMap(a => a.ids).filter(x => UUID_RE.test(String(x)));
+  if (alarmSent.length) await rpc('iu_alarm_bildirildi', { p_ids: alarmSent }, token).catch(() => null);
+  return json({ ok: true, sent, matched, subscribers_matched: targets.length, alarm_matched: alarmTargets.length });
 }
 
 // ---------------- handler ----------------
