@@ -162,7 +162,7 @@
       const st = document.createElement('span'); st.className = 'badge ' + (c.unsubscribed ? 'badge-gray' : 'badge-success'); st.textContent = c.unsubscribed ? 'Çıktı' : 'Aktif'; td(st);
       const act = document.createElement('div'); act.style.cssText = 'display:flex;gap:4px;justify-content:flex-end;';
       if (activeTag) { const rm = document.createElement('button'); rm.className = 'btn btn-outline btn-sm'; rm.textContent = 'Listeden çıkar'; rm.onclick = () => removeTag(c); act.appendChild(rm); }
-      const del = document.createElement('button'); del.className = 'btn btn-danger btn-sm'; App.iconText(del, 'trash'); del.title = 'Kişiyi tamamen sil'; del.setAttribute('aria-label', 'Kişiyi tamamen sil'); del.onclick = () => removeContact(c); act.appendChild(del);
+      const del = document.createElement('button'); del.className = 'btn btn-outline-danger btn-sm btn-icon'; App.iconText(del, 'trash'); del.title = 'Kişiyi tamamen sil'; del.setAttribute('aria-label', 'Kişiyi tamamen sil'); del.onclick = () => removeContact(c); act.appendChild(del);
       td(act);
       tb.appendChild(tr);
     });

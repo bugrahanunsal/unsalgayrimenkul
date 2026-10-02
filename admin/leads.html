@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261001-medya">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-btn">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -58,7 +58,7 @@
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20260929-of"></script>
   <script src="/admin/assets/auth.js?v=20260929-of"></script>
-  <script src="/admin/assets/app.js?v=20261001-medya"></script>
+  <script src="/admin/assets/app.js?v=20261002-btn"></script>
 
   <script>
     let allLeads = [];
@@ -84,100 +84,116 @@
         renderLeads(allLeads);
       } catch (error) {
         console.error('Load error:', error);
-        document.getElementById('leadsList').innerHTML =
-          '<div class="alert alert-error">Yükleme hatası: ' + Security.escapeHtml(error.message) + '</div>';
+        const box = document.getElementById('leadsList');
+        box.textContent = '';
+        const a = document.createElement('div');
+        a.className = 'alert alert-error';
+        a.textContent = 'Yükleme hatası: ' + (error && error.message ? error.message : String(error));
+        box.appendChild(a);
       }
+    }
+
+    const DURUM = { yeni: 'Yeni', aranildi: 'Arandı', gorusme: 'Görüşme yapılıyor', satildi: 'Satıldı', takip: 'Takip', spam: 'Spam', kapali: 'Kapalı' };
+    const EMAIL_RE = /^[^\s@<>"'()]+@[^\s@<>"'()]+\.[^\s@<>"'()]+$/;
+
+    // Ziyaretçiden gelen her şey textContent ile yazılır (HTML olarak yorumlanmaz)
+    function el(tag, cls, text) {
+      const n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text != null) n.textContent = String(text);
+      return n;
+    }
+    function iconText(tag, cls, icon, text) {
+      const n = el(tag, cls);
+      n.appendChild(App.icon(icon));
+      n.appendChild(el('span', null, text));
+      return n;
+    }
+    function infoItem(label, valueNode) {
+      const d = el('div', 'lead-field');
+      d.appendChild(el('div', 'lead-k', label));
+      valueNode.classList.add('lead-v');
+      d.appendChild(valueNode);
+      return d;
+    }
+
+    function leadCard(l) {
+      const card = el('article', 'card lead-card' + (l.durum === 'yeni' ? ' is-new' : ''));
+      card.dataset.id = String(l.id);
+
+      // Başlık: isim + zaman | durum
+      const head = el('div', 'lead-head');
+      const who = el('div', 'lead-who');
+      who.appendChild(el('div', 'lead-name', l.isim || 'İsimsiz'));
+      const when = el('div', 'lead-when');
+      when.appendChild(App.icon('calendar'));
+      when.appendChild(el('span', null, App.timeAgo(l.created_at) + ' · ' + App.formatDate(l.created_at, true)));
+      who.appendChild(when);
+      head.appendChild(who);
+      const sel = el('select', 'form-select form-select-sm lead-status');
+      sel.dataset.act = 'status';
+      sel.setAttribute('aria-label', 'Durum');
+      Object.keys(DURUM).forEach(k => { const o = el('option', null, DURUM[k]); o.value = k; if (l.durum === k) o.selected = true; sel.appendChild(o); });
+      if (l.durum && !DURUM[l.durum]) { const o = el('option', null, l.durum); o.value = l.durum; o.selected = true; sel.appendChild(o); }
+      head.appendChild(sel);
+      card.appendChild(head);
+
+      // Bilgiler
+      const tel = String(l.telefon || '').trim();
+      const telDigits = tel.replace(/[^\d+]/g, '');
+      const mail = String(l.email || '').trim();
+      const mailOk = EMAIL_RE.test(mail);
+      const info = el('div', 'lead-info');
+      if (tel) { const a = iconText('a', null, 'phone', tel); if (telDigits) a.href = 'tel:' + telDigits; info.appendChild(infoItem('Telefon', a)); }
+      if (mail) { const a = iconText(mailOk ? 'a' : 'span', null, 'mail', mail); if (mailOk) a.href = 'mailto:' + mail; info.appendChild(infoItem('E-posta', a)); }
+      if (l.properties && l.properties.baslik_tr) info.appendChild(infoItem('İlgili ilan', iconText('span', null, 'home', l.properties.baslik_tr)));
+      if (info.childElementCount) card.appendChild(info);
+
+      if (l.mesaj) {
+        const m = el('div', 'lead-msg');
+        m.appendChild(el('div', 'lead-k', 'Mesaj'));
+        m.appendChild(el('div', 'lead-msg-t', l.mesaj));
+        card.appendChild(m);
+      }
+
+      // İşlemler: hepsi aynı boyda; tek ana işlem (İlan Gönder), silme sağda ve sakin
+      const acts = el('div', 'lead-actions');
+      const main = el('div', 'lead-actions-main');
+      if (telDigits) {
+        const call = iconText('a', 'btn btn-outline btn-sm', 'phone', 'Ara'); call.href = 'tel:' + telDigits; main.appendChild(call);
+        const wa = iconText('a', 'btn btn-outline btn-sm', 'message', 'WhatsApp');
+        wa.href = 'https://wa.me/' + telDigits.replace(/\D/g, ''); wa.target = '_blank'; wa.rel = 'noopener noreferrer'; main.appendChild(wa);
+      }
+      if (mailOk) {
+        const em = iconText('a', 'btn btn-outline btn-sm', 'mail', 'E-posta'); em.href = 'mailto:' + mail; main.appendChild(em);
+        const send = iconText('a', 'btn btn-primary btn-sm', 'send', 'İlan Gönder'); send.href = '/admin/ilan-gonder.html?lead=' + encodeURIComponent(l.id); main.appendChild(send);
+      }
+      acts.appendChild(main);
+      const del = iconText('button', 'btn btn-outline-danger btn-sm lead-del', 'trash', 'Sil');
+      del.type = 'button'; del.dataset.act = 'delete';
+      acts.appendChild(del);
+      card.appendChild(acts);
+      return card;
     }
 
     function renderLeads(leads) {
       const container = document.getElementById('leadsList');
-
+      container.textContent = '';
       if (leads.length === 0) {
-        container.innerHTML = `
-          <div class="card">
-            <div class="empty-state">
-              <div class="empty-icon"><i class="ic ic-message" aria-hidden="true"></i></div>
-              <div>Henüz mesaj yok</div>
-            </div>
-          </div>
-        `;
+        const c = el('div', 'card');
+        const e = el('div', 'empty-state');
+        const ic = el('div', 'empty-icon'); ic.appendChild(App.icon('message'));
+        e.appendChild(ic);
+        e.appendChild(el('div', null, allLeads.length ? 'Bu filtreye uyan mesaj yok' : 'Henüz mesaj yok'));
+        c.appendChild(e);
+        container.appendChild(c);
         return;
       }
-
-      container.innerHTML = leads.map(l => `
-        <div class="card" style="margin-bottom: 12px; ${l.durum === 'yeni' ? 'border-left: 4px solid var(--warning);' : ''}">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-            <div>
-              <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">
-                ${Security.escapeHtml(l.isim || 'İsimsiz')}
-              </div>
-              <div style="color: var(--text-muted); font-size: 13px;">
-                <i class="ic ic-calendar" aria-hidden="true"></i> ${App.timeAgo(l.created_at)} • ${App.formatDate(l.created_at, true)}
-              </div>
-            </div>
-            <select onchange="updateStatus('${l.id}', this.value)" class="form-select" style="width: auto;">
-              ${['yeni','aranildi','gorusme','satildi','takip','spam','kapali'].map(s =>
-                `<option value="${s}" ${l.durum === s ? 'selected' : ''}>${s}</option>`
-              ).join('')}
-            </select>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
-            ${l.telefon ? `
-              <div>
-                <div style="color: var(--text-muted); font-size: 11px; text-transform: uppercase;">Telefon</div>
-                <div style="font-weight: 600;">
-                  <a href="tel:${Security.escapeHtml(l.telefon)}" style="color: var(--accent-dark); text-decoration: none;">
-                    <i class="ic ic-phone" aria-hidden="true"></i> ${Security.escapeHtml(l.telefon)}
-                  </a>
-                </div>
-              </div>
-            ` : ''}
-
-            ${l.email ? `
-              <div>
-                <div style="color: var(--text-muted); font-size: 11px; text-transform: uppercase;">Email</div>
-                <div style="font-weight: 600;">
-                  <a href="mailto:${Security.escapeHtml(l.email)}" style="color: var(--accent-dark); text-decoration: none;">
-                    <i class="ic ic-mail" aria-hidden="true"></i> ${Security.escapeHtml(l.email)}
-                  </a>
-                </div>
-              </div>
-            ` : ''}
-
-            ${l.properties ? `
-              <div>
-                <div style="color: var(--text-muted); font-size: 11px; text-transform: uppercase;">İlgili İlan</div>
-                <div style="font-weight: 600;">
-                  <i class="ic ic-home" aria-hidden="true"></i> ${Security.escapeHtml(l.properties.baslik_tr)}
-                </div>
-              </div>
-            ` : ''}
-          </div>
-
-          ${l.mesaj ? `
-            <div style="background: var(--bg); padding: 12px; border-radius: var(--radius); margin-bottom: 12px;">
-              <div style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; margin-bottom: 4px;">Mesaj</div>
-              <div style="white-space: pre-wrap;">${Security.escapeHtml(l.mesaj)}</div>
-            </div>
-          ` : ''}
-
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            ${l.telefon ? `
-              <a href="tel:${Security.escapeHtml(l.telefon)}" class="btn btn-success btn-sm"><i class="ic ic-phone" aria-hidden="true"></i> Ara</a>
-              <a href="https://wa.me/${Security.escapeHtml(l.telefon.replace(/\D/g, ''))}" target="_blank" class="btn btn-outline btn-sm"><i class="ic ic-message" aria-hidden="true"></i> WhatsApp</a>
-            ` : ''}
-            ${l.email ? `
-              <a href="mailto:${Security.escapeHtml(l.email)}" class="btn btn-outline btn-sm"><i class="ic ic-mail" aria-hidden="true"></i> Email</a>
-              <a href="/admin/ilan-gonder.html?lead=${encodeURIComponent(l.id)}" class="btn btn-primary btn-sm"><i class="ic ic-send" aria-hidden="true"></i> İlan Gönder</a>
-            ` : ''}
-            <button onclick="deleteLead('${l.id}')" class="btn btn-danger btn-sm"><i class="ic ic-trash" aria-hidden="true"></i> Sil</button>
-          </div>
-        </div>
-      `).join('');
+      leads.forEach(l => container.appendChild(leadCard(l)));
     }
 
     async function updateStatus(id, newStatus) {
+      if (!Object.prototype.hasOwnProperty.call(DURUM, newStatus)) return;
       try {
         const { error } = await supabaseClient
           .from('leads')
@@ -187,12 +203,12 @@
         if (error) throw error;
         App.toast('Durum güncellendi', 'success');
         await loadLeads();
+        App.updateLeadsBadge();
       } catch (error) {
         console.error(error);
         App.toast(error.message, 'error');
       }
     }
-    window.updateStatus = updateStatus;
 
     async function deleteLead(id) {
       const confirmed = await App.confirm('Bu mesajı silmek istediğinize emin misiniz?');
@@ -207,11 +223,24 @@
         if (error) throw error;
         App.toast('Mesaj silindi', 'success');
         await loadLeads();
+        App.updateLeadsBadge();
       } catch (error) {
         App.toast(error.message, 'error');
       }
     }
-    window.deleteLead = deleteLead;
+
+    // Satır içi onclick/onchange yok: kartlardaki işlemler tek yerden dinlenir
+    const listEl = document.getElementById('leadsList');
+    listEl.addEventListener('change', (e) => {
+      const sel = e.target.closest('select[data-act="status"]');
+      const card = sel && sel.closest('.lead-card');
+      if (card) updateStatus(card.dataset.id, sel.value);
+    });
+    listEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-act="delete"]');
+      const card = btn && btn.closest('.lead-card');
+      if (card) deleteLead(card.dataset.id);
+    });
 
     function setupFilters() {
       document.getElementById('filterDurum').addEventListener('change', applyFilter);

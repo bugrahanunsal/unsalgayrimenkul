@@ -184,8 +184,61 @@ const App = {
       `;
     }
 
+    // "Siteyi Görüntüle": her sayfanın üst çubuğunda aynı yerde (kullanıcı menüsünün solunda), yeni sekmede açılır
+    this.renderSiteLink();
+    // Telefonda menü butonu (yan menü ekran dışında kalıyordu; sayfalar arası geçiş için)
+    this.renderMobileMenu();
+
     // Bekleyen mesaj sayısı
     this.updateLeadsBadge();
+  },
+
+  renderMobileMenu() {
+    const topbar = document.querySelector('.topbar');
+    const sidebar = document.getElementById('sidebar');
+    if (!topbar || !sidebar || topbar.querySelector('.menu-btn')) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'menu-btn';
+    btn.setAttribute('aria-controls', 'sidebar');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-label', 'Menüyü aç');
+    btn.appendChild(this.icon('menu'));
+    topbar.insertBefore(btn, topbar.firstChild);
+    const backdrop = document.createElement('div');
+    backdrop.className = 'sidebar-backdrop';
+    backdrop.hidden = true;
+    document.body.appendChild(backdrop);
+    const set = (open) => {
+      sidebar.classList.toggle('open', open);
+      backdrop.hidden = !open;
+      document.body.classList.toggle('nav-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.setAttribute('aria-label', open ? 'Menüyü kapat' : 'Menüyü aç');
+    };
+    btn.addEventListener('click', () => set(!sidebar.classList.contains('open')));
+    backdrop.addEventListener('click', () => set(false));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sidebar.classList.contains('open')) { set(false); btn.focus(); } });
+    sidebar.addEventListener('click', (e) => { if (e.target.closest('a')) set(false); });
+  },
+
+  renderSiteLink() {
+    const actions = document.querySelector('.topbar .topbar-actions');
+    if (!actions || actions.querySelector('[data-site-link]')) return;
+    const a = document.createElement('a');
+    a.href = '/';
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.className = 'btn btn-outline btn-sm topbar-site';
+    a.setAttribute('data-site-link', '');
+    a.title = 'Siteyi yeni sekmede aç';
+    a.setAttribute('aria-label', 'Siteyi Görüntüle (yeni sekmede açılır)');
+    a.appendChild(this.icon('external'));
+    const t = document.createElement('span');
+    t.className = 'topbar-site-t';
+    t.textContent = 'Siteyi Görüntüle';
+    a.appendChild(t);
+    actions.insertBefore(a, actions.querySelector(':scope > #userMenu'));
   },
 
   /**

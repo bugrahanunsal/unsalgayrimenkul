@@ -76,7 +76,7 @@
         const v = document.createElement('a'); v.className = 'btn btn-outline btn-sm'; App.iconText(v, 'external', 'Sitede gör');
         v.href = '/blog/' + p.slug; v.target = '_blank'; v.rel = 'noopener'; act.appendChild(v);
       }
-      const del = document.createElement('button'); del.className = 'btn btn-danger btn-sm'; App.iconText(del, 'trash'); del.title = 'Sil'; del.setAttribute('aria-label', 'Sil');
+      const del = document.createElement('button'); del.className = 'btn btn-outline-danger btn-sm btn-icon'; App.iconText(del, 'trash'); del.title = 'Sil'; del.setAttribute('aria-label', 'Sil');
       del.onclick = () => deletePost(p); act.appendChild(del);
       body.append(top, t, d, act); card.append(img, body); grid.appendChild(card);
     });

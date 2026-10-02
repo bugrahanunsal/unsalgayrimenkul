@@ -203,20 +203,26 @@ body {
   color: var(--text-primary);
 }
 
+/* Butonlar: tek ölçü sistemi. Dolgulu ve çerçeveli butonlar aynı yükseklikte (hepsinde 1.5px kenarlık),
+   hiçbir buton kendiliğinden tam genişlik olmaz — gerekiyorsa .btn-block eklenir. */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 20px;
-  border: none;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1.5px solid transparent;
   border-radius: var(--radius);
   font-weight: 600;
   font-size: 14px;
+  line-height: 1.25;
   cursor: pointer;
   transition: var(--transition);
   text-decoration: none;
   font-family: inherit;
+  box-sizing: border-box;
+  vertical-align: middle;
 }
 
 .btn:disabled {
@@ -224,24 +230,27 @@ body {
   cursor: not-allowed;
 }
 
+.btn:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.35);
+  outline-offset: 2px;
+}
+
 .btn-primary {
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  border-color: var(--accent-dark);
   color: white;
-  width: 100%;
-  padding: 14px;
-  font-size: 15px;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+  background: var(--accent-dark);
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.28);
 }
 
 .btn-secondary {
   background: var(--bg);
   color: var(--text-primary);
-  border: 1px solid var(--border);
+  border-color: var(--border);
 }
 
 .btn-secondary:hover:not(:disabled) {
@@ -250,22 +259,25 @@ body {
 
 .btn-danger {
   background: var(--danger);
+  border-color: var(--danger);
   color: white;
 }
 
 .btn-danger:hover:not(:disabled) {
   background: #dc2626;
+  border-color: #dc2626;
 }
 
 .btn-success {
   background: var(--success);
+  border-color: var(--success);
   color: white;
 }
 
 .btn-outline {
   background: white;
   color: var(--text-primary);
-  border: 1.5px solid var(--border);
+  border-color: var(--border);
 }
 
 .btn-outline:hover:not(:disabled) {
@@ -273,14 +285,44 @@ body {
   color: var(--accent-dark);
 }
 
+/* Silme gibi geri alınamaz işlemler: sakin, çerçeveli kırmızı (dolgulu kırmızı yalnızca onay pencerelerinde) */
+.btn-outline-danger {
+  background: white;
+  color: #B91C1C;
+  border-color: #FECACA;
+}
+
+.btn-outline-danger:hover:not(:disabled) {
+  background: #FEF2F2;
+  border-color: #FCA5A5;
+  color: #991B1B;
+}
+
 .btn-sm {
-  padding: 8px 14px;
+  min-height: 34px;
+  padding: 6px 12px;
   font-size: 13px;
+  gap: 6px;
 }
 
 .btn-lg {
-  padding: 14px 28px;
+  min-height: 48px;
+  padding: 12px 24px;
   font-size: 15px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Yalnızca simgeli kare buton (ör. küçük ekranda "Siteyi Görüntüle") */
+.btn-icon {
+  width: 40px;
+  padding: 0;
+}
+
+.btn-sm.btn-icon {
+  width: 34px;
 }
 
 .login-footer {
@@ -485,6 +527,7 @@ body {
 
 .main-content {
   flex: 1;
+  min-width: 0;   /* içerideki geniş tablo/ızgara sayfayı yana taşırmasın (tablolar kendi kutusunda kayar) */
   margin-left: var(--sidebar-width);
   min-height: 100vh;
 }
@@ -568,6 +611,17 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
+}
+
+/* "Siteyi Görüntüle" her sayfanın üst çubuğunda; telefonda yalnızca simge */
+.topbar-site { flex-shrink: 0; }
+@media (max-width: 640px) {
+  .topbar { gap: 10px; }
+  .page-title { min-width: 0; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar-actions { gap: 8px; flex-shrink: 0; }
+  /* üst çubuktaki butonlar telefonda kare simge olur (sayfa başlığı okunur kalsın); ana işlem mavi rengiyle ayrışır */
+  .topbar-actions .btn-sm { width: 34px; padding: 0; gap: 0; font-size: 0; flex-shrink: 0; }
+  .topbar-actions .btn-sm .ic { width: 15px; height: 15px; }
 }
 
 /* Topbar responsive - küçük ekranlarda user info gizlenir */
@@ -743,6 +797,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .badge-success { background: #dcfce7; color: #166534; }
@@ -771,6 +826,14 @@ body {
   background: white;
   cursor: pointer;
   font-family: inherit;
+}
+
+.form-select-sm {
+  width: auto;
+  min-height: 34px;
+  padding: 6px 30px 6px 10px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .form-textarea {
@@ -802,7 +865,13 @@ body {
   width: 18px;
   height: 18px;
   cursor: pointer;
+  flex-shrink: 0;
 }
+
+/* Uzun etiketler: kutu ilk satırla hizalı, metin tek blok halinde alta sarar */
+.form-checkbox:has(> span) { align-items: flex-start; }
+.form-checkbox:has(> span) > input { margin-top: 1px; }
+.form-checkbox > span { min-width: 0; line-height: 1.4; }
 
 /* Toast Notifications */
 .toast-container {
@@ -1125,3 +1194,58 @@ body {
 .ic-hash{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='4' y1='9' x2='20' y2='9'/%3E%3Cline x1='4' y1='15' x2='20' y2='15'/%3E%3Cline x1='10' y1='3' x2='8' y2='21'/%3E%3Cline x1='16' y1='3' x2='14' y2='21'/%3E%3C/svg%3E")}
 .ic-crop{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.13 1L6 16a2 2 0 0 0 2 2h15'/%3E%3Cpath d='M1 6.13L16 6a2 2 0 0 1 2 2v15'/%3E%3C/svg%3E")}
 /* ICONS:END */
+
+/* ============================================
+   MESAJLAR (leads): orantılı kart ve işlem satırı
+   ============================================ */
+.lead-card { margin-bottom: 12px; padding: 20px 22px; }
+.lead-card.is-new { border-left: 4px solid var(--warning); }
+.lead-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.lead-who { min-width: 0; }
+.lead-name { font-size: 16px; font-weight: 700; color: var(--text-primary); overflow-wrap: anywhere; }
+.lead-when { display: flex; align-items: center; gap: 6px; margin-top: 3px; color: var(--text-muted); font-size: 13px; }
+.lead-status { flex-shrink: 0; }
+.lead-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 20px; margin-bottom: 14px; }
+.lead-field { min-width: 0; }
+.lead-k { color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 3px; }
+.lead-v { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; color: var(--text-primary); text-decoration: none; overflow-wrap: anywhere; }
+a.lead-v { color: var(--accent-dark); }
+a.lead-v:hover { text-decoration: underline; }
+.lead-msg { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+.lead-msg-t { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.55; color: var(--text-primary); }
+.lead-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.lead-actions-main { display: flex; flex-wrap: wrap; gap: 8px; }
+.lead-del { margin-left: auto; }
+@media (max-width: 640px) {
+  .lead-card { padding: 16px; }
+  .lead-actions-main { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+}
+
+/* Tablo satırı işlemleri: tek satırda, eşit kare simge butonları */
+.row-actions { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+
+/* Kartın son satırındaki form alanı kartın altına fazladan boşluk bırakmaz (filtre kartları) */
+.card > .form-row:last-child { margin-bottom: 0; }
+.card > .form-row:last-child > .form-group { margin-bottom: 0; }
+.card > .form-group:last-child { margin-bottom: 0; }
+
+/* Telefon/tablet: üst çubukta menü butonu, yan menü soldan açılır (arka plan tıklanınca kapanır) */
+.ic-menu{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='4' y1='7' x2='20' y2='7'/%3E%3Cline x1='4' y1='12' x2='20' y2='12'/%3E%3Cline x1='4' y1='17' x2='20' y2='17'/%3E%3C/svg%3E")}
+.menu-btn { display: none; }
+.sidebar-backdrop[hidden] { display: none; }
+@media (max-width: 768px) {
+  .menu-btn { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; margin-right: 10px; flex-shrink: 0;
+    border: 1.5px solid var(--border); border-radius: 10px; background: #fff; color: var(--text-primary); cursor: pointer; }
+  .menu-btn .ic { width: 18px; height: 18px; }
+  .menu-btn:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.35); outline-offset: 2px; }
+  .topbar .page-title { margin-right: auto; }
+  .sidebar.open { box-shadow: 0 0 48px rgba(15, 23, 42, 0.4); }
+  .sidebar-backdrop { position: fixed; inset: 0; z-index: 90; background: rgba(15, 23, 42, 0.45); }
+  body.nav-open { overflow: hidden; }
+}
+
+/* Tablolar: dizüstü genişliğinde işlem sütunu kesilmeden sığsın */
+@media (max-width: 1440px) {
+  .table th, .table td { padding-left: 12px; padding-right: 12px; }
+}
+.table td:has(> .row-actions) { width: 1%; white-space: nowrap; }
