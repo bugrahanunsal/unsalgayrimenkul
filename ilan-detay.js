@@ -517,7 +517,9 @@
       section('ilan-konum', 'Konum', buildMap(p))
     ]);
     const summary = buildSummary(p);
-    const right = el('aside', { class: 'ild-right' }, [summary, buildAgents(p), buildLeadForm(p)]);
+    // Üye ol / favorilere ekle kartı (uye-ol.js çizer) — her ilanda sağ sütunda
+    const uyeOl = el('div', { 'data-uye-ol': 'ilan', 'data-property-id': String(p.id) });
+    const right = el('aside', { class: 'ild-right' }, [summary, buildAgents(p), buildLeadForm(p), uyeOl]);
 
     root.innerHTML = '';
     root.append(crumbs, el('div', { class: 'ild-layout' }, [left, right]));
@@ -528,6 +530,16 @@
     const place = () => { if (mq.matches) slot.appendChild(summary); else right.insertBefore(summary, right.firstChild); };
     place();
     (mq.addEventListener ? mq.addEventListener('change', place) : mq.addListener(place));
+    if (window.IUUyeOl) window.IUUyeOl.mount(uyeOl);       // uye-ol.js sonra yüklenirse kendisi bulur
+
+    // Sağ sütun ekrandan uzunsa alt kenarından yapışsın: kaydırırken form ve üyelik kartı da görünür kalır
+    const fitAside = () => {
+      if (mq.matches) { right.style.top = ''; return; }
+      right.style.top = Math.min(104, Math.round(window.innerHeight - right.offsetHeight - 24)) + 'px';
+    };
+    fitAside();
+    window.addEventListener('resize', fitAside, { passive: true });
+    if ('ResizeObserver' in window) new ResizeObserver(fitAside).observe(right);
 
     // Mobil sabit alt bar: Ara / WhatsApp
     const bar = el('div', { class: 'ild-sticky' }, [

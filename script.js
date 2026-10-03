@@ -40,7 +40,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20261002-spam';
+  const SITE_VERSION = '20261002-uye';
 
   async function loadAllScripts() {
     try {

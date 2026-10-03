@@ -1338,6 +1338,7 @@
     const { data: { user } } = await sb.auth.getUser();
     IUAuth.user = user;
     renderAuthBar();
+    announceAuth();
   }
 
   // ==================== OTOMATIK AUTH INJECTION ====================
@@ -1647,8 +1648,8 @@
               </div>
               ${adminMenuItem}
               ${!isAdmin ? `<a href="${accountLink}">${iconAccount} ${t('Hesabım')}</a>
-              <a href="/favorilerim">${iconHeart} Favorilerim</a>
-              <a href="/aramalarim">${iconSearch} Kayıtlı Aramalar</a>` : ''}
+              <a href="${accountLink}#favoriler">${iconHeart} Favorilerim</a>
+              <a href="${accountLink}#alarmlar">${iconSearch} Kayıtlı Aramalar</a>` : ''}
               ${!isAdmin ? '<div class="iu-user-menu-divider"></div>' : ''}
               <a href="#" onclick="IUAuth.logout(event)" class="iu-user-menu-logout">${iconLogout} ${t('Çıkış Yap')}</a>
             </div>
@@ -1857,6 +1858,16 @@
       else alert(tMsg(subscribeError(res)));
     },
 
+    /** Bu ilan üyenin favorilerinde mi? (yalnızca kendi favorileri okunur — RLS) */
+    async isFavorite(propertyId) {
+      if (!this.user) return false;
+      const sb = initSupabase();
+      if (!sb) return false;
+      const { data, error } = await sb.from('favorites').select('property_id')
+        .eq('customer_id', this.user.id).eq('property_id', propertyId).limit(1);
+      return !error && Array.isArray(data) && data.length > 0;
+    },
+
     async toggleFavorite(propertyId) {
       if (!this.user) {
         this.open('login');
@@ -1886,6 +1897,14 @@
     }
   }
 
+  // Oturum durumu belli olduğunda / değiştiğinde sayfadaki diğer bölümlere haber ver (ör. uye-ol.js)
+  function announceAuth() {
+    IUAuth.ready = true;
+    try {
+      window.dispatchEvent(new CustomEvent('iu-auth-change', { detail: { signedIn: !!IUAuth.user, isAdmin: IUAuth.isAdmin === true } }));
+    } catch (_) { /* eski tarayıcı */ }
+  }
+
   // ==================== INIT ====================
   async function init() {
     injectStyles();
@@ -1899,13 +1918,17 @@
       IUAuth.user = user;
       IUAuth.isAdmin = await checkAdminStatus(user);
       renderAuthBar();
+      announceAuth();
 
       // Session değişimini dinle
       sb.auth.onAuthStateChange(async (event, session) => {
         IUAuth.user = session?.user || null;
         IUAuth.isAdmin = await checkAdminStatus(IUAuth.user);
         renderAuthBar();
+        announceAuth();
       });
+    } else {
+      announceAuth();
     }
 
     // URL parametresi kontrol - eğer zaten login olmuş ve redirect param varsa direkt yönlendir
