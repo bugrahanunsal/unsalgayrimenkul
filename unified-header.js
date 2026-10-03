@@ -153,7 +153,7 @@
   // ============================================================
   // INJECTION: Replace existing header OR prepend to body
   // ============================================================
-  const HEADER_CSS_VERSION = '20261003-menu';
+  const HEADER_CSS_VERSION = '20261003-dil';
 
   // Add a stylesheet once. toBodyEnd=true → appended at end of <body> so it
   // wins the cascade over page-specific header CSS. skipIfMatch → skip when
@@ -223,21 +223,9 @@
       console.log('[UnifiedHeader] Prepended to body');
     }
 
-    // Dil menüsü aç/kapa: translations.js zaten bağlıyorsa (home page ile aynı)
-    // tekrar bağlama — iki kez bağlanırsa toggle iki kez çalışır ve menü açılmaz.
-    if (typeof window.switchLanguageURL !== 'function') {
-      const switcher = document.getElementById('langSwitcher');
-      const current = document.getElementById('langCurrent');
-      if (current && switcher) {
-        current.addEventListener('click', (e) => {
-          e.stopPropagation();
-          switcher.classList.toggle('active');
-        });
-        document.addEventListener('click', (e) => {
-          if (!switcher.contains(e.target)) switcher.classList.remove('active');
-        });
-      }
-    }
+    // Dil menüsü aç/kapa: translations.js'teki tek ortak fonksiyon bağlar (iki kez bağlanırsa toggle
+    // iki kez çalışıp menü hiç kapanmıyordu). translations.js henüz yüklenmediyse o yüklenince bağlar.
+    if (typeof window.iuBindLangSwitcher === 'function') window.iuBindLangSwitcher();
 
     // TURYAP logosu, dil kodları, bayraklar ve auth alanı Google Translate ile çevrilmesin
     document.querySelectorAll('.logo svg, .lang-code, .flag, .nav-badge, [data-iu-auth]').forEach(el => {

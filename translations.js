@@ -1041,17 +1041,8 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(setLangHrefs, 500);
   setTimeout(setLangHrefs, 1500);
 
-  // Dropdown toggle
-  const langSwitcher = document.getElementById('langSwitcher');
-  if (langSwitcher) {
-    const langCurrent = langSwitcher.querySelector('.lang-current');
-    if (langCurrent) {
-      langCurrent.addEventListener('click', (e) => {
-        e.stopPropagation();
-        langSwitcher.classList.toggle('active');
-      });
-    }
-  }
+  // Dropdown aç/kapa — tek ortak bağlama (unified-header.js de aynı fonksiyonu kullanır; iki kez bağlanmaz)
+  iuBindLangSwitcher();
 
   // Dil seçenekleri — URL'e navigate (event delegation)
   document.addEventListener('click', function(e) {
@@ -1063,13 +1054,30 @@ document.addEventListener('DOMContentLoaded', () => {
     switchLanguageURL(lang);
   }, true);
 
-  // Dışarı tıklayınca dropdown kapansın
-  document.addEventListener('click', (e) => {
-    if (langSwitcher && !langSwitcher.contains(e.target)) {
-      langSwitcher.classList.remove('active');
-    }
-  });
 });
+
+function iuBindLangSwitcher() {
+  const sw = document.getElementById('langSwitcher');
+  const cur = sw && sw.querySelector('.lang-current');
+  if (!sw || !cur || sw.__iuLangBound) return;
+  sw.__iuLangBound = true;
+  cur.setAttribute('role', 'button');
+  cur.setAttribute('tabindex', '0');
+  cur.setAttribute('aria-haspopup', 'true');
+  const set = (open) => { sw.classList.toggle('active', open); cur.setAttribute('aria-expanded', open ? 'true' : 'false'); };
+  set(false);
+  // aynı düğmeye ikinci dokunuş menüyü kapatır
+  cur.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); set(!sw.classList.contains('active')); });
+  cur.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); set(!sw.classList.contains('active')); }
+  });
+  // dışarıya dokununca ya da Esc ile kapanır
+  document.addEventListener('click', (e) => { if (!sw.contains(e.target)) set(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sw.classList.contains('active')) { set(false); cur.focus(); } });
+  // geri tuşuyla sayfaya dönülünce (önbellekten) menü açık kalmasın
+  window.addEventListener('pageshow', () => set(false));
+}
+window.iuBindLangSwitcher = iuBindLangSwitcher;
 
 // Header injection sonrası çevirileri tekrar uygula
 document.addEventListener('iu:header-injected', () => {
