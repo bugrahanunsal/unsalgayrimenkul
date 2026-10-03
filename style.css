@@ -538,7 +538,10 @@ body[data-lang="de"] .nav a, body[data-lang="ru"] .nav a {
   }
   .nav a:last-of-type, .nav.open a:last-of-type { border-bottom: none !important; }
   .nav a.active, .nav.open a.active { color: #2563EB !important; border-bottom-color: rgba(37,99,235,0.35) !important; }
-  html.iu-nav-open, body.iu-nav-open { overflow: hidden !important; position: fixed !important; width: 100% !important; height: 100% !important; touch-action: none !important; overscroll-behavior: none !important; }
+  /* Menü açıkken arka sayfa kaymasın: overflow YALNIZCA html'de (body'de olursa yapışkan üst menü kayar);
+     position:fixed kullanma — aşağı kaydırılmışken sayfayı ve menüyü ekrandan çıkarıyordu (bembeyaz ekran) */
+  html.iu-nav-open { overflow: hidden !important; overscroll-behavior: none !important; }
+  body.iu-nav-open { touch-action: none !important; overscroll-behavior: none !important; }
   body.iu-nav-open .nav.open { touch-action: pan-y !important; }
   .header-cta { margin-top: 0; text-align: center; justify-content: center; align-items: center; }
   .header-cta > * { align-self: center; }

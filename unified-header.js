@@ -153,7 +153,7 @@
   // ============================================================
   // INJECTION: Replace existing header OR prepend to body
   // ============================================================
-  const HEADER_CSS_VERSION = '20260929-admin';
+  const HEADER_CSS_VERSION = '20261003-menu';
 
   // Add a stylesheet once. toBodyEnd=true → appended at end of <body> so it
   // wins the cascade over page-specific header CSS. skipIfMatch → skip when

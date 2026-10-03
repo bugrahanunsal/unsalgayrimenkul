@@ -405,18 +405,23 @@ document.addEventListener('DOMContentLoaded', () => {
   function syncBodyLock(nav) {
     if (!nav) return;
     const isOpen = nav.classList.contains('open');
+    // Kilit yalnızca overflow:hidden ile (CSS). Sayfa yerinden oynatılmaz: aşağı kaydırılmışken
+    // body'yi position:fixed + top:-scrollY ile taşımak üst menüyü ve açılan menüyü ekranın dışına
+    // itiyor, ekran bembeyaz kalıyordu (özellikle iPhone Safari).
     if (isOpen) {
+      if (document.body.classList.contains('iu-nav-open')) return;
       scrollY = window.scrollY;
       document.documentElement.classList.add('iu-nav-open');
       document.body.classList.add('iu-nav-open');
-      document.body.style.top = '-' + scrollY + 'px';
+      document.body.style.top = '';
       // iOS için touchmove'u engelle
       document.addEventListener('touchmove', preventBodyScroll, { passive: false });
     } else if (document.body.classList.contains('iu-nav-open')) {
       document.documentElement.classList.remove('iu-nav-open');
       document.body.classList.remove('iu-nav-open');
       document.body.style.top = '';
-      window.scrollTo(0, scrollY);
+      // eski önbellekteki CSS sayfayı başa atmışsa eski yere dön (yeni CSS'te kaydırma değişmez)
+      if (Math.abs(window.scrollY - scrollY) > 2) window.scrollTo(0, scrollY);
       document.removeEventListener('touchmove', preventBodyScroll);
     }
   }
@@ -426,16 +431,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const observer = new MutationObserver(() => syncBodyLock(mainNav));
     observer.observe(mainNav, { attributes: true, attributeFilter: ['class'] });
 
-    // Link'e tıklanınca menüyü kapat
-    mainNav.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => mainNav.classList.remove('open'));
+    // Menüdeki bir linke ya da Giriş / Üye Ol düğmesine dokununca menüyü kapat
+    // (sonradan eklenen giriş düğmeleri de dahil — tek dinleyici)
+    mainNav.addEventListener('click', (e) => {
+      const t = e.target && e.target.closest ? e.target.closest('a, .iu-authbar-btn') : null;
+      if (t && mainNav.contains(t)) mainNav.classList.remove('open');
     });
-    // Dışına tıklanınca menüyü kapat
+    // Menü açıkken dışarıya dokunmak YALNIZCA menüyü kapatsın: alttaki ilan/link açılmasın
+    // (eskiden menüyü kapatmak için boş yere dokunan kişi alttaki kategoriye gidiyordu)
     document.addEventListener('click', (e) => {
-      if (mainNav.classList.contains('open') && !mainNav.contains(e.target) && menuToggle && !menuToggle.contains(e.target)) {
-        mainNav.classList.remove('open');
-      }
-    });
+      if (!mainNav.classList.contains('open')) return;
+      const t = e.target;
+      if (mainNav.contains(t) || (menuToggle && menuToggle.contains(t))) return;
+      if (t && t.closest && t.closest('#iu-auth-modal, [role="dialog"], [aria-modal="true"]')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      mainNav.classList.remove('open');
+    }, true);
     // Ekran büyüyünce menüyü kapat
     window.addEventListener('resize', () => {
       if (window.innerWidth > 968) mainNav.classList.remove('open');

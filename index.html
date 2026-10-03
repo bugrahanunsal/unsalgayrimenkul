@@ -58,7 +58,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="style.css?v=20260930-navy2">
+<link rel="stylesheet" href="style.css?v=20261003-menu">
 
 <style>
 .hero {
@@ -580,12 +580,14 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
         .nav.open a:last-of-type {
           border-bottom: none !important;
         }
-        /* Menü açıkken sayfa scroll'unu kilitle (iOS Safari için touch-action + overscroll) */
-        html.iu-nav-open, body.iu-nav-open {
+        /* Menü açıkken sayfa scroll'unu kilitle (iOS Safari için touch-action + overscroll).
+           position:fixed KULLANMA: aşağı kaydırılmışken sayfayı ve menüyü ekranın dışına itiyordu (bembeyaz ekran).
+           overflow YALNIZCA html'de: body'de olursa yapışkan üst menü (header) sayfayla birlikte kayıp gider. */
+        html.iu-nav-open {
           overflow: hidden !important;
-          position: fixed !important;
-          width: 100% !important;
-          height: 100% !important;
+          overscroll-behavior: none !important;
+        }
+        body.iu-nav-open {
           touch-action: none !important;
           overscroll-behavior: none !important;
         }
