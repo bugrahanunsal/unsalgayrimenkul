@@ -82,9 +82,11 @@ export async function onRequest({ request, env }) {
   try {
     // 1) Davet et (yeni kullanıcı) — varsa mevcut hesabın ID'sini al
     let userId = null, invited = false;
-    const inv = await fetch(`${SUPABASE_URL}/auth/v1/invite`, {
+    // Supabase davet linkinin dönüş adresini yalnızca adres satırından (?redirect_to=) okur; gövdedeki redirect_to yok sayılır.
+    // Adres Supabase → Authentication → URL Configuration → Redirect URLs listesinde olmalı, yoksa Site URL kullanılır.
+    const inv = await fetch(`${SUPABASE_URL}/auth/v1/invite?redirect_to=${encodeURIComponent(SITE + '/sifre-belirle')}`, {
       method: 'POST', headers: svc(env),
-      body: JSON.stringify({ email, data: { full_name: name }, redirect_to: `${SITE}/sifre-belirle` })
+      body: JSON.stringify({ email, data: { full_name: name } })
     });
     const invBody = await inv.json().catch(() => ({}));
     if (inv.ok && UUID_RE.test(invBody.id || '')) { userId = invBody.id; invited = true; }
