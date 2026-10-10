@@ -33,6 +33,13 @@ function limited(k, max, win) { const n = Date.now(); const a = (hits.get(k) || 
 export function _resetLimits() { hits.clear(); }
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex' } });
 const esc = (v) => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+/** Adres kontrolünden sonraki her yanıt yaklaşık aynı sürede döner: yanıt hızı, adresin kayıtlı olup olmadığını ele
+    vermesin (e-posta göndermek, hiçbir şey yapmamaktan yavaştır). Testler bu değerleri düşürebilir. */
+export const TIMING = { floor: 1200, jitter: 400 };
+const settle = async (t0) => {
+  const wait = TIMING.floor - (Date.now() - t0) + Math.floor(Math.random() * (TIMING.jitter + 1));
+  if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+};
 const timed = (opts) => (typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? Object.assign({ signal: AbortSignal.timeout(8000) }, opts) : opts);
 
 function sameOrigin(request) {
@@ -101,7 +108,7 @@ async function sentRecently(email, H) {
   } catch (_) { return false; }
 }
 
-export async function onRequest(context) {
+async function handle(context, mark) {
   const { request, env } = context;
   if (request.method !== 'POST') return json({ ok: false, error: 'method_not_allowed' }, 405);
   if (!sameOrigin(request)) return json({ ok: false, error: 'forbidden' }, 403);
@@ -117,6 +124,7 @@ export async function onRequest(context) {
 
   const email = String(b.email || '').trim().toLowerCase().slice(0, 254);
   if (!EMAIL_RE.test(email)) return json({ ok: false, code: 'email', message: 'Geçerli bir e-posta adresi girin.' }, 400);
+  mark();
   const lang = T[b.dil] ? b.dil : (b.dil === 'ar' ? 'en' : 'tr');
   if (!serviceKey(env)) {
     console.warn('[sifre-sifirla] SUPABASE_SERVICE_ROLE_KEY tanımlı değil');
@@ -157,4 +165,11 @@ export async function onRequest(context) {
     console.warn('[sifre-sifirla]', e && e.message);
     return json({ ok: false, code: 'fail', message: 'Bir sorun oluştu. Lütfen biraz sonra tekrar deneyin.' }, 502);
   }
+}
+
+export async function onRequest(context) {
+  const box = { t0: 0 };
+  const res = await handle(context, () => { box.t0 = Date.now(); });
+  if (box.t0) await settle(box.t0);                // adres kontrolünden sonra her yanıt yaklaşık aynı sürer
+  return res;
 }
