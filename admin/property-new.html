@@ -152,7 +152,7 @@
 
               <div class="form-group">
                 <label class="form-label">Fiyat <span class="required">*</span></label>
-                <input type="number" name="fiyat" class="form-input" required min="0" step="0.01" placeholder="3500000">
+                <input type="text" inputmode="decimal" name="fiyat" class="form-input" required data-fiyat placeholder="3.500.000" autocomplete="off">
               </div>
 
               <div class="form-group">
@@ -353,6 +353,7 @@
   <script src="/admin/assets/auth.js?v=20261002-spam"></script>
   <script src="/admin/assets/app.js?v=20261002-spam"></script>
   <script src="/admin/assets/medya.js?v=20261002-150kb"></script>
+  <script src="/admin/assets/fiyat-input.js?v=20261010-fiyat"></script>
 
   <script>
     let uploadedPhotos = []; // {file, url, name}
@@ -475,13 +476,17 @@
             if (other) throw new Error(App.ozelFirsatError(other));
           }
 
+          // Fiyat: "2.500.000" gibi noktalı yazım → 2500000
+          const fiyat = FiyatInput.parse(fd.get('fiyat'));
+          if (!Number.isFinite(fiyat) || fiyat < 0 || fiyat >= 1e12) throw new Error('Geçerli bir fiyat girin (örnek: 2.500.000).');
+
           // İlan verisi
           const propertyData = {
             baslik_tr: Security.sanitizeInput(fd.get('baslik_tr'), { maxLength: 200 }),
             aciklama_tr: Security.sanitizeInput(fd.get('aciklama_tr'), { maxLength: 5000 }),
             tip: fd.get('tip'),
             kategori: fd.get('kategori'),
-            fiyat: parseFloat(fd.get('fiyat')),
+            fiyat,
             para_birimi: fd.get('para_birimi'),
             m2: fd.get('m2') ? parseInt(fd.get('m2')) : null,
             oda_sayisi: fd.get('oda_sayisi') || null,

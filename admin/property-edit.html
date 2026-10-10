@@ -101,7 +101,7 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Fiyat *</label>
-                <input type="number" name="fiyat" class="form-input" required min="0" step="0.01">
+                <input type="text" inputmode="decimal" name="fiyat" class="form-input" required data-fiyat placeholder="3.500.000" autocomplete="off">
               </div>
               <div class="form-group">
                 <label class="form-label">Para Birimi</label>
@@ -239,6 +239,7 @@
   <script src="/admin/assets/security.js?v=20261002-spam"></script>
   <script src="/admin/assets/auth.js?v=20261002-spam"></script>
   <script src="/admin/assets/app.js?v=20261002-spam"></script>
+  <script src="/admin/assets/fiyat-input.js?v=20261010-fiyat"></script>
   <script src="/admin/assets/medya.js?v=20261002-150kb"></script>
 
   <script>
@@ -289,6 +290,9 @@
             }
           }
         });
+
+        // Fiyat noktalı gösterilsin (2500000 → 2.500.000)
+        FiyatInput.set(form.elements['fiyat'], data.fiyat);
 
         // Özellikleri işaretle
         if (data.ozellikler) {
@@ -425,6 +429,10 @@
             if (other) throw new Error(App.ozelFirsatError(other));
           }
 
+          // Fiyat: "2.500.000" gibi noktalı yazım → 2500000
+          const fiyat = FiyatInput.parse(fd.get('fiyat'));
+          if (!Number.isFinite(fiyat) || fiyat < 0 || fiyat >= 1e12) throw new Error('Geçerli bir fiyat girin (örnek: 2.500.000).');
+
           const data = {
             baslik_tr: Security.sanitizeInput(fd.get('baslik_tr'), { maxLength: 200 }),
             baslik_en: null,   // eski manuel çeviriler temizlenir — site otomatik çevirir
@@ -434,7 +442,7 @@
             aciklama_tr: Security.sanitizeInput(fd.get('aciklama_tr'), { maxLength: 5000 }),
             tip: fd.get('tip'),
             kategori: fd.get('kategori'),
-            fiyat: parseFloat(fd.get('fiyat')),
+            fiyat,
             para_birimi: fd.get('para_birimi'),
             m2: fd.get('m2') ? parseInt(fd.get('m2')) : null,
             oda_sayisi: fd.get('oda_sayisi') || null,

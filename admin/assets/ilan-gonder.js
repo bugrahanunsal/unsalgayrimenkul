@@ -87,7 +87,8 @@
   const selected = new Set();
   let lastMatchIds = [];
   const $ = (id) => document.getElementById(id);
-  const num = (id) => { const v = $(id).value.trim(); return v === '' ? null : Number(v); };
+  // fiyat alanları "2.500.000" biçiminde yazılır (fiyat-input.js); diğerleri düz sayı
+  const num = (id) => { const el = $(id); const v = el.value.trim(); if (v === '') return null; const n = el.hasAttribute('data-fiyat') && window.FiyatInput ? FiyatInput.parse(v) : Number(v); return Number.isFinite(n) ? n : null; };
 
   function chip(container, name, value, label, type = 'checkbox') {
     const l = document.createElement('label'); l.className = 'chip';
