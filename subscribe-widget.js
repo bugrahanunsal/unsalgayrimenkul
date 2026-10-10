@@ -47,6 +47,22 @@
   const IU_LANG = ((location.pathname.toLowerCase().match(/^\/(en|fr|de|ru|ar)(\/|$)/) || [])[1]) || 'tr';
   const IU_I18N = {
     "en": {
+      "Girişe dön": "Back to sign in",
+      "Şifrenizi mi unuttunuz?": "Forgot your password?",
+      "Hesabınıza kayıtlı e-posta adresini yazın; size yeni şifre belirleme bağlantısı gönderelim.": "Enter the email address of your account and we will send you a link to choose a new password.",
+      "Sıfırlama bağlantısı gönder": "Send reset link",
+      "Gönderiliyor…": "Sending…",
+      "E-postanızı kontrol edin": "Check your email",
+      "Bu adrese kayıtlı bir hesap varsa şifre sıfırlama bağlantısını gönderdik:": "If an account exists for this address, we have sent a password reset link to:",
+      "Gelen kutunuzu ve spam (gereksiz) klasörünü kontrol edin.": "Check your inbox and your spam (junk) folder.",
+      "Bağlantı kısa süre geçerlidir ve yalnızca bir kez kullanılabilir.": "The link is valid for a short time and can be used only once.",
+      "Tekrar gönder": "Send again",
+      "Yeni bir bağlantı gönderildi.": "A new link has been sent.",
+      "Geçerli bir e-posta adresi girin.": "Please enter a valid email address.",
+      "Çok fazla deneme. Lütfen birkaç dakika sonra tekrar deneyin.": "Too many attempts. Please try again in a few minutes.",
+      "Şifre sıfırlama şu anda yapılamıyor. Lütfen daha sonra tekrar deneyin.": "Password reset is not available right now. Please try again later.",
+      "Bir sorun oluştu. Lütfen biraz sonra tekrar deneyin.": "Something went wrong. Please try again shortly.",
+      "Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.": "Could not connect. Check your internet connection and try again.",
       "Giriş": "Sign In",
       "Üye Ol": "Sign Up",
       "Hesabım": "My Account",
@@ -98,6 +114,22 @@
       "KVKK_SUB": "I accept the <a href=\"/kvkk\" target=\"_blank\">Privacy Notice (KVKK)</a>."
     },
     "fr": {
+      "Girişe dön": "Retour à la connexion",
+      "Şifrenizi mi unuttunuz?": "Mot de passe oublié ?",
+      "Hesabınıza kayıtlı e-posta adresini yazın; size yeni şifre belirleme bağlantısı gönderelim.": "Saisissez l’adresse e-mail de votre compte : nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+      "Sıfırlama bağlantısı gönder": "Envoyer le lien",
+      "Gönderiliyor…": "Envoi…",
+      "E-postanızı kontrol edin": "Consultez votre boîte mail",
+      "Bu adrese kayıtlı bir hesap varsa şifre sıfırlama bağlantısını gönderdik:": "Si un compte existe pour cette adresse, nous avons envoyé un lien de réinitialisation à :",
+      "Gelen kutunuzu ve spam (gereksiz) klasörünü kontrol edin.": "Vérifiez votre boîte de réception et le dossier spam (courrier indésirable).",
+      "Bağlantı kısa süre geçerlidir ve yalnızca bir kez kullanılabilir.": "Le lien n’est valable que peu de temps et ne peut être utilisé qu’une seule fois.",
+      "Tekrar gönder": "Renvoyer",
+      "Yeni bir bağlantı gönderildi.": "Un nouveau lien a été envoyé.",
+      "Geçerli bir e-posta adresi girin.": "Veuillez saisir une adresse e-mail valide.",
+      "Çok fazla deneme. Lütfen birkaç dakika sonra tekrar deneyin.": "Trop de tentatives. Réessayez dans quelques minutes.",
+      "Şifre sıfırlama şu anda yapılamıyor. Lütfen daha sonra tekrar deneyin.": "La réinitialisation du mot de passe n’est pas disponible pour le moment. Réessayez plus tard.",
+      "Bir sorun oluştu. Lütfen biraz sonra tekrar deneyin.": "Une erreur s’est produite. Réessayez dans un instant.",
+      "Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.": "Connexion impossible. Vérifiez votre connexion Internet et réessayez.",
       "Giriş": "Connexion",
       "Üye Ol": "S'inscrire",
       "Hesabım": "Mon compte",
@@ -149,6 +181,22 @@
       "KVKK_SUB": "J'accepte la <a href=\"/kvkk\" target=\"_blank\">Notice de confidentialité (KVKK)</a>."
     },
     "de": {
+      "Girişe dön": "Zurück zur Anmeldung",
+      "Şifrenizi mi unuttunuz?": "Passwort vergessen?",
+      "Hesabınıza kayıtlı e-posta adresini yazın; size yeni şifre belirleme bağlantısı gönderelim.": "Geben Sie die E-Mail-Adresse Ihres Kontos ein. Wir senden Ihnen einen Link, mit dem Sie ein neues Passwort festlegen können.",
+      "Sıfırlama bağlantısı gönder": "Link senden",
+      "Gönderiliyor…": "Wird gesendet…",
+      "E-postanızı kontrol edin": "Prüfen Sie Ihr Postfach",
+      "Bu adrese kayıtlı bir hesap varsa şifre sıfırlama bağlantısını gönderdik:": "Falls ein Konto mit dieser Adresse existiert, haben wir einen Link zum Zurücksetzen gesendet an:",
+      "Gelen kutunuzu ve spam (gereksiz) klasörünü kontrol edin.": "Sehen Sie im Posteingang und im Spam-Ordner nach.",
+      "Bağlantı kısa süre geçerlidir ve yalnızca bir kez kullanılabilir.": "Der Link ist nur kurze Zeit gültig und kann nur einmal verwendet werden.",
+      "Tekrar gönder": "Erneut senden",
+      "Yeni bir bağlantı gönderildi.": "Ein neuer Link wurde gesendet.",
+      "Geçerli bir e-posta adresi girin.": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      "Çok fazla deneme. Lütfen birkaç dakika sonra tekrar deneyin.": "Zu viele Versuche. Bitte versuchen Sie es in ein paar Minuten erneut.",
+      "Şifre sıfırlama şu anda yapılamıyor. Lütfen daha sonra tekrar deneyin.": "Das Zurücksetzen des Passworts ist gerade nicht möglich. Bitte versuchen Sie es später erneut.",
+      "Bir sorun oluştu. Lütfen biraz sonra tekrar deneyin.": "Etwas ist schiefgelaufen. Bitte versuchen Sie es gleich noch einmal.",
+      "Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.": "Keine Verbindung. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
       "Giriş": "Anmelden",
       "Üye Ol": "Registrieren",
       "Hesabım": "Mein Konto",
@@ -200,6 +248,22 @@
       "KVKK_SUB": "Ich akzeptiere den <a href=\"/kvkk\" target=\"_blank\">Datenschutzhinweis (KVKK)</a>."
     },
     "ru": {
+      "Girişe dön": "Вернуться ко входу",
+      "Şifrenizi mi unuttunuz?": "Забыли пароль?",
+      "Hesabınıza kayıtlı e-posta adresini yazın; size yeni şifre belirleme bağlantısı gönderelim.": "Введите адрес электронной почты вашей учётной записи — мы пришлём ссылку для создания нового пароля.",
+      "Sıfırlama bağlantısı gönder": "Отправить ссылку",
+      "Gönderiliyor…": "Отправка…",
+      "E-postanızı kontrol edin": "Проверьте почту",
+      "Bu adrese kayıtlı bir hesap varsa şifre sıfırlama bağlantısını gönderdik:": "Если учётная запись с этим адресом существует, мы отправили ссылку для сброса пароля на:",
+      "Gelen kutunuzu ve spam (gereksiz) klasörünü kontrol edin.": "Проверьте папку «Входящие» и папку «Спам».",
+      "Bağlantı kısa süre geçerlidir ve yalnızca bir kez kullanılabilir.": "Ссылка действует недолго и может быть использована только один раз.",
+      "Tekrar gönder": "Отправить ещё раз",
+      "Yeni bir bağlantı gönderildi.": "Новая ссылка отправлена.",
+      "Geçerli bir e-posta adresi girin.": "Введите корректный адрес электронной почты.",
+      "Çok fazla deneme. Lütfen birkaç dakika sonra tekrar deneyin.": "Слишком много попыток. Повторите через несколько минут.",
+      "Şifre sıfırlama şu anda yapılamıyor. Lütfen daha sonra tekrar deneyin.": "Сброс пароля сейчас недоступен. Повторите попытку позже.",
+      "Bir sorun oluştu. Lütfen biraz sonra tekrar deneyin.": "Что-то пошло не так. Повторите попытку чуть позже.",
+      "Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.": "Нет соединения. Проверьте подключение к интернету и повторите попытку.",
       "Giriş": "Войти",
       "Üye Ol": "Регистрация",
       "Hesabım": "Мой аккаунт",
@@ -251,6 +315,22 @@
       "KVKK_SUB": "Я принимаю <a href=\"/kvkk\" target=\"_blank\">Уведомление о конфиденциальности (KVKK)</a>."
     },
     "ar": {
+      "Girişe dön": "العودة إلى تسجيل الدخول",
+      "Şifrenizi mi unuttunuz?": "هل نسيت كلمة المرور؟",
+      "Hesabınıza kayıtlı e-posta adresini yazın; size yeni şifre belirleme bağlantısı gönderelim.": "أدخل البريد الإلكتروني المسجل في حسابك وسنرسل لك رابطًا لتعيين كلمة مرور جديدة.",
+      "Sıfırlama bağlantısı gönder": "إرسال رابط إعادة التعيين",
+      "Gönderiliyor…": "جارٍ الإرسال…",
+      "E-postanızı kontrol edin": "تحقق من بريدك الإلكتروني",
+      "Bu adrese kayıtlı bir hesap varsa şifre sıfırlama bağlantısını gönderdik:": "إذا كان هناك حساب مسجل بهذا العنوان، فقد أرسلنا رابط إعادة تعيين كلمة المرور إلى:",
+      "Gelen kutunuzu ve spam (gereksiz) klasörünü kontrol edin.": "تحقق من صندوق الوارد ومجلد الرسائل غير المرغوب فيها.",
+      "Bağlantı kısa süre geçerlidir ve yalnızca bir kez kullanılabilir.": "الرابط صالح لفترة قصيرة ويمكن استخدامه مرة واحدة فقط.",
+      "Tekrar gönder": "إعادة الإرسال",
+      "Yeni bir bağlantı gönderildi.": "تم إرسال رابط جديد.",
+      "Geçerli bir e-posta adresi girin.": "يرجى إدخال بريد إلكتروني صحيح.",
+      "Çok fazla deneme. Lütfen birkaç dakika sonra tekrar deneyin.": "محاولات كثيرة جدًا. يرجى المحاولة مرة أخرى بعد بضع دقائق.",
+      "Şifre sıfırlama şu anda yapılamıyor. Lütfen daha sonra tekrar deneyin.": "إعادة تعيين كلمة المرور غير متاحة حاليًا. يرجى المحاولة لاحقًا.",
+      "Bir sorun oluştu. Lütfen biraz sonra tekrar deneyin.": "حدث خطأ ما. يرجى المحاولة مرة أخرى بعد قليل.",
+      "Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.": "تعذر الاتصال. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
       "Giriş": "دخول",
       "Üye Ol": "تسجيل",
       "Hesabım": "حسابي",
@@ -859,6 +939,57 @@
       }
       .iu-forgot-link:hover { text-decoration: underline; }
 
+      /* Şifremi unuttum paneli (giriş sekmesinden açılır) */
+      .iu-tabs.iu-tabs-hidden { display: none; }
+      .iu-back {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: none; border: 0; border-radius: 8px;
+        padding: 6px 10px 6px 4px; margin: -6px 0 6px -4px;
+        color: #374151; font: 600 13px/1.2 inherit; font-family: inherit;
+        cursor: pointer; transition: color 0.15s, background 0.15s;
+      }
+      .iu-back:hover { color: #1D4ED8; background: #f3f4f6; }
+      .iu-back:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
+      .iu-back svg { width: 16px; height: 16px; flex-shrink: 0; }
+      [dir="rtl"] .iu-back svg { transform: scaleX(-1); }
+      .iu-fp-icon {
+        width: 56px; height: 56px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 2px auto 14px;
+        background: #eff6ff; color: #1D4ED8;
+        box-shadow: 0 0 0 8px #f8fbff;
+      }
+      .iu-fp-icon svg { width: 26px; height: 26px; }
+      .iu-fp-icon.ok { background: #ecfdf5; color: #047857; box-shadow: 0 0 0 8px #f5fdf9; }
+      .iu-fp-title {
+        text-align: center; margin: 0 0 6px;
+        font-size: 20px; font-weight: 800; color: #0a1929; letter-spacing: -0.2px;
+      }
+      .iu-fp-title:focus { outline: none; }
+      .iu-fp-text {
+        text-align: center; margin: 0 auto 20px; max-width: 34ch;
+        font-size: 14px; line-height: 1.55; color: #4b5563;
+      }
+      .iu-fp-email {
+        text-align: center; margin: -10px auto 16px;
+        font-size: 15px; font-weight: 700; color: #0a1929; word-break: break-all;
+      }
+      .iu-fp-tips {
+        list-style: none; margin: 0 0 14px; padding: 12px 14px;
+        background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px;
+        font-size: 13px; line-height: 1.5; color: #4b5563;
+      }
+      .iu-fp-tips li { position: relative; padding-left: 16px; }
+      .iu-fp-tips li + li { margin-top: 6px; }
+      .iu-fp-tips li::before {
+        content: ''; position: absolute; left: 2px; top: 7px;
+        width: 6px; height: 6px; border-radius: 50%; background: #3b82f6;
+      }
+      [dir="rtl"] .iu-fp-tips li { padding-left: 0; padding-right: 16px; }
+      [dir="rtl"] .iu-fp-tips li::before { left: auto; right: 2px; }
+      .iu-btn .iu-spinner { border-color: rgba(255,255,255,0.35); border-top-color: #ffffff; }
+      #iu-forgot-again { margin-top: 10px; }
+
       @media (max-width: 640px) {
         /* Modal: tam ekran + iOS Safari dinamik viewport */
         .iu-modal {
@@ -1029,6 +1160,48 @@
             </form>
           </div>
 
+          <!-- ŞİFREMİ UNUTTUM (giriş sekmesinden açılır; bağlantıyı sitenin sunucusu gönderir: /api/sifre-sifirla) -->
+          <div class="iu-tab-content" id="iu-tab-forgot" aria-labelledby="iu-fp-title">
+            <button type="button" class="iu-back" data-iu-back>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              <span>${t('Girişe dön')}</span>
+            </button>
+
+            <div id="iu-forgot-step">
+              <div class="iu-fp-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.9-.9"/><circle cx="12" cy="16" r="1.2"/></svg>
+              </div>
+              <h3 class="iu-fp-title" id="iu-fp-title">${t('Şifrenizi mi unuttunuz?')}</h3>
+              <p class="iu-fp-text">${t('Hesabınıza kayıtlı e-posta adresini yazın; size yeni şifre belirleme bağlantısı gönderelim.')}</p>
+
+              <form id="iu-forgot-form" novalidate>
+                <input type="text" name="website" class="iu-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+                <div class="iu-form-group">
+                  <label class="iu-label" for="iu-forgot-email">${t('Email')}</label>
+                  <input type="email" id="iu-forgot-email" name="email" class="iu-input" required maxlength="254" placeholder="ornek@email.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false">
+                </div>
+                <div id="iu-forgot-msg" role="alert"></div>
+                <button type="submit" class="iu-btn iu-btn-dark" id="iu-forgot-btn">${t('Sıfırlama bağlantısı gönder')}</button>
+              </form>
+            </div>
+
+            <div id="iu-forgot-done" hidden>
+              <div class="iu-fp-icon ok" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/><path d="m15.5 17.5 2 2 3.5-3.5"/></svg>
+              </div>
+              <h3 class="iu-fp-title" id="iu-fp-done-title" tabindex="-1">${t('E-postanızı kontrol edin')}</h3>
+              <p class="iu-fp-text">${t('Bu adrese kayıtlı bir hesap varsa şifre sıfırlama bağlantısını gönderdik:')}</p>
+              <p class="iu-fp-email" id="iu-forgot-sent-to"></p>
+              <ul class="iu-fp-tips">
+                <li>${t('Gelen kutunuzu ve spam (gereksiz) klasörünü kontrol edin.')}</li>
+                <li>${t('Bağlantı kısa süre geçerlidir ve yalnızca bir kez kullanılabilir.')}</li>
+              </ul>
+              <div id="iu-forgot-again-msg" role="status"></div>
+              <button type="button" class="iu-btn iu-btn-dark" data-iu-back>${t('Girişe dön')}</button>
+              <button type="button" class="iu-btn iu-btn-outline" id="iu-forgot-again" disabled>${t('Tekrar gönder')}</button>
+            </div>
+          </div>
+
           <!-- SUBSCRIBE (Hızlı Bülten - Hesap gerektirmez) -->
           <div class="iu-tab-content" id="iu-tab-subscribe">
             <p class="iu-intro">${t('📬 Hesap açmadan hızlı bülten kaydı. Yeni ilanlardan haberdar olun.')}</p>
@@ -1079,6 +1252,9 @@
   function setupFormHandlers() {
     document.getElementById('iu-signup-form').addEventListener('submit', handleSignup);
     document.getElementById('iu-login-form').addEventListener('submit', handleLogin);
+    document.getElementById('iu-forgot-form').addEventListener('submit', handleForgot);
+    document.getElementById('iu-forgot-again').addEventListener('click', handleForgotAgain);
+    document.querySelectorAll('#iu-tab-forgot [data-iu-back]').forEach(b => b.addEventListener('click', () => IUAuth.forgotBack()));
     const sf = document.getElementById('iu-subscribe-form');
     sf.addEventListener('submit', handleSubscribe);
     // Spam koruması açıksa: forma dokununca reCAPTCHA önceden yüklenir + Google bilgilendirme notu
@@ -1087,6 +1263,79 @@
 
   function showMsg(id, text, type = 'info') {
     document.getElementById(id).innerHTML = `<div class="iu-msg iu-msg-${type}">${Security.escapeHtml(tMsg(text))}</div>`;
+  }
+
+  // ŞİFREMİ UNUTTUM — bağlantıyı sitenin sunucusu gönderir (/api/sifre-sifirla); yanıt, hesap olsa da olmasa da aynıdır
+  const FORGOT_WAIT = 180;                 // sunucu aynı hesaba 3 dakikada en fazla 1 bağlantı gönderir
+  let forgotTimer = null, forgotEmail = '';
+  function stopForgotTimer() { if (forgotTimer) { clearInterval(forgotTimer); forgotTimer = null; } }
+  function startForgotTimer() {
+    const btn = document.getElementById('iu-forgot-again');
+    if (!btn) return;
+    stopForgotTimer();
+    let left = FORGOT_WAIT;
+    const paint = () => {
+      btn.disabled = left > 0;
+      btn.textContent = t('Tekrar gönder') + (left > 0 ? ` (${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')})` : '');
+    };
+    paint();
+    forgotTimer = setInterval(() => { left -= 1; paint(); if (left <= 0) stopForgotTimer(); }, 1000);
+  }
+  async function sendForgot(email, honeypot) {
+    try {
+      const r = await fetch('/api/sifre-sifirla', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, dil: IU_LANG, website: honeypot || '' })
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j && j.ok) return { ok: true };
+      return { ok: false, message: (j && typeof j.message === 'string' && j.message) || 'Bir sorun oluştu. Lütfen biraz sonra tekrar deneyin.' };
+    } catch (_) {
+      return { ok: false, message: 'Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.' };
+    }
+  }
+  async function handleForgot(e) {
+    e.preventDefault();
+    const form = e.target;
+    const btn = document.getElementById('iu-forgot-btn');
+    const email = String(form.email.value || '').trim().toLowerCase();
+    document.getElementById('iu-forgot-msg').innerHTML = '';
+    if (!Security.isValidEmail(email)) {
+      showMsg('iu-forgot-msg', 'Geçerli bir e-posta adresi girin.', 'error');
+      form.email.setAttribute('aria-invalid', 'true');
+      form.email.focus();
+      return;
+    }
+    form.email.removeAttribute('aria-invalid');
+    btn.disabled = true;
+    btn.innerHTML = `<span class="iu-spinner" aria-hidden="true"></span>${Security.escapeHtml(t('Gönderiliyor…'))}`;
+    const res = await sendForgot(email, form.website && form.website.value);
+    btn.disabled = false;
+    btn.textContent = t('Sıfırlama bağlantısı gönder');
+    if (!res.ok) { showMsg('iu-forgot-msg', res.message, 'error'); return; }
+    forgotEmail = email;
+    document.getElementById('iu-forgot-sent-to').textContent = email;
+    document.getElementById('iu-forgot-again-msg').innerHTML = '';
+    document.getElementById('iu-forgot-step').hidden = true;
+    document.getElementById('iu-forgot-done').hidden = false;
+    startForgotTimer();
+    const title = document.getElementById('iu-fp-done-title');
+    if (title) title.focus();
+  }
+  async function handleForgotAgain() {
+    if (!forgotEmail) return;
+    const btn = document.getElementById('iu-forgot-again');
+    btn.disabled = true;
+    btn.innerHTML = `<span class="iu-spinner" aria-hidden="true" style="border-color:rgba(10,25,41,0.2);border-top-color:#0a1929"></span>${Security.escapeHtml(t('Gönderiliyor…'))}`;
+    const res = await sendForgot(forgotEmail, '');
+    if (res.ok) {
+      showMsg('iu-forgot-again-msg', 'Yeni bir bağlantı gönderildi.', 'success');
+      startForgotTimer();
+    } else {
+      showMsg('iu-forgot-again-msg', res.message, 'error');
+      btn.disabled = false;
+      btn.textContent = t('Tekrar gönder');
+    }
   }
 
   // MÜŞTERİ KAYIT
@@ -1760,10 +2009,11 @@
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
-      ['iu-signup-msg', 'iu-login-msg', 'iu-sub-msg'].forEach(id => {
+      ['iu-signup-msg', 'iu-login-msg', 'iu-sub-msg', 'iu-forgot-msg', 'iu-forgot-again-msg'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = '';
       });
+      stopForgotTimer();
       // iOS Safari için: viewport meta'yı toggle et → zoom seviyesi resetlensin
       // Yalnız gerektiğinde (touch device'larda) ve maximum-scale değişikliği geçici
       try {
@@ -1780,6 +2030,9 @@
     },
 
     switchTab(tab) {
+      const bar = document.querySelector('#iu-auth-modal .iu-tabs');
+      if (bar) bar.classList.remove('iu-tabs-hidden');
+      stopForgotTimer();
       document.querySelectorAll('.iu-tab').forEach(t => {
         t.classList.toggle('active', t.dataset.tab === tab);
       });
@@ -1826,29 +2079,35 @@
       menus.forEach(m => m.classList.toggle('open'));
     },
 
-    // Sıfırlama bağlantısını sitenin sunucusu gönderir (/api/sifre-sifirla): bağlantı her zaman
-    // ismailunsal.com.tr/sifre-belirle sayfasına gider, Supabase'in URL ayarlarına bağlı değildir.
-    async forgotPassword(e) {
-      e.preventDefault();
-      const form = e.target && e.target.closest ? e.target.closest('form') : null;
-      const typed = form && form.email ? String(form.email.value || '').trim() : '';
-      const input = prompt('Şifrenizi sıfırlamak için e-posta adresinizi girin:', typed);
-      const email = String(input || '').trim().toLowerCase();
-      if (!email) return;
-      if (!Security.isValidEmail(email)) { alert('Geçerli bir e-posta adresi girin.'); return; }
+    // "Şifremi Unuttum": giriş penceresinin içinde kendi ekranı açılır (tarayıcı kutucuğu yok).
+    // Bağlantıyı sitenin sunucusu gönderir (/api/sifre-sifirla) ve her zaman ismailunsal.com.tr/sifre-belirle'ye gider.
+    forgotPassword(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const loginEmail = document.querySelector('#iu-login-form input[name="email"]');
+      const input = document.getElementById('iu-forgot-email');
+      if (!input) return;
+      const typed = loginEmail ? String(loginEmail.value || '').trim() : '';
+      if (typed) input.value = typed;
+      input.removeAttribute('aria-invalid');
+      document.getElementById('iu-forgot-msg').innerHTML = '';
+      document.getElementById('iu-forgot-again-msg').innerHTML = '';
+      document.getElementById('iu-forgot-step').hidden = false;
+      document.getElementById('iu-forgot-done').hidden = true;
+      this.switchTab('forgot');
+      const bar = document.querySelector('#iu-auth-modal .iu-tabs');
+      if (bar) bar.classList.add('iu-tabs-hidden');
+      const body = document.querySelector('#iu-auth-modal .iu-modal-body');
+      if (body) body.scrollTop = 0;
+      setTimeout(() => input.focus(), 30);
+    },
 
-      let msg = 'Bir sorun oluştu. Lütfen biraz sonra tekrar deneyin.';
-      try {
-        const r = await fetch('/api/sifre-sifirla', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, dil: IU_LANG })
-        });
-        const j = await r.json().catch(() => ({}));
-        if (j && typeof j.message === 'string' && j.message) msg = (r.ok ? '✅ ' : '') + j.message;
-      } catch (_) {
-        msg = 'Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.';
-      }
-      alert(msg);
+    forgotBack() {
+      const fe = document.getElementById('iu-forgot-email');
+      const loginEmail = document.querySelector('#iu-login-form input[name="email"]');
+      if (fe && loginEmail && !loginEmail.value && fe.value) loginEmail.value = fe.value.trim();
+      this.switchTab('login');
+      const target = loginEmail && loginEmail.value ? document.getElementById('iu-login-password') : loginEmail;
+      if (target) setTimeout(() => target.focus(), 30);
     },
 
     async quickSubscribe(e) {
