@@ -101,6 +101,9 @@
   <script>
     let allProperties = [];
     let filteredProperties = [];
+    const KAT_AD = { daire: 'Daire', villa: 'Villa', arsa: 'Arsa', mustakil_ev: 'Müstakil Ev', isyeri: 'İşyeri', yazlik: 'Yazlık', tarla: 'Tarla', bina: 'Bina' };
+    const TIP_AD = { satilik: 'Satılık', kiralik: 'Kiralık' };
+    const DURUM_AD = { aktif: 'Aktif', pasif: 'Pasif', satildi: 'Satıldı', kiralandi: 'Kiralandı', taslak: 'Taslak' };
 
     (async () => {
       const authed = await App.init('properties');
@@ -186,8 +189,8 @@
               <a href="${editUrl}" class="btn btn-sm btn-duzenle prop-edit-top"><i class="ic ic-edit" aria-hidden="true"></i> Düzenle</a>
             </td>
             <td class="c-kat">
-              <span class="badge badge-info">${Security.escapeHtml(p.kategori)}</span>
-              <div class="prop-tip">${Security.escapeHtml(p.tip)}</div>
+              <span class="badge badge-info">${Security.escapeHtml(KAT_AD[p.kategori] || p.kategori)}</span>
+              <div class="prop-tip">${Security.escapeHtml(TIP_AD[p.tip] || p.tip)}</div>
             </td>
             <td class="c-konum">${Security.escapeHtml(p.ilce || '-')}</td>
             <td class="c-fiyat">
@@ -196,7 +199,7 @@
             <td class="c-goruntu">${(p.goruntulenme || 0).toLocaleString('tr-TR')}</td>
             <td class="c-durum">
               <span class="badge badge-${getStatusColor(p.durum)}">
-                ${Security.escapeHtml(p.durum)}
+                ${Security.escapeHtml(DURUM_AD[p.durum] || p.durum)}
               </span>
             </td>
             <td class="c-islem"><div class="row-actions">

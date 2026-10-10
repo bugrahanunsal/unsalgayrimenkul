@@ -486,7 +486,7 @@
                   ${Security.escapeHtml(p.baslik_tr || 'İsimsiz')}
                 </div>
                 <div style="font-size: 12px; color: var(--text-muted);">
-                  ${Security.escapeHtml(p.ilce || '-')} • ${Security.escapeHtml(p.tip || '-')}
+                  ${Security.escapeHtml(p.ilce || '-')} • ${Security.escapeHtml(({ satilik: 'Satılık', kiralik: 'Kiralık' })[p.tip] || p.tip || '-')} • ${Security.escapeHtml(({ daire: 'Daire', villa: 'Villa', arsa: 'Arsa', mustakil_ev: 'Müstakil Ev', isyeri: 'İşyeri', yazlik: 'Yazlık', tarla: 'Tarla', bina: 'Bina' })[p.kategori] || p.kategori || '-')}
                 </div>
               </div>
               <div style="text-align: right; flex-shrink: 0;">
@@ -494,7 +494,7 @@
                   ${App.formatPrice(p.fiyat, p.para_birimi)}
                 </div>
                 <span class="badge badge-${p.durum === 'aktif' ? 'success' : 'gray'}" style="margin-top: 4px;">
-                  ${Security.escapeHtml(p.durum)}
+                  ${Security.escapeHtml(({ aktif: 'Aktif', pasif: 'Pasif', satildi: 'Satıldı', kiralandi: 'Kiralandı', taslak: 'Taslak' })[p.durum] || p.durum)}
                 </span>
               </div>
             </div>
