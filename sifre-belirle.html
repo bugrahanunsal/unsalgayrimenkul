@@ -59,7 +59,13 @@
   const sb = window.supabase.createClient('https://gosmkthmamloafgtvhpj.supabase.co', 'sb_publishable_iTHuziWSB_dtIguKLcxIKw_zFeJeRW4', {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'ismailunsal-customer-session' }
   });
-  const isInvite = /type=invite/.test(location.hash) || /type=invite/.test(location.search);
+  // Bağlantı iki şekilde gelebilir:
+  //  a) /sifre-belirle?token_hash=…&type=recovery  → sitenin kendi e-postası (/api/sifre-sifirla); kod burada doğrulanır
+  //  b) /sifre-belirle#access_token=…               → Supabase'in kendi e-postası (davetler); oturumu supabase-js okur
+  const qs = new URLSearchParams(location.search);
+  const tokenHash = qs.get('token_hash') || '';
+  const linkType = qs.get('type') || '';
+  const isInvite = linkType === 'invite' || /type=invite/.test(location.hash);
   let done = false;
   function show(user) {
     if (done) return; done = true;
@@ -73,8 +79,16 @@
     try { history.replaceState(null, '', location.pathname); } catch (_) {}
     $('p1').focus();
   }
-  sb.auth.onAuthStateChange((ev, session) => { if (session && session.user) show(session.user); });
-  setTimeout(async () => { const { data } = await sb.auth.getSession(); show(data && data.session ? data.session.user : null); }, 1500);
+  if (tokenHash) {
+    try { history.replaceState(null, '', location.pathname); } catch (_) {}      // kodu adres çubuğundan hemen kaldır
+    if (!/^(recovery|invite)$/.test(linkType) || !/^[A-Za-z0-9_-]{20,200}$/.test(tokenHash)) show(null);
+    else sb.auth.verifyOtp({ token_hash: tokenHash, type: linkType })
+      .then(({ data, error }) => show(!error && data ? (data.user || (data.session && data.session.user) || null) : null))
+      .catch(() => show(null));
+  } else {
+    sb.auth.onAuthStateChange((ev, session) => { if (session && session.user) show(session.user); });
+    setTimeout(async () => { const { data } = await sb.auth.getSession(); show(data && data.session ? data.session.user : null); }, 1500);
+  }
 
   function msg(t, ok) { const m = $('msg'); m.textContent = t; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
   $('form').addEventListener('submit', async (e) => {

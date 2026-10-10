@@ -1826,21 +1826,29 @@
       menus.forEach(m => m.classList.toggle('open'));
     },
 
+    // Sıfırlama bağlantısını sitenin sunucusu gönderir (/api/sifre-sifirla): bağlantı her zaman
+    // ismailunsal.com.tr/sifre-belirle sayfasına gider, Supabase'in URL ayarlarına bağlı değildir.
     async forgotPassword(e) {
       e.preventDefault();
-      const email = prompt('Şifrenizi sıfırlamak için email adresinizi girin:');
-      if (!email || !Security.isValidEmail(email)) return;
+      const form = e.target && e.target.closest ? e.target.closest('form') : null;
+      const typed = form && form.email ? String(form.email.value || '').trim() : '';
+      const input = prompt('Şifrenizi sıfırlamak için e-posta adresinizi girin:', typed);
+      const email = String(input || '').trim().toLowerCase();
+      if (!email) return;
+      if (!Security.isValidEmail(email)) { alert('Geçerli bir e-posta adresi girin.'); return; }
 
-      const sb = initSupabase();
-      const { error } = await sb.auth.resetPasswordForEmail(email, {
-        redirectTo: `${CONFIG.SITE_URL}/sifre-sifirla`
-      });
-
-      if (error) {
-        alert('Hata: ' + error.message);
-      } else {
-        alert('✅ Şifre sıfırlama linki email adresinize gönderildi.');
+      let msg = 'Bir sorun oluştu. Lütfen biraz sonra tekrar deneyin.';
+      try {
+        const r = await fetch('/api/sifre-sifirla', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, dil: IU_LANG })
+        });
+        const j = await r.json().catch(() => ({}));
+        if (j && typeof j.message === 'string' && j.message) msg = (r.ok ? '✅ ' : '') + j.message;
+      } catch (_) {
+        msg = 'Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.';
       }
+      alert(msg);
     },
 
     async quickSubscribe(e) {
