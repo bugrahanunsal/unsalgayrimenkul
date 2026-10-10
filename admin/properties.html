@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-150kb">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261010-duzenle">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -71,17 +71,17 @@
 
         <!-- İlanlar Tablosu -->
         <div class="table-container">
-          <table class="table">
+          <table class="table prop-table">
             <thead>
               <tr>
-                <th>Foto</th>
-                <th>Başlık</th>
-                <th>Kategori</th>
-                <th>Konum</th>
-                <th>Fiyat</th>
-                <th>Görüntülenme</th>
-                <th>Durum</th>
-                <th>İşlemler</th>
+                <th class="c-foto">Foto</th>
+                <th class="c-baslik">Başlık</th>
+                <th class="c-kat">Kategori</th>
+                <th class="c-konum">Konum</th>
+                <th class="c-fiyat">Fiyat</th>
+                <th class="c-goruntu">Görüntülenme</th>
+                <th class="c-durum">Durum</th>
+                <th class="c-islem">İşlemler</th>
               </tr>
             </thead>
             <tbody id="propertiesTable">
@@ -95,7 +95,7 @@
 
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20261002-spam"></script>
-  <script src="/admin/assets/auth.js?v=20261002-spam"></script>
+  <script src="/admin/assets/auth.js?v=20261010-duzenle"></script>
   <script src="/admin/assets/app.js?v=20261002-spam"></script>
 
   <script>
@@ -168,40 +168,42 @@
       tbody.innerHTML = filteredProperties.map(p => {
         const mainPhoto = p.property_images?.find(i => i.ana_foto)?.url
           || p.property_images?.[0]?.url;
+        // Her ilanın düzenleme sayfası: başlık, fotoğraf ve "Düzenle" butonu buraya gider
+        const editUrl = '/admin/property-edit.html?id=' + encodeURIComponent(p.id);
+        const title = Security.escapeHtml(p.baslik_tr || 'İsimsiz');
 
         return `
           <tr>
-            <td>
-              ${mainPhoto
-                ? `<img src="${Security.escapeHtml(mainPhoto)}" style="width: 60px; height: 45px; object-fit: cover; border-radius: 4px;" alt="">`
-                : '<div style="width: 60px; height: 45px; background: var(--bg); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-muted);"><i class="ic ic-home" aria-hidden="true"></i></div>'
-              }
+            <td class="c-foto">
+              <a href="${editUrl}" class="prop-thumb" tabindex="-1" aria-hidden="true">${mainPhoto
+                ? `<img src="${Security.escapeHtml(mainPhoto)}" alt="">`
+                : '<span class="prop-thumb-empty"><i class="ic ic-home" aria-hidden="true"></i></span>'
+              }</a>
             </td>
-            <td>
-              ${p.ozel_firsat ? '<div style="margin-bottom:4px;"><span class="badge badge-info" title="Ana sayfa Özel Fırsat vitrini"><i class="ic ic-gem" aria-hidden="true"></i> ÖZEL FIRSAT</span></div>' : ''}<div style="font-weight: 600;">${Security.escapeHtml(p.baslik_tr || 'İsimsiz')}</div>
-              <div style="font-size: 12px; color: var(--text-muted);">
-                ${p.m2 ? p.m2 + ' m² • ' : ''}${Security.escapeHtml(p.oda_sayisi || '')}
-              </div>
+            <td class="c-baslik">
+              ${p.ozel_firsat ? '<div style="margin-bottom:4px;"><span class="badge badge-info" title="Ana sayfa Özel Fırsat vitrini"><i class="ic ic-gem" aria-hidden="true"></i> ÖZEL FIRSAT</span></div>' : ''}<a href="${editUrl}" class="prop-title" title="Düzenlemek için tıklayın">${title}</a>
+              <div class="prop-sub">${[p.m2 ? Security.escapeHtml(p.m2) + ' m²' : '', Security.escapeHtml(p.oda_sayisi || '')].filter(Boolean).join(' • ')}</div>
+              <a href="${editUrl}" class="btn btn-sm btn-duzenle prop-edit-top"><i class="ic ic-edit" aria-hidden="true"></i> Düzenle</a>
             </td>
-            <td>
+            <td class="c-kat">
               <span class="badge badge-info">${Security.escapeHtml(p.kategori)}</span>
-              <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">${Security.escapeHtml(p.tip)}</div>
+              <div class="prop-tip">${Security.escapeHtml(p.tip)}</div>
             </td>
-            <td>${Security.escapeHtml(p.ilce || '-')}</td>
-            <td style="font-weight: 700; color: var(--accent-dark); white-space: nowrap;">
+            <td class="c-konum">${Security.escapeHtml(p.ilce || '-')}</td>
+            <td class="c-fiyat">
               ${App.formatPrice(p.fiyat, p.para_birimi)}
             </td>
-            <td>${(p.goruntulenme || 0).toLocaleString('tr-TR')}</td>
-            <td>
+            <td class="c-goruntu">${(p.goruntulenme || 0).toLocaleString('tr-TR')}</td>
+            <td class="c-durum">
               <span class="badge badge-${getStatusColor(p.durum)}">
                 ${Security.escapeHtml(p.durum)}
               </span>
             </td>
-            <td><div class="row-actions">
+            <td class="c-islem"><div class="row-actions">
+              <a href="${editUrl}" class="btn btn-duzenle prop-edit-bottom"><i class="ic ic-edit" aria-hidden="true"></i> Düzenle</a>
               ${p.durum === 'aktif' ? `<a href="${Security.escapeHtml(p.slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug) ? '/ilan/' + p.slug : '/ilan?id=' + encodeURIComponent(p.id))}" target="_blank" rel="noopener" class="btn btn-outline btn-sm btn-icon" title="İlan sayfasını sitede aç" aria-label="İlan sayfasını sitede aç"><i class="ic ic-external" aria-hidden="true"></i></a>` : ''}
               <button onclick="toggleOzelFirsat('${p.id}')" class="btn ${p.ozel_firsat ? 'btn-primary' : 'btn-outline'} btn-sm btn-icon" title="${p.ozel_firsat ? 'Özel Fırsat vitrininden kaldır' : 'Ana sayfada Özel Fırsat yap'}" aria-label="Özel Fırsat"><i class="ic ic-gem" aria-hidden="true"></i></button>
               ${p.durum === 'aktif' ? `<button onclick="App.announceProperty('${p.id}')" class="btn btn-outline btn-sm btn-icon" title="İlgi alanı uyan abonelere e-posta ile duyur" aria-label="Abonelere duyur"><i class="ic ic-megaphone" aria-hidden="true"></i></button>` : ''}
-              <a href="/admin/property-edit.html?id=${p.id}" class="btn btn-outline btn-sm btn-icon" title="Düzenle" aria-label="Düzenle"><i class="ic ic-edit" aria-hidden="true"></i></a>
               <button onclick="deleteProperty('${p.id}')" class="btn btn-outline-danger btn-sm btn-icon" title="Sil" aria-label="Sil"><i class="ic ic-trash" aria-hidden="true"></i></button>
             </div></td>
           </tr>

@@ -10,7 +10,7 @@
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
 
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-150kb">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261010-duzenle">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .welcome-banner {
@@ -198,6 +198,11 @@
     }
     .property-item:last-child, .lead-item:last-child { border-bottom: none; }
     .property-item:hover, .lead-item:hover { background: var(--bg-hover); }
+    a.property-item { display: block; color: inherit; text-decoration: none; }
+    a.property-item:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.35); outline-offset: -3px; }
+    .property-item .pi-edit { display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; padding: 4px 10px; border-radius: 8px;
+      background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; font-size: 12px; font-weight: 700; }
+    a.property-item:hover .pi-edit { background: #DBEAFE; border-color: #93C5FD; }
 
     /* son mesajlar: soldaki şerit mesajın durum renginde (Mesajlar sayfasıyla aynı renkler) */
     .lead-item.st { border-left: 3px solid var(--st-dot); }
@@ -402,7 +407,7 @@
 
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20261002-spam"></script>
-  <script src="/admin/assets/auth.js?v=20261002-spam"></script>
+  <script src="/admin/assets/auth.js?v=20261010-duzenle"></script>
   <script src="/admin/assets/app.js?v=20261002-spam"></script>
 
   <script>
@@ -474,7 +479,7 @@
         }
 
         container.innerHTML = data.map(p => `
-          <div class="property-item" onclick="window.location.href='/admin/property-edit.html?id=${p.id}'">
+          <a class="property-item" href="/admin/property-edit.html?id=${encodeURIComponent(p.id)}">
             <div style="display: flex; justify-content: space-between; align-items: start; gap: 12px;">
               <div style="flex: 1; min-width: 0;">
                 <div style="font-weight: 600; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
@@ -493,7 +498,8 @@
                 </span>
               </div>
             </div>
-          </div>
+            <span class="pi-edit"><i class="ic ic-edit" aria-hidden="true"></i> Düzenle</span>
+          </a>
         `).join('');
       } catch (error) {
         console.error('Recent properties error:', error);

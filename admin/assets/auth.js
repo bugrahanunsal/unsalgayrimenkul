@@ -152,7 +152,8 @@ const Auth = {
     if (!validation.valid) {
       console.warn('Auth failed:', validation.reason);
       // Ana siteye yönlendir, orada login modal açılsın
-      window.location.href = '/?login=1&redirect=' + encodeURIComponent(window.location.pathname);
+      // Giriş sonrası aynı sayfaya dönülsün (ör. ?id=… ile açılan ilan düzenleme sayfası)
+      window.location.href = '/?login=1&redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
       return false;
     }
 

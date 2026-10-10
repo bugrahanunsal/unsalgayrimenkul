@@ -514,6 +514,7 @@ document.getElementById('langCurrent')?.addEventListener('click', () => {
       var isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 30*86400000;
       var wa = 'https://wa.me/905075188482?text=' + encodeURIComponent('Merhaba, ' + (p.baslik_tr || 'İlan') + ' hakkında bilgi almak istiyorum');
       var img = getImg(p);
+      if (!/^https:\/\/[^\s"'()<>\\]+$/.test(img)) img = PLACEHOLDER[p.kategori] || PLACEHOLDER.default;
       var tagHtml = '';
       if (p.one_cikan) tagHtml = '<span class="iu-tag vip">💎 VIP FIRSAT</span>';
       else if (isNew) tagHtml = '<span class="iu-tag">🆕 YENİ İLAN</span>';
@@ -528,6 +529,7 @@ document.getElementById('langCurrent')?.addEventListener('click', () => {
       var descHtml = desc ? '<p class="iu-desc">' + esc(desc) + ((p.aciklama_tr || '').length > 130 ? '...' : '') + '</p>' : '';
       var article = document.createElement('article');
       article.className = 'iu-card-v2';
+      if (p.id != null) article.setAttribute('data-ilan-id', String(p.id));
       article.innerHTML =
         '<div class="iu-img" style="background-image:url(\'' + img.replace(/'/g, "\\'") + '\')">' +
         tagHtml +

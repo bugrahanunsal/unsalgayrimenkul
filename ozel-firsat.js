@@ -67,6 +67,8 @@
       else if (p.bina_yasi != null) st.appendChild(stat(String(p.bina_yasi), 'BİNA YAŞI'));
     }
     st.hidden = !st.children.length;
+    const content = sec.querySelector('.featured-content');
+    if (content && p.id != null) content.setAttribute('data-ilan-id', String(p.id));   // yönetici "Düzenle" butonu için
     sec.hidden = false;
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

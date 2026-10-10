@@ -2153,20 +2153,95 @@
 
   // Admin kontrolü - kullanıcının admin olup olmadığını cek
   async function checkAdminStatus(user) {
+    IUAuth.adminRole = null;
     if (!user) return false;
     try {
       const sb = initSupabase();
       const { data } = await sb.from('admin_users').select('role, is_active').eq('id', user.id).maybeSingle();
-      return !!(data && data.is_active !== false);
+      const ok = !!(data && data.is_active !== false);
+      IUAuth.adminRole = ok && typeof data.role === 'string' ? data.role : null;
+      return ok;
     } catch (err) {
       console.warn('[Admin check]', err);
       return false;
     }
   }
 
+  // ==================== YÖNETİCİ: HER İLANDA "DÜZENLE" ====================
+  // Panelde ilan düzenleyebilen biri (aktif admin / super_admin) sitede gezinirken her ilan kartında ve ilan
+  // sayfasında "Düzenle" butonu görür; ziyaretçiler görmez. Buton yalnızca bir bağlantıdır: düzenleme sayfası
+  // oturumu ve yetkiyi kendisi yeniden doğrular, veritabanı da (RLS) yetkisiz değişikliği reddeder.
+  // İlan kartları kendilerini data-ilan-id="<uuid>" ile işaretler (frontend-supabase.js, ilan-detay.js, ozel-firsat.js).
+  const ILAN_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const DUZENLE_ROLLER = ['super_admin', 'admin'];
+  let duzenleObserver = null;
+
+  function duzenleUrl(id) {
+    // Kaydedince bu sayfaya dönülsün (yalnızca site içi yol; düzenleme sayfası da ayrıca doğrular)
+    const back = location.pathname + location.search;
+    const ok = back.length <= 300 && /^\/(?!\/)[A-Za-z0-9\-._~\/?=&%]*$/.test(back) && !/^\/admin(\/|$)/i.test(back);
+    return '/admin/property-edit.html?id=' + encodeURIComponent(id) + (ok ? '&don=' + encodeURIComponent(back) : '');
+  }
+
+  function duzenleEkle(node) {
+    const id = node.getAttribute('data-ilan-id') || '';
+    if (!ILAN_ID_RE.test(id)) return;
+    for (const c of node.children) if (c.classList.contains('iu-ilan-duzenle')) return;   // zaten var
+    const a = document.createElement('a');
+    a.className = 'iu-ilan-duzenle';
+    a.href = duzenleUrl(id);
+    a.setAttribute('aria-label', 'Bu ilanı yönetim panelinde düzenle');
+    const i = document.createElement('i');
+    i.className = 'fa-solid fa-pen';
+    i.setAttribute('aria-hidden', 'true');
+    a.append(i, document.createTextNode(' Düzenle'));
+    a.addEventListener('click', (e) => e.stopPropagation());
+    node.insertBefore(a, node.firstChild);
+  }
+
+  function duzenleCss() {
+    if (document.getElementById('iu-ilan-duzenle-css')) return;
+    const st = document.createElement('style');
+    st.id = 'iu-ilan-duzenle-css';
+    st.textContent =
+      '.iu-ilan-duzenle{position:relative;z-index:6;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;' +
+      'min-height:42px;padding:10px 16px;margin:0;border:0;background:#0A2A5E;color:#fff!important;font:700 14px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;' +
+      'letter-spacing:.2px;text-decoration:none!important;cursor:pointer;transition:background-color .15s}' +
+      '.iu-ilan-duzenle:hover{background:#1D4ED8}' +
+      '.iu-ilan-duzenle:focus-visible{outline:3px solid #93C5FD;outline-offset:-3px}' +
+      '.iu-ilan-duzenle i{font-size:13px}' +
+      '.ild-summary>.iu-ilan-duzenle{border-radius:10px;margin-bottom:16px}' +
+      '.featured-content>.iu-ilan-duzenle{display:inline-flex;width:auto;align-self:flex-start;border-radius:10px;margin-bottom:16px;background:#fff;color:#0A2A5E!important}' +
+      '.featured-content>.iu-ilan-duzenle:hover{background:#DBEAFE}';
+    document.head.appendChild(st);
+  }
+
+  function duzenleButonlari() {
+    const on = !!(IUAuth.user && IUAuth.isAdmin === true && DUZENLE_ROLLER.includes(IUAuth.adminRole));
+    if (on) {
+      duzenleCss();
+      document.querySelectorAll('[data-ilan-id]').forEach(duzenleEkle);
+      if (!duzenleObserver && 'MutationObserver' in window && document.body) {
+        // Kartlar sonradan (veri gelince) çizildiği için yeni eklenenler de yakalanır
+        duzenleObserver = new MutationObserver((muts) => {
+          for (const m of muts) for (const n of m.addedNodes) {
+            if (n.nodeType !== 1) continue;
+            if (n.hasAttribute('data-ilan-id')) duzenleEkle(n);
+            n.querySelectorAll('[data-ilan-id]').forEach(duzenleEkle);
+          }
+        });
+        duzenleObserver.observe(document.body, { childList: true, subtree: true });
+      }
+    } else {
+      if (duzenleObserver) { duzenleObserver.disconnect(); duzenleObserver = null; }
+      document.querySelectorAll('.iu-ilan-duzenle').forEach((a) => a.remove());
+    }
+  }
+
   // Oturum durumu belli olduğunda / değiştiğinde sayfadaki diğer bölümlere haber ver (ör. uye-ol.js)
   function announceAuth() {
     IUAuth.ready = true;
+    try { duzenleButonlari(); } catch (e) { console.warn('[Düzenle]', e); }
     try {
       window.dispatchEvent(new CustomEvent('iu-auth-change', { detail: { signedIn: !!IUAuth.user, isAdmin: IUAuth.isAdmin === true } }));
     } catch (_) { /* eski tarayıcı */ }
@@ -2200,7 +2275,10 @@
 
     // URL parametresi kontrol - eğer zaten login olmuş ve redirect param varsa direkt yönlendir
     const urlParams = new URLSearchParams(window.location.search);
-    const redirectParam = urlParams.get('redirect');
+    // GÜVENLİK: yalnızca site içi /admin/ yolu kabul edilir. (Doğrulanmadan kullanılırsa
+    // "?redirect=javascript:..." ya da başka siteye yönlendiren bir bağlantı, giriş yapmış yöneticiyi hedef alabilir.)
+    const rawRedirectParam = urlParams.get('redirect') || '';
+    const redirectParam = rawRedirectParam.length <= 300 && /^\/admin\/[A-Za-z0-9\-._~\/?=&%#]*$/.test(rawRedirectParam) && !/\/\.\.?(\/|$)/.test(rawRedirectParam) ? rawRedirectParam : '';
 
     if (IUAuth.user && redirectParam) {
       // Zaten login olmuş ve redirect var - direkt admin panele git

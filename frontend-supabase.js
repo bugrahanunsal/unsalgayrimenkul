@@ -413,6 +413,7 @@
     // <article> root — semantic + no external CSS targets it
     const card = document.createElement('article');
     card.className = 'iu-card-v2';
+    if (p.id != null) card.setAttribute('data-ilan-id', String(p.id));   // yönetici "Düzenle" butonu için (subscribe-widget.js)
 
     // Image div
     const imgDiv = document.createElement('div');

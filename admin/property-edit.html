@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
   <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
   <meta name="theme-color" content="#0A2A5E">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261002-150kb">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261010-duzenle">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .photo-uploader { border: 2px dashed var(--border); border-radius: var(--radius); padding: 30px; text-align: center; cursor: pointer; transition: var(--transition); }
@@ -130,6 +130,7 @@
                   <option value="3+1">3+1</option>
                   <option value="4+1">4+1</option>
                   <option value="5+1">5+1</option>
+                  <option value="6+1">6+1</option>
                 </select>
               </div>
               <div class="form-group"><label class="form-label">Banyo</label><input type="number" name="banyo_sayisi" class="form-input" min="0" max="10"></div>
@@ -143,6 +144,8 @@
                   <option value="klima">Klima</option>
                   <option value="soba">Soba</option>
                   <option value="merkezi">Merkezi</option>
+                  <option value="dogalgaz">Doğalgaz Sobası</option>
+                  <option value="yok">Yok</option>
                 </select>
               </div>
             </div>
@@ -189,6 +192,7 @@
                   <option value="ticari">Ticari</option>
                   <option value="tarim">Tarım</option>
                   <option value="sanayi">Sanayi</option>
+                  <option value="turistik">Turistik</option>
                 </select>
               </div>
               <div class="form-group"><label class="form-label">Emsal</label><input type="text" name="emsal" class="form-input"></div>
@@ -227,7 +231,7 @@
           </div>
 
           <div style="display: flex; gap: 12px; justify-content: flex-end;">
-            <a href="/admin/properties.html" class="btn btn-outline">İptal</a>
+            <a href="/admin/properties.html" class="btn btn-outline" id="cancelLink">İptal</a>
             <button type="submit" class="btn btn-primary" id="submitBtn"><i class="ic ic-save" aria-hidden="true"></i> Değişiklikleri Kaydet</button>
           </div>
         </form>
@@ -237,7 +241,7 @@
 
   <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
   <script src="/admin/assets/security.js?v=20261002-spam"></script>
-  <script src="/admin/assets/auth.js?v=20261002-spam"></script>
+  <script src="/admin/assets/auth.js?v=20261010-duzenle"></script>
   <script src="/admin/assets/app.js?v=20261002-spam"></script>
   <script src="/admin/assets/fiyat-input.js?v=20261010-fiyat"></script>
   <script src="/admin/assets/medya.js?v=20261002-150kb"></script>
@@ -246,6 +250,17 @@
     let property = null;
     let images = [];
     let newPhotos = [];
+
+    // Sitede bir ilanın "Düzenle" butonuyla gelindiyse kaydedince / iptalde o sayfaya dönülür.
+    // GÜVENLİK: yalnızca bu sitenin kendi sayfaları kabul edilir — başka siteye yönlendirme (//site.com),
+    // javascript: adresleri ve panel sayfaları reddedilir.
+    const donRaw = new URLSearchParams(window.location.search).get('don') || '';
+    const returnTo = donRaw.length <= 300 && /^\/(?!\/)[A-Za-z0-9\-._~\/?=&%]*$/.test(donRaw) && !/^\/admin(\/|$)/i.test(donRaw) ? donRaw : null;
+    if (returnTo) {
+      const c = document.getElementById('cancelLink');
+      c.href = returnTo;
+      c.textContent = 'Siteye Dön';
+    }
 
     (async () => {
       const authed = await App.init('properties');
@@ -285,6 +300,15 @@
           if (field && key !== 'ozellikler') {
             if (field.type === 'checkbox') {
               field.checked = !!data[key];
+            } else if (field.tagName === 'SELECT') {
+              const v = data[key] == null ? '' : String(data[key]);
+              if (v && !Array.from(field.options).some(o => o.value === v)) {
+                const o = document.createElement('option');
+                o.value = v;
+                o.textContent = v;
+                field.appendChild(o);
+              }
+              field.value = v;
             } else {
               field.value = data[key] ?? '';
             }
@@ -496,7 +520,7 @@
           }
 
           App.toast('İlan güncellendi', 'success');
-          setTimeout(() => window.location.href = '/admin/properties.html', 1000);
+          setTimeout(() => { window.location.href = returnTo || '/admin/properties.html'; }, 1000);
         } catch (error) {
           App.toast((/ozel_firsat_tek|duplicate key.*ozel_firsat/i.test(error.message || '') ? 'Özel Fırsat zaten başka bir ilanda seçili. Aynı anda sadece 1 ilan olabilir.' : error.message), 'error');
           btn.disabled = false;

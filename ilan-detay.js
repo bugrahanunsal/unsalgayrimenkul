@@ -277,7 +277,7 @@
     });
     share.appendChild(copyBtn);
 
-    const box = el('div', { class: 'ild-summary' }, [
+    const box = el('div', { class: 'ild-summary', 'data-ilan-id': String(p.id) }, [
       el('div', { class: 'ild-sum-cat', text: ((TIP[p.tip] || '') + ' ' + (KATEGORI[p.kategori] || '')).trim().toUpperCase() }),
       el('h1', { class: 'ild-title', text: title(p) }),
       el('div', { class: 'ild-loc' }, [icon('fa-solid fa-location-dot'), ' ' + loc]),
