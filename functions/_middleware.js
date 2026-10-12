@@ -74,7 +74,7 @@ const REZERVE = new Set([
   'sitemap', 'robots', 'favicon', 'index', 'hesabim', 'account', 'favorilerim', 'sifre-belirle', 'sifre-sifirla',
   'verify', 'unsubscribe', 'login', 'giris', 'kayit', 'arama', 'search', 'sss', 'sikca-sorulan-sorular', 'hakkimda',
   'contact', 'kvkk', 'kvkk-aydinlatma-metni', 'kullanim-kosullari', 'privacy', 'privacy-policy', 'terms', 'gizlilik',
-  'yalova-satilik', 'yalova-kiralik', 'luks', 'foto-bekleniyor', 'ismail-unsal', 'apple-touch-icon'
+  'yalova-satilik', 'yalova-kiralik', 'luks', 'foto-bekleniyor', 'ismail-unsal', 'ramazan-aydemir', 'ramazan-aydemir-avatar', 'apple-touch-icon'
 ]);
 
 // ---------------------------------------------------------------------------

@@ -134,6 +134,12 @@ span.turyap-badge { color: #2563EB; }
   object-position: center 20%;
   display: block;
 }
+/* Arka planı kaldırılmış (şeffaf) portre: İsmail Bey'in fotoğrafındaki stüdyo grisi üzerinde, alttan hizalı */
+.about-photo--studio { background: radial-gradient(ellipse at 50% 30%, #CFD0D2 0%, #B8B9BB 55%, #A2A3A5 100%); }
+.about-photo--studio img {
+  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: auto; height: 94%; max-width: none; object-fit: contain; object-position: center bottom;
+}
 .about-photo-badge {
   position: absolute;
   bottom: -18px;
@@ -760,8 +766,8 @@ span.turyap-badge { color: #2563EB; }
   </div>
   <div class="about-hero-inner">
     <div class="about-photo-wrap">
-      <div class="about-photo">
-        <img src="/foto-bekleniyor.svg" alt="Ramazan Aydemir — fotoğraf yakında">
+      <div class="about-photo about-photo--studio">
+        <img src="/ramazan-aydemir.webp?v=20261012" alt="Ramazan Aydemir — TURYAP Yalova gayrimenkul danışmanı" width="470" height="709">
       </div>
       <div class="about-photo-badge">
         <i class="fa-solid fa-shield-halved"></i> TURYAP YETKİLİ

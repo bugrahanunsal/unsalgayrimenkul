@@ -345,14 +345,14 @@
 
   const AGENTS = [
     { name: 'İsmail Ünsal', role: 'TURYAP Gayrimenkul Danışmanı', phone: '+905075188482', phoneLabel: '+90 507 518 84 82', img: '/ismail-unsal.jpg' },
-    { name: 'Ramazan Aydemir', role: 'TURYAP Gayrimenkul Danışmanı', phone: '+905325013275', phoneLabel: '+90 532 501 32 75', img: '/foto-bekleniyor.svg' }
+    { name: 'Ramazan Aydemir', role: 'TURYAP Gayrimenkul Danışmanı', phone: '+905325013275', phoneLabel: '+90 532 501 32 75', img: '/ramazan-aydemir-avatar.webp?v=20261012', studio: true }
   ];
   function buildAgents(p) {
     const box = el('div', { class: 'ild-agents' }, [el('h3', { text: 'İlan Danışmanlarınız' })]);
     AGENTS.forEach(a => {
       const msg = 'Merhaba ' + a.name.split(' ')[0] + ' Bey, "' + title(p) + '" ilanı hakkında bilgi almak istiyorum.\n' + window.IUFrontend.listingUrl(p, true);
       box.appendChild(el('div', { class: 'ild-agent' }, [
-        el('img', { src: a.img, alt: a.name, loading: 'lazy', width: '56', height: '56' }),
+        el('img', { src: a.img, alt: a.name, loading: 'lazy', width: '56', height: '56', class: a.studio ? 'ild-agent-studio' : null }),
         el('div', { class: 'ild-agent-info' }, [el('strong', { text: a.name }), el('span', { text: a.role }), el('a', { href: 'tel:' + a.phone, text: a.phoneLabel })]),
         el('div', { class: 'ild-agent-btns' }, [
           el('a', { href: 'tel:' + a.phone, 'aria-label': a.name + ' ara' }, [icon('fa-solid fa-phone')]),
