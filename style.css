@@ -1066,3 +1066,44 @@ nav.nav > .nav-auth-mobile,
   background: linear-gradient(135deg, #0A2A5E, #1B4380) !important;
   box-shadow: 0 2px 8px rgba(10, 42, 94, 0.28) !important;
 }
+
+/* ============================================================================
+   Mobil menü: "Admin Panel" / "Hesabım" ve "Çıkış Yap" butonları (12 Ekim 2026)
+   Menüdeki genel ".nav.open a { color: lacivert !important }" kuralı daha baskın olduğu için butonların beyaz
+   yazısı lacivert görünüyordu (mavi ve kırmızı zeminde okunmuyordu). Seçiciler güçlendirildi:
+   ana işlem dolgulu lacivert + beyaz yazı, çıkış ise çerçeveli ikincil buton (beyaz zemin, kırmızı yazı).
+   ============================================================================ */
+.nav .nav-auth-mobile a.iu-mobile-btn,
+.nav.open .nav-auth-mobile a.iu-mobile-btn {
+  display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important;
+  min-height: 48px !important; padding: 12px 14px !important; border-radius: 12px !important;
+  font-size: 13px !important; font-weight: 700 !important; letter-spacing: 0.4px !important; line-height: 1.2 !important;
+  text-transform: uppercase !important; text-decoration: none !important;
+  box-shadow: none !important; transform: none !important; transition: background-color .15s ease, border-color .15s ease !important;
+}
+/* iki buton yan yana, eşit genişlikte (menüdeki ".nav.open .nav-auth-mobile * { display: revert }" kuralından güçlü) */
+.nav .nav-auth-mobile .iu-mobile-actions, .nav.open .nav-auth-mobile .iu-mobile-actions {
+  display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important; width: 100% !important; margin-top: 12px !important;
+}
+.nav .nav-auth-mobile a.iu-mobile-btn span, .nav.open .nav-auth-mobile a.iu-mobile-btn span {
+  display: block !important; min-width: 0 !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important;
+}
+.nav .nav-auth-mobile a.iu-mobile-btn svg { width: 17px !important; height: 17px !important; flex: 0 0 auto !important; }
+.nav .nav-auth-mobile a.iu-mobile-btn-admin, .nav.open .nav-auth-mobile a.iu-mobile-btn-admin,
+.nav .nav-auth-mobile a.iu-mobile-btn-account, .nav.open .nav-auth-mobile a.iu-mobile-btn-account {
+  background: #0A2A5E !important; color: #FFFFFF !important; border: 1.5px solid #0A2A5E !important;
+}
+.nav .nav-auth-mobile a.iu-mobile-btn-admin:hover, .nav.open .nav-auth-mobile a.iu-mobile-btn-admin:hover,
+.nav .nav-auth-mobile a.iu-mobile-btn-admin:active, .nav.open .nav-auth-mobile a.iu-mobile-btn-admin:active,
+.nav .nav-auth-mobile a.iu-mobile-btn-account:hover, .nav.open .nav-auth-mobile a.iu-mobile-btn-account:hover,
+.nav .nav-auth-mobile a.iu-mobile-btn-account:active, .nav.open .nav-auth-mobile a.iu-mobile-btn-account:active {
+  background: #1B4380 !important; border-color: #1B4380 !important; color: #FFFFFF !important;
+}
+.nav .nav-auth-mobile a.iu-mobile-btn-logout, .nav.open .nav-auth-mobile a.iu-mobile-btn-logout {
+  background: #FFFFFF !important; color: #B91C1C !important; border: 1.5px solid #FECACA !important;
+}
+.nav .nav-auth-mobile a.iu-mobile-btn-logout:hover, .nav.open .nav-auth-mobile a.iu-mobile-btn-logout:hover,
+.nav .nav-auth-mobile a.iu-mobile-btn-logout:active, .nav.open .nav-auth-mobile a.iu-mobile-btn-logout:active {
+  background: #FEF2F2 !important; border-color: #FCA5A5 !important; color: #991B1B !important;
+}
+.nav .nav-auth-mobile a.iu-mobile-btn:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.45) !important; outline-offset: 2px !important; }
