@@ -29,9 +29,12 @@
   // Sitedeki bölümler (ana sayfa kartı + kategori sayfası)
   const BOLUM = {
     'satilik:daire': 'Yalova Satılık Daire', 'satilik:villa': 'Yalova Satılık Villa', 'satilik:mustakil_ev': 'Yalova Satılık Ev',
-    'satilik:arsa': 'Yalova Satılık Arsa', 'satilik:tarla': 'Yalova Satılık Arsa',
-    'kiralik:daire': 'Yalova Kiralık Daire', 'kiralik:villa': 'Yalova Kiralık Villa', 'kiralik:mustakil_ev': 'Yalova Kiralık Ev'
+    'satilik:arsa': 'Yalova Satılık Arsa', 'satilik:tarla': 'Yalova Satılık Arsa', 'satilik:isyeri': 'Yalova Satılık İşyeri',
+    'kiralik:daire': 'Yalova Kiralık Daire', 'kiralik:villa': 'Yalova Kiralık Villa', 'kiralik:mustakil_ev': 'Yalova Kiralık Ev',
+    'kiralik:arsa': 'Yalova Kiralık Arsa', 'kiralik:tarla': 'Yalova Kiralık Arsa'
   };
+  // Sayfası olan ama ana sayfada ve menüde bağlantısı olmayan bölümler
+  const MENUDE_YOK = new Set(['satilik:mustakil_ev', 'kiralik:mustakil_ev']);
   /** tip + kategori (+ ilçe, eşyalı) → sitede listelendiği bölümler */
   function bolumler(tip, kategori, ilce, esyali) {
     const ana = BOLUM[tip + ':' + kategori];
@@ -176,6 +179,7 @@
     let txt = list.length
       ? 'Sitede görüneceği yer: ' + list.join(', ') + (list.length > 1 ? ' bölümleri.' : ' bölümü.')
       : 'Bu tip ve kategori için sitede ayrı bir bölüm yok; ilan kendi sayfasında yayınlanır.';
+    if (MENUDE_YOK.has(tip + ':' + kat)) txt += ' Bu sayfanın ana sayfada ve menüde bağlantısı yok.';
     if (durum && durum !== 'aktif') txt = 'Durum “Aktif” olunca sitede görünür. ' + txt;
     box.textContent = txt;
   }

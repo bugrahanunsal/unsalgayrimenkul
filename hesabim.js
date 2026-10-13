@@ -241,7 +241,7 @@
   function landing(a) {
     const k = (a.kategoriler || []).length === 1 ? a.kategoriler[0] : '';
     const t = a.islem_tipi;
-    const map = { 'satilik:daire': '/yalova-satilik-daire', 'satilik:arsa': '/yalova-satilik-arsa', 'satilik:villa': '/yalova-satilik-villa', 'satilik:mustakil_ev': '/yalova-satilik-ev', 'kiralik:daire': '/yalova-kiralik-daire', 'kiralik:villa': '/yalova-kiralik-villa', 'kiralik:mustakil_ev': '/yalova-kiralik-ev' };
+    const map = { 'satilik:daire': '/yalova-satilik-daire', 'satilik:arsa': '/yalova-satilik-arsa', 'kiralik:arsa': '/yalova-kiralik-arsa', 'satilik:isyeri': '/yalova-satilik-isyeri', 'satilik:villa': '/yalova-satilik-villa', 'satilik:mustakil_ev': '/yalova-satilik-ev', 'kiralik:daire': '/yalova-kiralik-daire', 'kiralik:villa': '/yalova-kiralik-villa', 'kiralik:mustakil_ev': '/yalova-kiralik-ev' };
     return map[t + ':' + k] || '/';
   }
   function renderAlarms() {

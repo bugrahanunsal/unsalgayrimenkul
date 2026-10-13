@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="style.css?v=20261012-menu">
+<link rel="stylesheet" href="style.css?v=20261013-menu2">
 
 <style>
 .top-bar { background: #0A2A5E !important; color: #FFFFFF !important; }
@@ -232,11 +232,11 @@
 
 </style>
 <script src="/translator.js?v=20260929-i18n" defer></script>
-<script src="/translations.js?v=20261013-villa" defer></script>
+<script src="/translations.js?v=20261013-menu2" defer></script>
 <script src="/uye-ol.js?v=20261010-sifre2" defer></script>
 </head>
 <body>
-<script src="/unified-header.js?v=20261013-villa"></script>
+<script src="/unified-header.js?v=20261013-menu2"></script>
 <div class="top-bar">
   <div class="top-bar-inner">
     <div class="top-info">
@@ -429,7 +429,8 @@
       <h4>İletişim</h4>
       <ul>
         <li><span><i class="fa-solid fa-location-dot"></i> Yalova, Türkiye</span></li>
-        <li><a href="tel:+905075188482"><i class="fa-solid fa-phone"></i> +90 507 518 84 82</a></li>
+        <li><a href="tel:+905075188482" class="ft-phone" translate="no"><i class="fa-solid fa-phone"></i> <span class="ft-phone-txt"><small>İsmail Ünsal</small>+90 507 518 84 82</span></a></li>
+        <li><a href="tel:+905325013275" class="ft-phone" translate="no"><i class="fa-solid fa-phone"></i> <span class="ft-phone-txt"><small>Ramazan Aydemir</small>+90 532 501 32 75</span></a></li>
         <li><a href="https://wa.me/905075188482"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
         <li><a href="https://www.linkedin.com/in/ismail-unsal-5802b2406/" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a></li>
       </ul>
@@ -476,6 +477,7 @@ document.getElementById('langCurrent')?.addEventListener('click', () => {
     else if (p.indexOf('daire') > -1) f.kategori = 'daire';
     else if (p.indexOf('villa') > -1) f.kategori = 'villa';
     else if (p.indexOf('satilik-ev') > -1 || p.indexOf('kiralik-ev') > -1 || p.indexOf('mustakil') > -1) f.kategori = 'mustakil_ev';
+    else if (p.indexOf('isyeri') > -1) f.kategori = 'isyeri';
     if (p.indexOf('cinarcik') > -1) f.ilce = 'Çınarcık';
     else if (p.indexOf('termal') > -1) f.ilce = 'Termal';
     else if (p.indexOf('altinova') > -1) f.ilce = 'Altınova';

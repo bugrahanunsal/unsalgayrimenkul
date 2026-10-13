@@ -42,7 +42,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20261013-villa';
+  const SITE_VERSION = '20261013-menu2';
 
   async function loadAllScripts() {
     try {
@@ -73,6 +73,56 @@
   } else {
     loadAllScripts();
   }
+})();
+
+(function () {
+  'use strict';
+  // Açılır menüler (SATILIK / KİRALIK / ARSA / LÜKS): ok düğmesi aç/kapa, dışarı tıklayınca ve Esc ile kapanır.
+  // Fareyle üzerine gelince CSS açar. Aynı kod script.js'te de var; hangisi önce çalışırsa o bağlar (bir kez).
+  function iuBindSubmenus() {
+    if (window.__iuSubBound) return;
+    window.__iuSubBound = true;
+    const items = () => Array.from(document.querySelectorAll('.nav .nav-item.has-sub'));
+    const setOpen = (item, open) => {
+      item.classList.toggle('open', open);
+      const b = item.querySelector('.nav-sub-btn');
+      if (b) b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    document.addEventListener('click', (e) => {
+      const t = e.target && e.target.closest ? e.target : null;
+      const btn = t && t.closest('.nav-sub-btn');
+      if (btn) {
+        e.preventDefault();
+        const item = btn.closest('.nav-item');
+        const open = !item.classList.contains('open');
+        items().forEach(i => { if (i !== item) setOpen(i, false); });
+        setOpen(item, open);
+        return;
+      }
+      if (t && t.closest('.nav-item.has-sub')) return;
+      items().forEach(i => setOpen(i, false));
+    });
+    // Klavyeyle menünün dışına çıkılınca açık liste kapanır
+    // (mobil menüde değil: orada kapanan liste, parmağın altındaki satırları kaydırıp yanlış yere dokundurur)
+    document.addEventListener('focusin', (e) => {
+      items().forEach(i => {
+        if (!i.classList.contains('open') || i.contains(e.target)) return;
+        const panel = i.closest('.nav.open');
+        if (panel && panel.contains(e.target)) return;
+        setOpen(i, false);
+      });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const it = items().find(i => i.classList.contains('open') || i.contains(document.activeElement));
+      if (!it) return;
+      const hadFocus = it.contains(document.activeElement);
+      setOpen(it, false);
+      const b = it.querySelector('.nav-sub-btn');
+      if (b && hadFocus) b.focus();
+    });
+  }
+  iuBindSubmenus();
 })();
 
 // ==================== MEVCUT UI KODLARI ====================

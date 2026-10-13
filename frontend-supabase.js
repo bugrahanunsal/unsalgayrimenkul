@@ -312,6 +312,8 @@
     href = href.toLowerCase();
     if (href.includes('satilik-daire')) return 'satilik-daire';
     if (href.includes('satilik-villa')) return 'satilik-villa';
+    if (href.includes('satilik-isyeri')) return 'satilik-isyeri';
+    if (href.includes('kiralik-arsa')) return 'kiralik-arsa';
     if (href.includes('kiralik-villa')) return 'kiralik-villa';
     if (href.includes('esyali-kiralik')) return 'esyali-kiralik';
     if (href.includes('merkez-kiralik')) return 'merkez-kiralik-daire';
@@ -331,7 +333,9 @@
 
     if (kat === 'daire' && tip === 'satilik') keys.push('satilik-daire');
     if (kat === 'daire' && tip === 'kiralik') keys.push('kiralik-daire');
-    if (kat === 'arsa' && tip === 'satilik') keys.push('satilik-arsa');
+    if ((kat === 'arsa' || kat === 'tarla') && tip === 'satilik') keys.push('satilik-arsa');
+    if ((kat === 'arsa' || kat === 'tarla') && tip === 'kiralik') keys.push('kiralik-arsa');
+    if (kat === 'isyeri' && tip === 'satilik') keys.push('satilik-isyeri');
     if (kat === 'villa' && tip === 'kiralik') keys.push('kiralik-villa');
     if (kat === 'villa' && tip === 'satilik') keys.push('satilik-villa');
     if (kat === 'mustakil_ev' && tip === 'satilik') keys.push('satilik-ev');

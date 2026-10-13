@@ -10,8 +10,8 @@
   const $ = (id) => document.getElementById(id);
   const PAGES = [
     ['index', 'Ana Sayfa'], ['hakkimizda', 'Hakkımızda'], ['iletisim', 'İletişim'],
-    ['yalova-satilik-daire', 'Satılık Daire'], ['yalova-satilik-villa', 'Satılık Villa'], ['yalova-satilik-ev', 'Satılık Ev'], ['yalova-satilik-arsa', 'Satılık Arsa'],
-    ['yalova-kiralik-daire', 'Kiralık Daire'], ['yalova-kiralik-ev', 'Kiralık Ev'], ['yalova-kiralik-villa', 'Lüks / Kiralık Villa'],
+    ['yalova-satilik-daire', 'Satılık Daire'], ['yalova-satilik-villa', 'Satılık Villa'], ['yalova-satilik-ev', 'Satılık Ev'], ['yalova-satilik-arsa', 'Satılık Arsa'], ['yalova-satilik-isyeri', 'Satılık İşyeri'],
+    ['yalova-kiralik-daire', 'Kiralık Daire'], ['yalova-kiralik-ev', 'Kiralık Ev'], ['yalova-kiralik-villa', 'Lüks / Kiralık Villa'], ['yalova-kiralik-arsa', 'Kiralık Arsa'],
     ['yalova-esyali-kiralik-daire', 'Eşyalı Kiralık'], ['yalova-merkez-kiralik-daire', 'Merkez Kiralık'],
     ['blog', 'Blog (liste sayfası)'], ['faq', 'Sıkça Sorulan Sorular'], ['724-destek', '7/24 Destek'],
     ['cok-dilli-hizmet', 'Çok Dilli Hizmet'], ['yerel-uzmanlik', 'Yerel Uzmanlık'], ['gizlilik-politikasi', 'Gizlilik Politikası']

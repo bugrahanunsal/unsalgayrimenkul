@@ -56,7 +56,8 @@
 
   function categoryPage(p) {
     const k = p.kategori, t = p.tip === 'kiralik' ? 'kiralik' : 'satilik';
-    if (k === 'arsa' || k === 'tarla') return { href: lp('/yalova-satilik-arsa'), label: 'Satılık Arsa' };
+    if (k === 'arsa' || k === 'tarla') return t === 'kiralik' ? { href: lp('/yalova-kiralik-arsa'), label: 'Kiralık Arsa' } : { href: lp('/yalova-satilik-arsa'), label: 'Satılık Arsa' };
+    if (k === 'isyeri' && t === 'satilik') return { href: lp('/yalova-satilik-isyeri'), label: 'Satılık İşyeri' };
     if (k === 'villa') return t === 'kiralik' ? { href: lp('/yalova-kiralik-villa'), label: 'Kiralık Villa' } : { href: lp('/yalova-satilik-villa'), label: 'Satılık Villa' };
     if (k === 'mustakil_ev') return { href: lp('/yalova-' + t + '-ev'), label: TIP[t] + ' Ev' };
     return { href: lp('/yalova-' + t + '-daire'), label: TIP[t] + ' Daire' };

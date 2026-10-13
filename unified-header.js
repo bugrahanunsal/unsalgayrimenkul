@@ -47,14 +47,32 @@
     return cleanPath.includes(match);
   }
 
+  // Açılır menülerdeki sayfalar (her biri sitede bir kategori sayfası)
+  const SUB = {
+    satDaire:  { page: 'yalova-satilik-daire',        key: 'nav.sub.satilik.daire',  label: 'Satılık Daire' },
+    satVilla:  { page: 'yalova-satilik-villa',        key: 'nav.sub.satilik.villa',  label: 'Satılık Villa' },
+    satArsa:   { page: 'yalova-satilik-arsa',         key: 'nav.sub.satilik.arsa',   label: 'Satılık Arsa' },
+    satIsyeri: { page: 'yalova-satilik-isyeri',       key: 'nav.sub.satilik.isyeri', label: 'Satılık İşyeri' },
+    kirDaire:  { page: 'yalova-kiralik-daire',        key: 'nav.sub.kiralik.daire',  label: 'Kiralık Daire' },
+    kirEsyali: { page: 'yalova-esyali-kiralik-daire', key: 'nav.sub.kiralik.esyali', label: 'Eşyalı Kiralık Daire' },
+    kirMerkez: { page: 'yalova-merkez-kiralik-daire', key: 'nav.sub.kiralik.merkez', label: 'Merkez Kiralık Daire' },
+    kirVilla:  { page: 'yalova-kiralik-villa',        key: 'nav.sub.kiralik.villa',  label: 'Kiralık Villa' },
+    kirArsa:   { page: 'yalova-kiralik-arsa',         key: 'nav.sub.kiralik.arsa',   label: 'Kiralık Arsa' }
+  };
+  const currentKey = (cleanPath.replace(/^\/+/, '').replace(/\.html$/i, '').split('/')[0] || '');
+
   // Menu items — CHANGE HERE, applies EVERYWHERE
   // Home page ile birebir aynı: SATILIK, KİRALIK, ARSA, LÜKS(YENİ), BLOG, HAKKIMIZDA, FAQ, İLETİŞİM
   // i18n key'leri Türkçe formatta (nav.satilik, nav.kiralik vb.)
   const menuItems = [
-    { href: lp('yalova-satilik-daire.html'), key: 'nav.satilik',    label: 'SATILIK',    match: ['satilik-daire','satilik-villa','satilik-ev'] },
-    { href: lp('yalova-kiralik-daire.html'), key: 'nav.kiralik',    label: 'KİRALIK',    match: ['kiralik-daire','kiralik-ev','esyali-kiralik','merkez-kiralik'] },
-    { href: lp('yalova-satilik-arsa.html'),  key: 'nav.arsa',       label: 'ARSA',       match: ['satilik-arsa'] },
-    { href: lp('yalova-kiralik-villa.html'), key: 'nav.luks',       label: 'LÜKS',       match: ['kiralik-villa'], badge: 'YENİ', badgeKey: 'nav.luks.badge' },
+    { href: lp('yalova-satilik-daire.html'), key: 'nav.satilik',    label: 'SATILIK',    match: ['satilik-daire','satilik-isyeri','satilik-ev'],
+      sub: [SUB.satDaire, SUB.satVilla, SUB.satArsa, SUB.satIsyeri] },
+    { href: lp('yalova-kiralik-daire.html'), key: 'nav.kiralik',    label: 'KİRALIK',    match: ['kiralik-daire','kiralik-ev','esyali-kiralik','merkez-kiralik'],
+      sub: [SUB.kirDaire, SUB.kirEsyali, SUB.kirMerkez, SUB.kirVilla, SUB.kirArsa] },
+    { href: lp('yalova-satilik-arsa.html'),  key: 'nav.arsa',       label: 'ARSA',       match: ['satilik-arsa','kiralik-arsa'],
+      sub: [SUB.satArsa, SUB.kirArsa] },
+    { href: lp('yalova-kiralik-villa.html'), key: 'nav.luks',       label: 'LÜKS',       match: ['kiralik-villa','satilik-villa'], badge: 'YENİ', badgeKey: 'nav.luks.badge',
+      sub: [SUB.satVilla, SUB.kirVilla] },
     { href: lp('blog.html'),                 key: 'nav.blog',       label: 'BLOG',       match: ['/blog'] },
     { href: lp('hakkimizda.html'),           key: 'nav.hakkimizda', label: 'HAKKIMIZDA', match: ['hakkimizda'] },
     { href: lp('faq.html'),                  key: 'nav.sss',        label: 'FAQ',        match: ['faq','sss'] },
@@ -85,13 +103,75 @@
   // Menu items HTML — home page ile birebir aynı format
   function buildMenuHTML() {
     return menuItems.map(item => {
-      const active = isActive(item.match) ? ' class="active"' : '';
+      const on = isActive(item.match);
+      const active = on ? ' class="active"' : '';
+      if (item.sub) {
+        // Açılır menü: üst bağlantı yine kategori sayfasına gider; ok düğmesi (dokunmatik / klavye) listeyi açar
+        const id = 'iu-sub-' + item.key.replace(/[^a-z0-9]+/gi, '-');
+        const label = item.badge
+          ? `<span data-i18n="${item.key}">${item.label}</span><span class="nav-badge" data-i18n="${item.badgeKey || 'nav.luks.badge'}">${item.badge}</span>`
+          : `<span data-i18n="${item.key}">${item.label}</span>`;
+        const links = item.sub.map(sb => {
+          const cur = sb.page === currentKey;
+          return `<a href="${lp(sb.page)}" data-i18n="${sb.key}"${cur ? ' class="current" aria-current="page"' : ''}>${sb.label}</a>`;
+        }).join('');
+        return `<div class="nav-item has-sub${on ? ' is-active' : ''}">` +
+          `<a href="${item.href}" class="nav-top${on ? ' active' : ''}">${label}</a>` +
+          `<button type="button" class="nav-sub-btn" aria-expanded="false" aria-controls="${id}" aria-label="${item.label.charAt(0) + item.label.slice(1).toLocaleLowerCase('tr-TR')} menüsü"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>` +
+          `<div class="nav-sub" id="${id}">${links}</div></div>`;
+      }
       if (item.badge) {
         // LÜKS gibi: <a><span data-i18n>LÜKS</span><span class="nav-badge" data-i18n>YENİ</span></a>
         return `<a href="${item.href}"${active}><span data-i18n="${item.key}">${item.label}</span><span class="nav-badge" data-i18n="${item.badgeKey || 'nav.luks.badge'}">${item.badge}</span></a>`;
       }
       return `<a href="${item.href}"${active} data-i18n="${item.key}">${item.label}</a>`;
     }).join('\n      ');
+  }
+
+  // Açılır menüler (SATILIK / KİRALIK / ARSA / LÜKS): ok düğmesi aç/kapa, dışarı tıklayınca ve Esc ile kapanır.
+  // Fareyle üzerine gelince CSS açar. Aynı kod script.js'te de var; hangisi önce çalışırsa o bağlar (bir kez).
+  function iuBindSubmenus() {
+    if (window.__iuSubBound) return;
+    window.__iuSubBound = true;
+    const items = () => Array.from(document.querySelectorAll('.nav .nav-item.has-sub'));
+    const setOpen = (item, open) => {
+      item.classList.toggle('open', open);
+      const b = item.querySelector('.nav-sub-btn');
+      if (b) b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    document.addEventListener('click', (e) => {
+      const t = e.target && e.target.closest ? e.target : null;
+      const btn = t && t.closest('.nav-sub-btn');
+      if (btn) {
+        e.preventDefault();
+        const item = btn.closest('.nav-item');
+        const open = !item.classList.contains('open');
+        items().forEach(i => { if (i !== item) setOpen(i, false); });
+        setOpen(item, open);
+        return;
+      }
+      if (t && t.closest('.nav-item.has-sub')) return;
+      items().forEach(i => setOpen(i, false));
+    });
+    // Klavyeyle menünün dışına çıkılınca açık liste kapanır
+    // (mobil menüde değil: orada kapanan liste, parmağın altındaki satırları kaydırıp yanlış yere dokundurur)
+    document.addEventListener('focusin', (e) => {
+      items().forEach(i => {
+        if (!i.classList.contains('open') || i.contains(e.target)) return;
+        const panel = i.closest('.nav.open');
+        if (panel && panel.contains(e.target)) return;
+        setOpen(i, false);
+      });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const it = items().find(i => i.classList.contains('open') || i.contains(document.activeElement));
+      if (!it) return;
+      const hadFocus = it.contains(document.activeElement);
+      setOpen(it, false);
+      const b = it.querySelector('.nav-sub-btn');
+      if (b && hadFocus) b.focus();
+    });
   }
 
   // TOP BAR (upper strip with phone, socials, language)
@@ -101,7 +181,7 @@
     <div class="top-info">
       <span><i class="fa-solid fa-location-dot"></i> <span data-i18n="topbar.location">Yalova, Türkiye</span></span>
       <span><i class="fa-solid fa-clock"></i> <span data-i18n="topbar.hours">Pzt-Cmt: 09:00 - 19:00</span></span>
-      <span><i class="fa-solid fa-phone"></i> +90 507 518 84 82</span>
+      <span class="top-phones" translate="no"><i class="fa-solid fa-phone" aria-hidden="true"></i><a href="tel:+905075188482"><small class="tp-name">İsmail Ünsal</small> +90 507 518 84 82</a><a href="tel:+905325013275"><small class="tp-name">Ramazan Aydemir</small> +90 532 501 32 75</a></span>
     </div>
     <div class="top-right">
       <div data-iu-auth class="topbar-auth"></div>
@@ -153,7 +233,7 @@
   // ============================================================
   // INJECTION: Replace existing header OR prepend to body
   // ============================================================
-  const HEADER_CSS_VERSION = '20261012-menu';
+  const HEADER_CSS_VERSION = '20261013-menu2';
 
   // Add a stylesheet once. toBodyEnd=true → appended at end of <body> so it
   // wins the cascade over page-specific header CSS. skipIfMatch → skip when
@@ -232,6 +312,8 @@
       el.setAttribute('translate', 'no');
       el.classList.add('notranslate');
     });
+
+    iuBindSubmenus();
 
     // Dispatch event so other scripts (auth widget, translator) know header is ready
     document.dispatchEvent(new CustomEvent('iu:header-injected'));
