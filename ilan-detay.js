@@ -363,7 +363,7 @@
     });
     box.appendChild(el('div', { class: 'ild-office' }, [
       el('div', null, [icon('fa-solid fa-location-dot'), ' Yalova, Türkiye']),
-      el('div', null, [icon('fa-solid fa-clock'), ' Pzt-Cmt: 09:00 - 19:00']),
+      el('div', null, [icon('fa-solid fa-clock'), ' Pzt-Cmt: 08:00 - 17:00']),
       el('div', null, [icon('fa-solid fa-award'), ' Resmi TURYAP Yetkili Danışmanı'])
     ]));
     return box;

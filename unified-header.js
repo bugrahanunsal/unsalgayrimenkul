@@ -180,7 +180,7 @@
   <div class="top-bar-inner">
     <div class="top-info">
       <span><i class="fa-solid fa-location-dot"></i> <span data-i18n="topbar.location">Yalova, Türkiye</span></span>
-      <span><i class="fa-solid fa-clock"></i> <span data-i18n="topbar.hours">Pzt-Cmt: 09:00 - 19:00</span></span>
+      <span><i class="fa-solid fa-clock"></i> <span data-i18n="topbar.hours">Pzt-Cmt: 08:00 - 17:00</span></span>
       <span class="top-phones" translate="no"><i class="fa-solid fa-phone" aria-hidden="true"></i><a href="tel:+905075188482"><small class="tp-name">İsmail Ünsal</small> +90 507 518 84 82</a><a href="tel:+905325013275"><small class="tp-name">Ramazan Aydemir</small> +90 532 501 32 75</a></span>
     </div>
     <div class="top-right">

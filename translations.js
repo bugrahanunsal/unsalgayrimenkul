@@ -7,7 +7,7 @@ const translations = {
   tr: {
     // TOP BAR
     "topbar.location": "Yalova, Türkiye",
-    "topbar.hours": "Pzt-Cmt: 09:00 - 19:00",
+    "topbar.hours": "Pzt-Cmt: 08:00 - 17:00",
 
     // NAVIGATION
     "nav.satilik": "SATILIK",
@@ -195,7 +195,7 @@ const translations = {
 
   en: {
     "topbar.location": "Yalova, Turkey",
-    "topbar.hours": "Mon-Sat: 09:00 - 19:00",
+    "topbar.hours": "Mon-Sat: 08:00 - 17:00",
 
     "nav.satilik": "FOR SALE",
     "nav.kiralik": "FOR RENT",
@@ -371,7 +371,7 @@ const translations = {
 
   fr: {
     "topbar.location": "Yalova, Turquie",
-    "topbar.hours": "Lun-Sam: 09h00 - 19h00",
+    "topbar.hours": "Lun-Sam: 08h00 - 17h00",
 
     "nav.satilik": "À VENDRE",
     "nav.kiralik": "À LOUER",
@@ -547,7 +547,7 @@ const translations = {
 
   de: {
     "topbar.location": "Yalova, Türkei",
-    "topbar.hours": "Mo-Sa: 09:00 - 19:00",
+    "topbar.hours": "Mo-Sa: 08:00 - 17:00",
 
     "nav.satilik": "VERKAUF",
     "nav.kiralik": "MIETE",
@@ -723,7 +723,7 @@ const translations = {
 
   ru: {
     "topbar.location": "Ялова, Турция",
-    "topbar.hours": "Пн-Сб: 09:00 - 19:00",
+    "topbar.hours": "Пн-Сб: 08:00 - 17:00",
 
     "nav.satilik": "ПРОДАЖА",
     "nav.kiralik": "АРЕНДА",
@@ -899,7 +899,7 @@ const translations = {
 
   ar: {
     "topbar.location": "يالوفا، تركيا",
-    "topbar.hours": "الاثنين-السبت: 09:00 - 19:00",
+    "topbar.hours": "الاثنين-السبت: 08:00 - 17:00",
 
     "nav.satilik": "للبيع",
     "nav.kiralik": "للإيجار",

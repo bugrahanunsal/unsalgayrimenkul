@@ -42,7 +42,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20261013-menu2';
+  const SITE_VERSION = '20261013-saat';
 
   async function loadAllScripts() {
     try {

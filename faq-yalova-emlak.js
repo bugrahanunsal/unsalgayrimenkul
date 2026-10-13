@@ -39,7 +39,7 @@
       },
       {
         q: 'İsmail Ünsal Gayrimenkul ile nasıl iletişime geçebilirim?',
-        a: 'Bizimle 0507 518 84 82 numaralı telefondan Pazartesi-Cumartesi 09:00-19:00 arasında iletişime geçebilirsiniz. Ayrıca WhatsApp üzerinden mesaj bırakabilir, sitemizden iletişim formunu doldurabilir veya Yalova\'daki ofisimizi ziyaret edebilirsiniz. TURYAP Yetkili Danışmanı olarak 20+ yıllık tecrübemizle Yalova\'nın her bölgesinde size en uygun gayrimenkulü bulmanız için hizmetinizdeyiz.'
+        a: 'Bizimle 0507 518 84 82 numaralı telefondan Pazartesi-Cumartesi 08:00-17:00 arasında iletişime geçebilirsiniz. Ayrıca WhatsApp üzerinden mesaj bırakabilir, sitemizden iletişim formunu doldurabilir veya Yalova\'daki ofisimizi ziyaret edebilirsiniz. TURYAP Yetkili Danışmanı olarak 20+ yıllık tecrübemizle Yalova\'nın her bölgesinde size en uygun gayrimenkulü bulmanız için hizmetinizdeyiz.'
       }
     ],
 
