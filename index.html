@@ -131,6 +131,10 @@
 .cat-groups { display: grid; gap: 40px; }
 .cat-groups > .cat-group { padding: 0; margin: 0; }
 .cat-group[hidden] { display: none; }
+/* Filtre / arama sonucu iki gruptan kart içeriyorsa: başlıksız tek ızgara, hepsi aynı sütun genişliğinde */
+.cat-groups.is-flat { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.cat-groups.is-flat > .cat-group, .cat-groups.is-flat .cat-grid { display: contents; }
+.cat-groups.is-flat .cat-group-title { display: none; }
 .cat-group-title { display: flex; align-items: center; gap: 16px; margin: 0 0 16px; font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: 24px; font-weight: 700; color: var(--navy); line-height: 1.1; }
 .cat-group-title::after { content: ''; flex: 1 1 auto; height: 1px; background: rgba(10,42,94,0.12); }
 .cat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
@@ -153,7 +157,8 @@
 /* 8 kart: masaüstü 4, tablet 2, telefon 1 sütun — yarım kalan satır olmaz */
 @media (min-width: 1200px) and (max-width: 1299px) { .cat-card-title { font-size: 18px; } }
 @media (max-width: 1199px) { .cat-grid, .cat-grid--5 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; } .cat-card-image { height: clamp(180px, 20vw, 240px); }
-  .cat-card--wide { grid-column: 1 / -1; } }
+  .cat-card--wide { grid-column: 1 / -1; }
+  .cat-groups.is-flat { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 /* Aynı satırdaki kartlarda başlık, ilan sayısı ve "İlanları Gör" hep hizalı (bir başlık iki satıra inse de, her dilde) */
 @supports (grid-template-rows: subgrid) {
   .cat-card { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; }
@@ -168,7 +173,7 @@
     .cat-card-cta { padding: 0 18px 18px; }
   }
 }
-@media (max-width: 639px) { .cat-groups { gap: 32px; } .cat-group-title { font-size: 21px; margin-bottom: 12px; } .cat-grid, .cat-grid--5 { grid-template-columns: 1fr; gap: 16px; } .cat-card-image { height: 180px; } .cat-card-content { padding: 16px 18px 18px; } }
+@media (max-width: 639px) { .cat-groups { gap: 32px; } .cat-groups.is-flat { grid-template-columns: 1fr; gap: 16px; } .cat-group-title { font-size: 21px; margin-bottom: 12px; } .cat-grid, .cat-grid--5 { grid-template-columns: 1fr; gap: 16px; } .cat-card-image { height: 180px; } .cat-card-content { padding: 16px 18px 18px; } }
 
 .no-results { text-align: center; padding: 80px 20px; display: none; }
 .no-results.active { display: block; }
@@ -1445,12 +1450,15 @@ function applyFilters() {
     }
   });
 
-  // Boş kalan grup (Satılık / Kiralık) başlığıyla gizlenir; tek sayıda kart kalırsa sonuncusu tablette tam genişlik
-  document.querySelectorAll('.cat-group').forEach(g => {
-    const shown = shownByGroup.get(g) || [];
-    g.hidden = shown.length === 0;
-    if (shown.length % 2 === 1) shown[shown.length - 1].classList.add('cat-card--wide');
-  });
+  // Tümü (aramasız): Satılık ve Kiralık ayrı satırlar. Filtre / arama sonucu iki gruptan da kart varsa
+  // (ör. ARSA: satılık + kiralık arsa) başlıksız tek ızgara: kartlar yan yana, aynı genişlikte.
+  // Boş kalan grup başlığıyla gizlenir; tek sayıda kart kalırsa sonuncusu tablette tam genişlik.
+  const groupsEl = document.getElementById('catGrid');
+  const flat = (currentFilter !== 'all' || !!currentSearch) && shownByGroup.size > 1;
+  if (groupsEl) groupsEl.classList.toggle('is-flat', flat);
+  document.querySelectorAll('.cat-group').forEach(g => { g.hidden = !shownByGroup.has(g); });
+  const lists = flat ? [[].concat(...shownByGroup.values())] : [...shownByGroup.values()];
+  lists.forEach(shown => { if (shown.length % 2 === 1) shown[shown.length - 1].classList.add('cat-card--wide'); });
   resultCount.textContent = visibleCount;
   updateTabBadges();
   window.iuUpdateTotal();
