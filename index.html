@@ -891,19 +891,19 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
       <div class="search-filter-tabs">
         <button class="search-filter-tab active" data-filter="all">
           <i class="fa-solid fa-th"></i> <span data-i18n="search.all">TÜMÜ</span>
-          <span class="badge-mini" id="count-all">8</span>
+          <span class="badge-mini" id="count-all">9</span>
         </button>
         <button class="search-filter-tab" data-filter="satilik">
           <i class="fa-solid fa-tag"></i> <span data-i18n="search.satilik">SATILIK</span>
-          <span class="badge-mini" id="count-satilik">3</span>
+          <span class="badge-mini" id="count-satilik">4</span>
         </button>
         <button class="search-filter-tab" data-filter="kiralik">
           <i class="fa-solid fa-key"></i> <span data-i18n="search.kiralik">KİRALIK</span>
-          <span class="badge-mini" id="count-kiralik">4</span>
+          <span class="badge-mini" id="count-kiralik">5</span>
         </button>
         <button class="search-filter-tab" data-filter="arsa">
           <i class="fa-solid fa-mountain"></i> <span data-i18n="search.arsa">ARSA</span>
-          <span class="badge-mini" id="count-arsa">1</span>
+          <span class="badge-mini" id="count-arsa">2</span>
         </button>
       </div>
 
@@ -1394,6 +1394,31 @@ document.addEventListener('click', (e) => {
 });
 
 // APPLY FILTERS
+// Sekmelerdeki sayılar: o sekmede (ve yazılan aramada) kaç kategori kartı var — karttan hesaplanır, elle yazılmaz
+function cardTypes(card) { return (card.dataset.type || '').split(/\s+/); }
+function cardMatchesSearch(card) {
+  if (!currentSearch) return true;
+  const keywords = (card.dataset.keywords || '').toLowerCase();
+  const title = card.querySelector('.cat-card-title').textContent.toLowerCase();
+  return `${title} ${keywords}`.includes(currentSearch);
+}
+function updateTabBadges() {
+  filterTabs.forEach(tab => {
+    const f = tab.dataset.filter;
+    const n = Array.from(catCards).filter(c => (f === 'all' || cardTypes(c).includes(f)) && cardMatchesSearch(c)).length;
+    const b = tab.querySelector('.badge-mini');
+    if (b) b.textContent = n;
+  });
+}
+// "Toplam N aktif ilan": seçili sekmenin ilan sayısı (frontend-supabase.js veritabanından doldurur)
+window.iuUpdateTotal = function () {
+  const t = window.IUListingTotals, el = document.getElementById('totalListings'), box = document.getElementById('totalListingsBox');
+  if (!t || !el || !box) return;
+  const n = typeof t[currentFilter] === 'number' ? t[currentFilter] : t.all;
+  el.textContent = n;
+  box.hidden = !(n > 0);
+};
+
 function applyFilters() {
   let visibleCount = 0;
   const shownByGroup = new Map();
@@ -1427,6 +1452,8 @@ function applyFilters() {
     if (shown.length % 2 === 1) shown[shown.length - 1].classList.add('cat-card--wide');
   });
   resultCount.textContent = visibleCount;
+  updateTabBadges();
+  window.iuUpdateTotal();
   noResults.classList.toggle('active', visibleCount === 0);
   updateTitle();
   updateFilterTag();
@@ -1556,7 +1583,7 @@ loadFromURL();
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/subscribe-widget.js?v=20261012-menu"></script>
 <!-- Frontend'i Supabase database'ine bağlayan script -->
-<script src="/frontend-supabase.js?v=20261013-saat"></script>
+<script src="/frontend-supabase.js?v=20261013-sekme"></script>
 
 <script src="/faq-yalova-emlak.js?v=20261013-saat"></script>
 <script>

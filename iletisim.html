@@ -146,6 +146,14 @@
   font-size: 16px;
   font-weight: 600;
 }
+/* "TELEFON İSMAİL ÜNSAL": danışmanın adı etiketin içinde, mavi */
+.contact-method-text strong .cm-who {
+  display: inline-block;   /* dar ekranda ad bölünmeden alt satıra iner */
+  margin-left: 2px;
+  color: #2563EB;
+  font-size: inherit;
+  font-weight: 700;
+}
 
 .quick-contact {
   background: linear-gradient(135deg, #0A2A5E 0%, #1B4380 100%);
@@ -314,8 +322,16 @@
       <a href="tel:+905075188482" class="contact-method">
         <div class="contact-method-icon"><i class="fa-solid fa-phone"></i></div>
         <div class="contact-method-text">
-          <strong>Telefon</strong>
-          <span>+90 507 518 84 82</span>
+          <strong>Telefon <span class="cm-who" translate="no">İsmail Ünsal</span></strong>
+          <span translate="no">+90 507 518 84 82</span>
+        </div>
+      </a>
+
+      <a href="tel:+905325013275" class="contact-method">
+        <div class="contact-method-icon"><i class="fa-solid fa-phone"></i></div>
+        <div class="contact-method-text">
+          <strong>Telefon <span class="cm-who" translate="no">Ramazan Aydemir</span></strong>
+          <span translate="no">+90 532 501 32 75</span>
         </div>
       </a>
 
@@ -356,11 +372,18 @@
       <h3>Hızlı İletişim</h3>
       <p>Tek tıkla ulaşın. Telefon, WhatsApp ya da LinkedIn — size en uygun yöntemi seçin.</p>
       <div class="quick-contact-buttons">
-        <a href="tel:+905075188482" class="qc-btn qc-phone">
+        <a href="tel:+905075188482" class="qc-btn qc-phone" translate="no">
           <i class="fa-solid fa-phone"></i>
           <div>
-            <div style="font-size: 11px; opacity: 0.8;">HEMEN ARA</div>
+            <div style="font-size: 11px; opacity: 0.8;">İSMAİL ÜNSAL</div>
             <div>+90 507 518 84 82</div>
+          </div>
+        </a>
+        <a href="tel:+905325013275" class="qc-btn qc-phone" translate="no">
+          <i class="fa-solid fa-phone"></i>
+          <div>
+            <div style="font-size: 11px; opacity: 0.8;">RAMAZAN AYDEMİR</div>
+            <div>+90 532 501 32 75</div>
           </div>
         </a>
         <a href="https://wa.me/905075188482" class="qc-btn qc-wa">
@@ -413,7 +436,7 @@
       <label class="cf-consent full"><input name="kvkk" type="checkbox" required><span><a href="gizlilik-politikasi.html" target="_blank">KVKK Aydınlatma Metni</a>'ni okudum, benimle iletişime geçilmesi için bilgilerimin kullanılmasını kabul ediyorum.</span></label>
       <div class="cf-actions full">
         <button type="submit" class="cf-submit"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Mesajı Gönder</button>
-        <span class="cf-note">Acil durumlar için: <a href="tel:+905075188482" style="color:#0A2A5E;font-weight:700">+90 507 518 84 82</a></span>
+        <span class="cf-note">Acil durumlar için: <a href="tel:+905075188482" style="color:#0A2A5E;font-weight:700">+90 507 518 84 82</a> veya <a href="tel:+905325013275" style="color:#0A2A5E;font-weight:700">+90 532 501 32 75</a></span>
       </div>
       <div class="cf-msg full" data-lead-msg role="status" aria-live="polite"></div>
     </form>

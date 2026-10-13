@@ -396,11 +396,23 @@
         }
       });
 
+      // Ana sayfa sekmeleri: Tümü / Satılık / Kiralık / Arsa için gerçek ilan sayıları
+      const tabTotals = { all: properties.length, satilik: 0, kiralik: 0, arsa: 0 };
+      properties.forEach(p => {
+        const tip = (p.tip || '').toLowerCase(), kat = (p.kategori || '').toLowerCase();
+        if (tip === 'satilik') tabTotals.satilik++;
+        if (tip === 'kiralik') tabTotals.kiralik++;
+        if (kat === 'arsa' || kat === 'tarla') tabTotals.arsa++;
+      });
+      window.IUListingTotals = tabTotals;
       const totalEl = document.getElementById('totalListings');
       if (totalEl) {
-        totalEl.textContent = properties.length;
-        const box = document.getElementById('totalListingsBox');
-        if (box) box.hidden = properties.length === 0;
+        if (typeof window.iuUpdateTotal === 'function') window.iuUpdateTotal();
+        else {
+          totalEl.textContent = properties.length;
+          const box = document.getElementById('totalListingsBox');
+          if (box) box.hidden = properties.length === 0;
+        }
       }
     } catch (err) {
       console.error('[Frontend] Kategori güncelleme hatası:', err);
