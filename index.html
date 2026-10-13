@@ -128,24 +128,40 @@
 .filter-status-right { font-size: 13px; color: var(--gray-500); }
 .filter-status-right strong { color: var(--orange); font-size: 16px; }
 
-.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
-.cat-card { background: var(--white); border-radius: 16px; overflow: hidden; border: 2px solid var(--gray-100); transition: var(--transition); cursor: pointer; display: block; text-decoration: none; color: inherit; position: relative; opacity: 1; transform: scale(1); }
+.cat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.cat-card { background: var(--white); border-radius: 16px; overflow: hidden; border: 2px solid var(--gray-100); transition: var(--transition); cursor: pointer; display: flex; flex-direction: column; text-decoration: none; color: inherit; position: relative; opacity: 1; transform: scale(1); }
 .cat-card.hiding { opacity: 0; transform: scale(0.95); pointer-events: none; }
 .cat-card.hidden { display: none; }
 .cat-card:hover { border-color: var(--orange); transform: translateY(-6px); box-shadow: 0 15px 30px rgba(37,99,235,0.2); }
 .cat-card-image { height: 200px; background-size: cover; background-position: center; position: relative; overflow: hidden; }
 .cat-card-image::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 0%, rgba(10,42,94,0.7) 100%); z-index: 1; }
 .cat-card-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; z-index: 0; }
-.cat-card-tag { position: absolute; top: 12px; left: 12px; background: var(--orange); color: #FFFFFF; padding: 5px 12px; border-radius: 50px; font-size: 10px; font-weight: 800; letter-spacing: 1px; z-index: 2; }
-.cat-card-tag.vip { background: var(--navy); color: #60A5FA; }
-.cat-card-tag.luks { background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%); color: #FFFFFF; }
 .cat-card-type-badge { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); color: var(--navy); padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; z-index: 2; }
-.cat-card-content { padding: 20px; }
+.cat-card-content { padding: 20px; display: flex; flex-direction: column; flex: 1 1 auto; }
 .cat-card-title { font-family: 'League Spartan', 'Montserrat', sans-serif; font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
-.cat-card-meta { display: flex; align-items: center; gap: 8px; color: var(--gray-500); font-size: 13px; margin-bottom: 12px; flex-wrap: wrap; }
+.cat-card-meta { display: flex; align-items: center; gap: 8px; color: var(--gray-500); font-size: 13px; margin-bottom: 12px; flex-wrap: wrap; min-height: 20px; }
+.cat-card-meta:not(.is-ready) { visibility: hidden; }
 .cat-card-meta i { color: var(--orange); }
-.cat-card-cta { color: var(--orange); font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); }
+.cat-card-cta { color: var(--orange); font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); margin-top: auto; align-self: flex-start; }
 .cat-card:hover .cat-card-cta { gap: 10px; }
+/* 8 kart: masaüstü 4, tablet 2, telefon 1 sütun — yarım kalan satır olmaz */
+@media (min-width: 1200px) and (max-width: 1299px) { .cat-card-title { font-size: 18px; } }
+@media (max-width: 1199px) { .cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cat-card-image { height: clamp(180px, 20vw, 240px); } }
+/* Aynı satırdaki kartlarda başlık, ilan sayısı ve "İlanları Gör" hep hizalı (bir başlık iki satıra inse de, her dilde) */
+@supports (grid-template-rows: subgrid) {
+  .cat-card { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; }
+  .cat-card.hidden { display: none; }
+  .cat-card-content { display: contents; }
+  .cat-card-title { padding: 20px 20px 0; margin-bottom: 8px; }
+  .cat-card-meta { padding: 0 20px; }
+  .cat-card-cta { padding: 0 20px 20px; margin-top: 0; justify-self: start; }
+  @media (max-width: 639px) {
+    .cat-card-title { padding: 16px 18px 0; }
+    .cat-card-meta { padding: 0 18px; }
+    .cat-card-cta { padding: 0 18px 18px; }
+  }
+}
+@media (max-width: 639px) { .cat-grid { grid-template-columns: 1fr; gap: 16px; } .cat-card-image { height: 180px; } .cat-card-content { padding: 16px 18px 18px; } }
 
 .no-results { text-align: center; padding: 80px 20px; display: none; }
 .no-results.active { display: block; }
@@ -309,7 +325,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
 </style>
 <script src="/translator.js?v=20260929-i18n" defer></script>
-<script src="/translations.js?v=20261003-dil" defer></script>
+<script src="/translations.js?v=20261013-villa" defer></script>
 <script src="/uye-ol.js?v=20261010-sifre2" defer></script>
 </head>
 
@@ -924,8 +940,8 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
           <i class="fa-solid fa-times" onclick="clearFilter()"></i>
         </span>
       </div>
-      <div class="filter-status-right">
-        <span data-i18n="cat.filter.total">Toplam</span> <strong id="totalListings">150+</strong> <span data-i18n="cat.filter.activelisting">aktif ilan</span>
+      <div class="filter-status-right" id="totalListingsBox" hidden>
+        <span data-i18n="cat.filter.total">Toplam</span> <strong id="totalListings" class="notranslate"></strong> <span data-i18n="cat.filter.activelisting">aktif ilan</span>
       </div>
     </div>
 
@@ -933,96 +949,92 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
 
       <a href="yalova-satilik-daire.html" class="cat-card" data-type="satilik" data-keywords="daire satılık konut ev apartman 1+1 2+1 3+1 4+1">
         <div class="cat-card-image"><img class="cat-card-photo" src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80" alt="Yalova Satılık Daire" loading="lazy" decoding="async" width="600" height="400">
-          <span class="cat-card-tag" data-i18n="tag.popular">EN POPÜLER</span>
           <span class="cat-card-type-badge" data-i18n="type.satilik">SATILIK</span>
         </div>
         <div class="cat-card-content">
           <h3 class="cat-card-title" data-i18n="card.satilik.daire.title">Yalova Satılık Daire</h3>
           <div class="cat-card-meta">
-            <i class="fa-solid fa-building"></i> <span data-i18n="card.satilik.daire.count">87 aktif ilan</span>
+            <i class="fa-solid fa-building" aria-hidden="true"></i> <span class="cat-card-count notranslate" data-cat-count></span>
           </div>
-          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right"></i></span>
+          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
         </div>
       </a>
 
-      <a href="yalova-kiralik-daire.html" class="cat-card" data-type="kiralik" data-keywords="daire kiralık eşyalı eşyasız 1+1 2+1 3+1">
-        <div class="cat-card-image"><img class="cat-card-photo" src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80" alt="Yalova Kiralık Daire" loading="lazy" decoding="async" width="600" height="400">
-          <span class="cat-card-tag" data-i18n="tag.popular2">POPÜLER</span>
-          <span class="cat-card-type-badge" data-i18n="type.kiralik">KİRALIK</span>
+      <a href="yalova-satilik-villa.html" class="cat-card" data-type="satilik" data-keywords="villa satılık havuzlu bahçeli deniz manzaralı lüks müstakil ev">
+        <div class="cat-card-image"><img class="cat-card-photo" src="/img/kategori/yalova-satilik-villa.webp?v=20261013" srcset="/img/kategori/yalova-satilik-villa-640.webp?v=20261013 640w, /img/kategori/yalova-satilik-villa.webp?v=20261013 950w" sizes="(min-width: 1200px) 300px, (min-width: 640px) 50vw, 100vw" alt="Yalova satılık villa örneği: havuzlu, bahçeli, taş ve ahşap cepheli modern villa" title="Yalova Satılık Villa İlanları" loading="lazy" decoding="async" width="950" height="625">
+          <span class="cat-card-type-badge" data-i18n="type.satilik">SATILIK</span>
         </div>
         <div class="cat-card-content">
-          <h3 class="cat-card-title" data-i18n="card.kiralik.daire.title">Yalova Kiralık Daire</h3>
+          <h3 class="cat-card-title" data-i18n="card.satilik.villa.title">Yalova Satılık Villa</h3>
           <div class="cat-card-meta">
-            <i class="fa-solid fa-key"></i> <span data-i18n="card.kiralik.daire.count">42 aktif ilan</span>
+            <i class="fa-solid fa-house-chimney" aria-hidden="true"></i> <span class="cat-card-count notranslate" data-cat-count></span>
           </div>
-          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right"></i></span>
+          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
         </div>
       </a>
 
       <a href="yalova-satilik-arsa.html" class="cat-card" data-type="arsa" data-keywords="arsa satılık imarlı yatırım akköy konut tarım çınarcık termal">
         <div class="cat-card-image"><img class="cat-card-photo" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80" alt="Yalova Satılık Arsa" loading="lazy" decoding="async" width="600" height="400">
-          <span class="cat-card-tag vip" data-i18n="tag.vip">💎 VIP</span>
           <span class="cat-card-type-badge" data-i18n="type.satilik">SATILIK</span>
         </div>
         <div class="cat-card-content">
           <h3 class="cat-card-title" data-i18n="card.satilik.arsa.title">Yalova Satılık Arsa</h3>
           <div class="cat-card-meta">
-            <i class="fa-solid fa-mountain"></i> <span data-i18n="card.satilik.arsa.count">23 aktif ilan</span> <span style="color:var(--orange);">• <span data-i18n="card.satilik.arsa.tag">Yatırım fırsatları</span></span>
+            <i class="fa-solid fa-mountain" aria-hidden="true"></i> <span class="cat-card-count notranslate" data-cat-count></span>
           </div>
-          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right"></i></span>
+          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+        </div>
+      </a>
+
+      <a href="yalova-kiralik-daire.html" class="cat-card" data-type="kiralik" data-keywords="daire kiralık eşyalı eşyasız 1+1 2+1 3+1">
+        <div class="cat-card-image"><img class="cat-card-photo" src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80" alt="Yalova Kiralık Daire" loading="lazy" decoding="async" width="600" height="400">
+          <span class="cat-card-type-badge" data-i18n="type.kiralik">KİRALIK</span>
+        </div>
+        <div class="cat-card-content">
+          <h3 class="cat-card-title" data-i18n="card.kiralik.daire.title">Yalova Kiralık Daire</h3>
+          <div class="cat-card-meta">
+            <i class="fa-solid fa-key" aria-hidden="true"></i> <span class="cat-card-count notranslate" data-cat-count></span>
+          </div>
+          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+        </div>
+      </a>
+
+      <a href="yalova-esyali-kiralik-daire.html" class="cat-card" data-type="kiralik" data-keywords="eşyalı kiralık daire mobilyalı hazır taşınabilir">
+        <div class="cat-card-image"><img class="cat-card-photo" src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80" alt="Yalova Eşyalı Kiralık Daire" loading="lazy" decoding="async" width="600" height="400">
+          <span class="cat-card-type-badge" data-i18n="type.kiralik">KİRALIK</span>
+        </div>
+        <div class="cat-card-content">
+          <h3 class="cat-card-title" data-i18n="card.esyali.kiralik.title">Yalova Eşyalı Kiralık Daire</h3>
+          <div class="cat-card-meta">
+            <i class="fa-solid fa-couch" aria-hidden="true"></i> <span class="cat-card-count notranslate" data-cat-count></span>
+          </div>
+          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+        </div>
+      </a>
+
+      <a href="yalova-merkez-kiralik-daire.html" class="cat-card" data-type="kiralik" data-keywords="merkez kiralık daire şehir merkezi hastane okul sahil">
+        <div class="cat-card-image"><img class="cat-card-photo" src="/img/kategori/yalova-merkez-kiralik-daire.webp?v=20261013" srcset="/img/kategori/yalova-merkez-kiralik-daire-640.webp?v=20261013 640w, /img/kategori/yalova-merkez-kiralik-daire.webp?v=20261013 1020w" sizes="(min-width: 1200px) 300px, (min-width: 640px) 50vw, 100vw" alt="Yalova şehir merkezi: sahil, iskele ve meydanın havadan görünümü" title="Yalova Merkez Kiralık Daire İlanları" loading="lazy" decoding="async" width="1020" height="572">
+          <span class="cat-card-type-badge" data-i18n="type.kiralik">KİRALIK</span>
+        </div>
+        <div class="cat-card-content">
+          <h3 class="cat-card-title" data-i18n="card.merkez.kiralik.title">Yalova Merkez Kiralık Daire</h3>
+          <div class="cat-card-meta">
+            <i class="fa-solid fa-city" aria-hidden="true"></i> <span class="cat-card-count notranslate" data-cat-count></span>
+          </div>
+          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
         </div>
       </a>
 
       <a href="yalova-kiralik-villa.html" class="cat-card" data-type="kiralik" data-keywords="villa kiralık lüks havuzlu jakuzili deniz manzaralı bahçeli">
         <div class="cat-card-image"><img class="cat-card-photo" src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80" alt="Yalova Kiralık Villa" loading="lazy" decoding="async" width="600" height="400">
-          <span class="cat-card-tag luks" data-i18n="tag.luxury">💎 LÜKS</span>
           <span class="cat-card-type-badge" data-i18n="type.kiralik">KİRALIK</span>
         </div>
         <div class="cat-card-content">
           <h3 class="cat-card-title" data-i18n="card.kiralik.villa.title">Yalova Kiralık Villa</h3>
           <div class="cat-card-meta">
-            <i class="fa-solid fa-house-chimney"></i> <span data-i18n="card.kiralik.villa.count">15 aktif ilan</span> <span style="color:var(--orange);">• <span data-i18n="card.kiralik.villa.tag">Havuzlu, manzaralı</span></span>
+            <i class="fa-solid fa-house-chimney" aria-hidden="true"></i> <span class="cat-card-count notranslate" data-cat-count></span>
           </div>
-          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right"></i></span>
-        </div>
-      </a>
-
-      <a href="yalova-satilik-ev.html" class="cat-card" data-type="satilik" data-keywords="ev satılık müstakil bahçeli villa">
-        <div class="cat-card-image"><img class="cat-card-photo" src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=600&q=80" alt="Yalova Satılık Ev" loading="lazy" decoding="async" width="600" height="400">
-          <span class="cat-card-type-badge" data-i18n="type.satilik">SATILIK</span>
-        </div>
-        <div class="cat-card-content">
-          <h3 class="cat-card-title" data-i18n="card.satilik.ev.title">Yalova Satılık Ev</h3>
-          <div class="cat-card-meta">
-            <i class="fa-solid fa-house"></i> <span data-i18n="card.satilik.ev.count">31 aktif ilan</span>
-          </div>
-          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right"></i></span>
-        </div>
-      </a>
-
-      <a href="yalova-esyali-kiralik-daire.html" class="cat-card" data-type="kiralik" data-keywords="eşyalı kiralık mobilyalı hazır taşınabilir">
-        <div class="cat-card-image"><img class="cat-card-photo" src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80" alt="Yalova Eşyalı Kiralık" loading="lazy" decoding="async" width="600" height="400">
-          <span class="cat-card-type-badge" data-i18n="type.kiralik">KİRALIK</span>
-        </div>
-        <div class="cat-card-content">
-          <h3 class="cat-card-title" data-i18n="card.esyali.kiralik.title">Yalova Eşyalı Kiralık</h3>
-          <div class="cat-card-meta">
-            <i class="fa-solid fa-couch"></i> <span data-i18n="card.esyali.kiralik.count">18 aktif ilan</span>
-          </div>
-          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right"></i></span>
-        </div>
-      </a>
-
-      <a href="yalova-merkez-kiralik-daire.html" class="cat-card" data-type="kiralik" data-keywords="merkez kiralık şehir merkezi hastane okul">
-        <div class="cat-card-image"><img class="cat-card-photo" src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80" alt="Merkez Kiralık Daire" loading="lazy" decoding="async" width="600" height="400">
-          <span class="cat-card-type-badge" data-i18n="type.kiralik">KİRALIK</span>
-        </div>
-        <div class="cat-card-content">
-          <h3 class="cat-card-title" data-i18n="card.merkez.kiralik.title">Merkez Kiralık Daire</h3>
-          <div class="cat-card-meta">
-            <i class="fa-solid fa-city"></i> <span data-i18n="card.merkez.kiralik.count">22 aktif ilan</span>
-          </div>
-          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right"></i></span>
+          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
         </div>
       </a>
 
@@ -1033,9 +1045,9 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
         <div class="cat-card-content">
           <h3 class="cat-card-title" data-i18n="card.kiralik.ev.title">Yalova Kiralık Ev</h3>
           <div class="cat-card-meta">
-            <i class="fa-solid fa-house"></i> <span data-i18n="card.kiralik.ev.count">14 aktif ilan</span>
+            <i class="fa-solid fa-house" aria-hidden="true"></i> <span class="cat-card-count notranslate" data-cat-count></span>
           </div>
-          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right"></i></span>
+          <span class="cat-card-cta"><span data-i18n="card.cta">İlanları Gör</span> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
         </div>
       </a>
 
@@ -1223,6 +1235,7 @@ body[data-lang="en"] .btn-call, body[data-lang="fr"] .btn-call, body[data-lang="
       <h4 data-i18n="footer.quick">Hızlı Erişim</h4>
       <ul>
         <li><a href="yalova-satilik-daire.html">Satılık Daire</a></li>
+        <li><a href="yalova-satilik-villa.html">Satılık Villa</a></li>
         <li><a href="yalova-kiralik-daire.html">Kiralık Daire</a></li>
         <li><a href="yalova-satilik-arsa.html">Satılık Arsa</a></li>
         <li><a href="yalova-kiralik-villa.html">Lüks Villa</a></li>
@@ -1292,7 +1305,8 @@ function getPopularSearches() {
     { text: window.t ? window.t('sug.esyali') : 'Eşyalı kiralık daire', icon: 'fa-couch', link: 'yalova-esyali-kiralik-daire.html' },
     { text: window.t ? window.t('sug.deniz') : 'Deniz manzaralı satılık', icon: 'fa-water', link: 'yalova-satilik-daire.html' },
     { text: window.t ? window.t('sug.mustakil') : 'Müstakil bahçeli ev', icon: 'fa-house', link: 'yalova-satilik-ev.html' },
-    { text: window.t ? window.t('sug.havuzlu') : 'Havuzlu lüks villa', icon: 'fa-house-chimney', link: 'yalova-kiralik-villa.html' }
+    { text: window.t ? window.t('sug.havuzlu') : 'Havuzlu lüks villa', icon: 'fa-house-chimney', link: 'yalova-kiralik-villa.html' },
+    { text: window.t ? window.t('sug.satilikvilla') : 'Satılık villa', icon: 'fa-house-chimney', link: 'yalova-satilik-villa.html' }
   ];
 }
 
@@ -1412,7 +1426,7 @@ function showSuggestions() {
       categoryMatches.push({
         text: title,
         link: card.getAttribute('href'),
-        meta: card.querySelector('.cat-card-meta span').textContent
+        meta: (card.querySelector('[data-cat-count]') || {}).textContent || ''
       });
     }
   });
@@ -1421,10 +1435,10 @@ function showSuggestions() {
   if (allMatches.length === 0) { suggestionsBox.classList.remove('active'); return; }
 
   suggestionsBox.innerHTML = allMatches.map(s => `
-    <a href="${s.link}" class="suggestion-item">
+    <a href="${escHtml(s.link)}" class="suggestion-item">
       <i class="fa-solid fa-search"></i>
       <div class="sug-text">${highlightMatch(s.text, currentSearch)}</div>
-      ${s.meta ? `<div class="sug-meta">${s.meta}</div>` : ''}
+      ${s.meta ? `<div class="sug-meta">${escHtml(s.meta)}</div>` : ''}
     </a>
   `).join('');
   suggestionsBox.classList.add('active');
@@ -1445,10 +1459,14 @@ function showAllSuggestions() {
   suggestionsBox.classList.add('active');
 }
 
+function escHtml(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
 function highlightMatch(text, query) {
-  if (!query) return text;
-  const regex = new RegExp(`(${query})`, 'gi');
-  return text.replace(regex, '<strong style="color: var(--orange);">$1</strong>');
+  const safe = escHtml(text);
+  if (!query) return safe;
+  const q = escHtml(query).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return safe.replace(new RegExp('(' + q + ')', 'gi'), '<strong style="color: var(--orange);">$1</strong>');
 }
 
 function quickSearch(term) {
@@ -1497,7 +1515,7 @@ loadFromURL();
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/subscribe-widget.js?v=20261012-menu"></script>
 <!-- Frontend'i Supabase database'ine bağlayan script -->
-<script src="/frontend-supabase.js?v=20261012-menu"></script>
+<script src="/frontend-supabase.js?v=20261013-villa"></script>
 
 <script src="/faq-yalova-emlak.js?v=20260930-navy"></script>
 <script>

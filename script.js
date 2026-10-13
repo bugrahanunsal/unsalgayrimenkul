@@ -20,9 +20,11 @@
 
   function loadScript(src, async = false) {
     return new Promise((resolve, reject) => {
-      // Zaten yüklü mü kontrol
-      if (document.querySelector('script[src="' + src + '"]') ||
-          document.querySelector('script[src*="' + src.replace(/^\//, '') + '"]')) {
+      // Zaten yüklü mü? Dosya adına göre (sayfa aynı dosyayı başka bir ?v= ile eklemiş olabilir;
+      // aynı dosya iki kez çalışırsa çeviri / SSS / üyelik kutusu iki kez kurulur)
+      const bare = (u) => String(u || '').split(/[?#]/)[0].replace(/^https?:\/\/[^/]+/i, '').replace(/^\/+/, '');
+      const want = bare(src);
+      if (Array.prototype.some.call(document.scripts, (sc) => sc.getAttribute('src') && bare(sc.getAttribute('src')) === want)) {
         resolve();
         return;
       }
@@ -40,7 +42,7 @@
 
   // Cache-buster: her deploy sonrası tarayıcının yeni JS'i çekmesi için
   // (kullanıcıların Ctrl+Shift+R yapmasına gerek kalmaz)
-  const SITE_VERSION = '20261012-menu';
+  const SITE_VERSION = '20261013-villa';
 
   async function loadAllScripts() {
     try {

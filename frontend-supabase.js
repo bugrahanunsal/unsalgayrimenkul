@@ -265,6 +265,7 @@
       if (filters.kategori) q = q.eq('kategori', filters.kategori);
       if (filters.kategoriIn) q = q.in('kategori', filters.kategoriIn);
       if (filters.ilce) q = q.eq('ilce', filters.ilce);
+      if (filters.esyali === true) q = q.eq('ozellikler->>esyali', 'true');
       if (filters.one_cikan === true) q = q.eq('one_cikan', true);
       q = q.order('created_at', { ascending: false });
       if (filters.limit) q = q.limit(filters.limit);
@@ -301,10 +302,16 @@
 
   // ==================== ANA SAYFA: KATEGORİ SAYAÇLARI ====================
 
+  /** translations.js sözlüğünden metin (yoksa Türkçe yedek) */
+  function tr(key, fallback) {
+    try { const v = typeof window.t === 'function' ? window.t(key) : null; return v && v !== key ? v : fallback; } catch (_) { return fallback; }
+  }
+
   function matchCategoryKey(href) {
     if (!href) return null;
     href = href.toLowerCase();
     if (href.includes('satilik-daire')) return 'satilik-daire';
+    if (href.includes('satilik-villa')) return 'satilik-villa';
     if (href.includes('kiralik-villa')) return 'kiralik-villa';
     if (href.includes('esyali-kiralik')) return 'esyali-kiralik';
     if (href.includes('merkez-kiralik')) return 'merkez-kiralik-daire';
@@ -326,8 +333,9 @@
     if (kat === 'daire' && tip === 'kiralik') keys.push('kiralik-daire');
     if (kat === 'arsa' && tip === 'satilik') keys.push('satilik-arsa');
     if (kat === 'villa' && tip === 'kiralik') keys.push('kiralik-villa');
-    if ((kat === 'villa' || kat === 'mustakil_ev') && tip === 'satilik') keys.push('satilik-ev');
-    if (esyali && tip === 'kiralik') keys.push('esyali-kiralik');
+    if (kat === 'villa' && tip === 'satilik') keys.push('satilik-villa');
+    if (kat === 'mustakil_ev' && tip === 'satilik') keys.push('satilik-ev');
+    if (esyali && tip === 'kiralik' && kat === 'daire') keys.push('esyali-kiralik');
     if (kat === 'daire' && tip === 'kiralik' && ilce === 'merkez') keys.push('merkez-kiralik-daire');
     if (kat === 'mustakil_ev' && tip === 'kiralik') keys.push('kiralik-ev');
     return keys;
@@ -362,13 +370,21 @@
         if (!key) return;
 
         const count = counts[key] || 0;
-        const metaSpans = card.querySelectorAll('.cat-card-meta span[data-i18n]');
-        metaSpans.forEach(span => {
-          const i18nKey = span.getAttribute('data-i18n');
-          if (i18nKey && i18nKey.includes('count')) {
-            span.textContent = count + ' aktif ilan';
-          }
-        });
+        const countEl = card.querySelector('[data-cat-count]');
+        if (countEl) {
+          // Gerçek sayı; 0 ise "Yeni ilanlar yakında". Çeviri sözlüğünden (translations.js), sayfa dilinde.
+          countEl.textContent = count > 0
+            ? tr('card.count.label', '{n} aktif ilan').replace('{n}', String(count))
+            : tr('card.count.none', 'Yeni ilanlar yakında');
+          const meta = countEl.closest('.cat-card-meta');
+          if (meta) meta.classList.add('is-ready');
+        } else {
+          // Eski önbellekteki sayfa (data-i18n sayaçları) için
+          card.querySelectorAll('.cat-card-meta span[data-i18n]').forEach(span => {
+            const i18nKey = span.getAttribute('data-i18n');
+            if (i18nKey && i18nKey.includes('count')) span.textContent = count + ' aktif ilan';
+          });
+        }
 
         if (firstImages[key]) {
           const imgDiv = card.querySelector('.cat-card-image');
@@ -377,7 +393,11 @@
       });
 
       const totalEl = document.getElementById('totalListings');
-      if (totalEl) totalEl.textContent = properties.length;
+      if (totalEl) {
+        totalEl.textContent = properties.length;
+        const box = document.getElementById('totalListingsBox');
+        if (box) box.hidden = properties.length === 0;
+      }
     } catch (err) {
       console.error('[Frontend] Kategori güncelleme hatası:', err);
     }
@@ -576,7 +596,7 @@
     if (pathname.includes('arsa') || pathname.includes('tarla')) filters.kategoriIn = ['arsa', 'tarla'];
     else if (pathname.includes('daire')) filters.kategori = 'daire';
     else if (pathname.includes('villa')) filters.kategori = 'villa';
-    else if (pathname.includes('mustakil') || pathname.includes('kiralik-ev') || pathname.includes('satilik-ev')) filters.kategoriIn = ['villa', 'mustakil_ev'];
+    else if (pathname.includes('mustakil') || pathname.includes('kiralik-ev') || pathname.includes('satilik-ev')) filters.kategori = 'mustakil_ev';
     else if (pathname.includes('isyeri') || pathname.includes('dukkan')) filters.kategori = 'isyeri';
     else if (pathname.includes('yazlik')) filters.kategori = 'yazlik';
     else if (pathname.includes('luks')) filters.one_cikan = true;
@@ -586,6 +606,7 @@
     else if (pathname.includes('altinova')) filters.ilce = 'Altınova';
     else if (pathname.includes('armutlu')) filters.ilce = 'Armutlu';
     else if (pathname.includes('merkez')) filters.ilce = 'Merkez';
+    if (pathname.includes('esyali')) filters.esyali = true;
 
     try {
       const { data: properties, error } = await fetchProperties(filters);

@@ -50,6 +50,7 @@ const SAYFALAR = [
   { key: 'faq', ad: 'Sıkça Sorulan Sorular', grup: 'Ana sayfalar', hero: '.sss-hero', odak: 'yalova emlak soruları', metin: false },
   { key: 'yalova-satilik-daire', ad: 'Satılık Daire', grup: 'İlan kategorileri', hero: '.page-hero', odak: 'yalova satılık daire' },
   { key: 'yalova-satilik-ev', ad: 'Satılık Ev', grup: 'İlan kategorileri', hero: '.page-hero', odak: 'yalova satılık ev' },
+  { key: 'yalova-satilik-villa', ad: 'Satılık Villa', grup: 'İlan kategorileri', hero: '.page-hero', odak: 'yalova satılık villa' },
   { key: 'yalova-satilik-arsa', ad: 'Satılık Arsa', grup: 'İlan kategorileri', hero: '.page-hero', odak: 'yalova satılık arsa' },
   { key: 'yalova-kiralik-daire', ad: 'Kiralık Daire', grup: 'İlan kategorileri', hero: '.page-hero', odak: 'yalova kiralık daire' },
   { key: 'yalova-kiralik-ev', ad: 'Kiralık Ev', grup: 'İlan kategorileri', hero: '.page-hero', odak: 'yalova kiralık ev' },
@@ -74,7 +75,7 @@ const REZERVE = new Set([
   'sitemap', 'robots', 'favicon', 'index', 'hesabim', 'account', 'favorilerim', 'sifre-belirle', 'sifre-sifirla',
   'verify', 'unsubscribe', 'login', 'giris', 'kayit', 'arama', 'search', 'sss', 'sikca-sorulan-sorular', 'hakkimda',
   'contact', 'kvkk', 'kvkk-aydinlatma-metni', 'kullanim-kosullari', 'privacy', 'privacy-policy', 'terms', 'gizlilik',
-  'yalova-satilik', 'yalova-kiralik', 'luks', 'foto-bekleniyor', 'ismail-unsal', 'ramazan-aydemir', 'ramazan-aydemir-avatar', 'apple-touch-icon'
+  'yalova-satilik', 'yalova-kiralik', 'luks', 'foto-bekleniyor', 'ismail-unsal', 'ramazan-aydemir', 'ramazan-aydemir-avatar', 'apple-touch-icon', 'img'
 ]);
 
 // ---------------------------------------------------------------------------

@@ -5,6 +5,7 @@
   ],
   "exclude": [
     "/admin/*",
+    "/img/*",
     "/README.md",
     "/YUKLEME_REHBERI.md",
     "/apple-touch-icon.png",

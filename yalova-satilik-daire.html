@@ -232,11 +232,11 @@
 
 </style>
 <script src="/translator.js?v=20260929-i18n" defer></script>
-<script src="/translations.js?v=20261003-dil" defer></script>
+<script src="/translations.js?v=20261013-villa" defer></script>
 <script src="/uye-ol.js?v=20261010-sifre2" defer></script>
 </head>
 <body>
-<script src="/unified-header.js?v=20261012-menu"></script>
+<script src="/unified-header.js?v=20261013-villa"></script>
 <div class="top-bar">
   <div class="top-bar-inner">
     <div class="top-info">
@@ -406,6 +406,7 @@
       <h4>Hızlı Erişim</h4>
       <ul>
         <li><a href="yalova-satilik-daire.html">Satılık Daire</a></li>
+        <li><a href="yalova-satilik-villa.html">Satılık Villa</a></li>
         <li><a href="yalova-kiralik-daire.html">Kiralık Daire</a></li>
         <li><a href="yalova-satilik-arsa.html">Satılık Arsa</a></li>
         <li><a href="yalova-kiralik-villa.html">Lüks Villa</a></li>
@@ -474,12 +475,13 @@ document.getElementById('langCurrent')?.addEventListener('click', () => {
     if (p.indexOf('arsa') > -1 || p.indexOf('tarla') > -1) f.kategoriIn = ['arsa','tarla'];
     else if (p.indexOf('daire') > -1) f.kategori = 'daire';
     else if (p.indexOf('villa') > -1) f.kategori = 'villa';
-    else if (p.indexOf('satilik-ev') > -1 || p.indexOf('kiralik-ev') > -1 || p.indexOf('mustakil') > -1) f.kategoriIn = ['villa','mustakil_ev'];
+    else if (p.indexOf('satilik-ev') > -1 || p.indexOf('kiralik-ev') > -1 || p.indexOf('mustakil') > -1) f.kategori = 'mustakil_ev';
     if (p.indexOf('cinarcik') > -1) f.ilce = 'Çınarcık';
     else if (p.indexOf('termal') > -1) f.ilce = 'Termal';
     else if (p.indexOf('altinova') > -1) f.ilce = 'Altınova';
     else if (p.indexOf('armutlu') > -1) f.ilce = 'Armutlu';
     else if (p.indexOf('merkez') > -1) f.ilce = 'Merkez';
+    if (p.indexOf('esyali') > -1) f.esyali = true;
     return f;
   }
 
@@ -564,6 +566,7 @@ document.getElementById('langCurrent')?.addEventListener('click', () => {
     if (f.kategori) q = q.eq('kategori', f.kategori);
     if (f.kategoriIn) q = q.in('kategori', f.kategoriIn);
     if (f.ilce) q = q.eq('ilce', f.ilce);
+    if (f.esyali) q = q.eq('ozellikler->>esyali', 'true');
     q = q.order('created_at', { ascending: false });
     q.then(function(res){
       console.log('[Inline] Sonuç:', res.data ? res.data.length + ' ilan' : 'null', res.error);
@@ -574,6 +577,7 @@ document.getElementById('langCurrent')?.addEventListener('click', () => {
         if (f.kategori) q2 = q2.eq('kategori', f.kategori);
         if (f.kategoriIn) q2 = q2.in('kategori', f.kategoriIn);
         if (f.ilce) q2 = q2.eq('ilce', f.ilce);
+        if (f.esyali) q2 = q2.eq('ozellikler->>esyali', 'true');
         q2 = q2.order('created_at', { ascending: false });
         q2.then(function(res2){ console.log('[Inline] Fallback:', res2.data ? res2.data.length + ' ilan' : 'null'); render(container, res2.data); });
         return;

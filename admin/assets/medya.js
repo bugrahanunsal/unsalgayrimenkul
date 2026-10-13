@@ -31,7 +31,7 @@
   const SQL_FILE = 'supabase-gorsel-deposu-2026-10-02.sql';
   const PAGE_NAMES = {
     index: 'Ana Sayfa', hakkimizda: 'Hakkımızda', iletisim: 'İletişim', 'yalova-satilik-daire': 'Satılık Daire',
-    'yalova-satilik-ev': 'Satılık Ev', 'yalova-satilik-arsa': 'Satılık Arsa', 'yalova-kiralik-daire': 'Kiralık Daire',
+    'yalova-satilik-villa': 'Satılık Villa', 'yalova-satilik-ev': 'Satılık Ev', 'yalova-satilik-arsa': 'Satılık Arsa', 'yalova-kiralik-daire': 'Kiralık Daire',
     'yalova-kiralik-ev': 'Kiralık Ev', 'yalova-kiralik-villa': 'Lüks / Kiralık Villa', 'yalova-esyali-kiralik-daire': 'Eşyalı Kiralık',
     'yalova-merkez-kiralik-daire': 'Merkez Kiralık', blog: 'Blog', faq: 'SSS', '724-destek': '7/24 Destek',
     'cok-dilli-hizmet': 'Çok Dilli Hizmet', 'yerel-uzmanlik': 'Yerel Uzmanlık', 'gizlilik-politikasi': 'Gizlilik Politikası', genel: 'Tüm sayfalar'

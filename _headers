@@ -20,6 +20,9 @@
   Cache-Control: public, max-age=604800, immutable
 /*.webp
   Cache-Control: public, max-age=604800, immutable
+# /img/: fotoğraflar (.webp önbelleği yukarıdaki /*.webp kuralından gelir)
+/img/*
+  X-Content-Type-Options: nosniff
 /*.svg
   Cache-Control: public, max-age=604800, immutable
 

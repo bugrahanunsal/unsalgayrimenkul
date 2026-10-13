@@ -51,7 +51,7 @@
   // Home page ile birebir aynı: SATILIK, KİRALIK, ARSA, LÜKS(YENİ), BLOG, HAKKIMIZDA, FAQ, İLETİŞİM
   // i18n key'leri Türkçe formatta (nav.satilik, nav.kiralik vb.)
   const menuItems = [
-    { href: lp('yalova-satilik-daire.html'), key: 'nav.satilik',    label: 'SATILIK',    match: ['satilik-daire','satilik-ev'] },
+    { href: lp('yalova-satilik-daire.html'), key: 'nav.satilik',    label: 'SATILIK',    match: ['satilik-daire','satilik-villa','satilik-ev'] },
     { href: lp('yalova-kiralik-daire.html'), key: 'nav.kiralik',    label: 'KİRALIK',    match: ['kiralik-daire','kiralik-ev','esyali-kiralik','merkez-kiralik'] },
     { href: lp('yalova-satilik-arsa.html'),  key: 'nav.arsa',       label: 'ARSA',       match: ['satilik-arsa'] },
     { href: lp('yalova-kiralik-villa.html'), key: 'nav.luks',       label: 'LÜKS',       match: ['kiralik-villa'], badge: 'YENİ', badgeKey: 'nav.luks.badge' },
