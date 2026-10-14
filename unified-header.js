@@ -63,7 +63,7 @@
   const currentKey = (cleanPath.replace(/^\/+/, '').replace(/\.html$/i, '').split('/')[0] || '');
 
   // Menu items — CHANGE HERE, applies EVERYWHERE
-  // Home page ile birebir aynı: SATILIK, KİRALIK, ARSA, LÜKS(YENİ), BLOG, HAKKIMIZDA, FAQ, İLETİŞİM
+  // Home page ile birebir aynı: SATILIK, KİRALIK, ARSA, LÜKS(YENİ), BLOG, HAKKIMIZDA, SSS (İngilizcede FAQ), İLETİŞİM
   // i18n key'leri Türkçe formatta (nav.satilik, nav.kiralik vb.)
   const menuItems = [
     { href: lp('yalova-satilik-daire.html'), key: 'nav.satilik',    label: 'SATILIK',    match: ['satilik-daire','satilik-isyeri','satilik-ev'],
@@ -76,7 +76,7 @@
       sub: [SUB.satVilla, SUB.kirVilla] },
     { href: lp('blog.html'),                 key: 'nav.blog',       label: 'BLOG',       match: ['/blog'] },
     { href: lp('hakkimizda.html'),           key: 'nav.hakkimizda', label: 'HAKKIMIZDA', match: ['hakkimizda'] },
-    { href: lp('faq.html'),                  key: 'nav.sss',        label: 'FAQ',        match: ['faq','sss'] },
+    { href: lp('faq.html'),                  key: 'nav.sss',        label: 'SSS',        match: ['faq','sss'] },
     { href: lp('iletisim.html'),             key: 'nav.iletisim',   label: 'İLETİŞİM',   match: ['iletisim'] }
   ];
 

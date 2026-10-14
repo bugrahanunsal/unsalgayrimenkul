@@ -192,18 +192,21 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('[SiteLoader] Footer logo TURYAP versiyonuyla güncellendi');
 });
 
-// ==================== NAV MENÜYE FAQ EKLE ====================
-// Her sayfada nav menüsüne FAQ linkini otomatik ekle (İLETİŞİM'den önce)
+// ==================== NAV MENÜYE SSS (FAQ) EKLE ====================
+// Her sayfada nav menüsüne SSS linkini otomatik ekle (İLETİŞİM'den önce).
+// Görünen ad: Türkçede "SSS" (sayfanın kendisi ve altbilgi "Sıkça Sorulan Sorular"), diğer dillerde
+// translations.js'teki "nav.sss" karşılığı (EN/FR/DE: FAQ). Adres her dilde /faq.
 document.addEventListener('DOMContentLoaded', () => {
   const nav = document.getElementById('mainNav');
   if (!nav) return;
+  const faqLabel = (typeof window.t === 'function' && window.t('nav.sss') !== 'nav.sss') ? window.t('nav.sss') : 'SSS';
 
   // Zaten var mı kontrol (eski /sss link'i varsa güncelle)
   const existing = nav.querySelector('a[href*="/sss"], a[href="sss.html"], a[href*="/faq"], a[href="faq.html"]');
   if (existing) {
     existing.setAttribute('href', '/faq');
     existing.setAttribute('data-i18n', 'nav.sss');
-    existing.textContent = 'FAQ';
+    existing.textContent = faqLabel;
     return;
   }
 
@@ -214,14 +217,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (t === 'SSS' || t === 'FAQ') {
       a.setAttribute('href', '/faq');
       a.setAttribute('data-i18n', 'nav.sss');
-      a.textContent = 'FAQ';
+      a.textContent = faqLabel;
       return;
     }
   }
 
   const faqLink = document.createElement('a');
   faqLink.href = '/faq';
-  faqLink.textContent = 'FAQ';
+  faqLink.textContent = faqLabel;
   faqLink.setAttribute('data-i18n', 'nav.sss');
 
   // Aktif sayfa kontrolü (özel adreste asıl sayfa anahtarı <html data-iu-page> ile gelir)

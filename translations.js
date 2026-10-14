@@ -18,7 +18,7 @@ const translations = {
     "nav.blog": "BLOG",
     "nav.hakkimizda": "HAKKIMIZDA",
     "nav.iletisim": "İLETİŞİM",
-    "nav.sss": "FAQ",
+    "nav.sss": "SSS",
     "nav.cta": "HEMEN ARA",
 
     // HERO
