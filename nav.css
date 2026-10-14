@@ -1,0 +1,206 @@
+/* ============================================================================
+   nav.css — Üst menü (14 Ekim 2026)
+   1) Üst bar: iki danışmanın telefonu
+   2) Masaüstü açılır listeler (SATILIK / KİRALIK / ARSA / LÜKS)
+   3) Mobil: sağdan açılan tam boy panel (html.iu-mnav)
+   Yükleyen: unified-header.js (header.css'ten sonra) ve index.html. style.css'i yüklemeyen
+   sayfalarda da (ör. Hesabım) menü aynı görünsün diye bu kurallar ayrı dosyada.
+   Eski header kurallarında çok sayıda !important var; buradaki seçiciler #mainNav ile onları geçer.
+   ============================================================================ */
+
+/* ---------- 1. Üst bar: iki danışmanın telefonu (dokununca arar) ---------- */
+.top-info .top-phones {gap: 0;}
+.top-phones > i {margin-right: 7px;}
+.top-phones a {display: inline-flex; align-items: baseline; gap: 5px; white-space: nowrap; text-decoration: none; color: #FFFFFF !important;}
+.top-phones a + a {margin-left: 12px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.28);}
+.top-phones .tp-name {font-size: inherit; font-weight: 500; color: rgba(255,255,255,0.72);}
+.top-phones a:hover, .top-phones a:hover .tp-name {color: #BFDBFE !important;}
+@media (max-width: 1199px) {.top-phones .tp-name {display: none;}}
+/* Dar ekranda çalışma saatleri gizlenir (iki numaraya yer açılır). Eski ".top-info span:nth-child(2)" kuralı
+   'Yalova, Türkiye' yazısını da (ikonun yanındaki iç span) gizliyordu: iç yazılar hep görünür. */
+@media (max-width: 1100px) {.top-info > span:nth-child(2) {display: none !important;}}
+.top-info > span > span[data-i18n] {display: inline !important;}
+@media (max-width: 540px) {
+  .top-bar .top-social {display: none !important;}
+  .top-phones a + a {margin-left: 9px; padding-left: 9px;}
+}
+
+/* ---------- 2. Masaüstü açılır listeler ----------
+   Üzerine gelince ya da ok düğmesiyle açılır (klavye: Tab ile oka gelip Enter); Esc ve dışarı tıklamak kapatır. */
+.nav .nav-item {position: relative; display: flex; align-items: center; gap: 0; flex-shrink: 0;}
+/* Sayfaların kendi ".nav-item" kuralları (ör. Hesabım'ın yan menüsü: width:100%, padding, arka plan) üst menüyü bozmasın */
+#mainNav .nav-item {width: auto; margin: 0; padding: 0; border-radius: 0; background: none; color: inherit; font-size: inherit; font-weight: inherit;
+  text-align: inherit; text-decoration: none; cursor: auto; transition: none;}
+#mainNav .nav-item:hover {background: none; color: inherit;}
+.nav .nav-sub-btn {display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 30px; margin: 0 -4px 0 1px; padding: 0;
+  border: 0; border-radius: 6px; background: transparent; color: #0A2A5E; cursor: pointer;}
+.nav .nav-sub-btn i {font-size: 10px; line-height: 1; transition: transform .2s ease;}
+.nav .nav-item.open > .nav-sub-btn i {transform: rotate(180deg);}
+.nav .nav-sub-btn:focus-visible {outline: 2px solid #2563EB; outline-offset: 1px;}
+.nav .nav-sub {position: absolute; top: calc(100% + 16px); left: -18px; z-index: 1000; min-width: 252px; padding: 6px;
+  background: #FFFFFF; border: 1px solid rgba(10,42,94,0.08); border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(10,42,94,0.06), 0 22px 44px -12px rgba(10,42,94,0.30);
+  opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .16s ease, transform .16s ease, visibility 0s linear .16s;}
+.nav .nav-sub::before {content: ''; position: absolute; left: 0; right: 0; top: -18px; height: 18px;} /* fareyle listeye inerken kapanmasın */
+.nav .nav-item.open > .nav-sub {opacity: 1; visibility: visible; transform: none; transition-delay: 0s;}
+@media (hover: hover) and (pointer: fine) {
+  .nav .nav-item:hover > .nav-sub {opacity: 1; visibility: visible; transform: none; transition-delay: 0s;}
+  .nav .nav-item:hover > .nav-sub-btn i {transform: rotate(180deg);}
+}
+.nav .nav-sub-list {display: block;}
+#mainNav .nav-sub a {display: grid !important; grid-template-columns: 32px minmax(0, 1fr); align-items: center; column-gap: 12px;
+  width: auto !important; padding: 6px 16px 6px 6px !important; margin: 0 !important; border: 0 !important; border-radius: 10px;
+  font-size: 14px !important; font-weight: 600 !important; letter-spacing: 0 !important; line-height: 1.3 !important; text-transform: none !important;
+  white-space: nowrap !important; color: #0A2A5E !important; background: transparent; animation: none !important;
+  transition: background-color .15s ease, color .15s ease;}
+#mainNav .nav-sub a + a {margin-top: 2px !important;}
+#mainNav .nav-sub a::after {display: none !important;}
+#mainNav .nav-sub-ico {display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px;
+  background: #F1F5FB; color: #0A2A5E; font-size: 13px; line-height: 1; transition: background-color .15s ease, color .15s ease;}
+#mainNav .nav-sub-ico i {line-height: 1;}
+#mainNav .nav-sub a:hover, #mainNav .nav-sub a:focus-visible {background: #F5F8FD; color: #1D4ED8 !important;}
+#mainNav .nav-sub a:hover .nav-sub-ico, #mainNav .nav-sub a:focus-visible .nav-sub-ico {background: #2563EB; color: #FFFFFF;}
+#mainNav .nav-sub a:focus-visible {outline: 2px solid #2563EB; outline-offset: -2px;}
+#mainNav .nav-sub a.current {background: #F5F8FD; color: #2563EB !important;}
+#mainNav .nav-sub a.current .nav-sub-ico {background: #2563EB; color: #FFFFFF;}
+
+/* Yedek (script.js yüklenmezse eski açılır mobil menü): ok düğmesi alt listeyi açar */
+.nav.open .nav-item {display: grid !important; grid-template-columns: minmax(0, 1fr) 44px; align-items: center;
+  border-bottom: 1px solid rgba(10,42,94,0.06);}
+#mainNav.open .nav-item > a.nav-top {border-bottom: none !important;}
+.nav.open .nav-sub-btn {position: relative; width: 44px; height: 28px; margin: 0; color: #0A2A5E;}
+.nav.open .nav-sub-btn::after {content: ''; position: absolute; left: 0; right: 0; top: -8px; bottom: -8px;} /* dokunma alanı 44 px */
+.nav.open .nav-sub-btn i {font-size: 13px;}
+.nav.open .nav-sub {position: static; grid-column: 1 / -1; min-width: 0; margin: 0 0 8px; padding: 2px 0 2px 12px;
+  background: transparent; border: 0; border-radius: 0; box-shadow: none; opacity: 1; visibility: visible; transform: none; transition: none;}
+.nav.open .nav-sub::before {display: none;}
+.nav.open .nav-item:not(.open) > .nav-sub {display: none !important;}
+
+/* ---------- 3. Mobil: sağdan açılan tam boy panel ----------
+   html.iu-mnav: hamburger görünürken script.js ekler (TR/AR ≤968 px, EN/FR/DE/RU ≤1050 px).
+   Açıkken html.iu-nav-open, kapanırken (kayma bitene kadar) html.iu-nav-closing. */
+.nav-drawer-head, .nav-contact, .nav-scrim {display: none;}
+
+/* Karartma: menünün dışına dokunmak menüyü kapatır */
+html.iu-mnav .nav-scrim {display: block; position: fixed; inset: 0; z-index: 100000; background: rgba(5,26,61,0.52);
+  opacity: 0; visibility: hidden; cursor: pointer; -webkit-tap-highlight-color: transparent;}
+html.iu-mnav.iu-nav-open .nav-scrim {opacity: 1; visibility: visible; transition: opacity .3s ease;}
+html.iu-mnav.iu-nav-open.iu-nav-closing .nav-scrim {opacity: 0;}
+/* Üst bar (z-index 99999) ve WhatsApp düğmesi panelin üstüne çıkmasın */
+html.iu-nav-open .header {z-index: 100002 !important;}
+
+html.iu-mnav #mainNav {
+  position: fixed !important; top: 0 !important; right: 0 !important; bottom: 0 !important; left: auto !important; z-index: 100001 !important;
+  display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important; align-items: stretch !important; justify-content: flex-start !important; gap: 0 !important;
+  width: min(86vw, 384px) !important; min-width: 0 !important; max-width: none !important; height: auto !important; max-height: none !important;
+  margin: 0 !important; padding: 0 !important; background: #FFFFFF !important; border: 0 !important; border-radius: 0 !important;
+  box-shadow: -18px 0 40px rgba(5,26,61,0.16) !important;
+  overflow-x: hidden !important; overflow-y: auto !important; overscroll-behavior: contain !important; -webkit-overflow-scrolling: touch;
+  opacity: 1 !important; visibility: hidden !important; pointer-events: none !important;
+  transform: translate3d(100%, 0, 0) !important; transition: none !important;
+}
+html.iu-mnav #mainNav.open {visibility: visible !important; pointer-events: auto !important; transform: none !important;
+  transition: transform .34s cubic-bezier(.22, .8, .24, 1) !important;}
+/* kapanırken "open" sınıfı kayma bitene kadar kalır (içerik yerinden oynamaz) */
+html.iu-mnav.iu-nav-closing #mainNav.open {transform: translate3d(100%, 0, 0) !important; transition: transform .28s cubic-bezier(.4, 0, .9, .6) !important;}
+html.iu-mnav #mainNav > * {flex-shrink: 0 !important; animation: none !important;}
+/* menü ile iletişim bloğu arasındaki boşluk: kısa menüde iletişimi en alta iter */
+html.iu-mnav #mainNav::after {content: ''; order: 1; flex: 1 0 28px;}
+/* kapalıyken Giriş / Üye Ol düğmeleri odak almasın (eski kurallar onları her zaman görünür yapıyor) */
+html.iu-mnav #mainNav:not(.open) .nav-auth-mobile,
+html.iu-mnav #mainNav:not(.open) .nav-auth-mobile * {visibility: hidden !important;}
+
+/* Başlık: logo + kapat (kaydırınca üstte kalır) */
+html.iu-mnav #mainNav .nav-drawer-head {display: flex; align-items: center; justify-content: space-between; gap: 12px; order: -2;
+  position: sticky; top: 0; z-index: 2; min-height: 68px; padding: 12px 12px 12px 20px; background: #FFFFFF; border-bottom: 1px solid #E8EDF5;}
+html.iu-mnav #mainNav .nav-drawer-head a.nav-drawer-logo {all: unset !important; display: block !important; line-height: 0 !important; cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent !important;}
+html.iu-mnav #mainNav .nav-drawer-head a.nav-drawer-logo:focus-visible {outline: 2px solid #2563EB !important; outline-offset: 4px !important; border-radius: 4px !important;}
+html.iu-mnav #mainNav .nav-drawer-logo-svg {display: block; width: auto; height: 34px;}
+html.iu-mnav #mainNav .nav-close {display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; margin: 0; padding: 0;
+  border: 0; border-radius: 12px; background: #F1F5FB; color: #0A2A5E; font-size: 19px; line-height: 1; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transition: background-color .15s ease;}
+html.iu-mnav #mainNav .nav-close:hover, html.iu-mnav #mainNav .nav-close:active {background: #E2E9F4;}
+html.iu-mnav #mainNav .nav-close:focus-visible {outline: 2px solid #2563EB; outline-offset: 2px;}
+
+/* Giriş / Üye Ol */
+html.iu-mnav #mainNav > .nav-auth-mobile {order: -1 !important; box-sizing: border-box !important; margin: 0 !important; padding: 16px 20px !important;
+  border-bottom: 1px solid #E8EDF5 !important;}
+
+/* Ana satırlar */
+html.iu-mnav #mainNav > a,
+html.iu-mnav #mainNav .nav-item > a.nav-top {all: unset !important; box-sizing: border-box !important; position: relative !important;
+  display: flex !important; align-items: center !important; gap: 8px !important; min-height: 52px !important; padding: 0 20px !important;
+  font-family: inherit !important; font-size: 15px !important; font-weight: 700 !important; line-height: 1.2 !important; letter-spacing: 0.04em !important;
+  text-transform: uppercase !important; color: #0A2A5E !important; cursor: pointer !important; -webkit-tap-highlight-color: transparent !important;}
+html.iu-mnav #mainNav > a {border-bottom: 1px solid #E8EDF5 !important;}
+html.iu-mnav #mainNav a::after {content: none !important; display: none !important;}
+html.iu-mnav #mainNav > a:active, html.iu-mnav #mainNav .nav-item > a.nav-top:active {background: #F5F8FD !important;}
+html.iu-mnav #mainNav > a.active, html.iu-mnav #mainNav .nav-item.is-active > a.nav-top {color: #2563EB !important; box-shadow: inset 3px 0 0 #2563EB !important;}
+html.iu-mnav #mainNav > a:focus-visible, html.iu-mnav #mainNav .nav-item > a.nav-top:focus-visible {outline: 2px solid #2563EB !important; outline-offset: -2px !important;}
+html.iu-mnav #mainNav .nav-top .nav-badge {margin-left: 2px;}
+
+/* Açılır satır: başlık + ok düğmesi, altında alt liste */
+html.iu-mnav #mainNav .nav-item {display: grid !important; grid-template-columns: minmax(0, 1fr) auto; align-items: center; position: relative;
+  padding-bottom: 0; border-bottom: 1px solid #E8EDF5; transition: padding-bottom .28s ease;}
+html.iu-mnav #mainNav .nav-item.open {padding-bottom: 12px;}
+html.iu-mnav #mainNav .nav-sub-btn {position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px;
+  margin: 0 10px 0 0; padding: 0; border: 0; border-radius: 12px; background: transparent; color: #0A2A5E; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transition: background-color .2s ease, color .2s ease;}
+html.iu-mnav #mainNav .nav-sub-btn::after {content: ''; position: absolute; top: -7px; bottom: -7px; left: -8px; right: -10px;} /* dokunma alanı satır boyu */
+html.iu-mnav #mainNav .nav-sub-btn i {font-size: 13px; transition: transform .28s ease;}
+html.iu-mnav #mainNav .nav-item:not(.open) > .nav-sub-btn i {transform: none;}
+html.iu-mnav #mainNav .nav-item.open > .nav-sub-btn {background: #EAF1FF; color: #2563EB;}
+html.iu-mnav #mainNav .nav-item.open > .nav-sub-btn i {transform: rotate(180deg);}
+html.iu-mnav #mainNav .nav-sub-btn:focus-visible {outline: 2px solid #2563EB; outline-offset: 0;}
+
+/* Alt liste: yumuşak açılır (yükseklik 0fr → 1fr) */
+html.iu-mnav #mainNav .nav-sub {position: static !important; grid-column: 1 / -1; display: grid !important; grid-template-rows: 0fr;
+  min-width: 0; margin: 0; padding: 0 12px; background: none; border: 0; border-radius: 0; box-shadow: none;
+  opacity: 1; visibility: hidden; transform: none; transition: grid-template-rows .28s ease, visibility 0s linear .28s;}
+html.iu-mnav #mainNav .nav-item.open > .nav-sub {grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows .28s ease;}
+html.iu-mnav #mainNav .nav-sub::before {display: none;}
+html.iu-mnav #mainNav .nav-sub-list {min-height: 0; overflow: hidden; background: #F3F6FB; border-radius: 14px;}
+html.iu-mnav #mainNav .nav-sub a {all: unset !important; box-sizing: border-box !important; display: grid !important; grid-template-columns: 36px minmax(0, 1fr) !important;
+  align-items: center !important; column-gap: 14px !important; min-height: 50px !important; margin: 0 4px !important; padding: 6px 12px 6px 4px !important;
+  border-radius: 10px !important; font-family: inherit !important; font-size: 15px !important; font-weight: 500 !important; line-height: 1.3 !important;
+  color: #0A2A5E !important; cursor: pointer !important; -webkit-tap-highlight-color: transparent !important;}
+html.iu-mnav #mainNav .nav-sub a:first-child {margin-top: 6px !important;}
+html.iu-mnav #mainNav .nav-sub a:last-child {margin-bottom: 6px !important;}
+html.iu-mnav #mainNav .nav-sub a + a {margin-top: 2px !important;}
+html.iu-mnav #mainNav .nav-sub-ico {width: 36px; height: 36px; border-radius: 10px; background: #FFFFFF; color: #0A2A5E; font-size: 14px;
+  box-shadow: inset 0 0 0 1px rgba(10,42,94,0.08);}
+html.iu-mnav #mainNav .nav-sub a:active {background: rgba(255,255,255,0.8) !important;}
+html.iu-mnav #mainNav .nav-sub a.current {background: #FFFFFF !important; color: #2563EB !important; font-weight: 600 !important; box-shadow: 0 1px 2px rgba(10,42,94,0.08) !important;}
+html.iu-mnav #mainNav .nav-sub a.current .nav-sub-ico {background: #2563EB; color: #FFFFFF; box-shadow: none;}
+html.iu-mnav #mainNav .nav-sub a:focus-visible {outline: 2px solid #2563EB !important; outline-offset: -2px !important;}
+
+/* İletişim: en altta lacivert blok */
+html.iu-mnav #mainNav .nav-contact {display: grid; order: 2; padding: 12px 20px calc(18px + env(safe-area-inset-bottom, 0px)); background: #0A2A5E; color: #FFFFFF;}
+html.iu-mnav #mainNav .nav-contact a {all: unset !important; box-sizing: border-box !important; cursor: pointer !important; -webkit-tap-highlight-color: transparent !important;}
+html.iu-mnav #mainNav .nav-contact a.nav-contact-call {display: grid !important; grid-template-columns: 40px minmax(0, 1fr) !important; align-items: center !important;
+  column-gap: 14px !important; min-height: 58px !important; padding: 8px 0 !important; color: #FFFFFF !important;}
+html.iu-mnav #mainNav .nav-contact a.nav-contact-call + a.nav-contact-call {border-top: 1px solid rgba(255,255,255,0.12) !important;}
+html.iu-mnav #mainNav .ncc-ico {display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.16); color: #FFFFFF; font-size: 15px; line-height: 1;}
+html.iu-mnav #mainNav .ncc-txt {display: grid; gap: 1px; min-width: 0;}
+html.iu-mnav #mainNav .ncc-txt small {font-size: 12px; font-weight: 500; line-height: 1.3; color: rgba(255,255,255,0.7);}
+html.iu-mnav #mainNav .ncc-num {font-size: 16.5px; font-weight: 600; line-height: 1.3; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; white-space: nowrap; color: #FFFFFF;}
+html.iu-mnav #mainNav .nav-contact a.nav-contact-call:active .ncc-ico {background: rgba(255,255,255,0.2);}
+html.iu-mnav #mainNav .nav-contact a.nav-contact-wa {display: flex !important; align-items: center !important; justify-content: center !important; gap: 10px !important;
+  min-height: 48px !important; margin-top: 8px !important; padding: 0 16px !important; border-radius: 12px !important; background: #FFFFFF !important;
+  color: #0A2A5E !important; font-family: inherit !important; font-size: 15px !important; font-weight: 600 !important; line-height: 1.2 !important;}
+html.iu-mnav #mainNav .nav-contact a.nav-contact-wa:active {background: #E8EEF8 !important;}
+html.iu-mnav #mainNav .nav-contact-wa i {font-size: 20px; line-height: 1;}
+html.iu-mnav #mainNav .nav-contact a:focus-visible {outline: 2px solid #93C5FD !important; outline-offset: 2px !important; border-radius: 12px !important;}
+html.iu-mnav #mainNav .nav-contact-hours {display: flex; align-items: center; justify-content: center; gap: 8px; margin: 12px 0 0; padding: 0;
+  font-size: 12.5px; line-height: 1.4; color: rgba(255,255,255,0.72);}
+html.iu-mnav #mainNav .nav-contact-hours i {font-size: 12px; color: rgba(255,255,255,0.55);}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav .nav-sub, .nav .nav-sub-btn i {transition: none !important;}
+  html.iu-mnav #mainNav, html.iu-mnav #mainNav.open, html.iu-mnav.iu-nav-closing #mainNav.open,
+  html.iu-mnav .nav-scrim, html.iu-mnav.iu-nav-open .nav-scrim,
+  html.iu-mnav #mainNav .nav-item, html.iu-mnav #mainNav .nav-sub, html.iu-mnav #mainNav .nav-item.open > .nav-sub,
+  html.iu-mnav #mainNav .nav-sub-btn i {transition: none !important;}
+}

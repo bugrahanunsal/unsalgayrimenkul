@@ -430,82 +430,253 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(updateCurrentLangDisplay, 1500);
 })();
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Mobile menu close on link click + body scroll lock
+// ==================== MOBİL MENÜ: SAĞDAN AÇILAN PANEL ====================
+// Hamburger görünürken (TR/AR ≤968 px, EN/FR/DE/RU ≤1050 px) <html> "iu-mnav" sınıfını alır ve menü sağdan kayan
+// tam boy panel olur (görünüm: nav.css). Panelin başlığı (logo + kapat), alttaki iletişim bloğu ve arkadaki karartma
+// burada bir kez kurulur: index.html'in sabit header'ı ile unified-header.js'in header'ı aynı menüyü kullanır.
+// Menü hamburger düğmesindeki onclick ile "open" sınıfı alır; bu kod sınıf değişimini izler.
+function iuMobileMenu() {
   const mainNav = document.getElementById('mainNav');
+  if (!mainNav || mainNav.__iuMenu) return;
+  mainNav.__iuMenu = true;
   const menuToggle = document.querySelector('.menu-toggle');
+  const root = document.documentElement;
+  const tx = (key, fallback) => {
+    const v = typeof window.t === 'function' ? window.t(key) : '';
+    return v && v !== key ? v : fallback;
+  };
+  const reduceMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const isDrawer = () => root.classList.contains('iu-mnav');
+  const isOpen = () => mainNav.classList.contains('open');
+  const isClosing = () => root.classList.contains('iu-nav-closing');
 
-  // Body scroll lock helper (iOS Safari uyumlu): .nav.open class değiştiğinde uygula
-  let scrollY = 0;
-  // Menü içindeki scroll'a izin ver, arkasına yasak
-  function preventBodyScroll(e) {
-    const nav = document.getElementById('mainNav');
-    if (!nav || !nav.classList.contains('open')) return;
-    // Nav içindeki dokunma ise: içinde scroll edebilsin
-    if (nav.contains(e.target)) {
-      // Bottom veya top'a dayanmışsa preventDefault
-      const el = nav;
-      if (el.scrollTop <= 0 && e.touches && e.touches[0]) {
-        // top'ta ve aşağı çekiyorsa engelle
-        if (e.type === 'touchmove') e.preventDefault();
-      }
-      return; // İçeride serbest
-    }
-    // Arka planda scroll'u iptal et
-    e.preventDefault();
+  // Kapanış: panel önce kayarak çıkar ("open" sınıfı bu sürede kalır, içerik yerinden oynamaz), sonra kapanır
+  let closingTimer = 0;
+  function finishClose() {
+    clearTimeout(closingTimer);
+    root.classList.remove('iu-nav-closing');
+    mainNav.classList.remove('open');
   }
-  function syncBodyLock(nav) {
-    if (!nav) return;
-    const isOpen = nav.classList.contains('open');
-    // Kilit yalnızca overflow:hidden ile (CSS). Sayfa yerinden oynatılmaz: aşağı kaydırılmışken
-    // body'yi position:fixed + top:-scrollY ile taşımak üst menüyü ve açılan menüyü ekranın dışına
-    // itiyor, ekran bembeyaz kalıyordu (özellikle iPhone Safari).
-    if (isOpen) {
+  function close() {
+    if (!isOpen()) return;
+    if (!isDrawer() || reduceMotion()) { finishClose(); return; }
+    if (isClosing()) return;
+    const hadFocus = mainNav.contains(document.activeElement);
+    root.classList.add('iu-nav-closing');
+    if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+    mainNav.setAttribute('inert', '');
+    if (hadFocus && menuToggle) menuToggle.focus({ preventScroll: true });   // odak hamburger düğmesine döner
+    closingTimer = setTimeout(finishClose, 300);
+  }
+
+  // Küçük DOM yardımcısı (metinler textContent ile girer)
+  function el(tag, attrs, kids) {
+    const n = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(k => n.setAttribute(k, attrs[k]));
+    (kids || []).forEach(k => n.appendChild(typeof k === 'string' ? document.createTextNode(k) : k));
+    return n;
+  }
+
+  // ---- Panelin başlığı: logo (ana sayfa) + kapat ----
+  const closeBtn = el('button', { type: 'button', class: 'nav-close', 'aria-label': tx('nav.close', 'Menüyü kapat') },
+    [el('i', { class: 'fa-solid fa-xmark', 'aria-hidden': 'true' })]);
+  closeBtn.addEventListener('click', (e) => { e.stopPropagation(); close(); });   // açık alt liste kayarken kapanmasın
+  const head = el('div', { class: 'nav-drawer-head' });
+  const logo = document.querySelector('.header .logo');
+  const home = el('a', { class: 'nav-drawer-logo notranslate', translate: 'no', href: (logo && logo.getAttribute('href')) || '/' });
+  const svg = logo && logo.querySelector('svg');
+  if (svg) {
+    const c = svg.cloneNode(true);
+    c.setAttribute('class', 'nav-drawer-logo-svg');
+    c.removeAttribute('style');
+    home.appendChild(c);
+  } else {
+    home.appendChild(document.createTextNode('TURYAP İsmail Ünsal'));
+  }
+  head.appendChild(home);
+  head.appendChild(closeBtn);
+  mainNav.insertBefore(head, mainNav.firstChild);
+  // Giriş / Üye Ol başlığın hemen altında: ekrandaki sıra ile klavye / ekran okuyucu sırası aynı olsun
+  const auth = Array.prototype.find.call(mainNav.children, c => c.classList.contains('nav-auth-mobile'));
+  if (auth) mainNav.insertBefore(auth, head.nextSibling);
+
+  // ---- En altta iletişim: iki danışmanın telefonu, WhatsApp, çalışma saatleri ----
+  const contact = el('div', { class: 'nav-contact' });
+  [['İsmail Ünsal', '+905075188482', '+90 507 518 84 82'], ['Ramazan Aydemir', '+905325013275', '+90 532 501 32 75']].forEach(p => {
+    contact.appendChild(el('a', { class: 'nav-contact-call', href: 'tel:' + p[1] }, [
+      el('span', { class: 'ncc-ico', 'aria-hidden': 'true' }, [el('i', { class: 'fa-solid fa-phone' })]),
+      el('span', { class: 'ncc-txt notranslate', translate: 'no' }, [el('small', null, [p[0]]), el('span', { class: 'ncc-num' }, [p[2]])])
+    ]));
+  });
+  contact.appendChild(el('a', { class: 'nav-contact-wa', href: 'https://wa.me/905075188482', target: '_blank', rel: 'noopener noreferrer' }, [
+    el('i', { class: 'fa-brands fa-whatsapp', 'aria-hidden': 'true' }),
+    el('span', { 'data-i18n': 'nav.contact.whatsapp' }, [tx('nav.contact.whatsapp', "WhatsApp'tan yazın")])
+  ]));
+  contact.appendChild(el('p', { class: 'nav-contact-hours' }, [
+    el('i', { class: 'fa-solid fa-clock', 'aria-hidden': 'true' }),
+    el('span', { 'data-i18n': 'topbar.hours' }, [tx('topbar.hours', 'Pzt-Cmt: 08:00 - 17:00')])
+  ]));
+  mainNav.appendChild(contact);
+
+  // ---- Arkadaki karartma: dokununca kapanır (iPhone'da dokunmanın tıklama sayılması için kendi dinleyicisi var) ----
+  const scrim = el('div', { class: 'nav-scrim', 'aria-hidden': 'true' });
+  scrim.addEventListener('click', close);
+  mainNav.parentNode.insertBefore(scrim, mainNav);
+
+  if (menuToggle) {
+    menuToggle.setAttribute('aria-controls', 'mainNav');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.setAttribute('aria-label', tx('nav.menu', menuToggle.getAttribute('aria-label') || 'Menü'));
+  }
+
+  // ---- Panel mi, masaüstü menü mü? Karar CSS'teki hamburger kurallarında (dil ve genişlik) ----
+  const headerCss = document.getElementById('iu-header-css');   // unified-header.js'in eklediği stil (yüklenmeden karar verme)
+  function syncMode() {
+    const cssReady = !headerCss || !!headerCss.sheet;
+    const on = cssReady && !!menuToggle && getComputedStyle(menuToggle).display !== 'none';
+    if (on !== isDrawer()) {
+      if (!on && isOpen()) finishClose();             // masaüstüne geçince açık menü hemen kapanır
+      root.classList.toggle('iu-mnav', on);
+    }
+    // ekran dışındaki kapalı panel klavyeye ve ekran okuyucuya görünmesin
+    mainNav.toggleAttribute('inert', on && (!isOpen() || isClosing()));
+  }
+
+  // ---- Sayfa kaydırma kilidi (iPhone Safari dahil) ----
+  // Kilit yalnızca overflow:hidden ile (CSS). Sayfa yerinden oynatılmaz: aşağı kaydırılmışken body'yi
+  // position:fixed + top:-scrollY ile taşımak üst menüyü ve açılan menüyü ekranın dışına itiyor, ekran bembeyaz kalıyordu.
+  let lockY = 0, touchY = 0;
+  const onTouchStart = (e) => { if (e.touches && e.touches[0]) touchY = e.touches[0].clientY; };
+  function preventBodyScroll(e) {
+    if (!isOpen()) return;
+    if (!mainNav.contains(e.target)) { e.preventDefault(); return; }   // arkadaki sayfa kaymasın
+    // Panelin içi serbestçe kayar; yalnızca en üstte aşağı, en altta yukarı çekince durdur (sayfaya geçmesin)
+    const y = e.touches && e.touches[0] ? e.touches[0].clientY : touchY;
+    const dy = y - touchY;
+    touchY = y;
+    const atTop = mainNav.scrollTop <= 0;
+    const atBottom = mainNav.scrollTop + mainNav.clientHeight >= mainNav.scrollHeight - 1;
+    if ((atTop && dy > 0) || (atBottom && dy < 0)) e.preventDefault();
+  }
+  function syncBodyLock(open) {
+    if (open) {
       if (document.body.classList.contains('iu-nav-open')) return;
-      scrollY = window.scrollY;
-      document.documentElement.classList.add('iu-nav-open');
+      lockY = window.scrollY;
+      root.classList.add('iu-nav-open');
       document.body.classList.add('iu-nav-open');
       document.body.style.top = '';
-      // iOS için touchmove'u engelle
+      document.addEventListener('touchstart', onTouchStart, { passive: true });
       document.addEventListener('touchmove', preventBodyScroll, { passive: false });
     } else if (document.body.classList.contains('iu-nav-open')) {
-      document.documentElement.classList.remove('iu-nav-open');
+      root.classList.remove('iu-nav-open');
       document.body.classList.remove('iu-nav-open');
       document.body.style.top = '';
       // eski önbellekteki CSS sayfayı başa atmışsa eski yere dön (yeni CSS'te kaydırma değişmez)
-      if (Math.abs(window.scrollY - scrollY) > 2) window.scrollTo(0, scrollY);
+      if (Math.abs(window.scrollY - lockY) > 2) window.scrollTo(0, lockY);
+      document.removeEventListener('touchstart', onTouchStart);
       document.removeEventListener('touchmove', preventBodyScroll);
     }
   }
 
-  if (mainNav) {
-    // Nav'da class değişimini izle (menu-toggle butonu toggle ediyor)
-    const observer = new MutationObserver(() => syncBodyLock(mainNav));
-    observer.observe(mainNav, { attributes: true, attributeFilter: ['class'] });
-
-    // Menüdeki bir linke ya da Giriş / Üye Ol düğmesine dokununca menüyü kapat
-    // (sonradan eklenen giriş düğmeleri de dahil — tek dinleyici)
-    mainNav.addEventListener('click', (e) => {
-      const t = e.target && e.target.closest ? e.target.closest('a, .iu-authbar-btn') : null;
-      if (t && mainNav.contains(t)) mainNav.classList.remove('open');
-    });
-    // Menü açıkken dışarıya dokunmak YALNIZCA menüyü kapatsın: alttaki ilan/link açılmasın
-    // (eskiden menüyü kapatmak için boş yere dokunan kişi alttaki kategoriye gidiyordu)
-    document.addEventListener('click', (e) => {
-      if (!mainNav.classList.contains('open')) return;
-      const t = e.target;
-      if (mainNav.contains(t) || (menuToggle && menuToggle.contains(t))) return;
-      if (t && t.closest && t.closest('#iu-auth-modal, [role="dialog"], [aria-modal="true"]')) return;
-      e.preventDefault();
-      e.stopPropagation();
-      mainNav.classList.remove('open');
-    }, true);
-    // Ekran büyüyünce menüyü kapat
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 968) mainNav.classList.remove('open');
+  // ---- Açılış / kapanış ----
+  let wasOpen = false;
+  function closeSubLists() {
+    mainNav.querySelectorAll('.nav-item.open').forEach(i => {
+      i.classList.remove('open');
+      const b = i.querySelector('.nav-sub-btn');
+      if (b) b.setAttribute('aria-expanded', 'false');
     });
   }
+  function onNavClass() {
+    const open = isOpen();
+    syncBodyLock(open);
+    if (open === wasOpen) return;
+    wasOpen = open;
+    if (menuToggle) menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    clearTimeout(closingTimer);
+    root.classList.remove('iu-nav-closing');
+    syncMode();
+    if (open) {
+      if (!isDrawer()) return;
+      mainNav.scrollTop = 0;
+      // odak panelin içine (kapat düğmesi); dokunarak açınca odak halkası görünmez
+      setTimeout(() => { if (isOpen() && !isClosing()) closeBtn.focus({ preventScroll: true }); }, 40);
+      return;
+    }
+    closeSubLists();                                 // bir sonraki açılış temiz başlasın
+    // odak hâlâ paneldeyse hamburger düğmesine dönsün
+    const a = document.activeElement;
+    if (menuToggle && isDrawer() && a && mainNav.contains(a)) menuToggle.focus({ preventScroll: true });
+  }
+  new MutationObserver(onNavClass).observe(mainNav, { attributes: true, attributeFilter: ['class'] });
 
+  // Menüdeki bir bağlantıya ya da Giriş / Üye Ol düğmesine dokununca menüyü kapat (sonradan eklenenler dahil)
+  mainNav.addEventListener('click', (e) => {
+    const t = e.target && e.target.closest ? e.target.closest('a, .iu-authbar-btn') : null;
+    if (t && mainNav.contains(t)) close();
+  });
+  // Alt liste açılınca panelin görünür alanına kaydır (en alttaki LÜKS gibi)
+  mainNav.addEventListener('click', (e) => {
+    const btn = e.target && e.target.closest ? e.target.closest('.nav-sub-btn') : null;
+    if (!btn || !isDrawer()) return;
+    const item = btn.closest('.nav-item');
+    setTimeout(() => {
+      if (!item || !item.classList.contains('open') || !isOpen()) return;
+      const box = mainNav.getBoundingClientRect(), r = item.getBoundingClientRect();
+      const over = r.bottom - box.bottom + 16;
+      if (over <= 0) return;
+      const room = r.top - box.top - head.offsetHeight;  // başlık satırı panelin üstünde sabit
+      const by = Math.min(over, Math.max(0, room));
+      if (by > 0) mainNav.scrollBy({ top: by, behavior: reduceMotion() ? 'auto' : 'smooth' });
+    }, reduceMotion() ? 0 : 300);
+  });
+  // Menü açıkken dışarıya dokunmak YALNIZCA menüyü kapatsın: alttaki ilan/link açılmasın
+  document.addEventListener('click', (e) => {
+    if (!isOpen()) return;
+    const t = e.target;
+    if (mainNav.contains(t) || (menuToggle && menuToggle.contains(t))) return;
+    if (t && t.closest && t.closest('#iu-auth-modal, [role="dialog"], [aria-modal="true"]')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    close();
+  }, true);
+
+  // Klavye: Esc kapatır (açık alt listede önce liste kapanır), Tab panelin içinde döner
+  const focusables = () => Array.prototype.filter.call(
+    mainNav.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'),
+    n => n.getClientRects().length > 0 && getComputedStyle(n).visibility !== 'hidden');
+  document.addEventListener('keydown', (e) => {
+    if (!isOpen() || !isDrawer() || isClosing()) return;
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      const item = mainNav.querySelector('.nav-item.open');
+      if (item && item.contains(document.activeElement)) return;
+      e.preventDefault();
+      e.stopPropagation();                           // açık alt liste panel kayarken kapanmasın
+      close();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const f = focusables();
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1], a = document.activeElement;
+    if (!mainNav.contains(a)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+    else if (e.shiftKey && a === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+  }, true);
+
+  // Ekran boyutu / dil değişince yeniden karar ver (masaüstüne geçerken açık menü kapanır)
+  let rz = 0;
+  const queueSync = () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(syncMode); };
+  window.addEventListener('resize', queueSync);
+  window.addEventListener('load', queueSync);
+  if (headerCss && !headerCss.sheet) headerCss.addEventListener('load', queueSync);
+  new MutationObserver(queueSync).observe(document.body, { attributes: true, attributeFilter: ['data-lang'] });
+  syncMode();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iuMobileMenu); else iuMobileMenu();
+document.addEventListener('iu:header-injected', iuMobileMenu);
+
+document.addEventListener('DOMContentLoaded', () => {
   // Generic filter tabs (eski pillar pages için)
   document.querySelectorAll('.filter-tab').forEach(tab => {
     tab.addEventListener('click', () => {

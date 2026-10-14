@@ -578,6 +578,11 @@
   font-weight: 700;
 }
 .article-body .price-table tr:nth-child(even) td { background: #F9FAFB; }
+/* Dar ekranda tablo sayfayı yana taşırmasın: tablo kendi içinde yana kayar */
+@media (max-width: 640px) {
+  .article-body .price-table { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; font-size: 13px; }
+  .article-body .price-table th, .article-body .price-table td { padding: 10px 12px; white-space: nowrap; }
+}
 
 .article-cta-inline {
   background: linear-gradient(135deg, #0A2A5E 0%, #1B4380 100%);

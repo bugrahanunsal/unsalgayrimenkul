@@ -48,16 +48,17 @@
   }
 
   // Açılır menülerdeki sayfalar (her biri sitede bir kategori sayfası)
+  // icon: tek renkli Font Awesome simgesi (listede ilan türünü gösterir)
   const SUB = {
-    satDaire:  { page: 'yalova-satilik-daire',        key: 'nav.sub.satilik.daire',  label: 'Satılık Daire' },
-    satVilla:  { page: 'yalova-satilik-villa',        key: 'nav.sub.satilik.villa',  label: 'Satılık Villa' },
-    satArsa:   { page: 'yalova-satilik-arsa',         key: 'nav.sub.satilik.arsa',   label: 'Satılık Arsa' },
-    satIsyeri: { page: 'yalova-satilik-isyeri',       key: 'nav.sub.satilik.isyeri', label: 'Satılık İşyeri' },
-    kirDaire:  { page: 'yalova-kiralik-daire',        key: 'nav.sub.kiralik.daire',  label: 'Kiralık Daire' },
-    kirEsyali: { page: 'yalova-esyali-kiralik-daire', key: 'nav.sub.kiralik.esyali', label: 'Eşyalı Kiralık Daire' },
-    kirMerkez: { page: 'yalova-merkez-kiralik-daire', key: 'nav.sub.kiralik.merkez', label: 'Merkez Kiralık Daire' },
-    kirVilla:  { page: 'yalova-kiralik-villa',        key: 'nav.sub.kiralik.villa',  label: 'Kiralık Villa' },
-    kirArsa:   { page: 'yalova-kiralik-arsa',         key: 'nav.sub.kiralik.arsa',   label: 'Kiralık Arsa' }
+    satDaire:  { page: 'yalova-satilik-daire',        key: 'nav.sub.satilik.daire',  label: 'Satılık Daire',        icon: 'fa-building' },
+    satVilla:  { page: 'yalova-satilik-villa',        key: 'nav.sub.satilik.villa',  label: 'Satılık Villa',        icon: 'fa-house-chimney' },
+    satArsa:   { page: 'yalova-satilik-arsa',         key: 'nav.sub.satilik.arsa',   label: 'Satılık Arsa',         icon: 'fa-map-location-dot' },
+    satIsyeri: { page: 'yalova-satilik-isyeri',       key: 'nav.sub.satilik.isyeri', label: 'Satılık İşyeri',       icon: 'fa-store' },
+    kirDaire:  { page: 'yalova-kiralik-daire',        key: 'nav.sub.kiralik.daire',  label: 'Kiralık Daire',        icon: 'fa-building' },
+    kirEsyali: { page: 'yalova-esyali-kiralik-daire', key: 'nav.sub.kiralik.esyali', label: 'Eşyalı Kiralık Daire', icon: 'fa-couch' },
+    kirMerkez: { page: 'yalova-merkez-kiralik-daire', key: 'nav.sub.kiralik.merkez', label: 'Merkez Kiralık Daire', icon: 'fa-city' },
+    kirVilla:  { page: 'yalova-kiralik-villa',        key: 'nav.sub.kiralik.villa',  label: 'Kiralık Villa',        icon: 'fa-house-chimney' },
+    kirArsa:   { page: 'yalova-kiralik-arsa',         key: 'nav.sub.kiralik.arsa',   label: 'Kiralık Arsa',         icon: 'fa-map-location-dot' }
   };
   const currentKey = (cleanPath.replace(/^\/+/, '').replace(/\.html$/i, '').split('/')[0] || '');
 
@@ -111,14 +112,17 @@
         const label = item.badge
           ? `<span data-i18n="${item.key}">${item.label}</span><span class="nav-badge" data-i18n="${item.badgeKey || 'nav.luks.badge'}">${item.badge}</span>`
           : `<span data-i18n="${item.key}">${item.label}</span>`;
+        // Yazı ayrı <span>'da: çeviri (data-i18n) yalnızca yazıyı değiştirir, simge kalır
         const links = item.sub.map(sb => {
           const cur = sb.page === currentKey;
-          return `<a href="${lp(sb.page)}" data-i18n="${sb.key}"${cur ? ' class="current" aria-current="page"' : ''}>${sb.label}</a>`;
+          return `<a href="${lp(sb.page)}"${cur ? ' class="current" aria-current="page"' : ''}>` +
+            `<span class="nav-sub-ico" aria-hidden="true"><i class="fa-solid ${sb.icon}"></i></span>` +
+            `<span class="nav-sub-txt" data-i18n="${sb.key}">${sb.label}</span></a>`;
         }).join('');
         return `<div class="nav-item has-sub${on ? ' is-active' : ''}">` +
           `<a href="${item.href}" class="nav-top${on ? ' active' : ''}">${label}</a>` +
           `<button type="button" class="nav-sub-btn" aria-expanded="false" aria-controls="${id}" aria-label="${item.label.charAt(0) + item.label.slice(1).toLocaleLowerCase('tr-TR')} menüsü"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>` +
-          `<div class="nav-sub" id="${id}">${links}</div></div>`;
+          `<div class="nav-sub" id="${id}"><div class="nav-sub-list">${links}</div></div></div>`;
       }
       if (item.badge) {
         // LÜKS gibi: <a><span data-i18n>LÜKS</span><span class="nav-badge" data-i18n>YENİ</span></a>
@@ -223,7 +227,7 @@
     </nav>
     <div class="header-cta">
       <a href="tel:+905075188482" class="btn-call"><i class="fa-solid fa-phone"></i> <span data-i18n="nav.cta">HEMEN ARA</span></a>
-      <button class="menu-toggle" aria-label="Menü" onclick="document.getElementById('mainNav').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
+      <button type="button" class="menu-toggle" aria-label="Menü" aria-controls="mainNav" aria-expanded="false" onclick="document.getElementById('mainNav').classList.toggle('open')"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
     </div>
   </div>
 </header>`;
@@ -234,6 +238,7 @@
   // INJECTION: Replace existing header OR prepend to body
   // ============================================================
   const HEADER_CSS_VERSION = '20261013-menu2';
+  const NAV_CSS_VERSION = '20261014-panel';
 
   // Add a stylesheet once. toBodyEnd=true → appended at end of <body> so it
   // wins the cascade over page-specific header CSS. skipIfMatch → skip when
@@ -259,6 +264,8 @@
     // kendi (farklı) header CSS'lerinden sonra gelsin ve home page ile
     // birebir aynı görünüm garanti olsun.
     ensureStylesheet('/header.css?v=' + HEADER_CSS_VERSION, 'iu-header-css', true);
+    // Açılır listeler, mobil menü paneli, üst bardaki telefonlar (header.css'ten sonra gelmeli)
+    ensureStylesheet('/nav.css?v=' + NAV_CSS_VERSION, 'iu-nav-css', true);
     ensureStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css', 'iu-fa-css', false, 'font-awesome');
     ensureStylesheet('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800;900&display=swap', 'iu-fonts-css', false, 'League+Spartan');
 
