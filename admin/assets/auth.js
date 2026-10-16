@@ -100,7 +100,8 @@ const Auth = {
         await Security.logSecurityEvent('logout', { user_id: user.id }, 'info');
       }
 
-      // Clear sensitive data
+      // Clear sensitive data (Analitik: Google'ın salt okunur anahtarı da iptal edilir / unutulur)
+      try { if (window.GaReport) window.GaReport.signOut(); } catch (_) { /* yine de aşağıda silinir */ }
       sessionStorage.clear();
       localStorage.removeItem('lastActivity');
       localStorage.removeItem('iu_admin_ui');

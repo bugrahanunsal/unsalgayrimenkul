@@ -611,6 +611,10 @@
 
   document.addEventListener('DOMContentLoaded', async () => {
     if (!(await App.init('analytics'))) return;
+    try {                                       // Google anahtarı panele giriş yapmış kişiye aittir; aynı sekmede başkası girerse sıfırdan başlar
+      const me = String((App.currentUser && App.currentUser.id) || '');
+      if (sessionStorage.getItem('iu-ga-user') !== me) { G.signOut(); sessionStorage.setItem('iu-ga-user', me); }
+    } catch (_) { /* sessionStorage yoksa anahtar sayfalar arasında zaten tutulmaz */ }
     bind();
     syncPeriod();
     try { await loadCfg(); }

@@ -78,14 +78,16 @@
     } catch (_) { /* no storage */ }
     return '';
   }
-  function expiresAt() { try { const t = JSON.parse(sessionStorage.getItem(KEY) || 'null'); return t && t.e ? t.e : 0; } catch (_) { return 0; } }
+  function expiresAt() { try { const t = JSON.parse(sessionStorage.getItem(KEY) || 'null'); return t && t.e ? t.e : memExp; } catch (_) { return memExp; } }
   function keep(accessToken, seconds) {
-    try { sessionStorage.setItem(KEY, JSON.stringify({ t: accessToken, e: Date.now() + Math.min(Math.max(Number(seconds) || 3600, 60), 3600) * 1000 })); } catch (_) { /* memory only */ }
-    mem = accessToken;
+    const e = Date.now() + Math.min(Math.max(Number(seconds) || 3600, 60), 3600) * 1000;
+    try { sessionStorage.setItem(KEY, JSON.stringify({ t: accessToken, e })); } catch (_) { /* memory only */ }
+    mem = accessToken; memExp = e;
   }
-  let mem = '';
-  function clear() { try { sessionStorage.removeItem(KEY); } catch (_) { /* fine */ } mem = ''; }
-  const current = () => token() || mem;
+  let mem = '', memExp = 0;
+  function clear() { try { sessionStorage.removeItem(KEY); } catch (_) { /* fine */ } mem = ''; memExp = 0; }
+  /** the token, while it has more than a minute left (also when this browser keeps nothing in sessionStorage) */
+  const current = () => token() || (mem && memExp - 60000 > Date.now() ? mem : '');
 
   // ------------------------------------------------------------------ Google Identity Services
   let gisPromise = null;
