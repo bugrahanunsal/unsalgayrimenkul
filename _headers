@@ -36,3 +36,11 @@
   Referrer-Policy: same-origin
   X-Robots-Tag: noindex, nofollow
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+# Admin → Analitik: Google girişi (Google Identity Services, salt okunur Analytics izni) ve Google Analytics API'leri
+# YALNIZCA bu sayfada. Satır içi betik yok → sıkı içerik güvenliği (CSP). Google'ın giriş penceresi için
+# same-origin-allow-popups (pencere açanla konuşabilsin).
+/admin/analytics*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2 https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self'; img-src 'self' data: blob: https:; connect-src 'self' https://gosmkthmamloafgtvhpj.supabase.co wss://gosmkthmamloafgtvhpj.supabase.co https://accounts.google.com/gsi/ https://oauth2.googleapis.com https://analyticsdata.googleapis.com https://analyticsadmin.googleapis.com https://api.ipify.org; frame-src 'self' https://accounts.google.com/gsi/; worker-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'
+  Cross-Origin-Opener-Policy: same-origin-allow-popups

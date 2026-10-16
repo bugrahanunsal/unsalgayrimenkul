@@ -53,6 +53,8 @@
       const t2 = await window.IUCaptcha.token(form);
       if (t2) res = await post(Object.assign({}, payload, { captcha: t2 }));
     }
+    // /analytics.js: Google Analytics'e yalnızca "talep geldi" bilgisi gider (formun türü; yazılanlar asla)
+    if (res.ok) { try { document.dispatchEvent(new CustomEvent('iu:lead', { detail: { form: form } })); } catch (_) { /* eski tarayıcı */ } }
     return res;
   }
 

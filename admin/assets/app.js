@@ -76,6 +76,7 @@ const App = {
       audit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>',
       admins: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
       settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+      analytics: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M8 17v-4M13 17V7M18 17v-7"/></svg>',
       media: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="14" height="14" rx="2"/><path d="M3 16V5a2 2 0 0 1 2-2h11"/><circle cx="11.5" cy="11.5" r="1.5"/><polyline points="21 17 17.5 13.5 11 20"/></svg>',
       logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'
     };
@@ -96,6 +97,10 @@ const App = {
             <a href="/admin/index.html" class="nav-item ${activePage === 'dashboard' ? 'active' : ''}">
               <span class="nav-icon">${icons.dashboard}</span>
               <span>Dashboard</span>
+            </a>
+            <a href="/admin/analytics.html" class="nav-item ${activePage === 'analytics' ? 'active' : ''}">
+              <span class="nav-icon">${icons.analytics}</span>
+              <span>Analitik</span>
             </a>
           </div>
 
@@ -189,13 +194,21 @@ const App = {
               <span class="nav-icon">${icons.settings}</span>
               <span>Ayarlar</span>
             </a>
-            <a href="#" onclick="Auth.logout(); return false;" class="nav-item nav-logout">
+            <a href="#" data-logout class="nav-item nav-logout">
               <span class="nav-icon">${icons.logout}</span>
               <span>Çıkış Yap</span>
             </a>
           </div>
         </nav>
       `;
+    }
+
+    // Çıkış: satır içi onclick yerine dinleyici (CSP'si sıkı sayfalarda da çalışır)
+    if (sidebar && !sidebar.dataset.logoutBound) {
+      sidebar.dataset.logoutBound = '1';
+      sidebar.addEventListener('click', (e) => {
+        if (e.target.closest('[data-logout]')) { e.preventDefault(); Auth.logout(); }
+      });
     }
 
     // Topbar user menu

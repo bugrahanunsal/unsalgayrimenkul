@@ -42,6 +42,8 @@
     "/team-public.js",
     "/translations.js",
     "/translator.js",
-    "/unified-header.js"
+    "/unified-header.js",
+    "/analytics.js",
+    "/analytics.css"
   ]
 }

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="same-origin">
+  <title>Analitik - Admin Panel</title>
+  <link rel="icon" type="image/svg+xml" href="/admin/assets/admin-icon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/admin-icon-32.png?v=2">
+  <link rel="apple-touch-icon" href="/admin/assets/admin-icon-180.png?v=2">
+  <meta name="theme-color" content="#0A2A5E">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20261016-ga">
+  <link rel="stylesheet" href="/admin/assets/analytics-admin.css?v=20261016-ga">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar">
+        <h1 class="page-title">Analitik</h1>
+        <div class="topbar-actions">
+          <div class="user-menu" id="userMenu"></div>
+        </div>
+      </header>
+      <div class="page-content">
+        <div class="alert alert-error an-msg" id="anErr" role="alert" hidden></div>
+
+        <section class="an-card an-hero" id="anConnect" aria-labelledby="anConnectT" hidden>
+          <div>
+            <h2 id="anConnectT">Sitenizi kimler ziyaret ediyor?</h2>
+            <p>Ziyaretçi sayısı, sizi nasıl buldukları (Google, sosyal medya, bağlantılar), hangi ülke, il ve şehirden geldikleri, yaş ve cinsiyetleri, telefon mu bilgisayar mı kullandıkları ve en çok baktıkları ilanlar. Rakamlar doğrudan Google Analytics'ten gelir.</p>
+            <ol class="an-steps" id="anSteps">
+              <li data-step="client"><span class="an-dot" aria-hidden="true"></span><div><b>Google giriş istemcisini ekleyin</b><small>Bir kez, aşağıdaki Bağlantı ayarları bölümünde.</small></div></li>
+              <li data-step="signin"><span class="an-dot" aria-hidden="true"></span><div><b>Google ile giriş yapın</b><small>Google Analytics'in bağlı olduğu Google hesabıyla.</small></div></li>
+              <li data-step="property"><span class="an-dot" aria-hidden="true"></span><div><b>Analytics mülkünü seçin</b><small>Raporlar bu mülkten okunur.</small></div></li>
+              <li data-step="tracking"><span class="an-dot" aria-hidden="true"></span><div><b>Site takibini açın</b><small>Site, çerez iznini kabul eden ziyaretçileri bu mülke saymaya başlar.</small></div></li>
+            </ol>
+          </div>
+          <div class="an-act">
+            <button type="button" class="btn btn-primary btn-lg" id="anSignIn">Google ile giriş yap</button>
+            <button type="button" class="an-linkbtn" id="anOtherAcct">Başka bir Google hesabı kullan</button>
+            <p>Google'ın kendi penceresi açılır. Bu site Google şifrenizi asla görmez. Erişim yalnızca okuma içindir ve bu sekmeyi kapatana ya da çıkış yapana kadar sürer.</p>
+            <p class="an-muted" id="anConnectNote" hidden></p>
+          </div>
+        </section>
+
+        <section id="anReports" aria-labelledby="anReportsT" hidden>
+          <h2 class="an-sr" id="anReportsT">Site analitiği</h2>
+          <div class="an-prop">
+            <span>Google Analytics: <b id="anPropName"></b></span>
+            <span class="an-live" id="anLive" hidden><span class="an-pulse" aria-hidden="true"></span><span id="anLiveT"></span></span>
+            <button type="button" class="btn btn-outline btn-sm" id="anRefresh">Yenile</button>
+          </div>
+          <div class="an-bar">
+            <div class="an-pills" id="anPeriods" role="group" aria-label="Dönem">
+              <button type="button" data-p="today">Bugün</button>
+              <button type="button" data-p="7">7 gün</button>
+              <button type="button" data-p="28">28 gün</button>
+              <button type="button" data-p="90">90 gün</button>
+              <button type="button" data-p="365">12 ay</button>
+              <button type="button" data-p="custom">Tarih seç</button>
+            </div>
+            <div class="an-custom" id="anCustom" hidden>
+              <label for="anFrom">Başlangıç<input type="date" class="form-input" id="anFrom"></label>
+              <label for="anTo">Bitiş<input type="date" class="form-input" id="anTo"></label>
+              <button type="button" class="btn btn-primary btn-sm" id="anApply">Göster</button>
+            </div>
+            <span class="an-range" id="anRange" aria-live="polite"></span>
+          </div>
+          <div class="an-kpis" id="anKpis" aria-label="Bu dönemin toplamları"></div>
+          <section class="an-card an-wide" aria-labelledby="anTrendT">
+            <div class="an-head"><h3 id="anTrendT">Günlük ziyaretçi</h3><p>Önceki dönemle karşılaştırmalı. Her günü okumak için grafiğin üzerine gelin ya da grafiğe Tab ile geçip ok tuşlarını kullanın. Yalnızca çerez iznini kabul eden ziyaretçiler sayılır (KVKK).</p></div>
+            <div id="anTrend"><p class="an-skel">Yükleniyor…</p></div>
+          </section>
+          <div class="an-grid">
+            <section class="an-card" aria-labelledby="anChT">
+              <div class="an-head"><h3 id="anChT">Trafik kaynağı</h3><p>Ziyaretlerin nasıl başladığı (ziyaret sayısına göre). Talepler: ilan ve iletişim formlarından gelen başvurular.</p></div>
+              <div id="anChannels"><p class="an-skel">Yükleniyor…</p></div>
+              <details class="an-explain"><summary>Bunlar ne demek?</summary><dl>
+                <dt>Organik arama</dt><dd>Google veya Bing sonuçlarından (reklam değil).</dd>
+                <dt>Doğrudan</dt><dd>Adresi yazarak, yer imiyle ya da nereden geldiğini gizleyen bir uygulamadan.</dd>
+                <dt>Yönlendiren site</dt><dd>Başka bir sitedeki bağlantıdan.</dd>
+                <dt>Sosyal medya</dt><dd>Instagram, Facebook ve benzerlerindeki bir paylaşım ya da profil bağlantısından.</dd>
+                <dt>Haritalar</dt><dd>Google Haritalar ve Google İşletme Profilinden.</dd>
+                <dt>Ücretli arama / sosyal</dt><dd>Para ödenen reklamlardan.</dd>
+                <dt>E-posta</dt><dd>Bir e-postadaki bağlantıdan (ör. bülten).</dd>
+                <dt>Belirsiz</dt><dd>Google kaynağı belirleyemedi.</dd>
+              </dl></details>
+            </section>
+            <section class="an-card" aria-labelledby="anSrcT">
+              <div class="an-head"><h3 id="anSrcT">Kaynaklar</h3><p>Ziyaretin geldiği site veya uygulama ve nasıl geldiği.</p></div>
+              <div id="anSources"><p class="an-skel">Yükleniyor…</p></div>
+            </section>
+            <section class="an-card" aria-labelledby="anCtyT">
+              <div class="an-head"><h3 id="anCtyT">Ülke</h3><p>Ziyaretçilerin bulunduğu ülke. Yabancı alıcılar buradan görünür.</p></div>
+              <div id="anCountries"><p class="an-skel">Yükleniyor…</p></div>
+            </section>
+            <section class="an-card" aria-labelledby="anRegT">
+              <div class="an-head"><h3 id="anRegT">İl / bölge</h3><p>Ziyaretçilerin bulunduğu il veya eyalet.</p></div>
+              <div id="anRegions"><p class="an-skel">Yükleniyor…</p></div>
+            </section>
+            <section class="an-card" aria-labelledby="anCityT">
+              <div class="an-head"><h3 id="anCityT">Şehir</h3><p>En çok ziyaretçi gelen 10 şehir.</p></div>
+              <div id="anCities"><p class="an-skel">Yükleniyor…</p></div>
+            </section>
+            <section class="an-card" aria-labelledby="anDevT">
+              <div class="an-head"><h3 id="anDevT">Cihazlar</h3><p>Telefon, bilgisayar veya tablet.</p></div>
+              <div id="anDevices"><p class="an-skel">Yükleniyor…</p></div>
+            </section>
+            <section class="an-card" aria-labelledby="anGenT">
+              <div class="an-head"><h3 id="anGenT">Cinsiyet</h3><p>Google'a giriş yapmış ziyaretçiler için Google'ın tahmini.</p></div>
+              <div id="anGender"><p class="an-skel">Yükleniyor…</p></div>
+            </section>
+            <section class="an-card" aria-labelledby="anAgeT">
+              <div class="an-head"><h3 id="anAgeT">Yaş</h3><p>Google'a giriş yapmış ziyaretçiler için Google'ın tahmini.</p></div>
+              <div id="anAge"><p class="an-skel">Yükleniyor…</p></div>
+            </section>
+          </div>
+          <section class="an-card an-wide an-mt" aria-labelledby="anPgT">
+            <div class="an-head"><h3 id="anPgT">En çok bakılan sayfalar</h3><p>İlanlar dahil, en çok okunan sayfalar.</p></div>
+            <div id="anPages"><p class="an-skel">Yükleniyor…</p></div>
+          </section>
+        </section>
+
+        <details class="an-set" id="anSettings">
+          <summary><i class="ic ic-settings" aria-hidden="true"></i><span>Bağlantı ayarları</span><i class="ic ic-chevron-right an-chev" aria-hidden="true"></i></summary>
+          <div class="an-set-body">
+            <section class="an-block" aria-labelledby="anClientT">
+              <h3 id="anClientT">1. Google giriş istemcisi <span class="an-state" id="anClientState">Eklenmedi</span></h3>
+              <p>Google Cloud'da bir kez oluşturulur (Google Auth Platform → Clients → Create client → Web application). Herkese açık bir kimliktir, şifre değildir. Şu adresleri <b>Authorized JavaScript origins</b> olarak ekleyin:</p>
+              <ul class="an-origins" id="anOrigins"></ul>
+              <div class="an-row">
+                <label class="an-sr" for="anClientId">İstemci kimliği (Client ID)</label>
+                <input class="form-input" id="anClientId" maxlength="200" autocomplete="off" spellcheck="false" placeholder="123456789012-abc….apps.googleusercontent.com">
+                <button type="button" class="btn btn-primary btn-sm" id="anClientSave">İstemci kimliğini kaydet</button>
+              </div>
+            </section>
+            <section class="an-block" aria-labelledby="anPropT">
+              <h3 id="anPropT">2. Analytics mülkü <span class="an-state" id="anPropState">Seçilmedi</span></h3>
+              <p>Raporların okunduğu Google Analytics mülkü (property). Listeden seçmek için Google ile giriş yapın ya da numarasını yazın (Google Analytics → Yönetici → Mülk ayrıntıları → Mülk kimliği).</p>
+              <div class="an-row">
+                <button type="button" class="btn btn-outline btn-sm" id="anPickProp">Google hesabımdan seç</button>
+                <label class="an-sr" for="anPropId">Mülk kimliği (Property ID)</label>
+                <input class="form-input" id="anPropId" inputmode="numeric" maxlength="20" autocomplete="off" placeholder="Mülk kimliği, örneğin 412345678">
+                <button type="button" class="btn btn-outline btn-sm" id="anPropSave">Mülk kimliğini kaydet</button>
+              </div>
+            </section>
+            <section class="an-block" aria-labelledby="anTagT">
+              <h3 id="anTagT">3. Site takibi <span class="an-state" id="anTagState">Kapalı</span></h3>
+              <p>Mülkünüzün web veri akışının ölçüm kimliği (G-…). Takip açıkken sitenin sayfaları (panel ve hesap sayfaları hariç) ziyaretçiye çerez izni sorar; yalnızca <b>kabul eden</b> ziyaretçiler Google Analytics'te sayılır (KVKK). Yeni rakamlar Google'da bir-iki gün içinde görünür.</p>
+              <div class="an-row">
+                <label class="an-sr" for="anMid">Ölçüm kimliği</label>
+                <input class="form-input" id="anMid" maxlength="22" autocomplete="off" spellcheck="false" placeholder="G-XXXXXXXXXX">
+                <button type="button" class="btn btn-outline btn-sm" id="anMidFind">Benim için bul</button>
+              </div>
+              <div class="an-row an-gap">
+                <label class="an-switch"><input type="checkbox" id="anTrackOn"><span>Site ziyaretlerini Google Analytics'te say</span></label>
+                <button type="button" class="btn btn-primary btn-sm" id="anTagSave">Takibi kaydet</button>
+              </div>
+            </section>
+            <section class="an-block" aria-labelledby="anMeT">
+              <h3 id="anMeT">4. Kendi ziyaretleriniz</h3>
+              <p>Siteye kendiniz baktığınızda bu ziyaretler de sayılır. Kullandığınız her tarayıcıda (telefon ve bilgisayar) bunu açın.</p>
+              <label class="an-switch"><input type="checkbox" id="anNotMe"><span>Bu tarayıcıdaki ziyaretlerimi sayma</span></label>
+            </section>
+            <div class="an-row">
+              <button type="button" class="btn btn-outline btn-sm" id="anSignOut" hidden>Google oturumunu kapat</button>
+              <span class="an-muted" id="anSignedIn"></span>
+            </div>
+          </div>
+        </details>
+
+        <dialog class="an-dialog" id="anPropDialog" aria-labelledby="anPropDialogT">
+          <div class="an-dialog-in">
+            <h2 id="anPropDialogT">Analytics mülkünüzü seçin</h2>
+            <div class="an-props" id="anPropList"></div>
+            <div class="an-dialog-foot"><button type="button" class="btn btn-outline" id="anPropClose">Kapat</button></div>
+          </div>
+        </dialog>
+      </div>
+    </main>
+  </div>
+
+  <script src="/admin/assets/supabase-config.js?v=20260929-of"></script>
+  <script src="/admin/assets/security.js?v=20261002-spam"></script>
+  <script src="/admin/assets/auth.js?v=20261010-duzenle"></script>
+  <script src="/admin/assets/app.js?v=20261016-ga"></script>
+  <script src="/admin/assets/lp-charts.js?v=20261016-ga"></script>
+  <script src="/admin/assets/ga-report.js?v=20261016-ga"></script>
+  <script src="/admin/assets/analytics-admin.js?v=20261016-ga"></script>
+</body>
+</html>

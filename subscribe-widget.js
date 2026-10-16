@@ -1541,6 +1541,8 @@
       const t2 = await c.token('abone');
       if (t2) res = await send(t2);
     }
+    // /analytics.js: yalnızca "bülten kaydı" bilgisi gider (e-posta adresi asla)
+    if (res.ok) { try { document.dispatchEvent(new CustomEvent('iu:subscribe')); } catch (_) { /* eski tarayıcı */ } }
     return res;
   }
   function subscribeError(res) {

@@ -1385,3 +1385,8 @@ a.lead-v:hover { text-decoration: underline; }
   .table.prop-table .prop-edit-bottom { display: inline-flex; flex: 1 1 auto; font-size: 15px; }
   .table.prop-table td[colspan] { grid-column: 1 / -1; }
 }
+
+/* Analitik: değişim okları ve etkinlik simgesi (tek renk, yazı renginden) */
+.ic-arrow-up{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5M5 12l7-7 7 7'/%3E%3C/svg%3E")}
+.ic-arrow-down{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M19 12l-7 7-7-7'/%3E%3C/svg%3E")}
+.ic-activity{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-4l-3 9L9 3l-3 9H2'/%3E%3C/svg%3E")}

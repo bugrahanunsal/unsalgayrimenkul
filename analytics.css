@@ -1,0 +1,16 @@
+/* Çerez tercihi kutusu (analytics.js): yalnızca Google Analytics açıkken ve ziyaretçi henüz seçim yapmadıysa görünür.
+   "Kabul et" ve "Reddet" aynı büyüklükte (ret, kabul kadar kolay). Telefonda ekranın altında, menünün altında kalır. */
+.iu-cerez{position:fixed;z-index:99990;left:16px;bottom:16px;max-width:440px;box-sizing:border-box;background:#fff;color:#0A2A5E;
+  border:1px solid #D7DFEA;border-radius:14px;box-shadow:0 12px 32px rgba(10,42,94,.18);padding:16px 18px;font-family:inherit}
+.iu-cerez[hidden]{display:none}
+.iu-cerez p{margin:0 0 12px;color:#334155;font-size:13.5px;line-height:1.55}
+.iu-cerez a{color:#0A2A5E;font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.iu-cerez-b{display:flex;gap:10px}
+.iu-cerez-b button{flex:1 1 0;min-height:44px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;padding:8px 14px;line-height:1.2}
+.iu-cerez-ok{background:#0A2A5E;color:#fff;border:2px solid #0A2A5E}
+.iu-cerez-ok:hover{background:#1B4380;border-color:#1B4380}
+.iu-cerez-no{background:#fff;color:#0A2A5E;border:2px solid #0A2A5E}
+.iu-cerez-no:hover{background:#EEF2F8}
+.iu-cerez-b button:focus-visible,.iu-cerez a:focus-visible{outline:3px solid #2563EB;outline-offset:2px}
+@media (max-width:560px){.iu-cerez{left:10px;right:10px;bottom:10px;max-width:none;padding:14px}}
+@media print{.iu-cerez{display:none}}
