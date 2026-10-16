@@ -482,7 +482,7 @@
     rows.forEach((x) => {
       const path = String(x.d[0] || '');
       let cell;
-      if (/^\/[A-Za-z0-9/_.~%-]{0,300}$/.test(path) && !path.includes('..') && !PRIVATE_PATH.test(path)) {
+      if (/^\/[A-Za-z0-9/_.~%-]{0,300}$/.test(path) && !path.includes('..') && !path.startsWith('//') && !PRIVATE_PATH.test(path)) {   // '//x' başka siteye gider
         cell = h('a', { href: path, target: '_blank', rel: 'noopener', text: pageLabel(path), title: path });
       } else cell = h('span', { text: path || 'Bilinmiyor' });
       tb.append(h('tr', null, h('td', null, cell), h('td', { class: 'lc-num', text: int(x.m[0]) }), h('td', { class: 'lc-num', text: int(x.m[1]) })));
