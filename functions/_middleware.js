@@ -81,9 +81,37 @@ const REZERVE = new Set([
 ]);
 
 // ---------------------------------------------------------------------------
+//  Çerçeve kuralları (clickjacking koruması): HTML sayfaları yalnızca bu sitenin ve Bugrahan Ünsal'ın
+//  portfolyosunun (bugrahanunsal.com, "canlı siteyi gez" penceresi) içinde gösterilebilir. Hesap ve şifre
+//  sayfaları yalnızca bu sitenin içinde. Başka bir sitenin koyduğu daha sıkı kural varsa ona dokunulmaz.
+// ---------------------------------------------------------------------------
+const FRAME_PUBLIC = "frame-ancestors 'self' https://bugrahanunsal.com";
+const FRAME_PRIVATE = "frame-ancestors 'self'";
+const PRIVATE_RE = /^\/(?:(?:en|fr|de|ru|ar)\/)?(?:hesabim|favorilerim|sifre-belirle|sifre-sifirla|verify|unsubscribe|giris|kayit|login|account)(?:\.html?)?\/?$/i;
+function frameRules(request, res) {
+  try {
+    if (!res || !/text\/html/i.test(res.headers.get('content-type') || '')) return res;
+    const path = new URL(request.url).pathname;
+    const headers = new Headers(res.headers);
+    const csp = headers.get('content-security-policy');
+    if (csp && /frame-ancestors/i.test(csp)) return res;
+    const rule = PRIVATE_RE.test(path) ? FRAME_PRIVATE : FRAME_PUBLIC;
+    headers.set('content-security-policy', csp ? csp + '; ' + rule : rule);
+    headers.set('x-frame-options', 'SAMEORIGIN');            // eski tarayıcılar için (yenileri frame-ancestors'a uyar)
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+  } catch (_) {
+    return res;
+  }
+}
+
+// ---------------------------------------------------------------------------
 //  Giriş noktası
 // ---------------------------------------------------------------------------
 export async function onRequest(context) {
+  return frameRules(context.request, await route(context));
+}
+
+async function route(context) {
   const { request, next } = context;
   try { if (typeof context.passThroughOnException === 'function') context.passThroughOnException(); } catch (_) { /* yok */ }
   const method = request.method;

@@ -183,3 +183,15 @@
     .catch(() => { /* bu sefer analitik yok; sayfa etkilenmez */ })
     .finally(() => { if (timer) clearTimeout(timer); });
 })();
+
+// Bugrahan Ünsal'ın portfolyosunda (bugrahanunsal.com, "canlı siteyi gez" penceresi) gösterilirken o sayfaya sitenin
+// yüklendiğini ve hangi sayfanın açık olduğunu söyler (yalnızca adres yolu; sorgu ve # gönderilmez). Mesajı yalnızca
+// bugrahanunsal.com alır; o sayfadan hiçbir şey okunmaz.
+(function () {
+  if (window.top === window.self) return;
+  var tell = function () {
+    try { window.parent.postMessage({ bu: 'live', path: location.pathname }, 'https://bugrahanunsal.com'); } catch (e) { /* portfolyo değil */ }
+  };
+  tell();
+  window.addEventListener('pageshow', tell);
+})();
